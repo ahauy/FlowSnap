@@ -1,0 +1,67 @@
+name: FlowSnap
+
+options:
+  bundleIdPrefix: com.flowsnap
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    ENABLE_HARDENED_RUNTIME: YES
+    CODE_SIGN_IDENTITY: "-"
+
+targets:
+  FlowSnap:
+    type: application
+    platform: macOS
+    sources:
+      - path: FlowSnap
+        excludes:
+          - "**/.DS_Store"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.flowsnap.app
+        INFOPLIST_FILE: FlowSnap/Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: FlowSnap/Resources/FlowSnap.entitlements
+        PRODUCT_NAME: FlowSnap
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        COMBINE_HIDPI_IMAGES: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          - "@executable_path/../Frameworks"
+    entitlements:
+      path: FlowSnap/Resources/FlowSnap.entitlements
+
+  FlowSnapTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: FlowSnapTests
+    dependencies:
+      - target: FlowSnap
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.flowsnap.tests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/FlowSnap.app/Contents/MacOS/FlowSnap"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+
+  FlowSnapLab:
+    type: application
+    platform: macOS
+    sources:
+      - path: FlowSnapLab
+      # Shared Domain & Infrastructure from main target
+      - path: FlowSnap/Domain
+      - path: FlowSnap/Core
+      - path: FlowSnap/Infrastructure
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.flowsnap.lab
+        INFOPLIST_FILE: FlowSnapLab/Info.plist
+        PRODUCT_NAME: FlowSnapLab
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_IDENTITY: "-"

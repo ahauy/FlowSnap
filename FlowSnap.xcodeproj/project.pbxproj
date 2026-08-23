@@ -1,0 +1,936 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01E00C6006103DACA95CD23A /* AccessibilityPermissionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43019770C882BE99A2A24A2 /* AccessibilityPermissionProvider.swift */; };
+		02D75FB018860A3CAD26075C /* ShortcutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C37D1A8C736ADE0A6350BB /* ShortcutSettingsView.swift */; };
+		0BA06492FD9D0846DC8C7AE8 /* LayoutZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C1425FD59382AD5120BE19 /* LayoutZoneTests.swift */; };
+		1151B12C1F11349473627AAE /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D161FB100C76864DFB4BC2 /* MenuBarView.swift */; };
+		1542AEF9EF3E838F289F7361 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63733F0E866C2305895BB57F /* AppDelegate.swift */; };
+		15CB584E5ED755A2C6060074 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EF0AA383DB2666E492CAD137 /* Assets.xcassets */; };
+		1984D02B3B4D16EBE860150A /* AccessibilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFABBDB45AD79B4AC9397B4 /* AccessibilityService.swift */; };
+		1B9118C686E4BC67368F15A4 /* CommandDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E1AAF1144FB50C946EB1A00 /* CommandDispatcher.swift */; };
+		2964C356BFDE09652D1DF558 /* WindowRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3215611D5E316EDFE63ABC5 /* WindowRegistry.swift */; };
+		2B15364C09FF8CE559B2CBAA /* WindowEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2CE7E99F6B9239288BEE1 /* WindowEvent.swift */; };
+		2BF4080A13A5F6401A0B4153 /* Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E52A8E94F9EB5A1D0F44862 /* Display.swift */; };
+		2C06745ABDBEF158D5CE2E9A /* WindowCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40AE155D33959E6CDC872DAA /* WindowCommand.swift */; };
+		2C918AEBD7C5ACE39EC17782 /* WorkspaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52B3EF81167806134CD93A0 /* WorkspaceManager.swift */; };
+		2D608639419517BC17839810 /* SnapDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695ACF86831A27621CBF2F7E /* SnapDetector.swift */; };
+		3081ABF3C1ECF494D5382253 /* EventBus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AEED54CA5E1FDA463F255E /* EventBus.swift */; };
+		30E8AE8738EC4532C54D15CF /* AXAccessibilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76D02C4F0C0E7AA130704FD3 /* AXAccessibilityService.swift */; };
+		337EC04D88D27E67003379D9 /* DisplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972A967150406624FD443D8D /* DisplayManager.swift */; };
+		3517692F274E545D61FEFE01 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99CCBFB82F9AFF970639431B /* Layout.swift */; };
+		36876680F3E192AF3AC39942 /* WindowPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DC4D44B8F281D8801C2B8C /* WindowPolicy.swift */; };
+		3CD93327ECE020CBA3191C57 /* SnapEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F6FCCD453ED6DA21D35F89 /* SnapEngine.swift */; };
+		3CE531AFED45D08A277DE28D /* WindowPlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D8C206B74A7A3730798DAB /* WindowPlacement.swift */; };
+		3DBF00D0C88F0962666AAAE0 /* ManagedWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEF5A45967837FE4040D7E2 /* ManagedWindow.swift */; };
+		3F83CC5BE7CDEB69D5B8AE61 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D0453BEFA30D4D700FA3F9 /* WindowManager.swift */; };
+		437F10D4716418B7F5E82A97 /* WorkspaceObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE52C1D2D665DD9E9353D73 /* WorkspaceObserver.swift */; };
+		43E6311A01ED29CD4821F122 /* FlowSnapLabApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7068EE6A183791B48D5D25DE /* FlowSnapLabApp.swift */; };
+		44C2DDD5666545D51B951B18 /* SnapEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F6FCCD453ED6DA21D35F89 /* SnapEngine.swift */; };
+		47730D9E24C0098C1C152AB9 /* GlobalHotkeyManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA302070D5256402373AAEC /* GlobalHotkeyManaging.swift */; };
+		48C72DADD60901C67006BB62 /* WindowManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E59D7D6510043500BD6E2B0 /* WindowManaging.swift */; };
+		4AB50F4074973F60C11142E3 /* WindowRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3215611D5E316EDFE63ABC5 /* WindowRegistry.swift */; };
+		4CD62494E7C572C29DA28F2C /* FlowSnapApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8140860715C5605A9A5D22 /* FlowSnapApp.swift */; };
+		507D3261C22426620A0FC3FD /* SnapTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FF830A73925B54810D8FE9 /* SnapTarget.swift */; };
+		51B45E330ACFBAE30290C5E3 /* InputMonitoringPermissionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AF4238A49FEFBA48A402 /* InputMonitoringPermissionProvider.swift */; };
+		527F2E409FB9FF627C9B0694 /* LayoutEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F91DA228E94E526F2A61D18 /* LayoutEngineTests.swift */; };
+		5360EBE7B4FF0382B7B44F58 /* CommandDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E1AAF1144FB50C946EB1A00 /* CommandDispatcher.swift */; };
+		53E3894A4E60F57A8C2FA027 /* AccessibilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFFABBDB45AD79B4AC9397B4 /* AccessibilityService.swift */; };
+		576107A30EE0111CD35DAFB0 /* AppDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253B998D2444EA6194140B3A /* AppDependencies.swift */; };
+		58956AC3379EF22C8B52DA55 /* WorkspaceObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE52C1D2D665DD9E9353D73 /* WorkspaceObserver.swift */; };
+		5AC60CA57DD0C662B921A4AC /* WindowPolicyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2DF15A0E9D6F66564F8FE16 /* WindowPolicyManager.swift */; };
+		603C49BD23A32046D90446A1 /* SpaceManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9329DD1D2BB54E77B49F4DF2 /* SpaceManaging.swift */; };
+		629E6A7E06CFD4F8789D0FEC /* WindowManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E59D7D6510043500BD6E2B0 /* WindowManaging.swift */; };
+		63C0935C8263A86CC8100F60 /* WorkspaceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33623F2840542D0A87951102 /* WorkspaceStore.swift */; };
+		647FAAFE999A08F132D60470 /* InputMonitoringPermissionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AF4238A49FEFBA48A402 /* InputMonitoringPermissionProvider.swift */; };
+		6832A5DE45B15A04224F4B23 /* SpaceManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9329DD1D2BB54E77B49F4DF2 /* SpaceManaging.swift */; };
+		6B20456958CE8793C35AB039 /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9C61ABB086757AADC21CB /* GeneralSettingsView.swift */; };
+		6C6527A2A62AE38E08EA5991 /* SnapPreviewPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917233E614F66482F68EB4C8 /* SnapPreviewPanel.swift */; };
+		77A697C7CE84F73B1D113E9B /* DisplayManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874C2B5F7B0DE3604E245FC7 /* DisplayManaging.swift */; };
+		7E1A6BE7BFD56068F27B0B4E /* Workspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C45EBED36C097796E6CD70A /* Workspace.swift */; };
+		7E7E25795E30579C89A15B0B /* WorkspaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52B3EF81167806134CD93A0 /* WorkspaceManager.swift */; };
+		7FC7A7BFB4954D5A0D3CDE0F /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C49F8641F41FAD006EE9663 /* PreferencesStore.swift */; };
+		81D4A8D2D4BA79CFF9BA9F1D /* Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E52A8E94F9EB5A1D0F44862 /* Display.swift */; };
+		855DAF308E3E6A75A130B39B /* Workspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C45EBED36C097796E6CD70A /* Workspace.swift */; };
+		8932AA46A9C293F8DC6B5C1E /* SnapTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FF830A73925B54810D8FE9 /* SnapTarget.swift */; };
+		8DE7192A1B7190E6213DA61B /* LayoutCalculating.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C2B39D95E9A7EF7F084843 /* LayoutCalculating.swift */; };
+		90524EAD2D1453E8098C62B0 /* WindowEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C2CE7E99F6B9239288BEE1 /* WindowEvent.swift */; };
+		947E0C864690CB6AD2780454 /* GlobalHotkeyManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EA302070D5256402373AAEC /* GlobalHotkeyManaging.swift */; };
+		953E573B720E191B6D86D841 /* SnapPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DDB982014F80B64A35B61FE /* SnapPreviewView.swift */; };
+		974336002410667FBC5A3D21 /* WindowPolicyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2DF15A0E9D6F66564F8FE16 /* WindowPolicyManager.swift */; };
+		9DB44170833112726114220E /* DisplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972A967150406624FD443D8D /* DisplayManager.swift */; };
+		9F338C6E3F351223BCE08429 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99CCBFB82F9AFF970639431B /* Layout.swift */; };
+		A650BB59C4EB60494569006D /* GlobalHotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5A4325641893ECDB8B3793 /* GlobalHotkeyManager.swift */; };
+		A9A0F47914A6FB47FB2FB644 /* AXAccessibilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76D02C4F0C0E7AA130704FD3 /* AXAccessibilityService.swift */; };
+		AC1FE9DB4C94843844598EC6 /* WindowClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DDCF67D6AF358E7276AA0AB /* WindowClassification.swift */; };
+		B423E48FAB514D318198738D /* WindowClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DDCF67D6AF358E7276AA0AB /* WindowClassification.swift */; };
+		B64E7C593055CCEC723AFB9C /* ApplicationRulesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46DA3A268479EBFE769CEFD /* ApplicationRulesView.swift */; };
+		BBEB3C815C54C1DA5F725350 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01516D7EAF5546C728E483AC /* SettingsView.swift */; };
+		C0EF9B556A04666E4F054B52 /* LayoutEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C83FDEF7A27D286A096EFAF2 /* LayoutEngine.swift */; };
+		C18D28F4BEFACD3106D1D055 /* WindowPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DC4D44B8F281D8801C2B8C /* WindowPolicy.swift */; };
+		C55AB549C23D054AA66D7C42 /* WindowCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40AE155D33959E6CDC872DAA /* WindowCommand.swift */; };
+		C96E85D8401333B795EFAB10 /* SnapDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 695ACF86831A27621CBF2F7E /* SnapDetector.swift */; };
+		D1D90B264D3CCF57472F2036 /* EventBus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AEED54CA5E1FDA463F255E /* EventBus.swift */; };
+		D7C6BA3A7303A3F3BA2AB407 /* ManagedWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEF5A45967837FE4040D7E2 /* ManagedWindow.swift */; };
+		DA95E3FB48AFA59C3A2D5222 /* DisplayManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874C2B5F7B0DE3604E245FC7 /* DisplayManaging.swift */; };
+		DFF709FACB4CB41F7F73489B /* GlobalHotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5A4325641893ECDB8B3793 /* GlobalHotkeyManager.swift */; };
+		E14FEB1B270148B926026E5B /* AccessibilityPermissionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43019770C882BE99A2A24A2 /* AccessibilityPermissionProvider.swift */; };
+		E3CED88FD6DD4221BFCE8275 /* LayoutCalculating.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C2B39D95E9A7EF7F084843 /* LayoutCalculating.swift */; };
+		E470DCA68EBAF7157B4A679D /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D0453BEFA30D4D700FA3F9 /* WindowManager.swift */; };
+		E4A0ACB137394CC17EBF22DF /* WindowPlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D8C206B74A7A3730798DAB /* WindowPlacement.swift */; };
+		ECF84AB658E05DDDA3322AB1 /* LayoutZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD1416DBF6D078EC3420DDC1 /* LayoutZone.swift */; };
+		F729541E553B4408C2F0CC75 /* LayoutZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD1416DBF6D078EC3420DDC1 /* LayoutZone.swift */; };
+		FDC3B1D4C0A0F461DF6468D7 /* LayoutEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C83FDEF7A27D286A096EFAF2 /* LayoutEngine.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EBD739C488D26F8747A13C55 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C987FA6D3CAC5C5C1E6A0F1F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E82218D9AEDCB562FABC543D;
+			remoteInfo = FlowSnap;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		01516D7EAF5546C728E483AC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		0E59D7D6510043500BD6E2B0 /* WindowManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManaging.swift; sourceTree = "<group>"; };
+		0F9B9E6D18AEB5716E9CAEE2 /* FlowSnapLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlowSnapLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C5A4325641893ECDB8B3793 /* GlobalHotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotkeyManager.swift; sourceTree = "<group>"; };
+		1C8140860715C5605A9A5D22 /* FlowSnapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowSnapApp.swift; sourceTree = "<group>"; };
+		1DDCF67D6AF358E7276AA0AB /* WindowClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowClassification.swift; sourceTree = "<group>"; };
+		253B998D2444EA6194140B3A /* AppDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDependencies.swift; sourceTree = "<group>"; };
+		33623F2840542D0A87951102 /* WorkspaceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceStore.swift; sourceTree = "<group>"; };
+		34C2CE7E99F6B9239288BEE1 /* WindowEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowEvent.swift; sourceTree = "<group>"; };
+		3C96C139A2A24F6EE9885AEC /* FlowSnapTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlowSnapTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E1AAF1144FB50C946EB1A00 /* CommandDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandDispatcher.swift; sourceTree = "<group>"; };
+		40AE155D33959E6CDC872DAA /* WindowCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowCommand.swift; sourceTree = "<group>"; };
+		4F91DA228E94E526F2A61D18 /* LayoutEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutEngineTests.swift; sourceTree = "<group>"; };
+		57413B20AF57620434884EF1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		5CE9C61ABB086757AADC21CB /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
+		62D161FB100C76864DFB4BC2 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		63733F0E866C2305895BB57F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		695ACF86831A27621CBF2F7E /* SnapDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapDetector.swift; sourceTree = "<group>"; };
+		7068EE6A183791B48D5D25DE /* FlowSnapLabApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowSnapLabApp.swift; sourceTree = "<group>"; };
+		75529D8EAACB273C667003CB /* FlowSnap.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlowSnap.entitlements; sourceTree = "<group>"; };
+		76D02C4F0C0E7AA130704FD3 /* AXAccessibilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXAccessibilityService.swift; sourceTree = "<group>"; };
+		7BE52C1D2D665DD9E9353D73 /* WorkspaceObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceObserver.swift; sourceTree = "<group>"; };
+		83C1425FD59382AD5120BE19 /* LayoutZoneTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutZoneTests.swift; sourceTree = "<group>"; };
+		874C2B5F7B0DE3604E245FC7 /* DisplayManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayManaging.swift; sourceTree = "<group>"; };
+		8C86D590DB737A38A6004AFC /* FlowSnap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlowSnap.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8DDB982014F80B64A35B61FE /* SnapPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapPreviewView.swift; sourceTree = "<group>"; };
+		8EA302070D5256402373AAEC /* GlobalHotkeyManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotkeyManaging.swift; sourceTree = "<group>"; };
+		917233E614F66482F68EB4C8 /* SnapPreviewPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapPreviewPanel.swift; sourceTree = "<group>"; };
+		9329DD1D2BB54E77B49F4DF2 /* SpaceManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceManaging.swift; sourceTree = "<group>"; };
+		96C37D1A8C736ADE0A6350BB /* ShortcutSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutSettingsView.swift; sourceTree = "<group>"; };
+		972A967150406624FD443D8D /* DisplayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayManager.swift; sourceTree = "<group>"; };
+		99CCBFB82F9AFF970639431B /* Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
+		99D8C206B74A7A3730798DAB /* WindowPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPlacement.swift; sourceTree = "<group>"; };
+		9C45EBED36C097796E6CD70A /* Workspace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workspace.swift; sourceTree = "<group>"; };
+		9C49F8641F41FAD006EE9663 /* PreferencesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesStore.swift; sourceTree = "<group>"; };
+		9E52A8E94F9EB5A1D0F44862 /* Display.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Display.swift; sourceTree = "<group>"; };
+		A2DF15A0E9D6F66564F8FE16 /* WindowPolicyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPolicyManager.swift; sourceTree = "<group>"; };
+		A9C2B39D95E9A7EF7F084843 /* LayoutCalculating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCalculating.swift; sourceTree = "<group>"; };
+		AFFABBDB45AD79B4AC9397B4 /* AccessibilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityService.swift; sourceTree = "<group>"; };
+		B3AEED54CA5E1FDA463F255E /* EventBus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventBus.swift; sourceTree = "<group>"; };
+		C46DA3A268479EBFE769CEFD /* ApplicationRulesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationRulesView.swift; sourceTree = "<group>"; };
+		C7DBCB6549464BF0471FD867 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		C83FDEF7A27D286A096EFAF2 /* LayoutEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutEngine.swift; sourceTree = "<group>"; };
+		C8D0453BEFA30D4D700FA3F9 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
+		C9E6AF4238A49FEFBA48A402 /* InputMonitoringPermissionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputMonitoringPermissionProvider.swift; sourceTree = "<group>"; };
+		CD1416DBF6D078EC3420DDC1 /* LayoutZone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutZone.swift; sourceTree = "<group>"; };
+		D7FF830A73925B54810D8FE9 /* SnapTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapTarget.swift; sourceTree = "<group>"; };
+		DBEF5A45967837FE4040D7E2 /* ManagedWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedWindow.swift; sourceTree = "<group>"; };
+		E43019770C882BE99A2A24A2 /* AccessibilityPermissionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityPermissionProvider.swift; sourceTree = "<group>"; };
+		E8DC4D44B8F281D8801C2B8C /* WindowPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPolicy.swift; sourceTree = "<group>"; };
+		EF0AA383DB2666E492CAD137 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F3215611D5E316EDFE63ABC5 /* WindowRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowRegistry.swift; sourceTree = "<group>"; };
+		F3F6FCCD453ED6DA21D35F89 /* SnapEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapEngine.swift; sourceTree = "<group>"; };
+		F52B3EF81167806134CD93A0 /* WorkspaceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceManager.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		07FDC45A365E962596AA583B /* Window */ = {
+			isa = PBXGroup;
+			children = (
+				DBEF5A45967837FE4040D7E2 /* ManagedWindow.swift */,
+				E8DC4D44B8F281D8801C2B8C /* WindowPolicy.swift */,
+			);
+			path = Window;
+			sourceTree = "<group>";
+		};
+		27D50972EC84252C820DAD51 /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				972A967150406624FD443D8D /* DisplayManager.swift */,
+				874C2B5F7B0DE3604E245FC7 /* DisplayManaging.swift */,
+				9329DD1D2BB54E77B49F4DF2 /* SpaceManaging.swift */,
+				7BE52C1D2D665DD9E9353D73 /* WorkspaceObserver.swift */,
+			);
+			path = macOS;
+			sourceTree = "<group>";
+		};
+		2CFE0BB07A0ABC80F74AA61A /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				D7FF830A73925B54810D8FE9 /* SnapTarget.swift */,
+				40AE155D33959E6CDC872DAA /* WindowCommand.swift */,
+			);
+			path = Commands;
+			sourceTree = "<group>";
+		};
+		313D43D697CBE796DA366781 /* Display */ = {
+			isa = PBXGroup;
+			children = (
+				9E52A8E94F9EB5A1D0F44862 /* Display.swift */,
+			);
+			path = Display;
+			sourceTree = "<group>";
+		};
+		4D4A75797BBEF04C1375CC4C /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				83C1425FD59382AD5120BE19 /* LayoutZoneTests.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		5055BEA91118C9C9A8430311 /* Workspace */ = {
+			isa = PBXGroup;
+			children = (
+				99D8C206B74A7A3730798DAB /* WindowPlacement.swift */,
+				9C45EBED36C097796E6CD70A /* Workspace.swift */,
+			);
+			path = Workspace;
+			sourceTree = "<group>";
+		};
+		54F33A496F0F4A02C050404E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8C86D590DB737A38A6004AFC /* FlowSnap.app */,
+				0F9B9E6D18AEB5716E9CAEE2 /* FlowSnapLab.app */,
+				3C96C139A2A24F6EE9885AEC /* FlowSnapTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		57AD1716133A69290481A00B /* Workspace */ = {
+			isa = PBXGroup;
+			children = (
+				F52B3EF81167806134CD93A0 /* WorkspaceManager.swift */,
+			);
+			path = Workspace;
+			sourceTree = "<group>";
+		};
+		5ED898E7C36FAF40C0EA7EC5 /* Infrastructure */ = {
+			isa = PBXGroup;
+			children = (
+				738910F50CBBE99931A63818 /* Accessibility */,
+				FECE043A4468F11DD7AC873D /* Hotkeys */,
+				27D50972EC84252C820DAD51 /* macOS */,
+			);
+			path = Infrastructure;
+			sourceTree = "<group>";
+		};
+		662186505D04B727685872D3 /* Layout */ = {
+			isa = PBXGroup;
+			children = (
+				99CCBFB82F9AFF970639431B /* Layout.swift */,
+				CD1416DBF6D078EC3420DDC1 /* LayoutZone.swift */,
+			);
+			path = Layout;
+			sourceTree = "<group>";
+		};
+		68773B8D0FD725F68A2018F4 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				C46DA3A268479EBFE769CEFD /* ApplicationRulesView.swift */,
+				5CE9C61ABB086757AADC21CB /* GeneralSettingsView.swift */,
+				01516D7EAF5546C728E483AC /* SettingsView.swift */,
+				96C37D1A8C736ADE0A6350BB /* ShortcutSettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		738910F50CBBE99931A63818 /* Accessibility */ = {
+			isa = PBXGroup;
+			children = (
+				E43019770C882BE99A2A24A2 /* AccessibilityPermissionProvider.swift */,
+				AFFABBDB45AD79B4AC9397B4 /* AccessibilityService.swift */,
+				76D02C4F0C0E7AA130704FD3 /* AXAccessibilityService.swift */,
+				C9E6AF4238A49FEFBA48A402 /* InputMonitoringPermissionProvider.swift */,
+			);
+			path = Accessibility;
+			sourceTree = "<group>";
+		};
+		7980405CB7A028C987A42815 /* Events */ = {
+			isa = PBXGroup;
+			children = (
+				B3AEED54CA5E1FDA463F255E /* EventBus.swift */,
+				1DDCF67D6AF358E7276AA0AB /* WindowClassification.swift */,
+				34C2CE7E99F6B9239288BEE1 /* WindowEvent.swift */,
+			);
+			path = Events;
+			sourceTree = "<group>";
+		};
+		7A0CD3800F37135D60E2AE98 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				9C49F8641F41FAD006EE9663 /* PreferencesStore.swift */,
+				33623F2840542D0A87951102 /* WorkspaceStore.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		7F5E231E83D5CB0FBD2D3DFE = {
+			isa = PBXGroup;
+			children = (
+				D6A369BBCAF8AAE0002D51EF /* FlowSnap */,
+				FE57CF9B222965B56FA9F9CF /* FlowSnapLab */,
+				BDCD7FBD84346317D45CF101 /* FlowSnapTests */,
+				54F33A496F0F4A02C050404E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8C269816BBCABD2AE5CE7BDD /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				4F91DA228E94E526F2A61D18 /* LayoutEngineTests.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		904758E201EFC30CBD1D0A82 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				EF0AA383DB2666E492CAD137 /* Assets.xcassets */,
+				75529D8EAACB273C667003CB /* FlowSnap.entitlements */,
+				57413B20AF57620434884EF1 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		975F5FA17AD0166B5BBD311F /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				62D161FB100C76864DFB4BC2 /* MenuBarView.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
+		B08389C207099F093F5138D2 /* SnapPreview */ = {
+			isa = PBXGroup;
+			children = (
+				917233E614F66482F68EB4C8 /* SnapPreviewPanel.swift */,
+				8DDB982014F80B64A35B61FE /* SnapPreviewView.swift */,
+			);
+			path = SnapPreview;
+			sourceTree = "<group>";
+		};
+		BDCD7FBD84346317D45CF101 /* FlowSnapTests */ = {
+			isa = PBXGroup;
+			children = (
+				8C269816BBCABD2AE5CE7BDD /* Core */,
+				4D4A75797BBEF04C1375CC4C /* Domain */,
+			);
+			path = FlowSnapTests;
+			sourceTree = "<group>";
+		};
+		BF7811BD4DA6F0EBCF1FB5DE /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				2CFE0BB07A0ABC80F74AA61A /* Commands */,
+				313D43D697CBE796DA366781 /* Display */,
+				662186505D04B727685872D3 /* Layout */,
+				07FDC45A365E962596AA583B /* Window */,
+				5055BEA91118C9C9A8430311 /* Workspace */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		C71C504984DB9DB387617D40 /* Window */ = {
+			isa = PBXGroup;
+			children = (
+				C8D0453BEFA30D4D700FA3F9 /* WindowManager.swift */,
+				0E59D7D6510043500BD6E2B0 /* WindowManaging.swift */,
+				F3215611D5E316EDFE63ABC5 /* WindowRegistry.swift */,
+			);
+			path = Window;
+			sourceTree = "<group>";
+		};
+		CB40DD05CF74906309B081C4 /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				3E1AAF1144FB50C946EB1A00 /* CommandDispatcher.swift */,
+			);
+			path = Commands;
+			sourceTree = "<group>";
+		};
+		D5059571A404238053EB4D37 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				975F5FA17AD0166B5BBD311F /* MenuBar */,
+				68773B8D0FD725F68A2018F4 /* Settings */,
+				B08389C207099F093F5138D2 /* SnapPreview */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		D6A369BBCAF8AAE0002D51EF /* FlowSnap */ = {
+			isa = PBXGroup;
+			children = (
+				E642622E5CFA0839D6949731 /* App */,
+				DF05DFB1746E4CD918FCE836 /* Core */,
+				BF7811BD4DA6F0EBCF1FB5DE /* Domain */,
+				5ED898E7C36FAF40C0EA7EC5 /* Infrastructure */,
+				7A0CD3800F37135D60E2AE98 /* Persistence */,
+				904758E201EFC30CBD1D0A82 /* Resources */,
+				D5059571A404238053EB4D37 /* UI */,
+			);
+			path = FlowSnap;
+			sourceTree = "<group>";
+		};
+		DF05DFB1746E4CD918FCE836 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				CB40DD05CF74906309B081C4 /* Commands */,
+				7980405CB7A028C987A42815 /* Events */,
+				F570FDF611E87D09F130B50C /* Layout */,
+				F88D3CA69DF2067C2AA561F9 /* Policy */,
+				C71C504984DB9DB387617D40 /* Window */,
+				57AD1716133A69290481A00B /* Workspace */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		E642622E5CFA0839D6949731 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				63733F0E866C2305895BB57F /* AppDelegate.swift */,
+				253B998D2444EA6194140B3A /* AppDependencies.swift */,
+				1C8140860715C5605A9A5D22 /* FlowSnapApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		F570FDF611E87D09F130B50C /* Layout */ = {
+			isa = PBXGroup;
+			children = (
+				A9C2B39D95E9A7EF7F084843 /* LayoutCalculating.swift */,
+				C83FDEF7A27D286A096EFAF2 /* LayoutEngine.swift */,
+				695ACF86831A27621CBF2F7E /* SnapDetector.swift */,
+				F3F6FCCD453ED6DA21D35F89 /* SnapEngine.swift */,
+			);
+			path = Layout;
+			sourceTree = "<group>";
+		};
+		F88D3CA69DF2067C2AA561F9 /* Policy */ = {
+			isa = PBXGroup;
+			children = (
+				A2DF15A0E9D6F66564F8FE16 /* WindowPolicyManager.swift */,
+			);
+			path = Policy;
+			sourceTree = "<group>";
+		};
+		FE57CF9B222965B56FA9F9CF /* FlowSnapLab */ = {
+			isa = PBXGroup;
+			children = (
+				7068EE6A183791B48D5D25DE /* FlowSnapLabApp.swift */,
+				C7DBCB6549464BF0471FD867 /* Info.plist */,
+			);
+			path = FlowSnapLab;
+			sourceTree = "<group>";
+		};
+		FECE043A4468F11DD7AC873D /* Hotkeys */ = {
+			isa = PBXGroup;
+			children = (
+				1C5A4325641893ECDB8B3793 /* GlobalHotkeyManager.swift */,
+				8EA302070D5256402373AAEC /* GlobalHotkeyManaging.swift */,
+			);
+			path = Hotkeys;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		650F86BD70869EF8A293CC86 /* FlowSnapTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA94A2A1DB202080EAE4E908 /* Build configuration list for PBXNativeTarget "FlowSnapTests" */;
+			buildPhases = (
+				92648EE3758DD8846FD9F427 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CAB15845EDD8CAB17CDB2DF3 /* PBXTargetDependency */,
+			);
+			name = FlowSnapTests;
+			packageProductDependencies = (
+			);
+			productName = FlowSnapTests;
+			productReference = 3C96C139A2A24F6EE9885AEC /* FlowSnapTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B5BD78D66C507AC27883FC2E /* FlowSnapLab */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 08CD161C996EBDFBFC52F01E /* Build configuration list for PBXNativeTarget "FlowSnapLab" */;
+			buildPhases = (
+				3555291D2AD89828C37C3BEB /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FlowSnapLab;
+			packageProductDependencies = (
+			);
+			productName = FlowSnapLab;
+			productReference = 0F9B9E6D18AEB5716E9CAEE2 /* FlowSnapLab.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E82218D9AEDCB562FABC543D /* FlowSnap */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 84A6EE4EB7EAF0E64ED1D1ED /* Build configuration list for PBXNativeTarget "FlowSnap" */;
+			buildPhases = (
+				99631C4246694929D19F7BA4 /* Sources */,
+				2DC397910A8579CCF961218F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FlowSnap;
+			packageProductDependencies = (
+			);
+			productName = FlowSnap;
+			productReference = 8C86D590DB737A38A6004AFC /* FlowSnap.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C987FA6D3CAC5C5C1E6A0F1F /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 840D91E25D9F0BFAE6C2F824 /* Build configuration list for PBXProject "FlowSnap" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 7F5E231E83D5CB0FBD2D3DFE;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 54F33A496F0F4A02C050404E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E82218D9AEDCB562FABC543D /* FlowSnap */,
+				650F86BD70869EF8A293CC86 /* FlowSnapTests */,
+				B5BD78D66C507AC27883FC2E /* FlowSnapLab */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2DC397910A8579CCF961218F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				15CB584E5ED755A2C6060074 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3555291D2AD89828C37C3BEB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9A0F47914A6FB47FB2FB644 /* AXAccessibilityService.swift in Sources */,
+				01E00C6006103DACA95CD23A /* AccessibilityPermissionProvider.swift in Sources */,
+				53E3894A4E60F57A8C2FA027 /* AccessibilityService.swift in Sources */,
+				1B9118C686E4BC67368F15A4 /* CommandDispatcher.swift in Sources */,
+				2BF4080A13A5F6401A0B4153 /* Display.swift in Sources */,
+				337EC04D88D27E67003379D9 /* DisplayManager.swift in Sources */,
+				DA95E3FB48AFA59C3A2D5222 /* DisplayManaging.swift in Sources */,
+				D1D90B264D3CCF57472F2036 /* EventBus.swift in Sources */,
+				43E6311A01ED29CD4821F122 /* FlowSnapLabApp.swift in Sources */,
+				A650BB59C4EB60494569006D /* GlobalHotkeyManager.swift in Sources */,
+				947E0C864690CB6AD2780454 /* GlobalHotkeyManaging.swift in Sources */,
+				647FAAFE999A08F132D60470 /* InputMonitoringPermissionProvider.swift in Sources */,
+				9F338C6E3F351223BCE08429 /* Layout.swift in Sources */,
+				E3CED88FD6DD4221BFCE8275 /* LayoutCalculating.swift in Sources */,
+				C0EF9B556A04666E4F054B52 /* LayoutEngine.swift in Sources */,
+				F729541E553B4408C2F0CC75 /* LayoutZone.swift in Sources */,
+				3DBF00D0C88F0962666AAAE0 /* ManagedWindow.swift in Sources */,
+				C96E85D8401333B795EFAB10 /* SnapDetector.swift in Sources */,
+				3CD93327ECE020CBA3191C57 /* SnapEngine.swift in Sources */,
+				507D3261C22426620A0FC3FD /* SnapTarget.swift in Sources */,
+				603C49BD23A32046D90446A1 /* SpaceManaging.swift in Sources */,
+				B423E48FAB514D318198738D /* WindowClassification.swift in Sources */,
+				C55AB549C23D054AA66D7C42 /* WindowCommand.swift in Sources */,
+				2B15364C09FF8CE559B2CBAA /* WindowEvent.swift in Sources */,
+				E470DCA68EBAF7157B4A679D /* WindowManager.swift in Sources */,
+				48C72DADD60901C67006BB62 /* WindowManaging.swift in Sources */,
+				3CE531AFED45D08A277DE28D /* WindowPlacement.swift in Sources */,
+				C18D28F4BEFACD3106D1D055 /* WindowPolicy.swift in Sources */,
+				974336002410667FBC5A3D21 /* WindowPolicyManager.swift in Sources */,
+				4AB50F4074973F60C11142E3 /* WindowRegistry.swift in Sources */,
+				7E1A6BE7BFD56068F27B0B4E /* Workspace.swift in Sources */,
+				2C918AEBD7C5ACE39EC17782 /* WorkspaceManager.swift in Sources */,
+				58956AC3379EF22C8B52DA55 /* WorkspaceObserver.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		92648EE3758DD8846FD9F427 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				527F2E409FB9FF627C9B0694 /* LayoutEngineTests.swift in Sources */,
+				0BA06492FD9D0846DC8C7AE8 /* LayoutZoneTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		99631C4246694929D19F7BA4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				30E8AE8738EC4532C54D15CF /* AXAccessibilityService.swift in Sources */,
+				E14FEB1B270148B926026E5B /* AccessibilityPermissionProvider.swift in Sources */,
+				1984D02B3B4D16EBE860150A /* AccessibilityService.swift in Sources */,
+				1542AEF9EF3E838F289F7361 /* AppDelegate.swift in Sources */,
+				576107A30EE0111CD35DAFB0 /* AppDependencies.swift in Sources */,
+				B64E7C593055CCEC723AFB9C /* ApplicationRulesView.swift in Sources */,
+				5360EBE7B4FF0382B7B44F58 /* CommandDispatcher.swift in Sources */,
+				81D4A8D2D4BA79CFF9BA9F1D /* Display.swift in Sources */,
+				9DB44170833112726114220E /* DisplayManager.swift in Sources */,
+				77A697C7CE84F73B1D113E9B /* DisplayManaging.swift in Sources */,
+				3081ABF3C1ECF494D5382253 /* EventBus.swift in Sources */,
+				4CD62494E7C572C29DA28F2C /* FlowSnapApp.swift in Sources */,
+				6B20456958CE8793C35AB039 /* GeneralSettingsView.swift in Sources */,
+				DFF709FACB4CB41F7F73489B /* GlobalHotkeyManager.swift in Sources */,
+				47730D9E24C0098C1C152AB9 /* GlobalHotkeyManaging.swift in Sources */,
+				51B45E330ACFBAE30290C5E3 /* InputMonitoringPermissionProvider.swift in Sources */,
+				3517692F274E545D61FEFE01 /* Layout.swift in Sources */,
+				8DE7192A1B7190E6213DA61B /* LayoutCalculating.swift in Sources */,
+				FDC3B1D4C0A0F461DF6468D7 /* LayoutEngine.swift in Sources */,
+				ECF84AB658E05DDDA3322AB1 /* LayoutZone.swift in Sources */,
+				D7C6BA3A7303A3F3BA2AB407 /* ManagedWindow.swift in Sources */,
+				1151B12C1F11349473627AAE /* MenuBarView.swift in Sources */,
+				7FC7A7BFB4954D5A0D3CDE0F /* PreferencesStore.swift in Sources */,
+				BBEB3C815C54C1DA5F725350 /* SettingsView.swift in Sources */,
+				02D75FB018860A3CAD26075C /* ShortcutSettingsView.swift in Sources */,
+				2D608639419517BC17839810 /* SnapDetector.swift in Sources */,
+				44C2DDD5666545D51B951B18 /* SnapEngine.swift in Sources */,
+				6C6527A2A62AE38E08EA5991 /* SnapPreviewPanel.swift in Sources */,
+				953E573B720E191B6D86D841 /* SnapPreviewView.swift in Sources */,
+				8932AA46A9C293F8DC6B5C1E /* SnapTarget.swift in Sources */,
+				6832A5DE45B15A04224F4B23 /* SpaceManaging.swift in Sources */,
+				AC1FE9DB4C94843844598EC6 /* WindowClassification.swift in Sources */,
+				2C06745ABDBEF158D5CE2E9A /* WindowCommand.swift in Sources */,
+				90524EAD2D1453E8098C62B0 /* WindowEvent.swift in Sources */,
+				3F83CC5BE7CDEB69D5B8AE61 /* WindowManager.swift in Sources */,
+				629E6A7E06CFD4F8789D0FEC /* WindowManaging.swift in Sources */,
+				E4A0ACB137394CC17EBF22DF /* WindowPlacement.swift in Sources */,
+				36876680F3E192AF3AC39942 /* WindowPolicy.swift in Sources */,
+				5AC60CA57DD0C662B921A4AC /* WindowPolicyManager.swift in Sources */,
+				2964C356BFDE09652D1DF558 /* WindowRegistry.swift in Sources */,
+				855DAF308E3E6A75A130B39B /* Workspace.swift in Sources */,
+				7E7E25795E30579C89A15B0B /* WorkspaceManager.swift in Sources */,
+				437F10D4716418B7F5E82A97 /* WorkspaceObserver.swift in Sources */,
+				63C0935C8263A86CC8100F60 /* WorkspaceStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CAB15845EDD8CAB17CDB2DF3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E82218D9AEDCB562FABC543D /* FlowSnap */;
+			targetProxy = EBD739C488D26F8747A13C55 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		634914B3DD767C4754853D48 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.flowsnap.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FlowSnap.app/Contents/MacOS/FlowSnap";
+			};
+			name = Release;
+		};
+		6D7C3FB155077F9FC642A356 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = FlowSnapLab/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.flowsnap.lab;
+				PRODUCT_NAME = FlowSnapLab;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		784E89D6C419F18FFEF37509 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = FlowSnapLab/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.flowsnap.lab;
+				PRODUCT_NAME = FlowSnapLab;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		7A54DF1A510E3186C8D6586A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		AD67B57755CE70AA02EE93A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.flowsnap.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FlowSnap.app/Contents/MacOS/FlowSnap";
+			};
+			name = Debug;
+		};
+		BBF5C3F97124722FA9CE8F7F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FlowSnap/Resources/FlowSnap.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = FlowSnap/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.flowsnap.app;
+				PRODUCT_NAME = FlowSnap;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		D86D3D6086F4D790F15D50FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = FlowSnap/Resources/FlowSnap.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = FlowSnap/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.flowsnap.app;
+				PRODUCT_NAME = FlowSnap;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		EBC329237CE892B4C6A29B14 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		08CD161C996EBDFBFC52F01E /* Build configuration list for PBXNativeTarget "FlowSnapLab" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D7C3FB155077F9FC642A356 /* Debug */,
+				784E89D6C419F18FFEF37509 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		840D91E25D9F0BFAE6C2F824 /* Build configuration list for PBXProject "FlowSnap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EBC329237CE892B4C6A29B14 /* Debug */,
+				7A54DF1A510E3186C8D6586A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		84A6EE4EB7EAF0E64ED1D1ED /* Build configuration list for PBXNativeTarget "FlowSnap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BBF5C3F97124722FA9CE8F7F /* Debug */,
+				D86D3D6086F4D790F15D50FC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FA94A2A1DB202080EAE4E908 /* Build configuration list for PBXNativeTarget "FlowSnapTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD67B57755CE70AA02EE93A4 /* Debug */,
+				634914B3DD767C4754853D48 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C987FA6D3CAC5C5C1E6A0F1F /* Project object */;
+}
