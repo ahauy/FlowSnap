@@ -30,3 +30,23 @@ Pods/
 *.swp
 *~
 
+
+# --- Universal Agents Workflow (Hybrid Mode: Private Engine) ---
+.agents/
+GEMINI.md
+CLAUDE.md
+AGENTS.md
+.cursorrules
+.windsurfrules
+.code-review-graph/
+.claude/
+.codebuddy/
+.cursor/
+.gemini/
+.kiro/
+.qoder/
+.vscode/
+.mcp.json
+CODEBUDDY.md
+QODER.md
+opencode.jsonc
