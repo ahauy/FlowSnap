@@ -13,6 +13,7 @@ public struct ManagedWindow: Identifiable, Hashable, Sendable {
     public let title: String
 
     public var frame: CGRect
+    public var minSize: CGSize?
     public var isMinimized: Bool
     public var isResizable: Bool
     public var kind: WindowKind
@@ -23,6 +24,7 @@ public struct ManagedWindow: Identifiable, Hashable, Sendable {
         bundleIdentifier: String? = nil,
         title: String,
         frame: CGRect,
+        minSize: CGSize? = nil,
         isMinimized: Bool = false,
         isResizable: Bool = true,
         kind: WindowKind = .normal
@@ -32,6 +34,7 @@ public struct ManagedWindow: Identifiable, Hashable, Sendable {
         self.bundleIdentifier = bundleIdentifier
         self.title = title
         self.frame = frame
+        self.minSize = minSize
         self.isMinimized = isMinimized
         self.isResizable = isResizable
         self.kind = kind

@@ -1,28 +1,110 @@
-import Testing
 import CoreGraphics
+import Foundation
+import Testing
 @testable import FlowSnap
 
-/// Tests for LayoutEngine frame calculations.
+/// Tests for LayoutEngine frame calculations across standard screen resolutions.
 ///
-/// These are the most important unit tests in FlowSnap.
-/// See spec §51.
+/// Traces to US-SNAP-002, TC-001, TC-002, TC-004, TC-005.
 struct LayoutEngineTests {
 
     let engine = LayoutEngine()
 
-    // MARK: - 50/50 Split
+    // MARK: - TC-001: 50/50 Split on Even Resolutions
 
     @Test func fiftyFiftySplit_1440x900() {
-        // TODO: Test that 50/50 layout on 1440×900 produces
-        //       two 720×900 frames
+        let bounds = CGRect(x: 0, y: 0, width: 1440, height: 900)
+
+        let left = engine.frame(for: .leftHalf, in: bounds)
+        let right = engine.frame(for: .rightHalf, in: bounds)
+        let top = engine.frame(for: .topHalf, in: bounds)
+        let bottom = engine.frame(for: .bottomHalf, in: bounds)
+
+        #expect(left == CGRect(x: 0, y: 0, width: 720, height: 900))
+        #expect(right == CGRect(x: 720, y: 0, width: 720, height: 900))
+        #expect(top == CGRect(x: 0, y: 0, width: 1440, height: 450))
+        #expect(bottom == CGRect(x: 0, y: 450, width: 1440, height: 450))
+
+        #expect(left.width + right.width == bounds.width)
+        #expect(top.height + bottom.height == bounds.height)
     }
 
-    // TODO: Test 60/40 split
-    // TODO: Test 70/30 split
-    // TODO: Test four corners (25% each)
-    // TODO: Test with gaps
-    // TODO: Test 4K display (2560×1440)
-    // TODO: Test Retina scaling
-    // TODO: Test portrait display
-    // TODO: Test multiple displays
+    @Test func fiftyFiftySplit_1920x1080() {
+        let bounds = CGRect(x: 0, y: 0, width: 1920, height: 1080)
+
+        let left = engine.frame(for: .leftHalf, in: bounds)
+        let right = engine.frame(for: .rightHalf, in: bounds)
+
+        #expect(left == CGRect(x: 0, y: 0, width: 960, height: 1080))
+        #expect(right == CGRect(x: 960, y: 0, width: 960, height: 1080))
+    }
+
+    // MARK: - TC-002: Four Corners (25% Each)
+
+    @Test func fourCorners_1920x1080() {
+        let bounds = CGRect(x: 0, y: 0, width: 1920, height: 1080)
+
+        let tl = engine.frame(for: .topLeft, in: bounds)
+        let tr = engine.frame(for: .topRight, in: bounds)
+        let bl = engine.frame(for: .bottomLeft, in: bounds)
+        let br = engine.frame(for: .bottomRight, in: bounds)
+
+        #expect(tl == CGRect(x: 0, y: 0, width: 960, height: 540))
+        #expect(tr == CGRect(x: 960, y: 0, width: 960, height: 540))
+        #expect(bl == CGRect(x: 0, y: 540, width: 960, height: 540))
+        #expect(br == CGRect(x: 960, y: 540, width: 960, height: 540))
+    }
+
+    // MARK: - TC-004: Maximize with Visible Frame Offsets
+
+    @Test func maximize_withDockAndMenuBarOffsets() {
+        let bounds = CGRect(x: 0, y: 25, width: 1440, height: 875)
+
+        let maxFrame = engine.frame(for: .maximize, in: bounds)
+
+        #expect(maxFrame == CGRect(x: 0, y: 25, width: 1440, height: 875))
+    }
+
+    // MARK: - TC-005: Multi-Resolution Determinism
+
+    @Test func multiResolutionCoverage() {
+        let resolutions: [CGSize] = [
+            CGSize(width: 2560, height: 1440), // 2K Display
+            CGSize(width: 3840, height: 2160), // 4K Display
+            CGSize(width: 1080, height: 1920)  // Portrait Display
+        ]
+
+        for size in resolutions {
+            let bounds = CGRect(origin: .zero, size: size)
+            let left = engine.frame(for: .leftHalf, in: bounds)
+            let right = engine.frame(for: .rightHalf, in: bounds)
+            let top = engine.frame(for: .topHalf, in: bounds)
+            let bottom = engine.frame(for: .bottomHalf, in: bounds)
+
+            #expect(left.width + right.width == bounds.width)
+            #expect(top.height + bottom.height == bounds.height)
+            #expect(left.minX == 0)
+            #expect(right.maxX == bounds.width)
+            #expect(top.minY == 0)
+            #expect(bottom.maxY == bounds.height)
+        }
+    }
+
+    // MARK: - Multi-Window Layout Mapping
+
+    @Test func multipleWindowsLayoutMapping() {
+        let bounds = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let layout = Layout(
+            name: "Two Columns",
+            zones: [.leftHalf, .rightHalf]
+        )
+
+        let win1 = ManagedWindow(id: 1, pid: 101, title: "Win 1", frame: .zero)
+        let win2 = ManagedWindow(id: 2, pid: 102, title: "Win 2", frame: .zero)
+
+        let frames = engine.frames(for: [win1, win2], in: bounds, layout: layout)
+
+        #expect(frames[1] == CGRect(x: 0, y: 0, width: 720, height: 900))
+        #expect(frames[2] == CGRect(x: 720, y: 0, width: 720, height: 900))
+    }
 }

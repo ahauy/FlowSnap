@@ -4,7 +4,20 @@ import CoreGraphics
 ///
 /// Takes a layout definition and display geometry, returns
 /// concrete window frames. Easily unit-testable. See spec §30.
-protocol LayoutCalculating {
+public protocol LayoutCalculating: Sendable {
+    /// Calculate concrete frame for a single standard layout zone on a display.
+    ///
+    /// - Parameters:
+    ///   - zone: The standard partition target.
+    ///   - availableFrame: The display's visible frame (excluding menu bar/dock).
+    ///   - gap: Pixel gap between windows (spec §18).
+    /// - Returns: Concrete pixel frame within availableFrame.
+    func frame(
+        for zone: LayoutZone,
+        in availableFrame: CGRect,
+        gap: CGFloat
+    ) -> CGRect
+
     /// Calculate concrete frames for windows given a layout and display area.
     ///
     /// - Parameters:
