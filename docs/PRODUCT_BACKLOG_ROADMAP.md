@@ -219,7 +219,7 @@ _Mục tiêu: Đảm bảo FlowSnap có đầy đủ quyền Trợ năng (Access
 
 _Mục tiêu: Xây dựng bộ não tính toán hình học bố cục (Layout Engine) không phụ thuộc phần cứng, hỗ trợ chia đôi, 4 góc, phóng to và khôi phục._
 
-- [ ] **US-SNAP-002: Động cơ Tính toán Bố cục Snap Cơ bản (Core Layout & Snap Engine)**
+- [x] **US-SNAP-002: Động cơ Tính toán Bố cục Snap Cơ bản (Core Layout & Snap Engine)**
   - **Slug:** `core-layout-snap-engine`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -228,16 +228,16 @@ _Mục tiêu: Xây dựng bộ não tính toán hình học bố cục (Layout E
   - **Blocks:** `US-SNAP-003`
   - **Mô tả:** Tính toán hình học chính xác cho các phân vùng snap chuẩn (trái 50%, phải 50%, 4 góc 25%, maximize, restore về frame cũ) độc lập với tọa độ pixel.
   - **Acceptance Criteria (AC):**
-    - [ ] `LayoutEngine` tính toán chuẩn xác frame cho: Left Half (50%), Right Half (50%), Top Half (50%), Bottom Half (50%), và 4 góc (Top-Left, Top-Right, Bottom-Left, Bottom-Right - 25% mỗi góc).
-    - [ ] Tính toán Maximize chiếm 100% visible frame của màn hình (trừ Menu bar và Dock).
-    - [ ] Ghi nhớ frame trước khi snap vào `WindowRegistry` để hỗ trợ hành động Restore (khôi phục về vị trí ban đầu).
-    - [ ] Unit test đạt độ bao phủ 100% trên các kích thước màn hình phổ biến: 1440x900 (MacBook), 1920x1080 (FHD), 2560x1440 (2K), 3840x2160 (4K), và màn hình dọc (Portrait).
+    - [x] `LayoutEngine` tính toán chuẩn xác frame cho: Left Half (50%), Right Half (50%), Top Half (50%), Bottom Half (50%), và 4 góc (Top-Left, Top-Right, Bottom-Left, Bottom-Right - 25% mỗi góc).
+    - [x] Tính toán Maximize chiếm 100% visible frame của màn hình (trừ Menu bar và Dock).
+    - [x] Ghi nhớ frame trước khi snap vào `WindowRegistry` để hỗ trợ hành động Restore (khôi phục về vị trí ban đầu).
+    - [x] Unit test đạt độ bao phủ 100% trên các kích thước màn hình phổ biến: 1440x900 (MacBook), 1920x1080 (FHD), 2560x1440 (2K), 3840x2160 (4K), và màn hình dọc (Portrait).
   - **Tasks:**
-    - [ ] `Domain`: Định nghĩa `LayoutZone.swift` enum (`leftHalf`, `rightHalf`, `topHalf`, `bottomHalf`, `topLeft`, `topRight`, `bottomLeft`, `bottomRight`, `maximize`).
-    - [ ] `Core`: Cài đặt `LayoutEngine.swift` thuần toán học, nhận `screenVisibleBounds: CGRect` và trả về `CGRect` đích.
-    - [ ] `Core`: Cài đặt `SnapEngine.swift` phối hợp giữa `LayoutEngine`, `AccessibilityService` và `WindowRegistry`.
-    - [ ] `FlowSnapLab`: Bổ sung các nút bấm `[Snap Left]`, `[Snap Right]`, `[Maximize]`, `[Restore]` để kiểm chứng trực quan.
-    - [ ] `Tests`: Bộ Swift Testing `@Test` kiểm tra toán học tọa độ với độ chính xác đến từng pixel.
+    - [x] `Domain`: Định nghĩa `LayoutZone.swift` enum (`leftHalf`, `rightHalf`, `topHalf`, `bottomHalf`, `topLeft`, `topRight`, `bottomLeft`, `bottomRight`, `maximize`).
+    - [x] `Core`: Cài đặt `LayoutEngine.swift` thuần toán học, nhận `screenVisibleBounds: CGRect` và trả về `CGRect` đích.
+    - [x] `Core`: Cài đặt `SnapEngine.swift` phối hợp giữa `LayoutEngine`, `AccessibilityService` và `WindowRegistry`.
+    - [x] `FlowSnapLab`: Bổ sung các nút bấm `[Snap Left]`, `[Snap Right]`, `[Maximize]`, `[Restore]` để kiểm chứng trực quan.
+    - [x] `Tests`: Bộ Swift Testing `@Test` kiểm tra toán học tọa độ với độ chính xác đến từng pixel.
   - **Deliverables khi [x]:**
     - `.specify/features/core-layout-snap-engine/baseline.md` (SIGNED-OFF)
     - `docs/features/core-layout-snap-engine/README.md`
