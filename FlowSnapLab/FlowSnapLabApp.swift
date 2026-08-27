@@ -4,7 +4,7 @@ import SwiftUI
 /// FlowSnap Lab — Debug & testing application.
 ///
 /// A separate target for validating Accessibility, window control,
-/// and display detection before building the production UI.
+/// and layout calculations before building the production UI.
 @main
 struct FlowSnapLabApp: App {
     var body: some Scene {
@@ -18,10 +18,13 @@ struct FlowSnapLabApp: App {
 struct FlowSnapLabView: View {
 
     private let accessibilityService: AccessibilityService = AXAccessibilityService()
+    private let windowRegistry = WindowRegistry()
+    private let layoutEngine = LayoutEngine()
 
     @State private var isTrusted = false
     @State private var focusedWindow: ManagedWindow?
     @State private var lastInspectionTime = Date()
+    @State private var statusMessage = ""
 
     let timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
 
@@ -95,6 +98,44 @@ struct FlowSnapLabView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
+            GroupBox("Snap Controls (US-SNAP-002)") {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
+                        Button("Snap Left") {
+                            triggerSnap(.left)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(focusedWindow == nil || !isTrusted)
+
+                        Button("Snap Right") {
+                            triggerSnap(.right)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(focusedWindow == nil || !isTrusted)
+
+                        Button("Maximize") {
+                            triggerSnap(.maximize)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(focusedWindow == nil || !isTrusted)
+
+                        Button("Restore") {
+                            triggerSnap(.restore)
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(focusedWindow == nil || !isTrusted)
+                    }
+
+                    if !statusMessage.isEmpty {
+                        Text(statusMessage)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
             GroupBox("Actions") {
                 HStack(spacing: 12) {
                     Button("Inspect Focused Window") {
@@ -114,7 +155,7 @@ struct FlowSnapLabView: View {
             Spacer()
         }
         .padding(20)
-        .frame(width: 520, height: 380)
+        .frame(width: 540, height: 440)
         .onAppear {
             refreshStatus()
         }
@@ -131,5 +172,37 @@ struct FlowSnapLabView: View {
             focusedWindow = nil
         }
         lastInspectionTime = Date()
+    }
+
+    private func triggerSnap(_ target: SnapTarget) {
+        guard let window = focusedWindow, window.kind.isSnappable else {
+            statusMessage = "Cannot snap: window is not resizable or non-standard."
+            return
+        }
+
+        Task {
+            let snapEngine = SnapEngine(layoutEngine: layoutEngine, windowRegistry: windowRegistry)
+            let visibleBounds = NSScreen.main?.visibleFrame ?? CGRect(x: 0, y: 0, width: 1440, height: 900)
+
+            if let targetFrame = await snapEngine.calculateFrame(for: target, window: window, availableFrame: visibleBounds) {
+                if let axElement = accessibilityService.focusedWindow() {
+                    do {
+                        try accessibilityService.setFrame(targetFrame, for: axElement)
+                        await MainActor.run {
+                            statusMessage = "Applied \(target): \(Int(targetFrame.width))x\(Int(targetFrame.height))"
+                            refreshStatus()
+                        }
+                    } catch {
+                        await MainActor.run {
+                            statusMessage = "Failed to set frame: \(error.localizedDescription)"
+                        }
+                    }
+                }
+            } else {
+                await MainActor.run {
+                    statusMessage = "No action: pre-snap frame not found for restore."
+                }
+            }
+        }
     }
 }
