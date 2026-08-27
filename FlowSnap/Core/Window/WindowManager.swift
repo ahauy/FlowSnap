@@ -13,8 +13,7 @@ final class WindowManager: WindowManaging {
     }
 
     func focusedWindow() async -> ManagedWindow? {
-        // TODO: Query AX for focused window, convert to ManagedWindow
-        nil
+        accessibilityService.focusedManagedWindow()
     }
 
     func move(_ window: ManagedWindow, to frame: CGRect) async throws {

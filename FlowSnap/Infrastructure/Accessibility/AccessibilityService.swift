@@ -1,12 +1,23 @@
 import ApplicationServices
+import CoreGraphics
+import Foundation
 
 /// Abstraction over Apple's Accessibility API (AXUIElement).
 ///
 /// All AX calls are isolated here so Core never depends
 /// on AXUIElement directly. See spec §28.
-protocol AccessibilityService {
+public protocol AccessibilityService: Sendable {
+    /// Check whether FlowSnap currently has Accessibility trust from macOS.
+    var isTrusted: Bool { get }
+
+    /// Open macOS System Settings directly to Privacy & Security > Accessibility.
+    func openSystemSettings()
+
     /// Get the system-wide focused window element.
     func focusedWindow() -> AXUIElement?
+
+    /// Query the frontmost application and construct a Domain ManagedWindow snapshot.
+    func focusedManagedWindow() -> ManagedWindow?
 
     /// Get all windows for a given process.
     func windows(of pid: pid_t) -> [AXUIElement]
