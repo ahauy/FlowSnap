@@ -1,0 +1,7 @@
+# Traceability Matrix: Accessibility & Focused Window Discovery (US-SNAP-001)
+
+| Business Goal / Need                          | Business Rule / Assumption             | User Story   | Acceptance Criteria Scenarios                                                                                                | Target Test Case                          |
+| :-------------------------------------------- | :------------------------------------- | :----------- | :--------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------- |
+| **G-01: Seamless Permission Verification**    | BR-SNAP-001, ASM-SNAP-001              | US-SNAP-001a | Scenario 1: Trusted check<br>Scenario 2: Untrusted check<br>Scenario 3: System Settings link<br>Scenario 4: Dynamic recovery | `TC-AX-001`<br>`TC-AX-002`<br>`TC-AX-003` |
+| **G-02: Focused Window Detection & Metadata** | BR-SNAP-003, BR-SNAP-004, ASM-SNAP-003 | US-SNAP-001b | Scenario 1: Active standard window<br>Scenario 2: Headless/missing title fallback<br>Scenario 3: No windows open             | `TC-AX-004`<br>`TC-AX-005`<br>`TC-AX-006` |
+| **G-03: Safe Semantic Window Filtering**      | BR-SNAP-002, ASM-SNAP-002              | US-SNAP-001c | Scenario 1: Standard window (.normal)<br>Scenario 2: Dialog & Sheet exclusion<br>Scenario 3: System element exclusion        | `TC-AX-007`<br>`TC-AX-008`<br>`TC-AX-009` |
