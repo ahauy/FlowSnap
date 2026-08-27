@@ -60,6 +60,19 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
+## 5. Strict Design System & Anti-AI-Slop Governance
+
+Before modifying or creating UI components:
+- Consult [CONTEXT.md](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/CONTEXT.md) for canonical terminology.
+- Read architectural decisions in [adr/](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/adr).
+- Adhere strictly to clean macOS design tokens, 1px hairline borders, and purposeful typography. Avoid generic AI slop.
+
+## 6. Universal Agents Workflow Integration
+
+- Master rules & subagent lifecycle: [.agents/AGENTS.md](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/.agents/AGENTS.md)
+- Available atomic skills: [.agents/skills/engineering/](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/.agents/skills/engineering/) and [.agents/skills/productivity/](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/.agents/skills/productivity/)
+- SpecKit engine: [.specify/](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/.specify/)
+
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.

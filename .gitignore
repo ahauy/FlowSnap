@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+
+# Xcode
+xcuserdata/
+DerivedData/
+*.xcuserstate
+*.xcscmblueprint
+
+# XcodeGen - regenerated project
+# FlowSnap.xcodeproj/
+
+# Build
+build/
+*.o
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+Packages/
+Package.pins
+Package.resolved
+
+# CocoaPods
+Pods/
+
+# Misc
+*.swp
+*~
+
