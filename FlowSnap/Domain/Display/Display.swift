@@ -4,15 +4,27 @@ import CoreGraphics
 ///
 /// Wraps the essential geometry information that FlowSnap needs
 /// to perform display-aware snapping. See spec §26, §33.
-struct Display: Identifiable, Hashable {
-    let id: CGDirectDisplayID
+public struct Display: Identifiable, Hashable, Sendable {
+    public let id: CGDirectDisplayID
 
     /// Full frame including menu bar and dock areas.
-    let frame: CGRect
+    public let frame: CGRect
 
     /// Usable frame excluding menu bar and dock.
-    let visibleFrame: CGRect
+    public let visibleFrame: CGRect
 
     /// Retina scale factor (1.0, 2.0, etc.).
-    let scaleFactor: CGFloat
+    public let scaleFactor: CGFloat
+
+    public init(
+        id: CGDirectDisplayID,
+        frame: CGRect,
+        visibleFrame: CGRect,
+        scaleFactor: CGFloat
+    ) {
+        self.id = id
+        self.frame = frame
+        self.visibleFrame = visibleFrame
+        self.scaleFactor = scaleFactor
+    }
 }
