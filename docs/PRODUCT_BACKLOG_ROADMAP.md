@@ -189,7 +189,7 @@ _Mục tiêu: Thiết lập hạ tầng mã nguồn, cấu hình XcodeGen, bộ 
 
 _Mục tiêu: Đảm bảo FlowSnap có đầy đủ quyền Trợ năng (Accessibility) của macOS và truy vấn chính xác thông tin hình học của cửa sổ đang active._
 
-- [ ] **US-SNAP-001: Trợ năng & Nhận diện Cửa sổ Trọng tâm (Accessibility & Focused Window Discovery)**
+- [x] **US-SNAP-001: Trợ năng & Nhận diện Cửa sổ Trọng tâm (Accessibility & Focused Window Discovery)**
   - **Slug:** `accessibility-window-discovery`
   - **Effort:** S
   - **Context-budget:** single-session
@@ -198,16 +198,16 @@ _Mục tiêu: Đảm bảo FlowSnap có đầy đủ quyền Trợ năng (Access
   - **Blocks:** `US-SNAP-002`
   - **Mô tả:** Kiểm tra và hướng dẫn cấp quyền macOS Accessibility (AXUIElement), phát hiện và đọc thông tin hình học (frame, bounds, pid, title) của cửa sổ đang active.
   - **Acceptance Criteria (AC):**
-    - [ ] `AccessibilityService` kiểm tra `AXIsProcessTrustedWithOptions`; nếu chưa có quyền, mở popup hướng dẫn và liên kết trực tiếp tới System Settings > Privacy & Security > Accessibility.
-    - [ ] Khi đã được cấp quyền, hàm `focusedWindow()` truy vấn `kAXFocusedWindowAttribute` từ frontmost application và trả về thực thể `ManagedWindow`.
-    - [ ] Đọc chính xác thuộc tính vị trí (`kAXPositionAttribute`) và kích thước (`kAXSizeAttribute`).
-    - [ ] Lọc bỏ các cửa sổ hệ thống không hợp lệ (Spotlight, Notification Center, context menus) và phân loại đúng `WindowKind` (.normal vs .dialog/.sheet).
+    - [x] `AccessibilityService` kiểm tra `AXIsProcessTrustedWithOptions`; nếu chưa có quyền, mở popup hướng dẫn và liên kết trực tiếp tới System Settings > Privacy & Security > Accessibility.
+    - [x] Khi đã được cấp quyền, hàm `focusedWindow()` truy vấn `kAXFocusedWindowAttribute` từ frontmost application và trả về thực thể `ManagedWindow`.
+    - [x] Đọc chính xác thuộc tính vị trí (`kAXPositionAttribute`) và kích thước (`kAXSizeAttribute`).
+    - [x] Lọc bỏ các cửa sổ hệ thống không hợp lệ (Spotlight, Notification Center, context menus) và phân loại đúng `WindowKind` (.normal vs .dialog/.sheet).
   - **Tasks:**
-    - [ ] `Domain`: Mở rộng `ManagedWindow.swift` chứa `CGWindowID`, `pid`, `title`, `frame: CGRect`, `isResizable: Bool`, `kind: WindowKind`.
-    - [ ] `Infrastructure`: Hiện thực hóa `AXAccessibilityService.swift` tuân thủ protocol `AccessibilityServing` (Sendable protocol).
-    - [ ] `Core`: Thêm `WindowRegistry.swift` (Actor) để lưu trữ danh sách cửa sổ đang theo dõi an toàn luồng.
-    - [ ] `FlowSnapLab`: Thêm nút kiểm tra "Check Permission" và hiển thị thông tin Focused Window thời gian thực trên lab view.
-    - [ ] `Tests`: Viết mock `MockAccessibilityService` và test cases kiểm thử trạng thái quyền và lọc window kind.
+    - [x] `Domain`: Mở rộng `ManagedWindow.swift` chứa `CGWindowID`, `pid`, `title`, `frame: CGRect`, `isResizable: Bool`, `kind: WindowKind`.
+    - [x] `Infrastructure`: Hiện thực hóa `AXAccessibilityService.swift` tuân thủ protocol `AccessibilityServing` (Sendable protocol).
+    - [x] `Core`: Thêm `WindowRegistry.swift` (Actor) để lưu trữ danh sách cửa sổ đang theo dõi an toàn luồng.
+    - [x] `FlowSnapLab`: Thêm nút kiểm tra "Check Permission" và hiển thị thông tin Focused Window thời gian thực trên lab view.
+    - [x] `Tests`: Viết mock `MockAccessibilityService` và test cases kiểm thử trạng thái quyền và lọc window kind.
   - **Deliverables khi [x]:**
     - `.specify/features/accessibility-window-discovery/baseline.md` (SIGNED-OFF)
     - `docs/features/accessibility-window-discovery/README.md`
