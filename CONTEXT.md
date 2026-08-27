@@ -27,14 +27,16 @@
 
 ## Glossary (FlowSnap Ubiquitous Language)
 
-| Term                     | Short definition                                   | Before (verbose)                               | After (concise)        | Notes                              |
-| :----------------------- | :------------------------------------------------- | :--------------------------------------------- | :--------------------- | :--------------------------------- |
-| **Workspace**            | Saved intent of window arrangements across apps    | "A saved multi-window setup"                   | `Workspace`            | Spec §38, portable across displays |
-| **WindowPlacement**      | Logical layout assignment for an app window        | "Position and size of an app on screen"        | `WindowPlacement`      | Decoupled from pixel coordinates   |
-| **SnapEngine**           | Coordinates snap zone calculations & trigger logic | "The logic that moves windows to screen edges" | `SnapEngine`           | Core calculation module            |
-| **LayoutEngine**         | Geometric grid & split-screen partition math       | "Screen splitting calculation helper"          | `LayoutEngine`         | Halves, thirds, quarters math      |
-| **AccessibilityService** | macOS AXUIElement adapter for window manipulation  | "Accessibility wrapper for OS windows"         | `AccessibilityService` | Infrastructure adapter             |
-| **AppDependencies**      | Root DI container for services and stores          | "Global service locator or singleton list"     | `AppDependencies`      | @MainActor DI container            |
+| Term                     | Short definition                                    | Before (verbose)                               | After (concise)        | Notes                              |
+| :----------------------- | :-------------------------------------------------- | :--------------------------------------------- | :--------------------- | :--------------------------------- |
+| **Workspace**            | Saved intent of window arrangements across apps     | "A saved multi-window setup"                   | `Workspace`            | Spec §38, portable across displays |
+| **WindowPlacement**      | Logical layout assignment for an app window         | "Position and size of an app on screen"        | `WindowPlacement`      | Decoupled from pixel coordinates   |
+| **SnapEngine**           | Coordinates snap zone calculations & trigger logic  | "The logic that moves windows to screen edges" | `SnapEngine`           | Core calculation module            |
+| **LayoutEngine**         | Geometric grid & split-screen partition math        | "Screen splitting calculation helper"          | `LayoutEngine`         | Halves, thirds, quarters math      |
+| **AccessibilityService** | macOS AXUIElement adapter for window manipulation   | "Accessibility wrapper for OS windows"         | `AccessibilityService` | Infrastructure adapter             |
+| **ManagedWindow**        | Snapshot of a window's state (ID, PID, frame, kind) | "A tracked window object"                      | `ManagedWindow`        | Pure domain model, no AX refs      |
+| **WindowKind**           | Semantic category of a window (.normal, .dialog...) | "Window type or window category"               | `WindowKind`           | Filters snappable vs modal windows |
+| **AppDependencies**      | Root DI container for services and stores           | "Global service locator or singleton list"     | `AppDependencies`      | @MainActor DI container            |
 
 ## Where to Look
 
