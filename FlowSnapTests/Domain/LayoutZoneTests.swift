@@ -1,24 +1,34 @@
-import Testing
 import CoreGraphics
+import Foundation
+import Testing
 @testable import FlowSnap
 
-/// Tests for LayoutZone normalized coordinate calculations.
+/// Tests for LayoutZone enum definitions and normalized bounds.
 ///
-/// See spec §51 — unit tests focused on Layout Engine.
+/// See spec §51 — unit tests focused on Domain Layout definitions.
 struct LayoutZoneTests {
 
-    @Test func zoneCoversFullScreen() {
-        let zone = LayoutZone(x: 0, y: 0, width: 1, height: 1)
-        #expect(zone.width == 1.0)
-        #expect(zone.height == 1.0)
+    @Test func allCasesCount() {
+        #expect(LayoutZone.allCases.count == 9)
     }
 
-    @Test func zoneCoversLeftHalf() {
-        let zone = LayoutZone(x: 0, y: 0, width: 0.5, height: 1)
-        #expect(zone.x == 0)
-        #expect(zone.width == 0.5)
+    @Test func normalizedRectCoordinates() {
+        #expect(LayoutZone.leftHalf.normalizedRect == CGRect(x: 0, y: 0, width: 0.5, height: 1.0))
+        #expect(LayoutZone.rightHalf.normalizedRect == CGRect(x: 0.5, y: 0, width: 0.5, height: 1.0))
+        #expect(LayoutZone.topHalf.normalizedRect == CGRect(x: 0, y: 0, width: 1.0, height: 0.5))
+        #expect(LayoutZone.bottomHalf.normalizedRect == CGRect(x: 0, y: 0.5, width: 1.0, height: 0.5))
+        #expect(LayoutZone.topLeft.normalizedRect == CGRect(x: 0, y: 0, width: 0.5, height: 0.5))
+        #expect(LayoutZone.topRight.normalizedRect == CGRect(x: 0.5, y: 0, width: 0.5, height: 0.5))
+        #expect(LayoutZone.bottomLeft.normalizedRect == CGRect(x: 0, y: 0.5, width: 0.5, height: 0.5))
+        #expect(LayoutZone.bottomRight.normalizedRect == CGRect(x: 0.5, y: 0.5, width: 0.5, height: 0.5))
+        #expect(LayoutZone.maximize.normalizedRect == CGRect(x: 0, y: 0, width: 1.0, height: 1.0))
     }
 
-    // TODO: Test 60/40, 70/30, four corners, gaps
-    // TODO: Test Retina, 4K, portrait displays
+    @Test func codableSerialization() throws {
+        for zone in LayoutZone.allCases {
+            let data = try JSONEncoder().encode(zone)
+            let decoded = try JSONDecoder().decode(LayoutZone.self, from: data)
+            #expect(decoded == zone)
+        }
+    }
 }
