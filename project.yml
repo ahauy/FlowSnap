@@ -46,6 +46,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flowsnap.tests
+        GENERATE_INFOPLIST_FILE: YES
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/FlowSnap.app/Contents/MacOS/FlowSnap"
         BUNDLE_LOADER: "$(TEST_HOST)"
 

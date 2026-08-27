@@ -1,0 +1,775 @@
+---
+project: "FlowSnap"
+tech-stack:
+  language: "Swift 6.0"
+  frameworks: "SwiftUI + AppKit (macOS Native)"
+  architecture: "Domain-Driven Design (DDD) & Deep Modules"
+  concurrency: "Strict Concurrency (Actors, @MainActor, Sendable)"
+  storage: "UserDefaults + Local JSON (Application Support)"
+  build: "XcodeGen (project.yml) + Xcode 16.0+"
+  test: "Swift Testing (@Test) + XCTest"
+git-mode: "hybrid"
+schema-version: "1.1"
+---
+
+# 📋 FlowSnap — Product Backlog, Business Requirements & Execution Roadmap
+
+> **Phiên bản:** 1.0.0  
+> **Vai trò:** Senior Business Analyst (BA), Product Owner (PO) & macOS System Architect  
+> **Trạng thái tài liệu:** Tài liệu sống (Living Document) — Quản lý tiến độ phát triển và điều phối tự động cho AI Agent  
+> **Ký hiệu trạng thái:**
+>
+> - `[x]` **Hoàn thành (Done)** — Đã kiểm thử đầy đủ, pass chất lượng, tài liệu và test suite hoàn chỉnh.
+> - `[/]` **Đang triển khai (In Progress)** — Đang phát triển hoặc đang trong giai đoạn phỏng vấn BA / Spec.
+> - `[ ]` **Chưa triển khai (To Do / Backlog)** — Đã có đặc tả nghiệp vụ, sẵn sàng lên kế hoạch sprint.
+> - `[!]` **Bị chặn / Cần làm rõ (Blocked / Review Needed)** — Phụ thuộc module khác hoặc cần quyết định kiến trúc/nghiệp vụ.
+> - `[~]` **Dự kiến dài hạn (Deferred / Future Phase)** — Nghiệp vụ giai đoạn sau (V2.0+).
+
+---
+
+## 📑 Mục lục
+
+1. [Tầm nhìn sản phẩm & Chân dung người dùng (Product Vision & Personas)](#1-tầm-nhìn-sản-phẩm--chân-dung-người-dùng)
+2. [Phân tích hiện trạng AS-IS vs TO-BE (Gap Analysis)](#2-phân-tích-hiện-trạng-as-is-vs-to-be)
+3. [Bảng ma trận ưu tiên MoSCoW & RICE](#3-bảng-ma-trận-ưu-tiên-moscow--rice)
+4. [Phân rã nghiệp vụ chi tiết & Checklist công việc (Epics & Backlog Tracking)](#4-phân-rã-nghiệp-vụ-chi-tiết--checklist-công-việc)
+   - [Sprint 0: Setup & Architecture Baseline](#sprint-0-project-setup--architecture-baseline)
+   - [Epic 1: Accessibility Permission & Focused Window Discovery](#epic-01-accessibility-permission--focused-window-discovery)
+   - [Epic 2: Core Layout Calculation & Basic Snap Engine](#epic-02-core-layout-calculation--basic-snap-engine)
+   - [Epic 3: Display-Aware Coordinate System & Multi-Monitor Support](#epic-03-display-aware-coordinate-system--multi-monitor-support)
+   - [Epic 4: Global Hotkeys & Command Dispatcher Daemon](#epic-04-global-hotkeys--command-dispatcher-daemon)
+   - [Epic 5: Menu Bar Status Item & Quick Snap Controls](#epic-05-menu-bar-status-item--quick-snap-controls)
+   - [Epic 6: Interactive Drag-to-Snap & HUD Snap Preview Overlay](#epic-06-interactive-drag-to-snap--hud-snap-preview-overlay)
+   - [Epic 7: Windows 11-Style Top-Edge Snap Layout Picker](#epic-07-windows-11-style-top-edge-snap-layout-picker)
+   - [Epic 8: Adaptive Multi-Window Resize (Shared Collinear Divider) & Gaps](#epic-08-adaptive-multi-window-resize-shared-collinear-divider--gaps)
+   - [Epic 9: SwiftUI Settings UI & Custom Shortcut Management](#epic-09-swiftui-settings-ui--custom-shortcut-management)
+   - [Epic 10: Workspace Snapshots & Intent-Based Multi-Window Restoration](#epic-10-workspace-snapshots--intent-based-multi-window-restoration)
+   - [Epic 11: Application Launch Observer & Current Space Preservation](#epic-11-application-launch-observer--current-space-preservation)
+   - [Epic 12: Per-App Window Policies & Smart Floating Stacking](#epic-12-per-app-window-policies--smart-floating-stacking)
+5. [Lộ trình phát hành theo Giai đoạn & Sprint (Release Roadmap)](#5-lộ-trình-phát-hành-theo-giai-đoạn--sprint)
+6. [Quy chuẩn định nghĩa hoàn thành (Definition of Done - DoD)](#6-quy-chuẩn-định-nghĩa-hoàn-thành-definition-of-done)
+7. [Phân tích Kỹ thuật Chuyên sâu, Rủi ro Hệ thống & Kế hoạch Phát hành (macOS System Strategy)](#7-phân-tích-kỹ-thuật-chuyên-sâu-rủi-ro-hệ-thống--kế-hoạch-phát-hành)
+   - [7.1 Hệ tọa độ ngược giữa AppKit và Accessibility API](#71-hệ-tọa-độ-ngược-giữa-appkit-và-accessibility-api)
+   - [7.2 Giới hạn macOS Spaces & Nguyên tắc Zero Private API](#72-giới-hạn-macos-spaces--nguyên-tắc-zero-private-api)
+   - [7.3 Ngân sách độ trễ & Tối ưu hiệu năng (Performance Latency Budget)](#73-ngân-sách-độ-trễ--tối-ưu-hiệu-năng-performance-latency-budget)
+   - [7.4 Kế hoạch Đóng gói & Ký số macOS (Code Signing, Notarization & Distribution)](#74-kế-hoạch-đóng-gói--ký-số-macos-code-signing-notarization--distribution)
+
+---
+
+## 1. Tầm nhìn sản phẩm & Chân dung người dùng
+
+### 1.1. Tầm nhìn (Product Vision)
+
+> **"Your Mac. Your Layout. Your Flow."**  
+> **Người dùng quyết định cửa sổ ở đâu. FlowSnap lo phần còn lại.**
+
+Trải nghiệm quản lý cửa sổ mặc định của macOS yêu cầu người dùng phải kéo thả thủ công, dùng Split View gò bó hoặc vật lộn với Mission Control / Spaces. Đặc biệt, một ức chế lớn là khi mở một ứng dụng mới, macOS thường tự động đẩy người dùng sang một Space khác ngoài ý muốn làm đứt gãy mạch tập trung.
+
+**FlowSnap** là tiện ích Native macOS kết hợp giữa:
+
+1. **Snap Layouts trực quan kiểu Windows 11**: Kéo thả vào mép màn hình hoặc kéo lên cạnh trên để bật bộ chọn Layout Picker nhiều ô trực quan.
+2. **Hệ điều hành không gian làm việc (Personal Workspace OS)**: Lưu lại bố cục nhiều cửa sổ theo **ý định (intent)** thay vì tọa độ pixel tĩnh, cho phép khôi phục không gian làm việc đa màn hình chỉ bằng một phím tắt.
+3. **Bảo toàn mạch làm việc (Flow Preservation)**: Giữ ứng dụng mới mở luôn xuất hiện tại không gian làm việc hiện tại, hỗ trợ cửa sổ nổi tạm thời (Smart Floating Stack) mà không phá vỡ bố cục các ứng dụng đang làm việc bên dưới.
+
+### 1.2. Chân dung người dùng mục tiêu (User Personas)
+
+```mermaid
+mindmap
+  root((FlowSnap Users))
+    Persona A: Hải - Senior Software Engineer
+      Đa màn hình: MacBook Pro 16" + 2 màn 4K
+      Bộ app: VS Code, Chrome DevTools, iTerm2
+      Pain point: Mở Telegram/Slack bị văng Space, resize 1 cửa sổ phải kéo lại các cửa sổ khác
+      Mong muốn: Hotkey snap tức thì, khôi phục Coding Workspace 1 click, kéo đường phân cách chung
+    Persona B: Trang - UI/UX Designer & Creator
+      Màn hình: Ultra-wide 34" cong
+      Bộ app: Figma, Slack, Spotify, Safari
+      Pain point: macOS chia đôi 50/50 quá to trên Ultra-wide, thiếu tỷ lệ 70/30 và chia 3 cột
+      Mong muốn: Layout Picker cạnh trên kéo-thả trực quan, Window Gaps thẩm mỹ, Snap 3 cột
+    Persona C: Nam - Product Manager / Writer
+      Thiết bị: MacBook Air 13" di động
+      Bộ app: Notion, Google Docs, Arc Browser
+      Pain point: Không gian hẹp, cần app chat nổi tạm thời mà không đè mất văn bản đang soạn
+      Mong muốn: Smart Floating Stack cho chat app, tự nhớ vị trí từng app, Menu bar nhỏ gọn
+```
+
+- **Persona A — Hải (Senior Software Engineer):** Sử dụng MacBook kết nối 2 màn hình ngoài 4K. Cần phím tắt snap cực nhanh, không có độ trễ. Rất bực bội khi mỗi lần mở app chat hay terminal thì bị macOS chuyển desktop sang Space khác. Cần tính năng khôi phục trọn gói bộ 3 app (VS Code + Chrome + Terminal) đúng tỷ lệ 60/25/15.
+- **Persona B — Trang (UI/UX Designer & Creator):** Làm việc trên màn hình Ultra-wide 34". Cần các tỷ lệ chia không gian bất đối xứng (70/30, 3 cột ngang) và tính năng kéo đường phân cách chung (Adaptive multi-window resize) để các app liền kề tự co giãn đồng bộ. Thích giao diện tinh tế, có khoảng hở viền (Window Gap) đồng điệu phong cách Apple.
+- **Persona C — Nam (Product Manager & Researcher):** Di chuyển liên tục với MacBook Air 13". Không gian màn hình hạn chế nên cần chế độ chia nửa 50/50 nhanh, gán app chat vào chế độ Floating để check tin nhắn xong là quay về văn bản mà không vỡ cửa sổ đang đọc.
+
+---
+
+## 2. Phân tích hiện trạng AS-IS vs TO-BE
+
+```mermaid
+graph TD
+    subgraph AS_IS["Hiện trạng đã có (AS-IS: Scaffold Phase)"]
+        A1["XcodeGen Project Config (FlowSnap, Tests, FlowSnapLab)"]
+        A2["Domain Models Stubs (Workspace, WindowPlacement)"]
+        A3["AppDependencies Injection Container Template"]
+        A4["Universal Agents Workflow (Swift 6 Skills, SwiftLint, CRG MCP)"]
+        A5["Git Tracking Hybrid Mode Configured"]
+    end
+
+    subgraph TO_BE["Mục tiêu hoàn chỉnh (TO-BE: Production FlowSnap)"]
+        B1["Accessibility Service (AXUIElement Permission & Geometry Discovery)"]
+        B2["Layout Engine (Halves, Quarters, 70/30, Ratios, Screen Visible Bounds)"]
+        B3["Display-Aware Multi-Monitor Manager (Coordinate Inversion Math)"]
+        B4["Global Hotkey Daemon (Carbon Hotkeys < 50ms latency)"]
+        B5["Status Bar Item & Quick Snap Popover (AppKit / SwiftUI)"]
+        B6["HUD Snap Preview & Windows 11 Top-Edge Layout Picker (NSPanel)"]
+        B7["Adaptive Multi-Window Resize (Collinear Shared Divider Drag)"]
+        B8["Workspace Snapshot & Intent-Based Multi-Window Restoration"]
+        B9["Application Launch Observer & Current Space Policy (Public APIs)"]
+        B10["Per-App Rules & Smart Floating Stacking Engine"]
+    end
+
+    AS_IS -->|Sprint 1: MVP Core Snap| B1
+    AS_IS -->|Sprint 1: MVP Core Snap| B2
+    B1 & B2 --> B3
+    B2 & B3 --> B4
+    B4 --> B5
+    B2 & B5 -->|Sprint 2: Snap Experience| B6
+    B2 & B6 -->|Sprint 2: Snap Experience| B7
+    B1 & B3 -->|Sprint 3: Workspaces & Policies| B8
+    B1 & B8 -->|Sprint 3: Workspaces & Policies| B9
+    B8 & B9 -->|Sprint 3: Workspaces & Policies| B10
+```
+
+---
+
+## 3. Bảng ma trận ưu tiên MoSCoW & RICE
+
+| Mã Epic     | Tên Nghiệp vụ / Tính năng                                 |     MoSCoW      | Reach | Impact | Confidence | Effort | RICE Score |       Mức ưu tiên       | Target Sprint |
+| :---------- | :-------------------------------------------------------- | :-------------: | :---: | :----: | :--------: | :----: | :--------: | :---------------------: | :-----------: |
+| **EPIC-01** | Trợ năng & Nhận diện Cửa sổ Trọng tâm (AX Discovery)      |  **Must-Have**  |  10   |  3.0   |    100%    |  1.0   |  **30.0**  |    **P0 (Blocker)**     |   Sprint 1    |
+| **EPIC-02** | Động cơ Tính toán Bố cục Snap Cơ bản (Core Layout Engine) |  **Must-Have**  |  10   |  3.0   |    100%    |  1.5   |  **20.0**  |    **P0 (Core USP)**    |   Sprint 1    |
+| **EPIC-03** | Nhận diện & Thao tác Cửa sổ Đa Màn hình (Multi-Monitor)   |  **Must-Have**  |   8   |  2.5   |    90%     |  1.5   |  **12.0**  |      **P0 (High)**      |   Sprint 1    |
+| **EPIC-04** | Phím tắt Toàn cục & Hệ thống Điều phối (Global Hotkeys)   |  **Must-Have**  |  10   |  3.0   |    95%     |  1.5   |  **19.0**  |      **P0 (Core)**      |   Sprint 1    |
+| **EPIC-05** | Menu Bar Status Item & Bảng Điều khiển Nhanh              |  **Must-Have**  |   9   |  2.0   |    100%    |  1.0   |  **18.0**  |   **P0 (Usability)**    |   Sprint 1    |
+| **EPIC-06** | Kéo Thả Cạnh Màn hình & Lớp Phủ Xem trước (HUD Preview)   | **Should-Have** |   8   |  2.0   |    90%     |  2.0   |  **7.2**   |   **P1 (Experience)**   |   Sprint 2    |
+| **EPIC-07** | Snap Layout Picker Cạnh Trên (Windows 11-style)           | **Should-Have** |   8   |  2.5   |    85%     |  2.5   |  **6.8**   | **P1 (Differentiator)** |   Sprint 2    |
+| **EPIC-08** | Tỷ lệ Tùy chỉnh (60/40, 70/30) & Window Gaps Thẩm mỹ      | **Should-Have** |   7   |  1.5   |    95%     |  1.5   |  **6.6**   |     **P1 (Visual)**     |   Sprint 2    |
+| **EPIC-09** | Kéo Đường Phân cách Chung (Adaptive Divider Resize)       | **Could-Have**  |   6   |  2.0   |    80%     |  3.0   |  **3.2**   |    **P2 (Advanced)**    |   Sprint 2    |
+| **EPIC-10** | Cài đặt SwiftUI & Tùy biến Phím tắt (Settings & Config)   | **Should-Have** |   8   |  1.5   |    95%     |  1.5   |  **7.6**   |    **P1 (Settings)**    |   Sprint 2    |
+| **EPIC-11** | Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspaces) | **Should-Have** |   8   |  3.0   |    85%     |  2.5   |  **8.1**   |  **P1 (Hero Feature)**  |   Sprint 3    |
+| **EPIC-12** | Nhóm Cửa sổ & Workspace Presets (Coding, Research)        | **Should-Have** |   7   |  2.0   |    90%     |  1.5   |  **8.4**   |   **P1 (Value-Add)**    |   Sprint 3    |
+| **EPIC-13** | Phát hiện Mở Ứng dụng & Giữ ở Workspace Hiện tại          |  **Must-Have**  |   9   |  3.0   |    85%     |  2.5   |  **9.1**   |  **P0 (Hero Feature)**  |   Sprint 3    |
+| **EPIC-14** | Quy tắc Riêng theo Ứng dụng & Cửa sổ Nổi (Floating Stack) | **Should-Have** |   7   |  2.0   |    90%     |  2.0   |  **6.3**   |  **P1 (Flexibility)**   |   Sprint 3    |
+
+---
+
+## 4. Phân rã nghiệp vụ chi tiết & Checklist công việc
+
+### Sprint 0: Project Setup & Architecture Baseline
+
+_Mục tiêu: Thiết lập hạ tầng mã nguồn, cấu hình XcodeGen, bộ quy chuẩn kiến trúc Deep Modules và công cụ kiểm thử._
+
+- [x] **SETUP-001: Khởi tạo project XcodeGen đa mục tiêu (`project.yml`)**
+  - **AC:** Sinh project Xcode với 3 targets: `FlowSnap` (app chính), `FlowSnapTests` (unit tests), `FlowSnapLab` (môi trường thử nghiệm trực tiếp).
+  - **Tasks:**
+    - [x] Cấu hình `project.yml` với macOS deployment target 14.0+, Swift 6.0, Hardened Runtime.
+    - [x] Tạo khung thư mục Deep Modules: `Domain/`, `Core/`, `Infrastructure/`, `UI/`, `App/`.
+
+- [x] **SETUP-002: Tích hợp Universal Agents Workflow & SwiftLint**
+  - **AC:** Kích hoạt bộ quy chuẩn Swift 6 strict concurrency, rules kiểm soát memory leak và boundary linter `.swiftlint.yml`.
+  - **Tasks:**
+    - [x] Nạp các skills chuyên biệt: `swift-patterns`, `swiftui-patterns`, `swift-concurrency`, `swift-protocol-di-testing`, `swift-actor-persistence`.
+    - [x] Cấu hình `.swiftlint.yml` chặn force unwrap/try/cast, giới hạn độ dài hàm/tệp.
+
+- [x] **SETUP-003: Code Intelligence MCP Server (`code-review-graph`)**
+  - **AC:** AST SQLite graph được xây dựng và đăng ký vào `.agents/mcp_config.json`, hỗ trợ subagent truy vấn blast-radius tối ưu token.
+  - **Tasks:**
+    - [x] Chạy `uvx code-review-graph install -y` và `build` lập chỉ mục 48 tệp mã nguồn.
+    - [x] Thiết lập `.gitignore` theo chế độ Hybrid Mode (bảo vệ private engine, theo dõi specs/docs).
+
+---
+
+### EPIC 01: Accessibility Permission & Focused Window Discovery
+
+_Mục tiêu: Đảm bảo FlowSnap có đầy đủ quyền Trợ năng (Accessibility) của macOS và truy vấn chính xác thông tin hình học của cửa sổ đang active._
+
+- [x] **US-SNAP-001: Trợ năng & Nhận diện Cửa sổ Trọng tâm (Accessibility & Focused Window Discovery)**
+  - **Slug:** `accessibility-window-discovery`
+  - **Effort:** S
+  - **Context-budget:** single-session
+  - **Priority:** Must-Have (P0)
+  - **Depends-on:** _(none)_
+  - **Blocks:** `US-SNAP-002`
+  - **Mô tả:** Kiểm tra và hướng dẫn cấp quyền macOS Accessibility (AXUIElement), phát hiện và đọc thông tin hình học (frame, bounds, pid, title) của cửa sổ đang active.
+  - **Acceptance Criteria (AC):**
+    - [x] `AccessibilityService` kiểm tra `AXIsProcessTrustedWithOptions`; nếu chưa có quyền, mở popup hướng dẫn và liên kết trực tiếp tới System Settings > Privacy & Security > Accessibility.
+    - [x] Khi đã được cấp quyền, hàm `focusedWindow()` truy vấn `kAXFocusedWindowAttribute` từ frontmost application và trả về thực thể `ManagedWindow`.
+    - [x] Đọc chính xác thuộc tính vị trí (`kAXPositionAttribute`) và kích thước (`kAXSizeAttribute`).
+    - [x] Lọc bỏ các cửa sổ hệ thống không hợp lệ (Spotlight, Notification Center, context menus) và phân loại đúng `WindowKind` (.normal vs .dialog/.sheet).
+  - **Tasks:**
+    - [x] `Domain`: Mở rộng `ManagedWindow.swift` chứa `CGWindowID`, `pid`, `title`, `frame: CGRect`, `isResizable: Bool`, `kind: WindowKind`.
+    - [x] `Infrastructure`: Hiện thực hóa `AXAccessibilityService.swift` tuân thủ protocol `AccessibilityServing` (Sendable protocol).
+    - [x] `Core`: Thêm `WindowRegistry.swift` (Actor) để lưu trữ danh sách cửa sổ đang theo dõi an toàn luồng.
+    - [x] `FlowSnapLab`: Thêm nút kiểm tra "Check Permission" và hiển thị thông tin Focused Window thời gian thực trên lab view.
+    - [x] `Tests`: Viết mock `MockAccessibilityService` và test cases kiểm thử trạng thái quyền và lọc window kind.
+  - **Deliverables khi [x]:**
+    - `.specify/features/accessibility-window-discovery/baseline.md` (SIGNED-OFF)
+    - `docs/features/accessibility-window-discovery/README.md`
+    - `docs/user-guides/accessibility-window-discovery.md`
+
+---
+
+### EPIC 02: Core Layout Calculation & Basic Snap Engine
+
+_Mục tiêu: Xây dựng bộ não tính toán hình học bố cục (Layout Engine) không phụ thuộc phần cứng, hỗ trợ chia đôi, 4 góc, phóng to và khôi phục._
+
+- [ ] **US-SNAP-002: Động cơ Tính toán Bố cục Snap Cơ bản (Core Layout & Snap Engine)**
+  - **Slug:** `core-layout-snap-engine`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Must-Have (P0)
+  - **Depends-on:** `US-SNAP-001`
+  - **Blocks:** `US-SNAP-003`
+  - **Mô tả:** Tính toán hình học chính xác cho các phân vùng snap chuẩn (trái 50%, phải 50%, 4 góc 25%, maximize, restore về frame cũ) độc lập với tọa độ pixel.
+  - **Acceptance Criteria (AC):**
+    - [ ] `LayoutEngine` tính toán chuẩn xác frame cho: Left Half (50%), Right Half (50%), Top Half (50%), Bottom Half (50%), và 4 góc (Top-Left, Top-Right, Bottom-Left, Bottom-Right - 25% mỗi góc).
+    - [ ] Tính toán Maximize chiếm 100% visible frame của màn hình (trừ Menu bar và Dock).
+    - [ ] Ghi nhớ frame trước khi snap vào `WindowRegistry` để hỗ trợ hành động Restore (khôi phục về vị trí ban đầu).
+    - [ ] Unit test đạt độ bao phủ 100% trên các kích thước màn hình phổ biến: 1440x900 (MacBook), 1920x1080 (FHD), 2560x1440 (2K), 3840x2160 (4K), và màn hình dọc (Portrait).
+  - **Tasks:**
+    - [ ] `Domain`: Định nghĩa `LayoutZone.swift` enum (`leftHalf`, `rightHalf`, `topHalf`, `bottomHalf`, `topLeft`, `topRight`, `bottomLeft`, `bottomRight`, `maximize`).
+    - [ ] `Core`: Cài đặt `LayoutEngine.swift` thuần toán học, nhận `screenVisibleBounds: CGRect` và trả về `CGRect` đích.
+    - [ ] `Core`: Cài đặt `SnapEngine.swift` phối hợp giữa `LayoutEngine`, `AccessibilityService` và `WindowRegistry`.
+    - [ ] `FlowSnapLab`: Bổ sung các nút bấm `[Snap Left]`, `[Snap Right]`, `[Maximize]`, `[Restore]` để kiểm chứng trực quan.
+    - [ ] `Tests`: Bộ Swift Testing `@Test` kiểm tra toán học tọa độ với độ chính xác đến từng pixel.
+  - **Deliverables khi [x]:**
+    - `.specify/features/core-layout-snap-engine/baseline.md` (SIGNED-OFF)
+    - `docs/features/core-layout-snap-engine/README.md`
+    - `docs/user-guides/core-layout-snap-engine.md`
+
+---
+
+### EPIC 03: Display-Aware Coordinate System & Multi-Monitor Support
+
+_Mục tiêu: Giải quyết bài toán hóc búa về sai lệch hệ tọa độ giữa macOS AppKit và Accessibility API trên thiết lập đa màn hình._
+
+- [ ] **US-SNAP-003: Nhận diện & Thao tác Cửa sổ trên Đa Màn hình (Display-Aware Multi-Monitor Manipulation)**
+  - **Slug:** `display-aware-manipulation`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Must-Have (P0)
+  - **Depends-on:** `US-SNAP-002`
+  - **Blocks:** `US-SNAP-004`
+  - **Mô tả:** Xác định chính xác màn hình đang chứa con trỏ/cửa sổ mục tiêu trên thiết lập đa màn hình (kể cả khác độ phân giải/Retina scale) và thực thi di chuyển/resize cửa sổ mượt mà.
+  - **Acceptance Criteria (AC):**
+    - [ ] `DisplayManager` xác định đúng màn hình (`Display`) chứa trọng tâm của cửa sổ đang active.
+    - [ ] Thực hiện chuyển đổi hệ tọa độ ngược: AppKit (gốc tọa độ dưới-trái) sang Accessibility API (gốc tọa độ trên-trái của Primary Screen) chính xác 100%: $Y_{AX} = H_{Primary} - (Y_{AppKit} + Height)$.
+    - [ ] Hỗ trợ đa màn hình đặt cạnh nhau theo chiều ngang, chiều dọc hoặc xếp chéo với Retina scaling khác nhau (1x vs 2x).
+    - [ ] Lắng nghe sự kiện cắm/rút màn hình (`NSApplication.didChangeScreenParametersNotification`) và tự động cập nhật danh sách màn hình khả dụng.
+  - **Tasks:**
+    - [ ] `Domain`: Định nghĩa `Display.swift` chứa `id: CGDirectDisplayID`, `bounds: CGRect`, `visibleFrame: CGRect`, `isPrimary: Bool`, `scaleFactor: CGFloat`.
+    - [ ] `Infrastructure`: Hiện thực hóa `DisplayManager.swift` đọc dữ liệu từ `NSScreen.screens` và mapping sang Domain model.
+    - [ ] `Core`: Hàm tiện ích chuyển đổi tọa độ `CoordinateTransformer.toAXCoordinates(from:onPrimary:)`.
+    - [ ] `Core`: Cập nhật `SnapEngine` sử dụng `DisplayManager` để áp dụng snap trên đúng màn hình mục tiêu.
+    - [ ] `Tests`: Test suite giả lập cấu hình 2 màn hình (Primary 1440x900, Secondary 4K bên phải/trên đỉnh).
+  - **Deliverables khi [x]:**
+    - `.specify/features/display-aware-manipulation/baseline.md` (SIGNED-OFF)
+    - `docs/features/display-aware-manipulation/README.md`
+    - `docs/user-guides/display-aware-manipulation.md`
+
+---
+
+### EPIC 04: Global Hotkeys & Command Dispatcher Daemon
+
+_Mục tiêu: Xây dựng hệ thống phím tắt toàn cục phản hồi tức thì (< 50ms) ngay cả khi ứng dụng chạy ngầm không có cửa sổ chính._
+
+- [ ] **US-SNAP-004: Phím tắt Toàn cục & Hệ thống Điều phối Lệnh (Global Hotkeys & Command Dispatcher)**
+  - **Slug:** `global-hotkeys-dispatcher`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Must-Have (P0)
+  - **Depends-on:** `US-SNAP-003`
+  - **Blocks:** `US-SNAP-005`
+  - **Mô tả:** Đăng ký các phím tắt hệ thống toàn cục (⌃⌥←, ⌃⌥→, ⌃⌥↑, ⌃⌥↓, ⌃⌥1..4) và điều phối lệnh snap tức thì với độ trễ cực thấp (< 50ms).
+  - **Acceptance Criteria (AC):**
+    - [ ] Đăng ký thành công các tổ hợp phím mặc định qua Carbon Event Hotkeys API:
+      - `⌃⌥←` (Ctrl + Opt + Left): Snap Left 50%
+      - `⌃⌥→` (Ctrl + Opt + Right): Snap Right 50%
+      - `⌃⌥↑` (Ctrl + Opt + Up): Maximize
+      - `⌃⌥↓` (Ctrl + Opt + Down): Restore vị trí ban đầu
+      - `⌃⌥1 / 2 / 3 / 4`: Snap 4 góc (Top-Left, Top-Right, Bottom-Left, Bottom-Right)
+    - [ ] Độ trễ từ khi nhấn phím đến khi gửi lệnh di chuyển cửa sổ đạt dưới 50ms.
+    - [ ] Phím tắt hoạt động ổn định trên mọi ứng dụng (VS Code, Chrome, Terminal, Finder, Telegram...).
+    - [ ] `CommandDispatcher` xử lý lệnh bất đồng bộ, tuyệt đối không block Main Thread hoặc làm chậm phím gõ của người dùng.
+  - **Tasks:**
+    - [ ] `Infrastructure`: Cài đặt `GlobalHotkeyManager.swift` sử dụng Carbon Event Handler (`RegisterEventHotKey`).
+    - [ ] `Core`: Cài đặt `CommandDispatcher.swift` dispatch các `SnapCommand` tới `SnapEngine`.
+    - [ ] `App`: Khởi tạo và liên kết hotkeys trong `AppDelegate.swift` khi ứng dụng hoàn tất khởi động.
+    - [ ] `Tests`: Kiểm thử CommandDispatcher với mock commands và event timing assertions.
+  - **Deliverables khi [x]:**
+    - `.specify/features/global-hotkeys-dispatcher/baseline.md` (SIGNED-OFF)
+    - `docs/features/global-hotkeys-dispatcher/README.md`
+    - `docs/user-guides/global-hotkeys-dispatcher.md`
+
+---
+
+### EPIC 05: Menu Bar Status Item & Quick Snap Controls
+
+_Mục tiêu: Cung cấp điểm chạm người dùng thường trực trên thanh Menu Bar của macOS, cho phép thao tác chuột nhanh và truy cập Settings._
+
+- [ ] **US-SNAP-005: Menu Bar Item & Bảng Điều khiển Nhanh (Menu Bar Status Item & Quick Snap Controls)**
+  - **Slug:** `menubar-quick-controls`
+  - **Effort:** S
+  - **Context-budget:** single-session
+  - **Priority:** Must-Have (P0)
+  - **Depends-on:** `US-SNAP-004`
+  - **Blocks:** `US-SNAP-006`
+  - **Mô tả:** Cung cấp biểu tượng Menu Bar thường trú trên macOS cho phép xem trạng thái ứng dụng, bấm chuột để snap nhanh cửa sổ active và mở Settings.
+  - **Acceptance Criteria (AC):**
+    - [ ] Biểu tượng FlowSnap xuất hiện trên thanh Menu Bar (`NSStatusItem`) với icon monochrome thích ứng Dark/Light Mode.
+    - [ ] Ứng dụng chạy ở chế độ nền (Agent App: `LSUIElement = true`), không hiển thị icon dưới Dock.
+    - [ ] Nhấp chuột trái vào icon mở Menu/Popover hiển thị các nút thao tác nhanh: Snap Trái, Snap Phải, Maximize, 4 Góc kèm hiển thị phím tắt gợi ý.
+    - [ ] Có các mục chức năng hệ thống: Check for Updates, Settings..., Quit FlowSnap.
+  - **Tasks:**
+    - [ ] `UI`: Thiết kế `MenuBarView.swift` bằng SwiftUI với các biểu tượng bố cục trực quan.
+    - [ ] `Infrastructure`: Tạo `MenuBarController.swift` quản lý vòng đời của `NSStatusItem` và `NSPopover`.
+    - [ ] `App`: Tích hợp vào `FlowSnapApp.swift` và cấu hình file `Info.plist` (`LSUIElement = YES`).
+    - [ ] `Tests`: Kiểm thử trạng thái menu bar controller và event handling.
+  - **Deliverables khi [x]:**
+    - `.specify/features/menubar-quick-controls/baseline.md` (SIGNED-OFF)
+    - `docs/features/menubar-quick-controls/README.md`
+    - `docs/user-guides/menubar-quick-controls.md`
+
+---
+
+### EPIC 06: Interactive Drag-to-Snap & HUD Snap Preview Overlay
+
+_Mục tiêu: Mang lại trải nghiệm kéo thả trực quan mượt mà với lớp phủ xem trước vùng snap bán trong suốt trước khi người dùng nhả chuột._
+
+- [ ] **US-SNAP-006: Kéo Thả vào Cạnh Màn hình & Lớp Phủ Xem trước Snap (Drag-to-Snap & HUD Snap Preview)**
+  - **Slug:** `drag-to-snap-preview`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Should-Have (P1)
+  - **Depends-on:** `US-SNAP-005`
+  - **Blocks:** `US-SNAP-007`
+  - **Mô tả:** Theo dõi hành vi kéo cửa sổ sát cạnh/góc màn hình và hiển thị overlay bán trong suốt (HUD Snap Preview) mô phỏng vị trí trước khi thả chuột.
+  - **Acceptance Criteria (AC):**
+    - [ ] Lắng nghe sự kiện di chuyển chuột toàn cục (`CGEventTap` / `NSEvent.addGlobalMonitorForEvents`) khi người dùng đang giữ kéo thanh tiêu đề cửa sổ.
+    - [ ] Khi con trỏ chuột chạm dải biên màn hình (ngưỡng edge threshold: cách mép 4px, giữ > 100ms), kích hoạt hiển thị vùng snap tương ứng.
+    - [ ] Hiển thị `SnapPreviewPanel` (NSPanel dạng non-activating, level `.floating`, bán trong suốt với hiệu ứng mờ kính Liquid Glass).
+    - [ ] Khi nhả chuột (`leftMouseUp`), cửa sổ lập tức snap vào vùng đã preview; nếu kéo chuột ra khỏi mép, preview tự biến mất mượt mà.
+  - **Tasks:**
+    - [ ] `Infrastructure`: Cài đặt `MouseDragTracker.swift` bắt sự kiện drag cửa sổ qua CGEventTap.
+    - [ ] `UI`: Cài đặt `SnapPreviewPanel.swift` (AppKit NSPanel tùy biến) bọc `SnapPreviewView` (SwiftUI).
+    - [ ] `Core`: Bổ sung `SnapDetector.swift` xác định vùng snap dựa trên tọa độ con trỏ và kích thước màn hình.
+    - [ ] `Tests`: Kiểm tra phát hiện vùng snap với các tọa độ con trỏ biên khác nhau.
+  - **Deliverables khi [x]:**
+    - `.specify/features/drag-to-snap-preview/baseline.md` (SIGNED-OFF)
+    - `docs/features/drag-to-snap-preview/README.md`
+    - `docs/user-guides/drag-to-snap-preview.md`
+
+---
+
+### EPIC 07: Windows 11-Style Top-Edge Snap Layout Picker
+
+_Mục tiêu: Đưa tính năng được yêu thích nhất của Windows 11 lên Mac — kéo cửa sổ lên cạnh trên để mở khay chọn bố cục nhiều ô trực quan._
+
+- [ ] **US-SNAP-007: Snap Layout Picker Cạnh Trên Phong cách Windows 11 (Top-Edge Snap Layout Picker)**
+  - **Slug:** `top-edge-layout-picker`
+  - **Effort:** L
+  - **Context-budget:** multi-session
+  - **Priority:** Should-Have (P1)
+  - **Depends-on:** `US-SNAP-006`
+  - **Blocks:** `US-SNAP-008`
+  - **Mô tả:** Khi kéo cửa sổ chạm mép trên cùng màn hình, hiển thị popup Layout Picker với nhiều ô chia (50/50, 70/30, 3 cột, 4 góc) cho phép thả trực tiếp vào ô mong muốn.
+  - **Acceptance Criteria (AC):**
+    - [ ] Khi con trỏ kéo cửa sổ lên dải sát mép trên cùng (Top Edge), xuất hiện menu overlay `SnapLayoutPickerPanel` trượt xuống nhẹ nhàng.
+    - [ ] Khay picker hiển thị các mẫu bố cục: 2 cột (50/50), 2 cột bất đối xứng (70/30), 3 cột (A/B/C), và 4 góc (Top-Left, Top-Right, Bottom-Left, Bottom-Right).
+    - [ ] Highlight ô cụ thể khi con trỏ di chuyển vào ô đó bên trong picker; hiển thị preview mờ toàn màn hình tương ứng với ô đang chọn.
+    - [ ] Thả chuột trong ô nào thì cửa sổ snap chính xác vào ô đó; nếu kéo chuột ra khỏi khay picker thì picker thu gọn biến mất.
+  - **Tasks:**
+    - [ ] `UI`: Thiết kế `SnapLayoutPickerView.swift` bằng SwiftUI với các khối layout card tương tác, animation phản hồi nhanh.
+    - [ ] `UI`: Cài đặt `SnapLayoutPickerPanel.swift` (NSPanel) định vị chính xác ở giữa cạnh trên của màn hình đang thao tác.
+    - [ ] `Core`: Bổ sung logic hit-testing trong `SnapEngine` để nhận biết zone được chọn trong khay picker.
+    - [ ] `Tests`: Kiểm thử zone hit-testing và animation state machine.
+  - **Deliverables khi [x]:**
+    - `.specify/features/top-edge-layout-picker/baseline.md` (SIGNED-OFF)
+    - `docs/features/top-edge-layout-picker/README.md`
+    - `docs/user-guides/top-edge-layout-picker.md`
+
+---
+
+### EPIC 08: Adaptive Multi-Window Resize (Shared Collinear Divider) & Gaps
+
+_Mục tiêu: Đưa trải nghiệm xếp cửa sổ lên tầm Tiling Window Manager chuyên nghiệp — kéo đường phân cách chung để co giãn đồng thời nhiều cửa sổ bám cạnh mà không làm vỡ bố cục._
+
+- [ ] **US-SNAP-008: Tỷ lệ Bố cục Tùy chỉnh (60/40, 70/30) & Khoảng cách Cửa sổ (Custom Ratios & Window Gaps)**
+  - **Slug:** `custom-ratios-window-gaps`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Should-Have (P1)
+  - **Depends-on:** `US-SNAP-007`
+  - **Blocks:** `US-SNAP-009`
+  - **Mô tả:** Hỗ trợ chia màn hình theo tỷ lệ bất đối xứng (60/40, 70/30, 80/20) và cho phép cấu hình khoảng hở viền thẩm mỹ (Window Gap: 0px, 4px, 8px, 16px).
+  - **Acceptance Criteria (AC):**
+    - [ ] `LayoutEngine` hỗ trợ tính toán tọa độ theo tỷ lệ tùy biến (60/40, 70/30, 80/20, 3 cột 25/50/25).
+    - [ ] Cấu hình khoảng hở viền (Window Gap: 0px, 4px, 8px, 12px, 16px) tự động bù trừ khoảng cách giữa các cửa sổ liền kề và mép ngoài màn hình.
+    - [ ] Lưu cấu hình Gap và Default Ratio vào `PreferencesStore` cục bộ.
+  - **Tasks:**
+    - [ ] `Domain`: Thêm trường `gapSize: CGFloat` và `customRatio: LayoutRatio` vào cấu hình Layout.
+    - [ ] `Core`: Nâng cấp thuật toán `LayoutEngine` tính toán khoảng trừ padding giữa các zones.
+    - [ ] `Tests`: Test kiểm tra kích thước frame và khoảng cách viền chính xác từng pixel.
+  - **Deliverables khi [x]:**
+    - `.specify/features/custom-ratios-window-gaps/baseline.md` (SIGNED-OFF)
+    - `docs/features/custom-ratios-window-gaps/README.md`
+    - `docs/user-guides/custom-ratios-window-gaps.md`
+
+- [ ] **US-SNAP-009: Kéo Đường Phân cách Chung Đa Cửa sổ (Adaptive Multi-Window Divider Resize)**
+  - **Slug:** `adaptive-divider-resize`
+  - **Effort:** L
+  - **Context-budget:** multi-session
+  - **Priority:** Could-Have (P2)
+  - **Depends-on:** `US-SNAP-008`
+  - **Blocks:** `US-SNAP-010`
+  - **Mô tả:** Cho phép kéo đường phân cách chung giữa các cửa sổ liền kề trong cùng layout để cùng lúc resize tất cả các cửa sổ có cạnh chung (collinear edge) mà không làm vỡ layout.
+  - **Acceptance Criteria (AC):**
+    - [ ] Xây dựng cấu trúc dữ liệu `LayoutGraph` (BSP Tree / Constraint Graph) lưu mối quan hệ không gian giữa các cửa sổ đang thuộc cùng layout quản lý.
+    - [ ] Phát hiện cạnh chung trùng phương (Collinear Edge Detection): Khi con trỏ chuột hover vào khoảng phân cách giữa 2 hoặc 3 cửa sổ liền kề, đổi con trỏ thành resize cursor (`NSCursor.resizeLeftRight` hoặc `resizeUpDown`).
+    - [ ] Khi kéo đường phân cách chung: Resize đồng thời tất cả các cửa sổ có cạnh chạm vào đường đó (ví dụ kéo đường phân cách dọc sang phải thì VS Code rộng ra, cả Chrome và Terminal bên phải cùng thu hẹp lại).
+    - [ ] Tôn trọng kích thước tối thiểu (`minSize`) của từng ứng dụng, chặn không cho kéo đè làm mất cửa sổ.
+  - **Tasks:**
+    - [ ] `Domain`: Xây dựng cấu trúc `LayoutNode` và `LayoutGraph` biểu diễn cây phân chia không gian.
+    - [ ] `Core`: Cài đặt thuật toán phát hiện cạnh chung `CollinearEdgeDetector.swift`.
+    - [ ] `Core`: Cơ chế Live Resize điều tiết tần suất gọi Accessibility API (Debounce/Throttle) để giữ 60fps không giật lag.
+    - [ ] `Tests`: Test case mô phỏng layout 3 cửa sổ dạng chữ T (T-junction resize).
+  - **Deliverables khi [x]:**
+    - `.specify/features/adaptive-divider-resize/baseline.md` (SIGNED-OFF)
+    - `docs/features/adaptive-divider-resize/README.md`
+    - `docs/user-guides/adaptive-divider-resize.md`
+
+---
+
+### EPIC 09: SwiftUI Settings UI & Custom Shortcut Management
+
+_Mục tiêu: Xây dựng trung tâm điều khiển cấu hình tiện dụng, cho phép người dùng tùy biến phím tắt và thiết lập trải nghiệm theo ý muốn._
+
+- [ ] **US-SNAP-010: Giao diện Cài đặt SwiftUI & Tùy biến Phím tắt (Settings UI & Shortcut Customization)**
+  - **Slug:** `settings-shortcut-customization`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Should-Have (P1)
+  - **Depends-on:** `US-SNAP-009`
+  - **Blocks:** `US-WORK-011`
+  - **Mô tả:** Xây dựng cửa sổ Settings trực quan bằng SwiftUI cho phép cấu hình khởi động cùng hệ thống, điều chỉnh Window Gap, gán phím tắt tùy biến và xem quyền hạn.
+  - **Acceptance Criteria (AC):**
+    - [ ] Cửa sổ Settings chia thành 4 tabs rõ ràng: General (Launch at login qua `SMAppService`, Gaps), Shortcuts (ghi phím tắt mới), Applications (quy tắc riêng từng app), About.
+    - [ ] Cho phép người dùng nhấp vào từng hành động snap để bắt tổ hợp phím mới (`ShortcutRecorderField`), kiểm tra xung đột với phím tắt hệ thống macOS.
+    - [ ] Tùy chọn bật/tắt tính năng Drag-to-snap, chỉnh độ trễ kích hoạt preview.
+    - [ ] Dữ liệu cấu hình tự động lưu trữ và đồng bộ tức thì qua `PreferencesStore` (`UserDefaults`).
+  - **Tasks:**
+    - [ ] `UI`: Cài đặt `SettingsView.swift`, `GeneralSettingsView.swift`, `ShortcutSettingsView.swift`.
+    - [ ] `UI`: Component `ShortcutRecorderField.swift` bắt `NSEvent` keydown và chuyển đổi sang biểu tượng phím tắt (`⌘`, `⌥`, `⌃`, `⇧`).
+    - [ ] `Persistence`: Cài đặt `PreferencesStore.swift` lưu trữ trạng thái với `@AppStorage` và Combine publisher.
+    - [ ] `Tests`: Unit test serialization phím tắt và migration cấu hình.
+  - **Deliverables khi [x]:**
+    - `.specify/features/settings-shortcut-customization/baseline.md` (SIGNED-OFF)
+    - `docs/features/settings-shortcut-customization/README.md`
+    - `docs/user-guides/settings-shortcut-customization.md`
+
+---
+
+### EPIC 10: Workspace Snapshots & Intent-Based Multi-Window Restoration
+
+_Mục tiêu: Bước chuyển dịch từ một tiện ích Snap thông thường thành một Workspace Operating Layer — ghi nhớ và khôi phục toàn bộ không gian làm việc theo ý định._
+
+- [ ] **US-WORK-011: Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspace Snapshot & Intent Restoration)**
+  - **Slug:** `workspace-snapshot-restoration`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Should-Have (P1)
+  - **Depends-on:** `US-SNAP-010`
+  - **Blocks:** `US-WORK-012`
+  - **Mô tả:** Lưu trữ bố cục làm việc hiện tại thành một Workspace (lưu ý định bố trí ứng dụng - WindowPlacement, không lưu pixel cứng) và khôi phục lại khi cần.
+  - **Acceptance Criteria (AC):**
+    - [ ] Người dùng chọn "Save Workspace", nhập tên định danh (ví dụ: "Coding", "Design", "Research") kèm icon.
+    - [ ] Thu thập trạng thái các cửa sổ đang mở: Lưu theo cấu trúc `WindowPlacement` (Bundle Identifier -> Vùng bố cục tương đối / Tỷ lệ zone), không lưu tọa độ pixel cứng để đảm bảo tính di động (portable across displays).
+    - [ ] Lưu trữ an toàn vào file JSON tại `~/Library/Application Support/FlowSnap/workspaces.json`.
+    - [ ] Khi kích hoạt "Restore Workspace", FlowSnap tự động tìm các cửa sổ của các app tương ứng (dù đang nằm ở đâu) và điều phối về đúng các vị trí đã định nghĩa trên màn hình hiện tại.
+  - **Tasks:**
+    - [ ] `Domain`: Cập nhật `Workspace.swift` và `WindowPlacement.swift` với đầy đủ Codable, Hashable.
+    - [ ] `Persistence`: Cài đặt `WorkspaceStore.swift` sử dụng Swift Actor để đọc/ghi file JSON bất đồng bộ an toàn luồng.
+    - [ ] `Core`: Cài đặt `WorkspaceManager.swift` giải quyết thuật toán ánh xạ cửa sổ đang chạy vào các placement slots.
+    - [ ] `UI`: Thêm menu quản lý danh sách Workspace trong Popover và Settings.
+    - [ ] `Tests`: Kiểm tra khả năng khôi phục layout trên màn hình có kích thước khác so với lúc lưu.
+  - **Deliverables khi [x]:**
+    - `.specify/features/workspace-snapshot-restoration/baseline.md` (SIGNED-OFF)
+    - `docs/features/workspace-snapshot-restoration/README.md`
+    - `docs/user-guides/workspace-snapshot-restoration.md`
+
+- [ ] **US-WORK-012: Nhóm Cửa sổ & Workspace Presets (Window Groups & Named Presets)**
+  - **Slug:** `window-groups-presets`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Should-Have (P1)
+  - **Depends-on:** `US-WORK-011`
+  - **Blocks:** `US-WORK-013`
+  - **Mô tả:** Cung cấp sẵn các mẫu Workspace Presets thông dụng (Coding, Design, Research, Writing) và quản lý nhóm cửa sổ liên kết nhau.
+  - **Acceptance Criteria (AC):**
+    - [ ] Cung cấp các Presets mẫu tích hợp sẵn:
+      - **Coding Preset**: VS Code (60%), Chrome (25%), Terminal (15%)
+      - **Research Preset**: Browser 1 (50%), Notes/Notion (25%), Browser 2 (25%)
+      - **Writing Preset**: Document Editor (70%), Reference/Dictionary (30%)
+    - [ ] Cho phép gán phím tắt kích hoạt nhanh cho từng Workspace Preset (ví dụ: `⌃⌥C` khôi phục Coding).
+    - [ ] Khái niệm `WindowGroup`: Liên kết các cửa sổ trong một nhóm để di chuyển hoặc thu nhỏ (minimize) đồng thời.
+  - **Tasks:**
+    - [ ] `Domain`: Mở rộng `WindowGroup.swift` và các preset factories.
+    - [ ] `Core`: Tích hợp xử lý phím tắt kích hoạt workspace trong `CommandDispatcher`.
+    - [ ] `UI`: Thẻ chọn Presets trong Settings với hình minh họa trực quan.
+    - [ ] `Tests`: Test load và apply preset mẫu với các mock applications.
+  - **Deliverables khi [x]:**
+    - `.specify/features/window-groups-presets/baseline.md` (SIGNED-OFF)
+    - `docs/features/window-groups-presets/README.md`
+    - `docs/user-guides/window-groups-presets.md`
+
+---
+
+### EPIC 11: Application Launch Observer & Current Space Preservation
+
+_Mục tiêu: Giải quyết triệt để nỗi đau lớn nhất của người dùng Mac — giữ cho ứng dụng mới mở luôn xuất hiện tại không gian làm việc hiện tại thay vì bị văng sang Space khác._
+
+- [ ] **US-WORK-013: Phát hiện Mở Ứng dụng & Giữ ở Workspace Hiện tại (App Launch Observer & Current Space Policy)**
+  - **Slug:** `app-launch-current-space-policy`
+  - **Effort:** L
+  - **Context-budget:** multi-session
+  - **Priority:** Must-Have (P0)
+  - **Depends-on:** `US-WORK-012`
+  - **Blocks:** `US-WORK-014`
+  - **Mô tả:** Lắng nghe sự kiện mở ứng dụng qua NSWorkspace/EventBus và áp dụng chính sách để cửa sổ mới mở xuất hiện ngay trong không gian làm việc hiện tại, không làm văng người dùng sang Space khác.
+  - **Acceptance Criteria (AC):**
+    - [ ] `ApplicationObserver` lắng nghe `NSWorkspace.didLaunchApplicationNotification` và `NSWorkspace.didActivateApplicationNotification`.
+    - [ ] Khi phát hiện ứng dụng mới khởi chạy, đăng ký AX Observer để bắt chính xác thời điểm cửa sổ đầu tiên của ứng dụng được tạo ra (`kAXWindowCreatedNotification`).
+    - [ ] Áp dụng chính sách mặc định: Nếu cửa sổ mới mở không có vị trí chỉ định, tự động định vị cửa sổ tại màn hình hiện tại (`Current Display`) và không kích hoạt cơ chế chuyển Space của macOS (bằng cách kích hoạt với cờ `.withoutActivating` hoặc điều chỉnh frame ngay khi window xuất hiện).
+    - [ ] Tuân thủ 100% Public APIs của macOS (tuyệt đối không sử dụng private/undocumented CGS APIs để tránh xung đột với các bản cập nhật macOS trong tương lai).
+  - **Tasks:**
+    - [ ] `Infrastructure`: Cài đặt `WorkspaceObserver.swift` và `ApplicationObserver.swift` theo dõi tiến trình hệ thống.
+    - [ ] `Core`: Cài đặt `WindowPolicyManager.swift` thực thi quy tắc `Current Space + Current Display`.
+    - [ ] `Core`: Xử lý timing race condition (ứng dụng launch nhưng window mất vài giây sau mới xuất hiện) bằng cơ chế quan sát bất đồng bộ có timeout.
+    - [ ] `Tests`: Unit test event sequence của application launch observer.
+  - **Deliverables khi [x]:**
+    - `.specify/features/app-launch-current-space-policy/baseline.md` (SIGNED-OFF)
+    - `docs/features/app-launch-current-space-policy/README.md`
+    - `docs/user-guides/app-launch-current-space-policy.md`
+
+---
+
+### EPIC 12: Per-App Window Policies & Smart Floating Stacking
+
+_Mục tiêu: Trao toàn quyền tùy biến hành vi cho người dùng — quy định cửa sổ nào được nổi tạm thời, cửa sổ nào luôn bám vào một layout cố định._
+
+- [ ] **US-WORK-014: Quy tắc Riêng cho Từng Ứng dụng & Cửa sổ Nổi Thông minh (Per-App Rules & Smart Floating Stack)**
+  - **Slug:** `per-app-rules-floating-stack`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Should-Have (P1)
+  - **Depends-on:** `US-WORK-013`
+  - **Blocks:** _(none)_
+  - **Mô tả:** Cho phép người dùng thiết lập quy tắc chuyên biệt cho từng app (ví dụ Telegram luôn Floating, Spotify luôn nhớ vị trí, VS Code luôn snap 60% bên trái) và cơ chế Smart Window Stack khi có app tạm mở đè lên.
+  - **Acceptance Criteria (AC):**
+    - [ ] Cung cấp các chính sách cửa sổ linh hoạt trong `WindowPolicy`:
+      - `Current Space`: Luôn mở ở Space hiện tại
+      - `Floating`: Cửa sổ nổi tự do, không bị ép vào layout dạng lưới
+      - `Remember Position`: Luôn mở lại đúng vị trí frame đã đóng lần trước
+      - `Assigned Layout`: Tự động snap vào một zone định sẵn (ví dụ: VS Code luôn mở Left 60%)
+    - [ ] Cơ chế `Smart Window Stack`: Khi mở một app dạng Floating (như Telegram/Slack), cửa sổ này hiển thị nổi phía trên mà không làm xáo trộn bố cục các cửa sổ đang chia đôi bên dưới.
+    - [ ] Khi đóng app nổi, tiêu điểm (focus) tự động trả lại cho ứng dụng làm việc gần nhất bên dưới một cách tự nhiên.
+  - **Tasks:**
+    - [ ] `Domain`: Hoàn thiện `WindowPolicy.swift` với đầy đủ các rule types và options.
+    - [ ] `Core`: `WindowPolicyManager` áp dụng rule tương ứng mỗi khi nhận `windowCreated` event.
+    - [ ] `UI`: Thêm tab "Applications" trong Settings cho phép người dùng chọn app từ danh sách `/Applications` và gán policy.
+    - [ ] `Tests`: Kiểm tra priority rule precedence (App-specific rule ghi đè Default rule).
+  - **Deliverables khi [x]:**
+    - `.specify/features/per-app-rules-floating-stack/baseline.md` (SIGNED-OFF)
+    - `docs/features/per-app-rules-floating-stack/README.md`
+    - `docs/user-guides/per-app-rules-floating-stack.md`
+
+---
+
+## 5. Lộ trình phát hành theo Giai đoạn & Sprint
+
+```
+┌───────────────────────────────────────────────────────────────────────────────────┐
+│                                FLOWSNAP ROADMAP                                   │
+└───────────────────────────────────────────────────────────────────────────────────┘
+
+[ Sprint 0 - Architecture Baseline & Setup ]  ──► [ COMPLETED ✅ ]
+  ├── XcodeGen multi-target project (FlowSnap, Tests, FlowSnapLab)
+  ├── Universal Agents Workflow (Swift 6 skills, rules, subagents)
+  ├── SwiftLint architectural boundary linter (.swiftlint.yml)
+  └── Code-Review-Graph Local MCP AST indexing (48 files, 150 nodes)
+
+[ Sprint 1 - Core Snap Engine & Global Hotkeys (MVP 1) ]  ──► [ P0 NEXT 🚀 ]
+  ├── US-SNAP-001: Accessibility Permission & Focused Window Discovery
+  ├── US-SNAP-002: Core Layout Calculation & Basic Snap Engine (Halves, Quarters)
+  ├── US-SNAP-003: Multi-Monitor & Coordinate Inversion Manipulation
+  ├── US-SNAP-004: Carbon Global Hotkeys & Command Dispatcher (< 50ms)
+  └── US-SNAP-005: Menu Bar Status Item & Quick Snap Popover
+
+[ Sprint 2 - Interactive Drag Experience & Custom Layouts (MVP 2) ]
+  ├── US-SNAP-006: Edge Drag-to-Snap & HUD Snap Preview (Liquid Glass Overlay)
+  ├── US-SNAP-007: Windows 11-Style Top-Edge Snap Layout Picker
+  ├── US-SNAP-008: Custom Grid Ratios (60/40, 70/30) & Window Gaps
+  ├── US-SNAP-009: Adaptive Multi-Window Resize (Collinear Shared Divider)
+  └── US-SNAP-010: SwiftUI Settings UI & Shortcut Customization
+
+[ Sprint 3 - Workspaces & Per-App Workflow Policies (MVP 3) ]
+  ├── US-WORK-011: Workspace Snapshot & Intent-Based Restoration
+  ├── US-WORK-012: Window Groups & Built-in Workflow Presets
+  ├── US-WORK-013: Application Launch Observer & Current Space Policy
+  └── US-WORK-014: Per-App Window Rules & Smart Floating Stacking
+
+[ Future Horizons (V2.0+) ]
+  ├── US-FUTURE-001: Visual Canvas-based Interactive Layout Editor
+  ├── US-FUTURE-002: Start-a-Workflow Automation (One-click launch & arrange)
+  └── US-FUTURE-003: Cross-Machine Layout Config Export & Import (AirDrop/JSON)
+```
+
+---
+
+## 6. Quy chuẩn định nghĩa hoàn thành (Definition of Done - DoD)
+
+Một User Story chỉ được chuyển trạng thái sang `[x]` khi thỏa mãn đầy đủ 7 tiêu chuẩn kiểm soát chất lượng nghiêm ngặt:
+
+1. **Tuân thủ Nghiệp vụ (100% Acceptance Criteria Met):**
+   - Vượt qua toàn bộ các kịch bản thử nghiệm đã cam kết trong phần AC (bao gồm cả Happy Path và Edge Cases).
+2. **Chuẩn mã nguồn Swift 6 & Kiến trúc Deep Modules:**
+   - Hoàn toàn tuân thủ **Swift 6 Strict Concurrency** (zero warning liên quan đến Data Race, Actor Isolation hoặc Sendable).
+   - Tuyệt đối không dùng force unwrap (`!`), force try (`try!`), hoặc force cast (`as!`).
+   - Giới hạn tệp: `< 800 LOC`, hàm: `< 50 LOC`.
+   - Vượt qua kiểm tra linter: `swiftlint lint --strict`.
+3. **Kiểm thử Tự động (Automated Test Evidence):**
+   - Unit tests viết bằng **Swift Testing (`@Test`)** hoặc XCTest với độ bao phủ toán học đạt `100%` trên `LayoutEngine`.
+   - Tất cả test cases pass sạch sẽ: `xcodebuild test -scheme FlowSnapTests`.
+4. **Không suy diễn & Bảo toàn Ngôn ngữ chung (Ubiquitous Language):**
+   - Tên biến, struct, method bám sát các thuật ngữ trong `CONTEXT.md` và tài liệu kiến trúc.
+   - Không tự ý thêm tính năng hoặc cấu hình ngoài phạm vi đã ký duyệt.
+5. **Đánh giá Chéo Đối kháng (Dual-Pass Adversarial Review):**
+   - Pass A: Đạt chuẩn bảo mật, an toàn bộ nhớ (`[weak self]`, ARC), tài nguyên hệ thống.
+   - Pass B: Đạt độ trung thực 100% với đặc tả kỹ thuật và trải nghiệm người dùng macOS.
+6. **Tài liệu Kỹ thuật Đầy đủ (Tech Documentation):**
+   - Tệp `.specify/features/<slug>/baseline.md` đạt trạng thái `SIGNED-OFF v1.0`.
+   - Có tệp tài liệu kỹ thuật tại `docs/features/<slug>/README.md`.
+7. **Cẩm nang Người dùng Thực tế (User Guide with Verified Visuals):**
+   - Tệp cẩm nang `docs/user-guides/<slug>.md` hoàn thiện với ảnh chụp giao diện thật hoặc sơ đồ luồng người dùng minh họa rõ ràng.
+
+---
+
+## 7. Phân tích Kỹ thuật Chuyên sâu, Rủi ro Hệ thống & Kế hoạch Phát hành
+
+### 7.1. Hệ tọa độ ngược giữa AppKit và Accessibility API
+
+Một trong những cạm bẫy lớn nhất trong lập trình cửa sổ trên macOS là sự không đồng nhất về gốc tọa độ giữa hai hệ thống:
+
+```
+AppKit (NSScreen):                          Accessibility API (AXUIElement):
+Gốc (0,0) ở góc DƯỚI-TRÁI màn hình chính     Gốc (0,0) ở góc TRÊN-TRÁI màn hình chính
+
+Y ↑                                         (0,0) ──────► X
+  │                                           │
+  │     [ Window ]                            │     [ Window ]
+  │                                           ▼ Y
+(0,0) ──────► X
+```
+
+**Công thức chuyển đổi chuẩn mực của FlowSnap:**
+Để đưa cửa sổ về vị trí mong muốn qua Accessibility API:
+$$Y_{AX} = H_{Primary} - (Y_{AppKit} + Height_{Window})$$
+Trong đó:
+
+- $H_{Primary}$ là chiều cao toàn phần của màn hình chính (`NSScreen.screens.first?.frame.height`).
+- Điểm này phải được trừ trên chiều cao của **Màn hình Chính (Primary Screen)**, kể cả khi cửa sổ đang nằm trên màn hình phụ (Secondary Screen) có tọa độ âm hoặc lớn hơn.
+
+FlowSnap đóng gói logic này vào một deep module duy nhất: `CoordinateTransformer.swift` để toàn bộ các module khác (`SnapEngine`, `SnapDetector`) không bao giờ phải xử lý toán đổi trục trực tiếp.
+
+---
+
+### 7.2. Giới hạn macOS Spaces & Nguyên tắc Zero Private API
+
+macOS kiểm soát Spaces (Virtual Desktops) thông qua tiến trình `WindowServer` và không công khai Public API để ứng dụng bên thứ ba di chuyển cửa sổ giữa các Spaces (`moveWindowToSpace`).
+
+Một số tiện ích nguồn mở sử dụng private framework `CoreGraphics` (như `CGSSetWindowSpaces`, `SLSGetWindowSpaces`). Tuy nhiên, cách tiếp cận này:
+
+- ❌ Dễ vỡ khi Apple cập nhật macOS (đã từng làm tê liệt hàng loạt app trên macOS Sonoma và Sequoia).
+- ❌ Vi phạm chính sách bảo mật của macOS, có nguy cơ bị hệ thống coi là phần mềm độc hại.
+- ❌ Có thể gây sập `WindowServer`, làm logout người dùng tức thì.
+
+**Chiến lược Zero Private API của FlowSnap:**
+
+- **Tuyệt đối không dùng private APIs.**
+- Thay vì cưỡng ép di chuyển cửa sổ xuyên Space, FlowSnap sử dụng cơ chế **Bảo toàn Ngữ cảnh Làm việc (Context Preservation)**:
+  1. Giám sát sự kiện mở ứng dụng.
+  2. Ngăn chặn hành vi tự chuyển Space của macOS bằng cách gán cửa sổ mới vào không gian hiển thị hiện tại ngay tại thời điểm khởi tạo (`kAXWindowCreatedNotification`).
+  3. Duy trì các cửa sổ tạm thời ở trạng thái Floating hoặc gán vào vùng bố cục trống mà không kích hoạt Mission Control animation.
+
+---
+
+### 7.3. Ngân sách độ trễ & Tối ưu hiệu năng (Performance Latency Budget)
+
+Một tiện ích quản lý cửa sổ phải mang lại cảm giác phản hồi **tức thì**. Nếu người dùng nhấn phím tắt mà mất 200ms cửa sổ mới di chuyển, trải nghiệm sẽ bị coi là nặng nề và thất bại.
+
+| Thao tác                | Ngân sách tối đa (Budget) | Giải pháp kỹ thuật trong FlowSnap                                                                             |
+| :---------------------- | :------------------------ | :------------------------------------------------------------------------------------------------------------ |
+| **Hotkey to Snap**      | `< 50ms`                  | Carbon Global Hotkeys xử lý ở tầng C-callback, dispatch trực tiếp tới Actor không qua polling.                |
+| **Mouse Drag Preview**  | `< 16ms` (60fps)          | `NSPanel` overlay sử dụng Core Animation layer-backed, tính toán tọa độ thuần toán học.                       |
+| **Window Frame Resize** | `< 80ms`                  | Gọi trực tiếp `AXUIElementSetAttributeValue` cho Position và Size song song, debounce các sự kiện trung gian. |
+| **Memory Footprint**    | `< 40MB RAM`              | Ứng dụng chạy nền thuần túy (Daemon/Agent), không load WebViews, UI SwiftUI tải theo nhu cầu (lazy).          |
+| **CPU Idle**            | `0.0%`                    | Event-driven 100%. Tuyệt đối không có vòng lặp `while(true)` hoặc timer quét cửa sổ định kỳ.                  |
+
+---
+
+### 7.4. Kế hoạch Đóng gói & Ký số macOS (Code Signing, Notarization & Distribution)
+
+Do FlowSnap sử dụng `AXUIElement` để can thiệp cửa sổ của các ứng dụng khác, FlowSnap **không thể phân phối qua Mac App Store** vì yêu cầu Sandbox của App Store cấm quyền Accessibility toàn hệ thống.
+
+**Kế hoạch phân phối độc lập chuẩn mực:**
+
+```mermaid
+flowchart LR
+    A["Xcode Archive"] --> B["Developer ID Application Signing"]
+    B --> C["Hardened Runtime + Entitlements"]
+    C --> D["Apple Notarization (xcrun notarytool)"]
+    D --> E["Staple Ticket"]
+    E --> F["Tạo DMG / Homebrew Cask"]
+```
+
+1. **Ký số (Code Signing):**
+   - Sử dụng chứng chỉ **Developer ID Application** chính thức từ Apple Developer Program.
+   - Bật **Hardened Runtime** (`ENABLE_HARDENED_RUNTIME = YES`).
+   - File `FlowSnap.entitlements` chỉ yêu cầu các quyền hợp lệ:
+     - `com.apple.security.accessibility`: Quyền điều khiển trợ năng.
+2. **Công chứng với Apple (Notarization):**
+   - Chạy lệnh tự động hóa:
+     ```bash
+     xcrun notarytool submit FlowSnap.dmg --keychain-profile "AC_PASSWORD" --wait
+     xcrun stapler staple FlowSnap.dmg
+     ```
+   - Đảm bảo người dùng mở ứng dụng trên macOS Gatekeeper không bị cảnh báo "Ứng dụng không rõ nguồn gốc".
+3. **Kênh phân phối (Distribution Channels):**
+   - **Trang chủ chính thức / GitHub Releases**: Cung cấp file `.dmg` có giao diện kéo-thả vào `/Applications` chuyên nghiệp.
+   - **Homebrew Cask**: Hỗ trợ cộng đồng developer cài đặt với 1 dòng lệnh:
+     `brew install --cask flowsnap`
+   - **Cơ chế Tự động Cập nhật (Auto-Update)**: Tích hợp framework mã nguồn mở chuẩn công nghiệp **Sparkle 2** hỗ trợ cập nhật phiên bản mới an toàn qua EdDSA signature.
+
+---
+
+## 📝 Hướng Dẫn Vận Hành Cho AI Agent (`/command-continue-project`)
+
+> AI Agent đọc phần này để hiểu quy tắc tự động hóa thực thi tính năng.
+
+1. **Xác định Task tiếp theo:**
+   - Quét từ trên xuống dưới, tìm User Story đầu tiên có trạng thái `[/]` (ưu tiên tiếp tục việc dở dang).
+   - Nếu không có `[/]`, bốc User Story đầu tiên có trạng thái `[ ]`.
+   - Kiểm tra `Depends-on`: Nếu dependency chưa đạt `[x]`, dừng lại và cảnh báo người dùng.
+2. **Kích hoạt Pipeline BA & Thực thi:**
+   - Dựa vào `Effort` và `Context-budget`:
+     - `Effort: S` + `single-session` ➔ Thực hiện Bounded BA / TDD nhanh.
+     - `Effort: M` + `single-session` ➔ Thực hiện quy trình BA 8 giai đoạn chuẩn mực.
+     - `Effort: L|XL` + `multi-session` ➔ Kích hoạt `wayfinder` lập bản đồ phân rã trước khi code.
+3. **Đánh dấu Hoàn thành `[x]`:**
+   - Chỉ được chuyển checkbox thành `[x]` khi toàn bộ Tiêu chuẩn DoD tại Mục 6 đã được thỏa mãn và có bằng chứng test pass.

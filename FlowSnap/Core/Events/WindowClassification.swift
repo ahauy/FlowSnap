@@ -4,22 +4,12 @@ import Foundation
 ///
 /// Not all windows should be snapped — dialogs, sheets,
 /// and system UI should be left alone. See spec §53.
-enum WindowKind {
-    /// A standard application window (should be managed).
-    case normal
+public struct WindowClassifier: Sendable {
 
-    /// A modal dialog (should NOT be managed).
-    case dialog
+    public init() {}
 
-    /// A sheet attached to a window (should NOT be managed).
-    case sheet
-
-    /// A utility/palette window (should NOT be managed).
-    case utility
-
-    /// A fullscreen window (should NOT be managed).
-    case fullscreen
-
-    /// Could not determine window type.
-    case unknown
+    /// Checks if a window kind is eligible for management/snapping.
+    public func shouldManage(kind: WindowKind) -> Bool {
+        kind.isSnappable
+    }
 }
