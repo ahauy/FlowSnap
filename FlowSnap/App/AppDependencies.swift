@@ -29,5 +29,13 @@ public final class AppDependencies {
         displayManager: displayManager
     )
 
+    // MARK: - View Models
+
+    public lazy var menuBarViewModel: MenuBarViewModel = MenuBarViewModel(
+        accessibilityService: accessibilityService,
+        commandDispatcher: commandDispatcher,
+        windowManager: windowManager
+    )
+
     public init() {}
 }

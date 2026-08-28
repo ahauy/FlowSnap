@@ -313,7 +313,7 @@ _Mục tiêu: Xây dựng hệ thống phím tắt toàn cục phản hồi tứ
 
 _Mục tiêu: Cung cấp điểm chạm người dùng thường trực trên thanh Menu Bar của macOS, cho phép thao tác chuột nhanh và truy cập Settings._
 
-- [ ] **US-SNAP-005: Menu Bar Item & Bảng Điều khiển Nhanh (Menu Bar Status Item & Quick Snap Controls)**
+- [x] **US-SNAP-005: Menu Bar Item & Bảng Điều khiển Nhanh (Menu Bar Status Item & Quick Snap Controls)**
   - **Slug:** `menubar-quick-controls`
   - **Effort:** S
   - **Context-budget:** single-session
@@ -322,15 +322,15 @@ _Mục tiêu: Cung cấp điểm chạm người dùng thường trực trên th
   - **Blocks:** `US-SNAP-006`
   - **Mô tả:** Cung cấp biểu tượng Menu Bar thường trú trên macOS cho phép xem trạng thái ứng dụng, bấm chuột để snap nhanh cửa sổ active và mở Settings.
   - **Acceptance Criteria (AC):**
-    - [ ] Biểu tượng FlowSnap xuất hiện trên thanh Menu Bar (`NSStatusItem`) với icon monochrome thích ứng Dark/Light Mode.
-    - [ ] Ứng dụng chạy ở chế độ nền (Agent App: `LSUIElement = true`), không hiển thị icon dưới Dock.
-    - [ ] Nhấp chuột trái vào icon mở Menu/Popover hiển thị các nút thao tác nhanh: Snap Trái, Snap Phải, Maximize, 4 Góc kèm hiển thị phím tắt gợi ý.
-    - [ ] Có các mục chức năng hệ thống: Check for Updates, Settings..., Quit FlowSnap.
+    - [x] Biểu tượng FlowSnap xuất hiện trên thanh Menu Bar (`NSStatusItem`) với icon monochrome thích ứng Dark/Light Mode.
+    - [x] Ứng dụng chạy ở chế độ nền (Agent App: `LSUIElement = true`), không hiển thị icon dưới Dock.
+    - [x] Nhấp chuột trái vào icon mở Menu/Popover hiển thị các nút thao tác nhanh: Snap Trái, Snap Phải, Maximize, 4 Góc kèm hiển thị phím tắt gợi ý.
+    - [x] Có các mục chức năng hệ thống: Check for Updates, Settings..., Quit FlowSnap.
   - **Tasks:**
-    - [ ] `UI`: Thiết kế `MenuBarView.swift` bằng SwiftUI với các biểu tượng bố cục trực quan.
-    - [ ] `Infrastructure`: Tạo `MenuBarController.swift` quản lý vòng đời của `NSStatusItem` và `NSPopover`.
-    - [ ] `App`: Tích hợp vào `FlowSnapApp.swift` và cấu hình file `Info.plist` (`LSUIElement = YES`).
-    - [ ] `Tests`: Kiểm thử trạng thái menu bar controller và event handling.
+    - [x] `UI`: Thiết kế `MenuBarView.swift` bằng SwiftUI với các biểu tượng bố cục trực quan.
+    - [x] `Infrastructure`: Tạo `MenuBarController.swift` quản lý vòng đời của `NSStatusItem` và `NSPopover`.
+    - [x] `App`: Tích hợp vào `FlowSnapApp.swift` và cấu hình file `Info.plist` (`LSUIElement = YES`).
+    - [x] `Tests`: Kiểm thử trạng thái menu bar controller và event handling.
   - **Deliverables khi [x]:**
     - `.specify/features/menubar-quick-controls/baseline.md` (SIGNED-OFF)
     - `docs/features/menubar-quick-controls/README.md`
