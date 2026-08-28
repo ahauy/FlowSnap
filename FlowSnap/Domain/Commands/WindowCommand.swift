@@ -6,7 +6,7 @@ import Foundation
 /// Every input source (hotkey, menu bar, automation) produces
 /// a WindowCommand that flows through CommandDispatcher.
 /// See spec §35.
-enum WindowCommand {
+public enum WindowCommand: Hashable, Sendable {
     // MARK: - Snap
 
     case snap(SnapTarget)

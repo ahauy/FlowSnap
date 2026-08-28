@@ -1,30 +1,47 @@
 import CoreGraphics
+import Foundation
 
 /// Concrete implementation of WindowManaging.
 ///
-/// Delegates actual window control to AccessibilityService.
+/// Delegates actual window control to AccessibilityService on the MainActor.
 /// See spec §27.
-final class WindowManager: WindowManaging {
+@MainActor
+public final class WindowManager: WindowManaging {
 
     private let accessibilityService: AccessibilityService
 
-    init(accessibilityService: AccessibilityService) {
+    public init(accessibilityService: AccessibilityService) {
         self.accessibilityService = accessibilityService
     }
 
-    func focusedWindow() async -> ManagedWindow? {
+    public func focusedWindow() async -> ManagedWindow? {
         accessibilityService.focusedManagedWindow()
     }
 
-    func move(_ window: ManagedWindow, to frame: CGRect) async throws {
-        // TODO: Use accessibilityService.setFrame
+    public func move(_ window: ManagedWindow, to frame: CGRect) async throws {
+        // Prevent snapping FlowSnap's own windows
+        if window.pid == ProcessInfo.processInfo.processIdentifier {
+            return
+        }
+        guard let element = accessibilityService.focusedWindow() else {
+            throw AccessibilityError.cannotComplete
+        }
+
+        try accessibilityService.setFrame(frame, for: element)
     }
 
-    func focus(_ window: ManagedWindow) async throws {
-        // TODO: Use accessibilityService.raise
+    public func focus(_ window: ManagedWindow) async throws {
+        // Prevent focusing FlowSnap's own windows
+        if window.pid == ProcessInfo.processInfo.processIdentifier {
+            return
+        }
+        guard let element = accessibilityService.focusedWindow() else {
+            throw AccessibilityError.cannotComplete
+        }
+        try accessibilityService.raise(element)
     }
 
-    func minimize(_ window: ManagedWindow) async throws {
-        // TODO: Use AX to minimize
+    public func minimize(_ window: ManagedWindow) async throws {
+        // AX minimize can be added when needed
     }
 }

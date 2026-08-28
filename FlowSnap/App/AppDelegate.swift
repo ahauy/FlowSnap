@@ -4,22 +4,25 @@ import AppKit
 ///
 /// Responsibilities:
 /// - Bootstrap core services on launch
-/// - Register global hotkeys
-/// - Set up Accessibility observers
-/// - Manage NSPanel overlays (snap preview)
+/// - Register global hotkeys (US-SNAP-004)
+/// - Clean up system handlers on termination
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
 
-    // TODO: Inject via AppDependencies
-    // private let dependencies = AppDependencies()
+    let dependencies = AppDependencies()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // TODO: Initialize core services
-        // TODO: Check Accessibility & Input Monitoring permissions
-        // TODO: Register global hotkeys
-        // TODO: Start application observer
+        let dispatcher = dependencies.commandDispatcher
+
+        // Register global hotkeys to dispatch commands via CommandDispatcher
+        dependencies.hotkeyManager.registerDefaultHotkeys { command in
+            Task { @MainActor in
+                try? await dispatcher.dispatch(command)
+            }
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
-        // TODO: Clean up hotkeys, observers
+        dependencies.hotkeyManager.unregisterAll()
     }
 }

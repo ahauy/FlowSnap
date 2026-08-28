@@ -5,27 +5,29 @@ import Foundation
 /// Centralizes creation and wiring of all core services.
 /// Protocols allow swapping implementations for testing.
 @MainActor
-final class AppDependencies {
+public final class AppDependencies {
 
-    // MARK: - Infrastructure
+    // MARK: - Infrastructure Services
 
-    // TODO: lazy var accessibilityService: AccessibilityService
-    // TODO: lazy var displayManager: DisplayManaging
-    // TODO: lazy var hotkeyManager: GlobalHotkeyManaging
+    public lazy var accessibilityService: AccessibilityService = AXAccessibilityService()
+    public lazy var displayManager: DisplayManaging = DisplayManager()
+    public lazy var hotkeyManager: GlobalHotkeyManaging = GlobalHotkeyManager()
 
-    // MARK: - Core
+    // MARK: - Core Services
 
-    // TODO: lazy var windowRegistry: WindowRegistry
-    // TODO: lazy var windowManager: WindowManaging
-    // TODO: lazy var layoutEngine: LayoutCalculating
-    // TODO: lazy var snapEngine: SnapEngine
-    // TODO: lazy var commandDispatcher: CommandDispatcher
-    // TODO: lazy var windowPolicyManager: WindowPolicyManager
-    // TODO: lazy var workspaceManager: WorkspaceManager
-    // TODO: lazy var eventBus: EventBus
+    public lazy var windowRegistry: WindowRegistry = WindowRegistry()
+    public lazy var windowManager: WindowManaging = WindowManager(accessibilityService: accessibilityService)
+    public lazy var layoutEngine: LayoutCalculating = LayoutEngine()
+    public lazy var snapEngine: SnapEngine = SnapEngine(
+        layoutEngine: layoutEngine,
+        windowRegistry: windowRegistry,
+        displayManager: displayManager
+    )
+    public lazy var commandDispatcher: CommandDispatcher = CommandDispatcher(
+        windowManager: windowManager,
+        snapEngine: snapEngine,
+        displayManager: displayManager
+    )
 
-    // MARK: - Persistence
-
-    // TODO: lazy var preferencesStore: PreferencesStore
-    // TODO: lazy var workspaceStore: WorkspaceStore
+    public init() {}
 }

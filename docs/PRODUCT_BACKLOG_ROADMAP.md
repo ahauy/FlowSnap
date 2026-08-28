@@ -279,7 +279,7 @@ _Mục tiêu: Giải quyết bài toán hóc búa về sai lệch hệ tọa đ�
 
 _Mục tiêu: Xây dựng hệ thống phím tắt toàn cục phản hồi tức thì (< 50ms) ngay cả khi ứng dụng chạy ngầm không có cửa sổ chính._
 
-- [ ] **US-SNAP-004: Phím tắt Toàn cục & Hệ thống Điều phối Lệnh (Global Hotkeys & Command Dispatcher)**
+- [x] **US-SNAP-004: Phím tắt Toàn cục & Hệ thống Điều phối Lệnh (Global Hotkeys & Command Dispatcher)**
   - **Slug:** `global-hotkeys-dispatcher`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -288,20 +288,20 @@ _Mục tiêu: Xây dựng hệ thống phím tắt toàn cục phản hồi tứ
   - **Blocks:** `US-SNAP-005`
   - **Mô tả:** Đăng ký các phím tắt hệ thống toàn cục (⌃⌥←, ⌃⌥→, ⌃⌥↑, ⌃⌥↓, ⌃⌥1..4) và điều phối lệnh snap tức thì với độ trễ cực thấp (< 50ms).
   - **Acceptance Criteria (AC):**
-    - [ ] Đăng ký thành công các tổ hợp phím mặc định qua Carbon Event Hotkeys API:
+    - [x] Đăng ký thành công các tổ hợp phím mặc định qua Carbon Event Hotkeys API:
       - `⌃⌥←` (Ctrl + Opt + Left): Snap Left 50%
       - `⌃⌥→` (Ctrl + Opt + Right): Snap Right 50%
       - `⌃⌥↑` (Ctrl + Opt + Up): Maximize
       - `⌃⌥↓` (Ctrl + Opt + Down): Restore vị trí ban đầu
       - `⌃⌥1 / 2 / 3 / 4`: Snap 4 góc (Top-Left, Top-Right, Bottom-Left, Bottom-Right)
-    - [ ] Độ trễ từ khi nhấn phím đến khi gửi lệnh di chuyển cửa sổ đạt dưới 50ms.
-    - [ ] Phím tắt hoạt động ổn định trên mọi ứng dụng (VS Code, Chrome, Terminal, Finder, Telegram...).
-    - [ ] `CommandDispatcher` xử lý lệnh bất đồng bộ, tuyệt đối không block Main Thread hoặc làm chậm phím gõ của người dùng.
+    - [x] Độ trễ từ khi nhấn phím đến khi gửi lệnh di chuyển cửa sổ đạt dưới 50ms.
+    - [x] Phím tắt hoạt động ổn định trên mọi ứng dụng (VS Code, Chrome, Terminal, Finder, Telegram...).
+    - [x] `CommandDispatcher` xử lý lệnh bất đồng bộ, tuyệt đối không block Main Thread hoặc làm chậm phím gõ của người dùng.
   - **Tasks:**
-    - [ ] `Infrastructure`: Cài đặt `GlobalHotkeyManager.swift` sử dụng Carbon Event Handler (`RegisterEventHotKey`).
-    - [ ] `Core`: Cài đặt `CommandDispatcher.swift` dispatch các `SnapCommand` tới `SnapEngine`.
-    - [ ] `App`: Khởi tạo và liên kết hotkeys trong `AppDelegate.swift` khi ứng dụng hoàn tất khởi động.
-    - [ ] `Tests`: Kiểm thử CommandDispatcher với mock commands và event timing assertions.
+    - [x] `Infrastructure`: Cài đặt `GlobalHotkeyManager.swift` sử dụng Carbon Event Handler (`RegisterEventHotKey`).
+    - [x] `Core`: Cài đặt `CommandDispatcher.swift` dispatch các `SnapCommand` tới `SnapEngine`.
+    - [x] `App`: Khởi tạo và liên kết hotkeys trong `AppDelegate.swift` khi ứng dụng hoàn tất khởi động.
+    - [x] `Tests`: Kiểm thử CommandDispatcher với mock commands và event timing assertions.
   - **Deliverables khi [x]:**
     - `.specify/features/global-hotkeys-dispatcher/baseline.md` (SIGNED-OFF)
     - `docs/features/global-hotkeys-dispatcher/README.md`

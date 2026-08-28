@@ -80,6 +80,11 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
         var pid: pid_t = 0
         guard AXUIElementGetPid(windowElement, &pid) == .success else { return nil }
 
+        // FlowSnap must never snap its own windows (Lab, Settings, MenuBar)
+        if pid == ProcessInfo.processInfo.processIdentifier {
+            return nil
+        }
+
         guard let windowFrame = frame(of: windowElement) else { return nil }
 
         let runningApp = NSRunningApplication(processIdentifier: pid)
@@ -146,6 +151,14 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
     public func setFrame(_ frame: CGRect, for window: AXUIElement) throws {
         guard isTrusted else { throw AccessibilityError.notTrusted }
 
+        var currentPos = CGPoint.zero
+        var currentPosVal: AnyObject?
+        if AXUIElementCopyAttributeValue(window, kAXPositionAttribute as CFString, &currentPosVal) == .success,
+           let val = currentPosVal {
+            // swiftlint:disable:next force_cast
+            _ = AXValueGetValue(val as! AXValue, .cgPoint, &currentPos)
+        }
+
         var origin = frame.origin
         var size = frame.size
 
@@ -154,11 +167,18 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
             throw AccessibilityError.invalidGeometry
         }
 
-        let posResult = AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, posValue)
-        guard posResult == .success else { throw AccessibilityError.cannotComplete }
-
-        let sizeResult = AXUIElementSetAttributeValue(window, kAXSizeAttribute as CFString, sizeValue)
-        guard sizeResult == .success else { throw AccessibilityError.cannotComplete }
+        // Smart ordering to prevent visual overflow:
+        // Moving right: set position first, then size.
+        // Moving left: set size first, then position.
+        if frame.origin.x >= currentPos.x {
+            _ = AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, posValue)
+            let sizeResult = AXUIElementSetAttributeValue(window, kAXSizeAttribute as CFString, sizeValue)
+            guard sizeResult == .success else { throw AccessibilityError.cannotComplete }
+        } else {
+            _ = AXUIElementSetAttributeValue(window, kAXSizeAttribute as CFString, sizeValue)
+            let posResult = AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, posValue)
+            guard posResult == .success else { throw AccessibilityError.cannotComplete }
+        }
     }
 
     public func raise(_ window: AXUIElement) throws {
