@@ -20,11 +20,14 @@ struct FlowSnapLabView: View {
     private let accessibilityService: AccessibilityService = AXAccessibilityService()
     private let windowRegistry = WindowRegistry()
     private let layoutEngine = LayoutEngine()
+    private let displayManager = DisplayManager()
 
     @State private var isTrusted = false
     @State private var focusedWindow: ManagedWindow?
     @State private var lastInspectionTime = Date()
     @State private var statusMessage = ""
+    @State private var connectedDisplays: [Display] = []
+    @State private var primaryScreenHeight: CGFloat = 0
 
     let timer = Timer.publish(every: 1.0, on: .main, in: .common).autoconnect()
 
@@ -136,6 +139,47 @@ struct FlowSnapLabView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
+            GroupBox("Multi-Monitor & Displays (US-SNAP-003)") {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("Displays (\(connectedDisplays.count)):")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                        Spacer()
+                        Text("Primary Height: \(Int(primaryScreenHeight))pt")
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    ForEach(connectedDisplays) { display in
+                        HStack {
+                            Circle()
+                                .fill(display.isPrimary ? Color.blue : Color.orange)
+                                .frame(width: 6, height: 6)
+                            Text("Display \(display.id) \(display.isPrimary ? "(Primary)" : "")")
+                                .font(.system(.caption, design: .monospaced))
+                                .fontWeight(.medium)
+                            Spacer()
+                            Text("\(Int(display.frame.width))x\(Int(display.frame.height)) @ \(String(format: "%.0fx", display.scaleFactor))")
+                                .font(.system(.caption, design: .monospaced))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    if connectedDisplays.count > 1 {
+                        Button("Move Window to Next Display (Left Half)") {
+                            triggerMoveToNextDisplay()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                        .disabled(focusedWindow == nil || !isTrusted)
+                        .padding(.top, 4)
+                    }
+                }
+                .padding(8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
             GroupBox("Actions") {
                 HStack(spacing: 12) {
                     Button("Inspect Focused Window") {
@@ -155,7 +199,7 @@ struct FlowSnapLabView: View {
             Spacer()
         }
         .padding(20)
-        .frame(width: 540, height: 440)
+        .frame(width: 540, height: 560)
         .onAppear {
             refreshStatus()
         }
@@ -172,6 +216,15 @@ struct FlowSnapLabView: View {
             focusedWindow = nil
         }
         lastInspectionTime = Date()
+
+        Task {
+            let displays = await displayManager.displays
+            let height = await displayManager.primaryScreenHeight
+            await MainActor.run {
+                self.connectedDisplays = displays
+                self.primaryScreenHeight = height
+            }
+        }
     }
 
     private func triggerSnap(_ target: SnapTarget) {
@@ -181,26 +234,66 @@ struct FlowSnapLabView: View {
         }
 
         Task {
-            let snapEngine = SnapEngine(layoutEngine: layoutEngine, windowRegistry: windowRegistry)
-            let visibleBounds = NSScreen.main?.visibleFrame ?? CGRect(x: 0, y: 0, width: 1440, height: 900)
+            let snapEngine = SnapEngine(
+                layoutEngine: layoutEngine,
+                windowRegistry: windowRegistry,
+                displayManager: displayManager
+            )
 
-            if let targetFrame = await snapEngine.calculateFrame(for: target, window: window, availableFrame: visibleBounds) {
+            if let targetDisplay = await displayManager.display(for: window.frame) {
+                if let targetFrame = await snapEngine.frame(for: target, window: window, on: targetDisplay) {
+                    if let axElement = accessibilityService.focusedWindow() {
+                        do {
+                            try accessibilityService.setFrame(targetFrame, for: axElement)
+                            await MainActor.run {
+                                statusMessage = "Applied \(target) on Display \(targetDisplay.id): \(Int(targetFrame.width))x\(Int(targetFrame.height))"
+                                refreshStatus()
+                            }
+                        } catch {
+                            await MainActor.run {
+                                statusMessage = "Failed to set frame: \(error.localizedDescription)"
+                            }
+                        }
+                    }
+                } else {
+                    await MainActor.run {
+                        statusMessage = "No action: pre-snap frame not found for restore."
+                    }
+                }
+            }
+        }
+    }
+
+    private func triggerMoveToNextDisplay() {
+        guard let window = focusedWindow, window.kind.isSnappable else {
+            statusMessage = "Cannot move: window is not resizable or non-standard."
+            return
+        }
+
+        Task {
+            let snapEngine = SnapEngine(
+                layoutEngine: layoutEngine,
+                windowRegistry: windowRegistry,
+                displayManager: displayManager
+            )
+
+            if let (targetFrame, nextDisplay) = await snapEngine.calculateFrameOnNextDisplay(
+                for: .left,
+                window: window,
+                displayManager: displayManager
+            ) {
                 if let axElement = accessibilityService.focusedWindow() {
                     do {
                         try accessibilityService.setFrame(targetFrame, for: axElement)
                         await MainActor.run {
-                            statusMessage = "Applied \(target): \(Int(targetFrame.width))x\(Int(targetFrame.height))"
+                            statusMessage = "Moved to Display \(nextDisplay.id): \(Int(targetFrame.width))x\(Int(targetFrame.height))"
                             refreshStatus()
                         }
                     } catch {
                         await MainActor.run {
-                            statusMessage = "Failed to set frame: \(error.localizedDescription)"
+                            statusMessage = "Failed to move: \(error.localizedDescription)"
                         }
                     }
-                }
-            } else {
-                await MainActor.run {
-                    statusMessage = "No action: pre-snap frame not found for restore."
                 }
             }
         }
