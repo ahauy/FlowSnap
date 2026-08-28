@@ -243,6 +243,60 @@ struct FlowSnapLabView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
+                GroupBox("Menu Bar & Quick Snap Controls (US-SNAP-005)") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack {
+                            Text("Interactive Menu Bar Dropdown Preview:")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("Agent App: LSUIElement")
+                                .font(.system(.caption, design: .monospaced))
+                                .foregroundStyle(.secondary)
+                        }
+
+                        HStack(alignment: .top, spacing: 16) {
+                            // Embedded Live MenuBarView
+                            VStack(alignment: .leading) {
+                                Text("Live Component:")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+
+                                MenuBarView(viewModel: makeMenuBarViewModel())
+                                    .background(Color(NSColor.windowBackgroundColor))
+                                    .cornerRadius(8)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                                    )
+                            }
+
+                            // Info & Actions Guide
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Feature Highlights:")
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+
+                                Text("• Auto-dismisses on snap click")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text("• Displays warning banner if untrusted")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text("• Quick 10-zone mouse snapping")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text("• Settings (⌘,) & Quit (⌘Q)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(.top, 18)
+                        }
+                    }
+                    .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
                 GroupBox("Actions") {
                     HStack(spacing: 12) {
                         Button("Inspect Focused Window") {
@@ -409,5 +463,29 @@ struct FlowSnapLabView: View {
                 }
             }
         }
+    }
+
+    private func makeMenuBarViewModel() -> MenuBarViewModel {
+        let windowManager = WindowManager(accessibilityService: self.accessibilityService)
+        let snapEngine = SnapEngine(
+            layoutEngine: layoutEngine,
+            windowRegistry: windowRegistry,
+            displayManager: displayManager
+        )
+        let dispatcher = CommandDispatcher(
+            windowManager: windowManager,
+            snapEngine: snapEngine,
+            displayManager: displayManager
+        )
+        let vm = MenuBarViewModel(
+            accessibilityService: accessibilityService,
+            commandDispatcher: dispatcher,
+            windowManager: windowManager
+        )
+        vm.dismissHandler = {
+            self.statusMessage = "✅ MenuBar Action Triggered & Dismissed"
+            self.refreshStatus()
+        }
+        return vm
     }
 }
