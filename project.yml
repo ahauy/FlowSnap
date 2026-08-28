@@ -59,6 +59,7 @@ targets:
       - path: FlowSnap/Domain
       - path: FlowSnap/Core
       - path: FlowSnap/Infrastructure
+      - path: FlowSnap/UI/SnapPreview
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flowsnap.lab

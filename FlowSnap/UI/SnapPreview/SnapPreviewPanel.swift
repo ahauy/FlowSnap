@@ -1,39 +1,44 @@
 import AppKit
+import SwiftUI
 
-/// Transparent overlay window for showing snap preview.
+/// Transparent overlay window for showing snap preview and highlight flash.
 ///
 /// Uses NSPanel (non-activating, always on top) so it doesn't
-/// steal focus from the window being dragged. See spec §32.
-final class SnapPreviewPanel: NSPanel {
+/// steal focus from the window being dragged or snapped. See spec §32.
+@MainActor
+public final class SnapPreviewPanel: NSPanel {
 
-    override init(
-        contentRect: NSRect,
-        styleMask style: NSWindow.StyleMask,
-        backing backingStoreType: NSWindow.BackingStoreType,
-        defer flag: Bool
-    ) {
+    public static let shared = SnapPreviewPanel()
+
+    public init() {
         super.init(
-            contentRect: contentRect,
+            contentRect: .zero,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
 
-        // TODO: Configure panel properties
-        // - isOpaque = false
-        // - backgroundColor = .clear
-        // - level = .floating
-        // - ignoresMouseEvents = true
-        // - hasShadow = false
+        isOpaque = false
+        backgroundColor = .clear
+        level = .floating
+        ignoresMouseEvents = true
+        hasShadow = false
+        isReleasedWhenClosed = false
+        contentView = NSHostingView(rootView: SnapPreviewView())
     }
 
-    /// Show the preview at a given frame on screen.
-    func showPreview(frame: CGRect) {
-        // TODO: Position panel, animate in
-    }
+    /// Flash an accent outline over the snapped region and fade out smoothly.
+    public func flash(frame: CGRect, duration: TimeInterval = 0.25) {
+        setFrame(frame, display: true)
+        alphaValue = 0.85
+        orderFrontRegardless()
 
-    /// Hide the preview with animation.
-    func hidePreview() {
-        // TODO: Animate out, orderOut
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = duration
+            context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+            animator().alphaValue = 0.0
+        } completionHandler: { [weak self] in
+            self?.orderOut(nil)
+        }
     }
 }
