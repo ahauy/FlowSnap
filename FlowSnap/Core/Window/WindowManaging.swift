@@ -1,19 +1,13 @@
 import CoreGraphics
+import Foundation
 
-/// Abstraction for controlling windows.
+/// Protocol abstraction for window querying and manipulation.
 ///
-/// The single interface through which all window manipulation flows.
-/// Implementation wraps AccessibilityService. See spec §27.
-protocol WindowManaging {
-    /// Returns the currently focused window, if any.
+/// See spec §27. All window manipulations execute on the MainActor.
+@MainActor
+public protocol WindowManaging: Sendable {
     func focusedWindow() async -> ManagedWindow?
-
-    /// Moves and resizes a window to the given frame.
     func move(_ window: ManagedWindow, to frame: CGRect) async throws
-
-    /// Brings a window to the front.
     func focus(_ window: ManagedWindow) async throws
-
-    /// Minimizes a window.
     func minimize(_ window: ManagedWindow) async throws
 }
