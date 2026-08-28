@@ -47,6 +47,8 @@
 | **GlobalHotkeyManager**   | Carbon Event Hotkeys implementation                  | "Low-level system hotkey listener"             | `GlobalHotkeyManager`   | Uses `RegisterEventHotKey`                   |
 | **CommandDispatcher**     | Central router dispatching WindowCommands            | "Command execution controller"                 | `CommandDispatcher`     | Routes commands to SnapEngine asynchronously |
 | **WindowCommand**         | Semantic user intent enum (snap, maximize, restore)  | "Action or user command"                       | `WindowCommand`         | Decoupled command payload                    |
+| **MenuBarManaging**       | Interface for managing status bar icon & popover     | "Status item controller interface"             | `MenuBarManaging`       | Protocol for Menu Bar lifecycle              |
+| **MenuBarViewModel**      | ViewModel driving reactive Menu Bar UI state         | "Menu bar state store"                         | `MenuBarViewModel`      | @Observable state for MenuBarView            |
 | **AppDependencies**       | Root DI container for services and stores            | "Global service locator or singleton list"     | `AppDependencies`       | @MainActor DI container                      |
 
 ## Where to Look
