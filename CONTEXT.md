@@ -27,19 +27,22 @@
 
 ## Glossary (FlowSnap Ubiquitous Language)
 
-| Term                     | Short definition                                     | Before (verbose)                               | After (concise)        | Notes                              |
-| :----------------------- | :--------------------------------------------------- | :--------------------------------------------- | :--------------------- | :--------------------------------- |
-| **Workspace**            | Saved intent of window arrangements across apps      | "A saved multi-window setup"                   | `Workspace`            | Spec §38, portable across displays |
-| **WindowPlacement**      | Logical layout assignment for an app window          | "Position and size of an app on screen"        | `WindowPlacement`      | Decoupled from pixel coordinates   |
-| **SnapEngine**           | Coordinates snap zone calculations & trigger logic   | "The logic that moves windows to screen edges" | `SnapEngine`           | Core calculation module            |
-| **LayoutEngine**         | Geometric grid & split-screen partition math         | "Screen splitting calculation helper"          | `LayoutEngine`         | Halves, thirds, quarters math      |
-| **AccessibilityService** | macOS AXUIElement adapter for window manipulation    | "Accessibility wrapper for OS windows"         | `AccessibilityService` | Infrastructure adapter             |
-| **ManagedWindow**        | Snapshot of a window's state (ID, PID, frame, kind)  | "A tracked window object"                      | `ManagedWindow`        | Pure domain model, no AX refs      |
-| **WindowKind**           | Semantic category of a window (.normal, .dialog...)  | "Window type or window category"               | `WindowKind`           | Filters snappable vs modal windows |
-| **LayoutZone**           | Normalized rectangular partition (0...1 coordinates) | "A screen tile or slot"                        | `LayoutZone`           | Halves, quarters, custom zones     |
-| **SnapTarget**           | Semantic destination enum (left, right, max...)      | "Where the window should snap"                 | `SnapTarget`           | Domain command target              |
-| **PreSnapFrame**         | Cached window bounds before snapping begins          | "The original window position before snapping" | `PreSnapFrame`         | Enables restore action             |
-| **AppDependencies**      | Root DI container for services and stores            | "Global service locator or singleton list"     | `AppDependencies`      | @MainActor DI container            |
+| Term                      | Short definition                                     | Before (verbose)                               | After (concise)         | Notes                                     |
+| :------------------------ | :--------------------------------------------------- | :--------------------------------------------- | :---------------------- | :---------------------------------------- |
+| **Workspace**             | Saved intent of window arrangements across apps      | "A saved multi-window setup"                   | `Workspace`             | Spec §38, portable across displays        |
+| **WindowPlacement**       | Logical layout assignment for an app window          | "Position and size of an app on screen"        | `WindowPlacement`       | Decoupled from pixel coordinates          |
+| **SnapEngine**            | Coordinates snap zone calculations & trigger logic   | "The logic that moves windows to screen edges" | `SnapEngine`            | Core calculation module                   |
+| **LayoutEngine**          | Geometric grid & split-screen partition math         | "Screen splitting calculation helper"          | `LayoutEngine`          | Halves, thirds, quarters math             |
+| **AccessibilityService**  | macOS AXUIElement adapter for window manipulation    | "Accessibility wrapper for OS windows"         | `AccessibilityService`  | Infrastructure adapter                    |
+| **ManagedWindow**         | Snapshot of a window's state (ID, PID, frame, kind)  | "A tracked window object"                      | `ManagedWindow`         | Pure domain model, no AX refs             |
+| **WindowKind**            | Semantic category of a window (.normal, .dialog...)  | "Window type or window category"               | `WindowKind`            | Filters snappable vs modal windows        |
+| **LayoutZone**            | Normalized rectangular partition (0...1 coordinates) | "A screen tile or slot"                        | `LayoutZone`            | Halves, quarters, custom zones            |
+| **SnapTarget**            | Semantic destination enum (left, right, max...)      | "Where the window should snap"                 | `SnapTarget`            | Domain command target                     |
+| **PreSnapFrame**          | Cached window bounds before snapping begins          | "The original window position before snapping" | `PreSnapFrame`          | Enables restore action                    |
+| **CoordinateTransformer** | Bidirectional AppKit ↔ AX coordinate conversion math | "Coordinate flip math helper"                  | `CoordinateTransformer` | Pure functional, zero system dependencies |
+| **DisplayManaging**       | Protocol for querying displays and active screens    | "Display manager interface"                    | `DisplayManaging`       | Mockable interface for DI                 |
+| **DisplayManager**        | AppKit implementation observing screen changes       | "System screen tracker service"                | `DisplayManager`        | Tracks `NSScreen.screens` changes         |
+| **AppDependencies**       | Root DI container for services and stores            | "Global service locator or singleton list"     | `AppDependencies`       | @MainActor DI container                   |
 
 ## Where to Look
 

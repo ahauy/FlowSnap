@@ -10,13 +10,16 @@ public struct SnapEngine: Sendable {
 
     private let layoutEngine: LayoutCalculating
     private let windowRegistry: WindowRegistry
+    private let displayManager: (any DisplayManaging)?
 
     public init(
         layoutEngine: LayoutCalculating = LayoutEngine(),
-        windowRegistry: WindowRegistry
+        windowRegistry: WindowRegistry,
+        displayManager: (any DisplayManaging)? = nil
     ) {
         self.layoutEngine = layoutEngine
         self.windowRegistry = windowRegistry
+        self.displayManager = displayManager
     }
 
     /// Calculate the concrete frame for a target without applying it to the window.
@@ -59,6 +62,74 @@ public struct SnapEngine: Sendable {
         gap: CGFloat = 0
     ) async -> CGRect? {
         await calculateFrame(for: target, window: window, availableFrame: display.visibleFrame, gap: gap)
+    }
+
+    // MARK: - Multi-Monitor & AX Coordinate Inversion (US-SNAP-003)
+
+    /// Calculates the target frame in Accessibility API coordinates on the specified display.
+    public func calculateAXFrame(
+        for target: SnapTarget,
+        window: ManagedWindow,
+        on display: Display,
+        primaryScreenHeight: CGFloat,
+        gap: CGFloat = 0
+    ) async -> CGRect? {
+        guard let appKitFrame = await frame(for: target, window: window, on: display, gap: gap) else {
+            return nil
+        }
+        return CoordinateTransformer.toAX(rect: appKitFrame, primaryScreenHeight: primaryScreenHeight)
+    }
+
+    /// Automatically resolves the target display and calculates target frame in Accessibility API coordinates.
+    public func calculateAXFrame(
+        for target: SnapTarget,
+        window: ManagedWindow,
+        displayManager: (any DisplayManaging)? = nil,
+        cursorPoint: CGPoint? = nil,
+        gap: CGFloat = 0
+    ) async -> CGRect? {
+        guard let manager = displayManager ?? self.displayManager else {
+            return nil
+        }
+
+        guard let targetDisplay = await manager.display(for: window.frame, cursorPoint: cursorPoint) else {
+            return nil
+        }
+
+        let primaryHeight = await manager.primaryScreenHeight
+        return await calculateAXFrame(
+            for: target,
+            window: window,
+            on: targetDisplay,
+            primaryScreenHeight: primaryHeight,
+            gap: gap
+        )
+    }
+
+    /// Moves a window to the next display in sequence, preserving its relative layout target.
+    public func calculateFrameOnNextDisplay(
+        for target: SnapTarget,
+        window: ManagedWindow,
+        displayManager: (any DisplayManaging)? = nil,
+        gap: CGFloat = 0
+    ) async -> (frame: CGRect, display: Display)? {
+        guard let manager = displayManager ?? self.displayManager else {
+            return nil
+        }
+
+        guard let currentDisplay = await manager.display(for: window.frame, cursorPoint: nil) else {
+            return nil
+        }
+
+        guard let nextDisplay = await manager.nextDisplay(after: currentDisplay) else {
+            return nil
+        }
+
+        guard let targetFrame = await frame(for: target, window: window, on: nextDisplay, gap: gap) else {
+            return nil
+        }
+
+        return (targetFrame, nextDisplay)
     }
 
     // MARK: - Private Anchoring Helper (BR-LAYOUT-005)
