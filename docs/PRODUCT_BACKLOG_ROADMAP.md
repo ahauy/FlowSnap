@@ -249,7 +249,7 @@ _Mục tiêu: Xây dựng bộ não tính toán hình học bố cục (Layout E
 
 _Mục tiêu: Giải quyết bài toán hóc búa về sai lệch hệ tọa độ giữa macOS AppKit và Accessibility API trên thiết lập đa màn hình._
 
-- [ ] **US-SNAP-003: Nhận diện & Thao tác Cửa sổ trên Đa Màn hình (Display-Aware Multi-Monitor Manipulation)**
+- [x] **US-SNAP-003: Nhận diện & Thao tác Cửa sổ trên Đa Màn hình (Display-Aware Multi-Monitor Manipulation)**
   - **Slug:** `display-aware-manipulation`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -258,16 +258,16 @@ _Mục tiêu: Giải quyết bài toán hóc búa về sai lệch hệ tọa đ�
   - **Blocks:** `US-SNAP-004`
   - **Mô tả:** Xác định chính xác màn hình đang chứa con trỏ/cửa sổ mục tiêu trên thiết lập đa màn hình (kể cả khác độ phân giải/Retina scale) và thực thi di chuyển/resize cửa sổ mượt mà.
   - **Acceptance Criteria (AC):**
-    - [ ] `DisplayManager` xác định đúng màn hình (`Display`) chứa trọng tâm của cửa sổ đang active.
-    - [ ] Thực hiện chuyển đổi hệ tọa độ ngược: AppKit (gốc tọa độ dưới-trái) sang Accessibility API (gốc tọa độ trên-trái của Primary Screen) chính xác 100%: $Y_{AX} = H_{Primary} - (Y_{AppKit} + Height)$.
-    - [ ] Hỗ trợ đa màn hình đặt cạnh nhau theo chiều ngang, chiều dọc hoặc xếp chéo với Retina scaling khác nhau (1x vs 2x).
-    - [ ] Lắng nghe sự kiện cắm/rút màn hình (`NSApplication.didChangeScreenParametersNotification`) và tự động cập nhật danh sách màn hình khả dụng.
+    - [x] `DisplayManager` xác định đúng màn hình (`Display`) chứa trọng tâm của cửa sổ đang active.
+    - [x] Thực hiện chuyển đổi hệ tọa độ ngược: AppKit (gốc tọa độ dưới-trái) sang Accessibility API (gốc tọa độ trên-trái của Primary Screen) chính xác 100%: $Y_{AX} = H_{Primary} - (Y_{AppKit} + Height)$.
+    - [x] Hỗ trợ đa màn hình đặt cạnh nhau theo chiều ngang, chiều dọc hoặc xếp chéo với Retina scaling khác nhau (1x vs 2x).
+    - [x] Lắng nghe sự kiện cắm/rút màn hình (`NSApplication.didChangeScreenParametersNotification`) và tự động cập nhật danh sách màn hình khả dụng.
   - **Tasks:**
-    - [ ] `Domain`: Định nghĩa `Display.swift` chứa `id: CGDirectDisplayID`, `bounds: CGRect`, `visibleFrame: CGRect`, `isPrimary: Bool`, `scaleFactor: CGFloat`.
-    - [ ] `Infrastructure`: Hiện thực hóa `DisplayManager.swift` đọc dữ liệu từ `NSScreen.screens` và mapping sang Domain model.
-    - [ ] `Core`: Hàm tiện ích chuyển đổi tọa độ `CoordinateTransformer.toAXCoordinates(from:onPrimary:)`.
-    - [ ] `Core`: Cập nhật `SnapEngine` sử dụng `DisplayManager` để áp dụng snap trên đúng màn hình mục tiêu.
-    - [ ] `Tests`: Test suite giả lập cấu hình 2 màn hình (Primary 1440x900, Secondary 4K bên phải/trên đỉnh).
+    - [x] `Domain`: Định nghĩa `Display.swift` chứa `id: CGDirectDisplayID`, `bounds: CGRect`, `visibleFrame: CGRect`, `isPrimary: Bool`, `scaleFactor: CGFloat`.
+    - [x] `Infrastructure`: Hiện thực hóa `DisplayManager.swift` đọc dữ liệu từ `NSScreen.screens` và mapping sang Domain model.
+    - [x] `Core`: Hàm tiện ích chuyển đổi tọa độ `CoordinateTransformer.toAXCoordinates(from:onPrimary:)`.
+    - [x] `Core`: Cập nhật `SnapEngine` sử dụng `DisplayManager` để áp dụng snap trên đúng màn hình mục tiêu.
+    - [x] `Tests`: Test suite giả lập cấu hình 2 màn hình (Primary 1440x900, Secondary 4K bên phải/trên đỉnh).
   - **Deliverables khi [x]:**
     - `.specify/features/display-aware-manipulation/baseline.md` (SIGNED-OFF)
     - `docs/features/display-aware-manipulation/README.md`
@@ -605,11 +605,11 @@ _Mục tiêu: Trao toàn quyền tùy biến hành vi cho người dùng — quy
   └── Code-Review-Graph Local MCP AST indexing (48 files, 150 nodes)
 
 [ Sprint 1 - Core Snap Engine & Global Hotkeys (MVP 1) ]  ──► [ P0 NEXT 🚀 ]
-  ├── US-SNAP-001: Accessibility Permission & Focused Window Discovery
-  ├── US-SNAP-002: Core Layout Calculation & Basic Snap Engine (Halves, Quarters)
-  ├── US-SNAP-003: Multi-Monitor & Coordinate Inversion Manipulation
-  ├── US-SNAP-004: Carbon Global Hotkeys & Command Dispatcher (< 50ms)
-  └── US-SNAP-005: Menu Bar Status Item & Quick Snap Popover
+  ├── [x] US-SNAP-001: Accessibility Permission & Focused Window Discovery
+  ├── [x] US-SNAP-002: Core Layout Calculation & Basic Snap Engine (Halves, Quarters)
+  ├── [x] US-SNAP-003: Multi-Monitor & Coordinate Inversion Manipulation
+  ├── [ ] US-SNAP-004: Carbon Global Hotkeys & Command Dispatcher (< 50ms)
+  └── [ ] US-SNAP-005: Menu Bar Status Item & Quick Snap Popover
 
 [ Sprint 2 - Interactive Drag Experience & Custom Layouts (MVP 2) ]
   ├── US-SNAP-006: Edge Drag-to-Snap & HUD Snap Preview (Liquid Glass Overlay)
