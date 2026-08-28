@@ -10,8 +10,9 @@ struct FlowSnapApp: App {
     var body: some Scene {
         // Menu bar app — no main window
         MenuBarExtra("FlowSnap", systemImage: "rectangle.split.2x1") {
-            MenuBarView()
+            MenuBarView(viewModel: appDelegate.dependencies.menuBarViewModel)
         }
+        .menuBarExtraStyle(.window)
 
         Settings {
             SettingsView()
