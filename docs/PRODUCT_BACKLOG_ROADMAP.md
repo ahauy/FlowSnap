@@ -371,7 +371,7 @@ _Mục tiêu: Mang lại trải nghiệm kéo thả trực quan mượt mà vớ
 
 _Mục tiêu: Đưa tính năng được yêu thích nhất của Windows 11 lên Mac — kéo cửa sổ lên cạnh trên để mở khay chọn bố cục nhiều ô trực quan._
 
-- [ ] **US-SNAP-007: Snap Layout Picker Cạnh Trên Phong cách Windows 11 (Top-Edge Snap Layout Picker)**
+- [x] **US-SNAP-007: Snap Layout Picker Cạnh Trên Phong cách Windows 11 (Top-Edge Snap Layout Picker)**
   - **Slug:** `top-edge-layout-picker`
   - **Effort:** L
   - **Context-budget:** multi-session
@@ -380,15 +380,15 @@ _Mục tiêu: Đưa tính năng được yêu thích nhất của Windows 11 lê
   - **Blocks:** `US-SNAP-008`
   - **Mô tả:** Khi kéo cửa sổ chạm mép trên cùng màn hình, hiển thị popup Layout Picker với nhiều ô chia (50/50, 70/30, 3 cột, 4 góc) cho phép thả trực tiếp vào ô mong muốn.
   - **Acceptance Criteria (AC):**
-    - [ ] Khi con trỏ kéo cửa sổ lên dải sát mép trên cùng (Top Edge), xuất hiện menu overlay `SnapLayoutPickerPanel` trượt xuống nhẹ nhàng.
-    - [ ] Khay picker hiển thị các mẫu bố cục: 2 cột (50/50), 2 cột bất đối xứng (70/30), 3 cột (A/B/C), và 4 góc (Top-Left, Top-Right, Bottom-Left, Bottom-Right).
-    - [ ] Highlight ô cụ thể khi con trỏ di chuyển vào ô đó bên trong picker; hiển thị preview mờ toàn màn hình tương ứng với ô đang chọn.
-    - [ ] Thả chuột trong ô nào thì cửa sổ snap chính xác vào ô đó; nếu kéo chuột ra khỏi khay picker thì picker thu gọn biến mất.
+    - [x] Khi con trỏ kéo cửa sổ lên dải sát mép trên cùng (Top Edge), xuất hiện menu overlay `SnapLayoutPickerPanel` trượt xuống nhẹ nhàng.
+    - [x] Khay picker hiển thị các mẫu bố cục: 2 cột (50/50), 2 cột bất đối xứng (70/30), 3 cột (A/B/C), và 4 góc (Top-Left, Top-Right, Bottom-Left, Bottom-Right).
+    - [x] Highlight ô cụ thể khi con trỏ di chuyển vào ô đó bên trong picker; hiển thị preview mờ toàn màn hình tương ứng với ô đang chọn.
+    - [x] Thả chuột trong ô nào thì cửa sổ snap chính xác vào ô đó; nếu kéo chuột ra khỏi khay picker thì picker thu gọn biến mất.
   - **Tasks:**
-    - [ ] `UI`: Thiết kế `SnapLayoutPickerView.swift` bằng SwiftUI với các khối layout card tương tác, animation phản hồi nhanh.
-    - [ ] `UI`: Cài đặt `SnapLayoutPickerPanel.swift` (NSPanel) định vị chính xác ở giữa cạnh trên của màn hình đang thao tác.
-    - [ ] `Core`: Bổ sung logic hit-testing trong `SnapEngine` để nhận biết zone được chọn trong khay picker.
-    - [ ] `Tests`: Kiểm thử zone hit-testing và animation state machine.
+    - [x] `UI`: Thiết kế `SnapLayoutPickerView.swift` bằng SwiftUI với các khối layout card tương tác, animation phản hồi nhanh.
+    - [x] `UI`: Cài đặt `SnapLayoutPickerPanel.swift` (NSPanel) định vị chính xác ở giữa cạnh trên của màn hình đang thao tác.
+    - [x] `Core`: Bổ sung logic hit-testing trong `SnapEngine` để nhận biết zone được chọn trong khay picker.
+    - [x] `Tests`: Kiểm thử zone hit-testing và animation state machine.
   - **Deliverables khi [x]:**
     - `.specify/features/top-edge-layout-picker/baseline.md` (SIGNED-OFF)
     - `docs/features/top-edge-layout-picker/README.md`

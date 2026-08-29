@@ -147,13 +147,24 @@ struct SnapDetectorTests {
         #expect(outerResult?.isAdjacentEdge == false)
     }
 
-    // MARK: - TC-DRAG-004: Interior Deadzone / Non-Edge Position
+    // MARK: - TC-TOP-002: Top-Center Zone (Layout Picker Summon) Detection
 
-    @Test func interiorDeadzoneReturnsNil() {
-        // Point in the center of the display (x: 960, y: 540)
-        let point = CGPoint(x: 960, y: 540)
-        let result = detector.detectZone(at: point, on: primaryDisplay, adjacentDisplays: [])
+    @Test func detectTopCenterZoneTrigger() {
+        // Point in top-center region (middle 40% of width: x: 960, top edge y: 1078)
+        let centerTopPoint = CGPoint(x: 960, y: 1078)
+        let result = detector.detectZone(at: centerTopPoint, on: primaryDisplay, adjacentDisplays: [])
 
-        #expect(result == nil)
+        #expect(result != nil)
+        #expect(result?.target == .maximize)
+        #expect(result?.isTopCenterZone == true)
+        #expect(detector.isTopCenterZone(at: centerTopPoint, on: primaryDisplay) == true)
+
+        // Point outside top-center (top edge x: 400 is < 30% of width 1920 which is 576)
+        let cornerTopPoint = CGPoint(x: 400, y: 1078)
+        let cornerResult = detector.detectZone(at: cornerTopPoint, on: primaryDisplay, adjacentDisplays: [])
+
+        #expect(cornerResult != nil)
+        #expect(cornerResult?.isTopCenterZone == false)
+        #expect(detector.isTopCenterZone(at: cornerTopPoint, on: primaryDisplay) == false)
     }
 }

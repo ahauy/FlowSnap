@@ -8,4 +8,7 @@ public protocol SnapDetecting: Sendable {
         on display: Display,
         adjacentDisplays: [Display]
     ) -> SnapDetectionResult?
+
+    /// Checks whether the cursor is in the top-center trigger zone (middle 40% width, top edge).
+    func isTopCenterZone(at point: CGPoint, on display: Display) -> Bool
 }

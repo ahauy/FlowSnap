@@ -42,10 +42,12 @@ public final class AppDependencies {
     public lazy var mouseDragTracker: MouseDragTracking = MouseDragTracker()
     public lazy var snapDetector: SnapDetecting = SnapDetector()
     public lazy var snapPreviewManager: SnapPreviewManaging = SnapPreviewPanel.shared
+    public lazy var layoutPickerManager: SnapLayoutPickerManaging = SnapLayoutPickerManager.shared
     public lazy var dragToSnapCoordinator: DragToSnapCoordinator = DragToSnapCoordinator(
         mouseTracker: mouseDragTracker,
         detector: snapDetector,
         previewManager: snapPreviewManager,
+        layoutPickerManager: layoutPickerManager,
         commandDispatcher: commandDispatcher,
         displayManager: displayManager,
         accessibilityService: accessibilityService

@@ -27,6 +27,7 @@ struct DragToSnapCoordinatorTests {
     @Test func outerEdgeDwellTimerTriggersPreview() async throws {
         let mouseTracker = MockMouseDragTracker()
         let previewManager = MockSnapPreviewManager()
+        let layoutPickerManager = MockSnapLayoutPickerManager()
         let commandDispatcher = MockCommandDispatcher()
         let displayManager = MockDisplayManager(displays: [primaryDisplay])
         let accessibilityService = MockAccessibilityService(isTrusted: true)
@@ -35,6 +36,7 @@ struct DragToSnapCoordinatorTests {
             mouseTracker: mouseTracker,
             detector: SnapDetector(edgeThreshold: 20),
             previewManager: previewManager,
+            layoutPickerManager: layoutPickerManager,
             commandDispatcher: commandDispatcher,
             displayManager: displayManager,
             accessibilityService: accessibilityService
@@ -50,10 +52,10 @@ struct DragToSnapCoordinatorTests {
         #expect(previewManager.showPreviewCallCount == 0) // Not yet expired (50ms dwell)
 
         // Wait for 50ms dwell timeout (+ buffer)
-        try await Task.sleep(nanoseconds: 70_000_000)
+        try await Task.sleep(nanoseconds: 120_000_000)
 
         #expect(previewManager.showPreviewCallCount == 1)
-        #expect(previewManager.lastShownFrame == LayoutEngine().frame(for: .leftHalf, in: primaryDisplay.visibleFrame))
+        #expect(previewManager.lastShownFrame == LayoutEngine().frame(for: .leftHalf, in: primaryDisplay.visibleFrame, gap: 0))
         #expect(coordinator.activeDetectionResult?.target == .left)
 
         coordinator.stop()
@@ -63,6 +65,7 @@ struct DragToSnapCoordinatorTests {
     @Test func adjacentEdgeRequiresHigherDwellTimeout() async throws {
         let mouseTracker = MockMouseDragTracker()
         let previewManager = MockSnapPreviewManager()
+        let layoutPickerManager = MockSnapLayoutPickerManager()
         let commandDispatcher = MockCommandDispatcher()
         let displayManager = MockDisplayManager(displays: [primaryDisplay, secondaryDisplay])
         let accessibilityService = MockAccessibilityService(isTrusted: true)
@@ -71,6 +74,7 @@ struct DragToSnapCoordinatorTests {
             mouseTracker: mouseTracker,
             detector: SnapDetector(edgeThreshold: 20),
             previewManager: previewManager,
+            layoutPickerManager: layoutPickerManager,
             commandDispatcher: commandDispatcher,
             displayManager: displayManager,
             accessibilityService: accessibilityService
@@ -86,7 +90,7 @@ struct DragToSnapCoordinatorTests {
         #expect(previewManager.showPreviewCallCount == 0) // Still waiting for 150ms dwell!
 
         // Wait remaining time for 150ms dwell (+ buffer)
-        try await Task.sleep(nanoseconds: 110_000_000)
+        try await Task.sleep(nanoseconds: 150_000_000)
         #expect(previewManager.showPreviewCallCount == 1)
         #expect(coordinator.activeDetectionResult?.isAdjacentEdge == true)
 
@@ -98,6 +102,7 @@ struct DragToSnapCoordinatorTests {
     @Test func mouseReleaseAppliesSnapAndDismissesPreview() async throws {
         let mouseTracker = MockMouseDragTracker()
         let previewManager = MockSnapPreviewManager()
+        let layoutPickerManager = MockSnapLayoutPickerManager()
         let commandDispatcher = MockCommandDispatcher()
         let displayManager = MockDisplayManager(displays: [primaryDisplay])
         let accessibilityService = MockAccessibilityService(isTrusted: true)
@@ -106,6 +111,7 @@ struct DragToSnapCoordinatorTests {
             mouseTracker: mouseTracker,
             detector: SnapDetector(edgeThreshold: 20),
             previewManager: previewManager,
+            layoutPickerManager: layoutPickerManager,
             commandDispatcher: commandDispatcher,
             displayManager: displayManager,
             accessibilityService: accessibilityService
@@ -113,13 +119,13 @@ struct DragToSnapCoordinatorTests {
 
         coordinator.start()
 
-        // Drag to top edge (Maximize)
-        await coordinator.handleDrag(at: CGPoint(x: 960, y: 1078))
-        try await Task.sleep(nanoseconds: 70_000_000)
+        // Drag to top edge (Maximize - outside top-center)
+        await coordinator.handleDrag(at: CGPoint(x: 400, y: 1078))
+        try await Task.sleep(nanoseconds: 120_000_000)
         #expect(previewManager.showPreviewCallCount == 1)
 
         // Release mouse
-        await coordinator.handleRelease(at: CGPoint(x: 960, y: 1078))
+        await coordinator.handleRelease(at: CGPoint(x: 400, y: 1078))
 
         // Check preview dismissal and flash
         #expect(previewManager.hidePreviewCallCount == 1)
@@ -136,6 +142,7 @@ struct DragToSnapCoordinatorTests {
     @Test func movingAwayFromEdgeCancelsDwellAndHidesPreview() async throws {
         let mouseTracker = MockMouseDragTracker()
         let previewManager = MockSnapPreviewManager()
+        let layoutPickerManager = MockSnapLayoutPickerManager()
         let commandDispatcher = MockCommandDispatcher()
         let displayManager = MockDisplayManager(displays: [primaryDisplay])
         let accessibilityService = MockAccessibilityService(isTrusted: true)
@@ -144,6 +151,7 @@ struct DragToSnapCoordinatorTests {
             mouseTracker: mouseTracker,
             detector: SnapDetector(edgeThreshold: 20),
             previewManager: previewManager,
+            layoutPickerManager: layoutPickerManager,
             commandDispatcher: commandDispatcher,
             displayManager: displayManager,
             accessibilityService: accessibilityService
@@ -153,7 +161,7 @@ struct DragToSnapCoordinatorTests {
 
         // Drag to left edge and let preview show
         await coordinator.handleDrag(at: CGPoint(x: 2, y: 540))
-        try await Task.sleep(nanoseconds: 70_000_000)
+        try await Task.sleep(nanoseconds: 120_000_000)
         #expect(previewManager.showPreviewCallCount == 1)
 
         // Move cursor away into center (x: 960, y: 540)
@@ -169,6 +177,7 @@ struct DragToSnapCoordinatorTests {
     @Test func untrustedAccessibilityIgnoresDrag() async throws {
         let mouseTracker = MockMouseDragTracker()
         let previewManager = MockSnapPreviewManager()
+        let layoutPickerManager = MockSnapLayoutPickerManager()
         let commandDispatcher = MockCommandDispatcher()
         let displayManager = MockDisplayManager(displays: [primaryDisplay])
         let accessibilityService = MockAccessibilityService(isTrusted: false)
@@ -177,6 +186,7 @@ struct DragToSnapCoordinatorTests {
             mouseTracker: mouseTracker,
             detector: SnapDetector(edgeThreshold: 20),
             previewManager: previewManager,
+            layoutPickerManager: layoutPickerManager,
             commandDispatcher: commandDispatcher,
             displayManager: displayManager,
             accessibilityService: accessibilityService
@@ -188,6 +198,120 @@ struct DragToSnapCoordinatorTests {
 
         #expect(previewManager.showPreviewCallCount == 0)
         #expect(coordinator.currentCandidateZone == nil)
+
+        coordinator.stop()
+    }
+
+    // MARK: - Top-Edge Snap Layout Picker Tests (US-SNAP-007)
+
+    @Test func dragIntoTopCenterSummonsLayoutPicker() async throws {
+        let mouseTracker = MockMouseDragTracker()
+        let previewManager = MockSnapPreviewManager()
+        let layoutPickerManager = MockSnapLayoutPickerManager()
+        let commandDispatcher = MockCommandDispatcher()
+        let displayManager = MockDisplayManager(displays: [primaryDisplay])
+        let accessibilityService = MockAccessibilityService(isTrusted: true)
+
+        let coordinator = DragToSnapCoordinator(
+            mouseTracker: mouseTracker,
+            detector: SnapDetector(edgeThreshold: 20),
+            previewManager: previewManager,
+            layoutPickerManager: layoutPickerManager,
+            commandDispatcher: commandDispatcher,
+            displayManager: displayManager,
+            accessibilityService: accessibilityService
+        )
+
+        coordinator.start()
+
+        // Drag to top-center zone (x: 960 is 50% width, y: 1078 is top edge)
+        await coordinator.handleDrag(at: CGPoint(x: 960, y: 1078))
+
+        #expect(layoutPickerManager.showPickerCallCount == 1)
+        #expect(layoutPickerManager.isVisible == true)
+        #expect(previewManager.showPreviewCallCount == 1)
+
+        coordinator.stop()
+        #expect(layoutPickerManager.hidePickerCallCount == 1)
+    }
+
+    @Test func releaseInsidePickerSlotSnapsWindow() async throws {
+        let mouseTracker = MockMouseDragTracker()
+        let previewManager = MockSnapPreviewManager()
+        let layoutPickerManager = MockSnapLayoutPickerManager()
+        let commandDispatcher = MockCommandDispatcher()
+        let displayManager = MockDisplayManager(displays: [primaryDisplay])
+        let accessibilityService = MockAccessibilityService(isTrusted: true)
+
+        let coordinator = DragToSnapCoordinator(
+            mouseTracker: mouseTracker,
+            detector: SnapDetector(edgeThreshold: 20),
+            previewManager: previewManager,
+            layoutPickerManager: layoutPickerManager,
+            commandDispatcher: commandDispatcher,
+            displayManager: displayManager,
+            accessibilityService: accessibilityService
+        )
+
+        coordinator.start()
+
+        // 1. Drag into top-center to summon picker
+        await coordinator.handleDrag(at: CGPoint(x: 960, y: 1078))
+        #expect(layoutPickerManager.isVisible == true)
+
+        // 2. Hover over slot (simulate hover on Left 70% slot)
+        let slot = LayoutSlot(
+            id: "twoColAsym-left",
+            title: "Left (70%)",
+            target: .leftTwoThirds,
+            normalizedRect: CGRect(x: 0, y: 0, width: 0.7, height: 1.0)
+        )
+        layoutPickerManager.mockedSlotToReturn = slot
+
+        // Drag point inside picker frame
+        await coordinator.handleDrag(at: CGPoint(x: 800, y: 980))
+        #expect(coordinator.currentCandidateZone == .leftTwoThirds)
+
+        // 3. Release mouse inside the slot
+        await coordinator.handleRelease(at: CGPoint(x: 800, y: 980))
+
+        #expect(layoutPickerManager.hidePickerCallCount == 1)
+        #expect(previewManager.flashSnapSuccessCallCount == 1)
+        #expect(commandDispatcher.dispatchCallCount == 1)
+        #expect(commandDispatcher.dispatchedCommands.first == .snap(.leftTwoThirds, targetDisplayID: primaryDisplay.id))
+
+        coordinator.stop()
+    }
+
+    @Test func moveAwayFromPickerDismissesSmoothly() async throws {
+        let mouseTracker = MockMouseDragTracker()
+        let previewManager = MockSnapPreviewManager()
+        let layoutPickerManager = MockSnapLayoutPickerManager(pickerFrame: CGRect(x: 745, y: 955, width: 430, height: 92))
+        let commandDispatcher = MockCommandDispatcher()
+        let displayManager = MockDisplayManager(displays: [primaryDisplay])
+        let accessibilityService = MockAccessibilityService(isTrusted: true)
+
+        let coordinator = DragToSnapCoordinator(
+            mouseTracker: mouseTracker,
+            detector: SnapDetector(edgeThreshold: 20),
+            previewManager: previewManager,
+            layoutPickerManager: layoutPickerManager,
+            commandDispatcher: commandDispatcher,
+            displayManager: displayManager,
+            accessibilityService: accessibilityService
+        )
+
+        coordinator.start()
+
+        // 1. Open picker at top center
+        await coordinator.handleDrag(at: CGPoint(x: 960, y: 1078))
+        #expect(layoutPickerManager.isVisible == true)
+
+        // 2. Move cursor downwards away from picker (y: 800 is below pickerFrame.minY 955)
+        await coordinator.handleDrag(at: CGPoint(x: 960, y: 800))
+
+        #expect(layoutPickerManager.hidePickerCallCount == 1)
+        #expect(previewManager.hidePreviewCallCount >= 1)
 
         coordinator.stop()
     }

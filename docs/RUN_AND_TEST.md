@@ -51,3 +51,10 @@ xcodebuild -project FlowSnap.xcodeproj -scheme FlowSnapLab -destination 'platfor
 ## 4. Quy Ước AI Agent (Agent Delivery Convention)
 
 > ⭐️ **Quy tắc bắt buộc:** Mỗi khi AI hoàn thành một User Story / Tính năng mới (kết thúc Phase 6 và cập nhật tài liệu), AI **phải tự động thực thi lệnh mở ứng dụng** `FlowSnapLab.app` để người dùng có thể kiểm thử trực tiếp trên máy thật ngay lập tức.
+
+
+killall FlowSnap FlowSnapLab 2>/dev/null || true
+tccutil reset Accessibility com.flowsnap.lab
+tccutil reset Accessibility com.flowsnap.app
+open ~/Library/Developer/Xcode/DerivedData/FlowSnap-*/Build/Products/Debug/FlowSnapLab.app
+open ~/Library/Developer/Xcode/DerivedData/FlowSnap-*/Build/Products/Debug/FlowSnap.app
