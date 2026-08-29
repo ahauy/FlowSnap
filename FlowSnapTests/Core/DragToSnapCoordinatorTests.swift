@@ -33,7 +33,7 @@ struct DragToSnapCoordinatorTests {
 
         let coordinator = DragToSnapCoordinator(
             mouseTracker: mouseTracker,
-            detector: SnapDetector(edgeThreshold: 4),
+            detector: SnapDetector(edgeThreshold: 20),
             previewManager: previewManager,
             commandDispatcher: commandDispatcher,
             displayManager: displayManager,
@@ -47,10 +47,10 @@ struct DragToSnapCoordinatorTests {
         await coordinator.handleDrag(at: CGPoint(x: 2, y: 540))
 
         #expect(coordinator.currentCandidateZone == .left)
-        #expect(previewManager.showPreviewCallCount == 0) // Not yet expired (100ms dwell)
+        #expect(previewManager.showPreviewCallCount == 0) // Not yet expired (50ms dwell)
 
-        // Wait for 100ms dwell timeout (+ buffer)
-        try await Task.sleep(nanoseconds: 130_000_000)
+        // Wait for 50ms dwell timeout (+ buffer)
+        try await Task.sleep(nanoseconds: 70_000_000)
 
         #expect(previewManager.showPreviewCallCount == 1)
         #expect(previewManager.lastShownFrame == LayoutEngine().frame(for: .leftHalf, in: primaryDisplay.visibleFrame))
@@ -69,7 +69,7 @@ struct DragToSnapCoordinatorTests {
 
         let coordinator = DragToSnapCoordinator(
             mouseTracker: mouseTracker,
-            detector: SnapDetector(edgeThreshold: 4),
+            detector: SnapDetector(edgeThreshold: 20),
             previewManager: previewManager,
             commandDispatcher: commandDispatcher,
             displayManager: displayManager,
@@ -81,12 +81,12 @@ struct DragToSnapCoordinatorTests {
         // Drag to right edge of primary display (x: 1918) which is adjacent to secondary
         await coordinator.handleDrag(at: CGPoint(x: 1918, y: 540))
 
-        // Wait 120ms (which would have fired on outer edge, but NOT on adjacent edge)
-        try await Task.sleep(nanoseconds: 120_000_000)
-        #expect(previewManager.showPreviewCallCount == 0) // Still waiting for 250ms dwell!
+        // Wait 70ms (which would have fired on outer edge, but NOT on adjacent edge)
+        try await Task.sleep(nanoseconds: 70_000_000)
+        #expect(previewManager.showPreviewCallCount == 0) // Still waiting for 150ms dwell!
 
-        // Wait remaining time for 250ms dwell (+ buffer)
-        try await Task.sleep(nanoseconds: 160_000_000)
+        // Wait remaining time for 150ms dwell (+ buffer)
+        try await Task.sleep(nanoseconds: 110_000_000)
         #expect(previewManager.showPreviewCallCount == 1)
         #expect(coordinator.activeDetectionResult?.isAdjacentEdge == true)
 
@@ -104,7 +104,7 @@ struct DragToSnapCoordinatorTests {
 
         let coordinator = DragToSnapCoordinator(
             mouseTracker: mouseTracker,
-            detector: SnapDetector(edgeThreshold: 4),
+            detector: SnapDetector(edgeThreshold: 20),
             previewManager: previewManager,
             commandDispatcher: commandDispatcher,
             displayManager: displayManager,
@@ -115,7 +115,7 @@ struct DragToSnapCoordinatorTests {
 
         // Drag to top edge (Maximize)
         await coordinator.handleDrag(at: CGPoint(x: 960, y: 1078))
-        try await Task.sleep(nanoseconds: 130_000_000)
+        try await Task.sleep(nanoseconds: 70_000_000)
         #expect(previewManager.showPreviewCallCount == 1)
 
         // Release mouse
@@ -126,7 +126,7 @@ struct DragToSnapCoordinatorTests {
         #expect(previewManager.flashSnapSuccessCallCount == 1)
 
         #expect(commandDispatcher.dispatchCallCount == 1)
-        #expect(commandDispatcher.dispatchedCommands.first == .snap(.maximize))
+        #expect(commandDispatcher.dispatchedCommands.first == .snap(.maximize, targetDisplayID: primaryDisplay.id))
 
         coordinator.stop()
     }
@@ -142,7 +142,7 @@ struct DragToSnapCoordinatorTests {
 
         let coordinator = DragToSnapCoordinator(
             mouseTracker: mouseTracker,
-            detector: SnapDetector(edgeThreshold: 4),
+            detector: SnapDetector(edgeThreshold: 20),
             previewManager: previewManager,
             commandDispatcher: commandDispatcher,
             displayManager: displayManager,
@@ -153,7 +153,7 @@ struct DragToSnapCoordinatorTests {
 
         // Drag to left edge and let preview show
         await coordinator.handleDrag(at: CGPoint(x: 2, y: 540))
-        try await Task.sleep(nanoseconds: 130_000_000)
+        try await Task.sleep(nanoseconds: 70_000_000)
         #expect(previewManager.showPreviewCallCount == 1)
 
         // Move cursor away into center (x: 960, y: 540)
@@ -175,7 +175,7 @@ struct DragToSnapCoordinatorTests {
 
         let coordinator = DragToSnapCoordinator(
             mouseTracker: mouseTracker,
-            detector: SnapDetector(edgeThreshold: 4),
+            detector: SnapDetector(edgeThreshold: 20),
             previewManager: previewManager,
             commandDispatcher: commandDispatcher,
             displayManager: displayManager,
@@ -184,7 +184,7 @@ struct DragToSnapCoordinatorTests {
 
         coordinator.start()
         await coordinator.handleDrag(at: CGPoint(x: 2, y: 540))
-        try await Task.sleep(nanoseconds: 130_000_000)
+        try await Task.sleep(nanoseconds: 70_000_000)
 
         #expect(previewManager.showPreviewCallCount == 0)
         #expect(coordinator.currentCandidateZone == nil)

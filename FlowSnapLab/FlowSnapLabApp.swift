@@ -417,7 +417,7 @@ struct FlowSnapLabView: View {
 
     private func commandTitle(_ command: WindowCommand) -> String {
         switch command {
-        case .snap(let target):
+        case .snap(let target, _):
             switch target {
             case .zone(let z): return z.rawValue
             case .restore: return "restore"

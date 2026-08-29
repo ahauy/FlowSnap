@@ -79,8 +79,8 @@ public final class CommandDispatcher: CommandDispatching {
     @discardableResult
     private func execute(_ command: WindowCommand) async throws -> Bool {
         switch command {
-        case .snap(let target):
-            return try await executeSnap(target)
+        case .snap(let target, let targetDisplayID):
+            return try await executeSnap(target, targetDisplayID: targetDisplayID)
 
         case .maximize:
             return try await executeSnap(.zone(.maximize))
@@ -104,15 +104,23 @@ public final class CommandDispatcher: CommandDispatching {
         }
     }
 
-    private func executeSnap(_ target: SnapTarget) async throws -> Bool {
+    private func executeSnap(_ target: SnapTarget, targetDisplayID: CGDirectDisplayID? = nil) async throws -> Bool {
         // BR-HOTKEY-006: Guard against nil focused window
         guard let window = await windowManager.focusedWindow() else {
             dispatcherLogger.debug("No active focused window found. Aborting snap command.")
             return false
         }
 
-        // Resolve active target display
-        guard let display = await displayManager.display(for: window.frame, cursorPoint: nil) else {
+        // Resolve active target display (Target-Lock with fallback)
+        let display: Display?
+        if let targetDisplayID = targetDisplayID,
+           let matched = await displayManager.displays.first(where: { $0.id == targetDisplayID }) {
+            display = matched
+        } else {
+            display = await displayManager.display(for: window.frame, cursorPoint: nil)
+        }
+
+        guard let targetDisplay = display else {
             dispatcherLogger.warning("Unable to resolve display for window \(window.id).")
             return false
         }
@@ -123,7 +131,7 @@ public final class CommandDispatcher: CommandDispatching {
         guard let axFrame = await snapEngine.calculateAXFrame(
             for: target,
             window: window,
-            on: display,
+            on: targetDisplay,
             primaryScreenHeight: primaryHeight
         ) else {
             dispatcherLogger.debug("SnapEngine produced nil frame (e.g. restore with no cached frame).")

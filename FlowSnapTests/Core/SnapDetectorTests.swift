@@ -8,7 +8,7 @@ import Testing
 /// Traces to US-SNAP-006, TC-DRAG-001 through TC-DRAG-004.
 struct SnapDetectorTests {
 
-    let detector = SnapDetector(edgeThreshold: 4, cornerRatio: 0.20)
+    let detector = SnapDetector(edgeThreshold: 20, cornerRatio: 0.20)
     let layoutEngine = LayoutEngine()
 
     let primaryDisplay = Display(

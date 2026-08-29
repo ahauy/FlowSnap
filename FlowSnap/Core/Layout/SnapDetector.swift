@@ -7,7 +7,7 @@ import Foundation
 /// Conforms to `SnapDetecting` (Sendable). See spec §30, §31.
 public struct SnapDetector: SnapDetecting, Sendable {
 
-    /// Distance from screen boundary (in points) that activates snap edge triggers (default: 4px).
+    /// Distance from screen boundary (in points) that activates snap edge triggers (default: 20px).
     public let edgeThreshold: CGFloat
 
     /// Portion of screen edge length allocated to corner zones (default: 0.20 = 20%).
@@ -16,7 +16,7 @@ public struct SnapDetector: SnapDetecting, Sendable {
     private let layoutEngine: LayoutEngine
 
     public init(
-        edgeThreshold: CGFloat = 4,
+        edgeThreshold: CGFloat = 20,
         cornerRatio: CGFloat = 0.20,
         layoutEngine: LayoutEngine = LayoutEngine()
     ) {
@@ -40,7 +40,8 @@ public struct SnapDetector: SnapDetecting, Sendable {
         let isNearLeft = point.x >= minX - edgeThreshold && point.x <= minX + edgeThreshold
         let isNearRight = point.x >= maxX - edgeThreshold && point.x <= maxX + edgeThreshold
         let isNearBottom = point.y >= minY - edgeThreshold && point.y <= minY + edgeThreshold
-        let isNearTop = point.y >= maxY - edgeThreshold && point.y <= maxY + edgeThreshold
+        let topBoundary = min(display.visibleFrame.maxY, maxY)
+        let isNearTop = point.y >= topBoundary - edgeThreshold && point.y <= maxY + edgeThreshold
 
         guard isNearLeft || isNearRight || isNearBottom || isNearTop else {
             return nil

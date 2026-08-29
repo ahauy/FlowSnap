@@ -94,8 +94,8 @@ public final class DragToSnapCoordinator {
             currentCandidateZone = result.target
             pendingDwellTask?.cancel()
 
-            // BR-DRAG-001: 100ms for outer boundary vs 250ms for internal adjacent monitor border
-            let dwellNanos: UInt64 = result.isAdjacentEdge ? 250_000_000 : 100_000_000
+            // Adaptive dwell: 50ms for outer boundary vs 150ms for internal adjacent monitor border
+            let dwellNanos: UInt64 = result.isAdjacentEdge ? 150_000_000 : 50_000_000
 
             pendingDwellTask = Task { @MainActor [weak self] in
                 try? await Task.sleep(nanoseconds: dwellNanos)
@@ -127,7 +127,8 @@ public final class DragToSnapCoordinator {
             previewManager.hidePreview(animated: false)
             previewManager.flashSnapSuccess(frame: activeResult.previewFrame)
 
-            try? await commandDispatcher.dispatch(.snap(activeResult.target))
+            // Target-Lock: Explicitly snap onto the active preview display
+            try? await commandDispatcher.dispatch(.snap(activeResult.target, targetDisplayID: activeResult.displayID))
         }
     }
 }
