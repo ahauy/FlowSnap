@@ -297,6 +297,61 @@ struct FlowSnapLabView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
+                GroupBox("Interactive Drag-to-Snap & HUD Snap Preview (US-SNAP-006)") {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("HUD Snap Preview Controls:")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("Liquid Glass NSPanel")
+                                .font(.system(.caption, design: .monospaced))
+                                .foregroundStyle(.secondary)
+                        }
+
+                        HStack(spacing: 8) {
+                            Button("Left 50%") {
+                                if let screen = NSScreen.main {
+                                    let targetFrame = layoutEngine.frame(for: .leftHalf, in: screen.visibleFrame)
+                                    SnapPreviewPanel.shared.showPreview(frame: targetFrame, displayID: 0)
+                                }
+                            }
+                            .buttonStyle(.bordered)
+
+                            Button("Right 50%") {
+                                if let screen = NSScreen.main {
+                                    let targetFrame = layoutEngine.frame(for: .rightHalf, in: screen.visibleFrame)
+                                    SnapPreviewPanel.shared.showPreview(frame: targetFrame, displayID: 0)
+                                }
+                            }
+                            .buttonStyle(.bordered)
+
+                            Button("Maximize") {
+                                if let screen = NSScreen.main {
+                                    let targetFrame = layoutEngine.frame(for: .maximize, in: screen.visibleFrame)
+                                    SnapPreviewPanel.shared.showPreview(frame: targetFrame, displayID: 0)
+                                }
+                            }
+                            .buttonStyle(.bordered)
+
+                            Button("Flash Outline") {
+                                if let screen = NSScreen.main {
+                                    let targetFrame = layoutEngine.frame(for: .leftHalf, in: screen.visibleFrame)
+                                    SnapPreviewPanel.shared.flashSnapSuccess(frame: targetFrame)
+                                }
+                            }
+                            .buttonStyle(.bordered)
+
+                            Button("Hide") {
+                                SnapPreviewPanel.shared.hidePreview(animated: true)
+                            }
+                            .buttonStyle(.borderedProminent)
+                        }
+                    }
+                    .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
                 GroupBox("Actions") {
                     HStack(spacing: 12) {
                         Button("Inspect Focused Window") {
