@@ -54,11 +54,11 @@ public struct SnapDetector: SnapDetecting, Sendable {
         let isAdjacent: Bool
 
         // 1. Check 4 Corners
-        if (isNearLeft && point.y >= maxY - cornerHeight) || (isNearTop && point.x <= minX + cornerWidth) {
+        if (isNearLeft && point.y >= topBoundary - cornerHeight) || (isNearTop && point.x <= minX + cornerWidth) {
             target = .topLeft
             isAdjacent = isEdgeAdjacent(side: .left, minX: minX, maxX: maxX, minY: minY, maxY: maxY, adjacentDisplays: adjacentDisplays) ||
                          isEdgeAdjacent(side: .top, minX: minX, maxX: maxX, minY: minY, maxY: maxY, adjacentDisplays: adjacentDisplays)
-        } else if (isNearRight && point.y >= maxY - cornerHeight) || (isNearTop && point.x >= maxX - cornerWidth) {
+        } else if (isNearRight && point.y >= topBoundary - cornerHeight) || (isNearTop && point.x >= maxX - cornerWidth) {
             target = .topRight
             isAdjacent = isEdgeAdjacent(side: .right, minX: minX, maxX: maxX, minY: minY, maxY: maxY, adjacentDisplays: adjacentDisplays) ||
                          isEdgeAdjacent(side: .top, minX: minX, maxX: maxX, minY: minY, maxY: maxY, adjacentDisplays: adjacentDisplays)

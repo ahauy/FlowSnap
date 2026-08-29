@@ -76,10 +76,17 @@ public final class DragToSnapCoordinator {
         guard accessibilityService.isTrusted else { return }
 
         let displays = await displayManager.displays
-        guard let activeDisplay = await displayManager.display(
-            for: CGRect(origin: point, size: CGSize(width: 1, height: 1)),
-            cursorPoint: point
-        ) ?? displays.first else {
+        let resolvedDisplay: Display?
+        if let direct = await displayManager.display(containing: point) {
+            resolvedDisplay = direct
+        } else {
+            resolvedDisplay = await displayManager.display(
+                for: CGRect(origin: point, size: CGSize(width: 1, height: 1)),
+                cursorPoint: point
+            )
+        }
+
+        guard let activeDisplay = resolvedDisplay ?? displays.first else {
             return
         }
 

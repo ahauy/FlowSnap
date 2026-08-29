@@ -26,14 +26,14 @@ struct LayoutEngineOddPixelTests {
 
         #expect(top.height == 450)
         #expect(bottom.height == 451)
-        #expect(top.origin.y == 0)
-        #expect(bottom.origin.y == 450)
+        #expect(top.origin.y == 451)
+        #expect(bottom.origin.y == 0)
 
         // Invariants: Total width & height match exactly with zero gaps and zero overflow
         #expect(left.width + right.width == bounds.width)
         #expect(top.height + bottom.height == bounds.height)
         #expect(right.maxX == bounds.width)
-        #expect(bottom.maxY == bounds.height)
+        #expect(top.maxY == bounds.height)
     }
 
     @Test func oddPixelQuarters_1441x901() {
@@ -44,10 +44,10 @@ struct LayoutEngineOddPixelTests {
         let bl = engine.frame(for: .bottomLeft, in: bounds)
         let br = engine.frame(for: .bottomRight, in: bounds)
 
-        #expect(tl == CGRect(x: 0, y: 0, width: 720, height: 450))
-        #expect(tr == CGRect(x: 720, y: 0, width: 721, height: 450))
-        #expect(bl == CGRect(x: 0, y: 450, width: 720, height: 451))
-        #expect(br == CGRect(x: 720, y: 450, width: 721, height: 451))
+        #expect(tl == CGRect(x: 0, y: 451, width: 720, height: 450))
+        #expect(tr == CGRect(x: 720, y: 451, width: 721, height: 450))
+        #expect(bl == CGRect(x: 0, y: 0, width: 720, height: 451))
+        #expect(br == CGRect(x: 720, y: 0, width: 721, height: 451))
 
         #expect(tl.width + tr.width == bounds.width)
         #expect(bl.width + br.width == bounds.width)
