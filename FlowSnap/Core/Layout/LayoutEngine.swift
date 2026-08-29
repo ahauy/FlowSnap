@@ -38,7 +38,8 @@ public struct LayoutEngine: LayoutCalculating, Sendable {
 
         let topHeight = floor(effectiveHeight / 2.0)
         let bottomHeight = effectiveHeight - topHeight
-        let bottomY = originY + topHeight + safeGap
+        let topY = originY + bottomHeight + safeGap
+        let bottomY = originY
 
         switch zone {
         case .leftHalf:
@@ -46,13 +47,13 @@ public struct LayoutEngine: LayoutCalculating, Sendable {
         case .rightHalf:
             return CGRect(x: rightX, y: originY, width: rightWidth, height: totalHeight)
         case .topHalf:
-            return CGRect(x: originX, y: originY, width: totalWidth, height: topHeight)
+            return CGRect(x: originX, y: topY, width: totalWidth, height: topHeight)
         case .bottomHalf:
             return CGRect(x: originX, y: bottomY, width: totalWidth, height: bottomHeight)
         case .topLeft:
-            return CGRect(x: originX, y: originY, width: leftWidth, height: topHeight)
+            return CGRect(x: originX, y: topY, width: leftWidth, height: topHeight)
         case .topRight:
-            return CGRect(x: rightX, y: originY, width: rightWidth, height: topHeight)
+            return CGRect(x: rightX, y: topY, width: rightWidth, height: topHeight)
         case .bottomLeft:
             return CGRect(x: originX, y: bottomY, width: leftWidth, height: bottomHeight)
         case .bottomRight:

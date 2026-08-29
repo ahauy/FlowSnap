@@ -342,7 +342,7 @@ _Mục tiêu: Cung cấp điểm chạm người dùng thường trực trên th
 
 _Mục tiêu: Mang lại trải nghiệm kéo thả trực quan mượt mà với lớp phủ xem trước vùng snap bán trong suốt trước khi người dùng nhả chuột._
 
-- [ ] **US-SNAP-006: Kéo Thả vào Cạnh Màn hình & Lớp Phủ Xem trước Snap (Drag-to-Snap & HUD Snap Preview)**
+- [x] **US-SNAP-006: Kéo Thả vào Cạnh Màn hình & Lớp Phủ Xem trước Snap (Drag-to-Snap & HUD Snap Preview)**
   - **Slug:** `drag-to-snap-preview`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -351,15 +351,15 @@ _Mục tiêu: Mang lại trải nghiệm kéo thả trực quan mượt mà vớ
   - **Blocks:** `US-SNAP-007`
   - **Mô tả:** Theo dõi hành vi kéo cửa sổ sát cạnh/góc màn hình và hiển thị overlay bán trong suốt (HUD Snap Preview) mô phỏng vị trí trước khi thả chuột.
   - **Acceptance Criteria (AC):**
-    - [ ] Lắng nghe sự kiện di chuyển chuột toàn cục (`CGEventTap` / `NSEvent.addGlobalMonitorForEvents`) khi người dùng đang giữ kéo thanh tiêu đề cửa sổ.
-    - [ ] Khi con trỏ chuột chạm dải biên màn hình (ngưỡng edge threshold: cách mép 4px, giữ > 100ms), kích hoạt hiển thị vùng snap tương ứng.
-    - [ ] Hiển thị `SnapPreviewPanel` (NSPanel dạng non-activating, level `.floating`, bán trong suốt với hiệu ứng mờ kính Liquid Glass).
-    - [ ] Khi nhả chuột (`leftMouseUp`), cửa sổ lập tức snap vào vùng đã preview; nếu kéo chuột ra khỏi mép, preview tự biến mất mượt mà.
+    - [x] Lắng nghe sự kiện di chuyển chuột toàn cục (`CGEventTap` / `NSEvent.addGlobalMonitorForEvents`) khi người dùng đang giữ kéo thanh tiêu đề cửa sổ.
+    - [x] Khi con trỏ chuột chạm dải biên màn hình (ngưỡng edge threshold: cách mép 4px, giữ > 100ms), kích hoạt hiển thị vùng snap tương ứng.
+    - [x] Hiển thị `SnapPreviewPanel` (NSPanel dạng non-activating, level `.floating`, bán trong suốt với hiệu ứng mờ kính Liquid Glass).
+    - [x] Khi nhả chuột (`leftMouseUp`), cửa sổ lập tức snap vào vùng đã preview; nếu kéo chuột ra khỏi mép, preview tự biến mất mượt mà.
   - **Tasks:**
-    - [ ] `Infrastructure`: Cài đặt `MouseDragTracker.swift` bắt sự kiện drag cửa sổ qua CGEventTap.
-    - [ ] `UI`: Cài đặt `SnapPreviewPanel.swift` (AppKit NSPanel tùy biến) bọc `SnapPreviewView` (SwiftUI).
-    - [ ] `Core`: Bổ sung `SnapDetector.swift` xác định vùng snap dựa trên tọa độ con trỏ và kích thước màn hình.
-    - [ ] `Tests`: Kiểm tra phát hiện vùng snap với các tọa độ con trỏ biên khác nhau.
+    - [x] `Infrastructure`: Cài đặt `MouseDragTracker.swift` bắt sự kiện drag cửa sổ qua NSEvent global monitor với 60fps throttling.
+    - [x] `UI`: Cài đặt `SnapPreviewPanel.swift` (AppKit NSPanel tùy biến) bọc `SnapPreviewView` (SwiftUI).
+    - [x] `Core`: Bổ sung `SnapDetector.swift` xác định vùng snap dựa trên tọa độ con trỏ và kích thước màn hình.
+    - [x] `Tests`: Kiểm tra phát hiện vùng snap với các tọa độ con trỏ biên khác nhau.
   - **Deliverables khi [x]:**
     - `.specify/features/drag-to-snap-preview/baseline.md` (SIGNED-OFF)
     - `docs/features/drag-to-snap-preview/README.md`

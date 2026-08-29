@@ -20,9 +20,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 try? await dispatcher.dispatch(command)
             }
         }
+
+        // Start Drag-to-Snap observation
+        dependencies.dragToSnapCoordinator.start()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         dependencies.hotkeyManager.unregisterAll()
+        dependencies.dragToSnapCoordinator.stop()
     }
 }

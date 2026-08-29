@@ -9,7 +9,7 @@ import Foundation
 public enum WindowCommand: Hashable, Sendable {
     // MARK: - Snap
 
-    case snap(SnapTarget)
+    case snap(SnapTarget, targetDisplayID: CGDirectDisplayID? = nil)
 
     // MARK: - Window Actions
 

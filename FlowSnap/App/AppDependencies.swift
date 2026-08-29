@@ -37,5 +37,19 @@ public final class AppDependencies {
         windowManager: windowManager
     )
 
+    // MARK: - Drag to Snap
+
+    public lazy var mouseDragTracker: MouseDragTracking = MouseDragTracker()
+    public lazy var snapDetector: SnapDetecting = SnapDetector()
+    public lazy var snapPreviewManager: SnapPreviewManaging = SnapPreviewPanel.shared
+    public lazy var dragToSnapCoordinator: DragToSnapCoordinator = DragToSnapCoordinator(
+        mouseTracker: mouseDragTracker,
+        detector: snapDetector,
+        previewManager: snapPreviewManager,
+        commandDispatcher: commandDispatcher,
+        displayManager: displayManager,
+        accessibilityService: accessibilityService
+    )
+
     public init() {}
 }

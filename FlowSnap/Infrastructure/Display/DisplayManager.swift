@@ -56,7 +56,11 @@ public final class DisplayManager: DisplayManaging {
     }
 
     public func display(containing point: CGPoint) -> Display? {
-        cachedDisplays.first(where: { $0.frame.contains(point) })
+        if let exact = cachedDisplays.first(where: { $0.frame.contains(point) }) {
+            return exact
+        }
+        // Fallback for points exactly on the boundary (x == maxX or y == maxY) or pushed slightly outside by mouse acceleration
+        return cachedDisplays.first(where: { $0.frame.insetBy(dx: -30, dy: -30).contains(point) })
     }
 
     public func display(for windowFrame: CGRect, cursorPoint: CGPoint? = nil) -> Display? {

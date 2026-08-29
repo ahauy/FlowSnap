@@ -22,8 +22,8 @@ struct LayoutEngineTests {
 
         #expect(left == CGRect(x: 0, y: 0, width: 720, height: 900))
         #expect(right == CGRect(x: 720, y: 0, width: 720, height: 900))
-        #expect(top == CGRect(x: 0, y: 0, width: 1440, height: 450))
-        #expect(bottom == CGRect(x: 0, y: 450, width: 1440, height: 450))
+        #expect(top == CGRect(x: 0, y: 450, width: 1440, height: 450))
+        #expect(bottom == CGRect(x: 0, y: 0, width: 1440, height: 450))
 
         #expect(left.width + right.width == bounds.width)
         #expect(top.height + bottom.height == bounds.height)
@@ -49,10 +49,10 @@ struct LayoutEngineTests {
         let bl = engine.frame(for: .bottomLeft, in: bounds)
         let br = engine.frame(for: .bottomRight, in: bounds)
 
-        #expect(tl == CGRect(x: 0, y: 0, width: 960, height: 540))
-        #expect(tr == CGRect(x: 960, y: 0, width: 960, height: 540))
-        #expect(bl == CGRect(x: 0, y: 540, width: 960, height: 540))
-        #expect(br == CGRect(x: 960, y: 540, width: 960, height: 540))
+        #expect(tl == CGRect(x: 0, y: 540, width: 960, height: 540))
+        #expect(tr == CGRect(x: 960, y: 540, width: 960, height: 540))
+        #expect(bl == CGRect(x: 0, y: 0, width: 960, height: 540))
+        #expect(br == CGRect(x: 960, y: 0, width: 960, height: 540))
     }
 
     // MARK: - TC-004: Maximize with Visible Frame Offsets
@@ -85,8 +85,8 @@ struct LayoutEngineTests {
             #expect(top.height + bottom.height == bounds.height)
             #expect(left.minX == 0)
             #expect(right.maxX == bounds.width)
-            #expect(top.minY == 0)
-            #expect(bottom.maxY == bounds.height)
+            #expect(bottom.minY == 0)
+            #expect(top.maxY == bounds.height)
         }
     }
 

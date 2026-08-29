@@ -94,6 +94,6 @@ struct SnapEngineTests {
         // With minSize 600x500, clamped size is 600x500, anchored to bottom-right (x = 800 - 600 = 200, y = 600 - 500 = 100)
         let brFrame = await engine.calculateFrame(for: .bottomRight, window: window, availableFrame: smallArea)
 
-        #expect(brFrame == CGRect(x: 200, y: 100, width: 600, height: 500))
+        #expect(brFrame == CGRect(x: 200, y: 0, width: 600, height: 500))
     }
 }

@@ -156,10 +156,12 @@ public struct SnapEngine: Sendable {
             break
         }
 
-        // Anchor to bottom edge if zone is bottom-aligned
+        // Anchor to top edge if zone is top-aligned (in AppKit coordinates: top is maxY)
         switch zone {
-        case .bottomHalf, .bottomLeft, .bottomRight:
+        case .topHalf, .topLeft, .topRight:
             y = availableFrame.maxY - effectiveHeight
+        case .bottomHalf, .bottomLeft, .bottomRight:
+            y = availableFrame.minY
         default:
             break
         }

@@ -21,6 +21,11 @@ public enum SnapTarget: Hashable, Sendable, Codable {
     public static let top = SnapTarget.zone(.topHalf)
     public static let bottom = SnapTarget.zone(.bottomHalf)
 
+    public static let leftHalf = SnapTarget.left
+    public static let rightHalf = SnapTarget.right
+    public static let topHalf = SnapTarget.top
+    public static let bottomHalf = SnapTarget.bottom
+
     // MARK: - Convenience Shorthands (Quarter Screen)
     public static let topLeft = SnapTarget.zone(.topLeft)
     public static let topRight = SnapTarget.zone(.topRight)
