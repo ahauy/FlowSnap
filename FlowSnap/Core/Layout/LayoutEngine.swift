@@ -41,6 +41,19 @@ public struct LayoutEngine: LayoutCalculating, Sendable {
         let topY = originY + bottomHeight + safeGap
         let bottomY = originY
 
+        // 70/30 Asymmetric split
+        let left70Width = floor(effectiveWidth * 0.7)
+        let right30Width = effectiveWidth - left70Width
+        let right30X = originX + left70Width + safeGap
+
+        // 3-Column Equal split
+        let threeColEffectiveWidth = max(0, totalWidth - 2 * safeGap)
+        let col1Width = floor(threeColEffectiveWidth / 3.0)
+        let col2Width = floor((threeColEffectiveWidth - col1Width) / 2.0)
+        let col3Width = threeColEffectiveWidth - col1Width - col2Width
+        let col2X = originX + col1Width + safeGap
+        let col3X = originX + col1Width + col2Width + (2 * safeGap)
+
         switch zone {
         case .leftHalf:
             return CGRect(x: originX, y: originY, width: leftWidth, height: totalHeight)
@@ -60,6 +73,16 @@ public struct LayoutEngine: LayoutCalculating, Sendable {
             return CGRect(x: rightX, y: bottomY, width: rightWidth, height: bottomHeight)
         case .maximize:
             return CGRect(x: originX, y: originY, width: totalWidth, height: totalHeight)
+        case .leftTwoThirds:
+            return CGRect(x: originX, y: originY, width: left70Width, height: totalHeight)
+        case .rightOneThird:
+            return CGRect(x: right30X, y: originY, width: right30Width, height: totalHeight)
+        case .leftThird:
+            return CGRect(x: originX, y: originY, width: col1Width, height: totalHeight)
+        case .centerThird:
+            return CGRect(x: col2X, y: originY, width: col2Width, height: totalHeight)
+        case .rightThird:
+            return CGRect(x: col3X, y: originY, width: col3Width, height: totalHeight)
         }
     }
 

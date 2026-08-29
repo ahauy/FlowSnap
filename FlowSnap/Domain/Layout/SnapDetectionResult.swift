@@ -15,15 +15,20 @@ public struct SnapDetectionResult: Equatable, Sendable {
     /// Whether the triggered edge is adjacent to another connected display.
     public let isAdjacentEdge: Bool
 
+    /// Whether the triggered zone is in the top-center summon region (30% - 70% width, top edge).
+    public let isTopCenterZone: Bool
+
     public init(
         target: SnapTarget,
         previewFrame: CGRect,
         displayID: CGDirectDisplayID,
-        isAdjacentEdge: Bool = false
+        isAdjacentEdge: Bool = false,
+        isTopCenterZone: Bool = false
     ) {
         self.target = target
         self.previewFrame = previewFrame
         self.displayID = displayID
         self.isAdjacentEdge = isAdjacentEdge
+        self.isTopCenterZone = isTopCenterZone
     }
 }

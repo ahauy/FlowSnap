@@ -107,4 +107,30 @@ struct LayoutEngineTests {
         #expect(frames[1] == CGRect(x: 0, y: 0, width: 720, height: 900))
         #expect(frames[2] == CGRect(x: 720, y: 0, width: 720, height: 900))
     }
+
+    // MARK: - TC-TOP-001: 70/30 Asymmetric & 3-Column Splits
+
+    @Test func asymmetricSeventyThirtySplit_1920x1080() {
+        let bounds = CGRect(x: 0, y: 0, width: 1920, height: 1080)
+
+        let left70 = engine.frame(for: .leftTwoThirds, in: bounds)
+        let right30 = engine.frame(for: .rightOneThird, in: bounds)
+
+        #expect(left70 == CGRect(x: 0, y: 0, width: 1344, height: 1080))
+        #expect(right30 == CGRect(x: 1344, y: 0, width: 576, height: 1080))
+        #expect(left70.width + right30.width == bounds.width)
+    }
+
+    @Test func threeColumnEqualSplit_1920x1080() {
+        let bounds = CGRect(x: 0, y: 0, width: 1920, height: 1080)
+
+        let col1 = engine.frame(for: .leftThird, in: bounds)
+        let col2 = engine.frame(for: .centerThird, in: bounds)
+        let col3 = engine.frame(for: .rightThird, in: bounds)
+
+        #expect(col1 == CGRect(x: 0, y: 0, width: 640, height: 1080))
+        #expect(col2 == CGRect(x: 640, y: 0, width: 640, height: 1080))
+        #expect(col3 == CGRect(x: 1280, y: 0, width: 640, height: 1080))
+        #expect(col1.width + col2.width + col3.width == bounds.width)
+    }
 }

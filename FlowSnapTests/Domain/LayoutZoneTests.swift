@@ -9,7 +9,7 @@ import Testing
 struct LayoutZoneTests {
 
     @Test func allCasesCount() {
-        #expect(LayoutZone.allCases.count == 9)
+        #expect(LayoutZone.allCases.count == 14)
     }
 
     @Test func normalizedRectCoordinates() {
@@ -22,6 +22,11 @@ struct LayoutZoneTests {
         #expect(LayoutZone.bottomLeft.normalizedRect == CGRect(x: 0, y: 0.5, width: 0.5, height: 0.5))
         #expect(LayoutZone.bottomRight.normalizedRect == CGRect(x: 0.5, y: 0.5, width: 0.5, height: 0.5))
         #expect(LayoutZone.maximize.normalizedRect == CGRect(x: 0, y: 0, width: 1.0, height: 1.0))
+        #expect(LayoutZone.leftTwoThirds.normalizedRect == CGRect(x: 0, y: 0, width: 0.7, height: 1.0))
+        #expect(LayoutZone.rightOneThird.normalizedRect == CGRect(x: 0.7, y: 0, width: 0.3, height: 1.0))
+        #expect(LayoutZone.leftThird.normalizedRect.width == 1.0 / 3.0)
+        #expect(LayoutZone.centerThird.normalizedRect.minX == 1.0 / 3.0)
+        #expect(LayoutZone.rightThird.normalizedRect.minX == 2.0 / 3.0)
     }
 
     @Test func codableSerialization() throws {

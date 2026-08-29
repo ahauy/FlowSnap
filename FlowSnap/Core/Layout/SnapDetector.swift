@@ -91,14 +91,28 @@ public struct SnapDetector: SnapDetecting, Sendable {
             return nil
         }
 
+        let isTopCenter = isNearTop && (target == .maximize) && (point.x >= minX + frame.width * 0.3 && point.x <= minX + frame.width * 0.7)
         let previewFrame = layoutEngine.frame(for: zone, in: display.visibleFrame)
 
         return SnapDetectionResult(
             target: target,
             previewFrame: previewFrame,
             displayID: display.id,
-            isAdjacentEdge: isAdjacent
+            isAdjacentEdge: isAdjacent,
+            isTopCenterZone: isTopCenter
         )
+    }
+
+    /// Checks whether the cursor is in the top-center trigger zone (middle 40% width, top edge).
+    public func isTopCenterZone(at point: CGPoint, on display: Display) -> Bool {
+        let frame = display.frame
+        let minX = frame.minX
+        let maxY = frame.maxY
+        let topBoundary = min(display.visibleFrame.maxY, maxY)
+        let isNearTop = point.y >= topBoundary - edgeThreshold && point.y <= maxY + edgeThreshold
+        let centerMinX = minX + frame.width * 0.3
+        let centerMaxX = minX + frame.width * 0.7
+        return isNearTop && point.x >= centerMinX && point.x <= centerMaxX
     }
 
     private enum EdgeSide {

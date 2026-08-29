@@ -35,6 +35,13 @@ public enum SnapTarget: Hashable, Sendable, Codable {
     // MARK: - Convenience Shorthands (Full Screen)
     public static let maximize = SnapTarget.zone(.maximize)
 
+    // MARK: - Convenience Shorthands (Asymmetric & Thirds)
+    public static let leftTwoThirds = SnapTarget.zone(.leftTwoThirds)
+    public static let rightOneThird = SnapTarget.zone(.rightOneThird)
+    public static let leftThird = SnapTarget.zone(.leftThird)
+    public static let centerThird = SnapTarget.zone(.centerThird)
+    public static let rightThird = SnapTarget.zone(.rightThird)
+
     /// Returns the associated LayoutZone if this target targets a standard zone.
     public var zone: LayoutZone? {
         if case .zone(let z) = self {

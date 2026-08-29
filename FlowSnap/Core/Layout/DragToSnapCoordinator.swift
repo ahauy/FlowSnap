@@ -14,6 +14,8 @@ public final class DragToSnapCoordinator {
     private let mouseTracker: MouseDragTracking
     private let detector: SnapDetecting
     private let previewManager: SnapPreviewManaging
+    private let layoutPickerManager: SnapLayoutPickerManaging
+    private let layoutEngine: LayoutCalculating
     private let commandDispatcher: CommandDispatching
     private let displayManager: DisplayManaging
     private let accessibilityService: AccessibilityService
@@ -26,6 +28,8 @@ public final class DragToSnapCoordinator {
         mouseTracker: MouseDragTracking,
         detector: SnapDetecting = SnapDetector(),
         previewManager: SnapPreviewManaging,
+        layoutPickerManager: SnapLayoutPickerManaging = SnapLayoutPickerManager.shared,
+        layoutEngine: LayoutCalculating = LayoutEngine(),
         commandDispatcher: CommandDispatching,
         displayManager: DisplayManaging,
         accessibilityService: AccessibilityService
@@ -33,6 +37,8 @@ public final class DragToSnapCoordinator {
         self.mouseTracker = mouseTracker
         self.detector = detector
         self.previewManager = previewManager
+        self.layoutPickerManager = layoutPickerManager
+        self.layoutEngine = layoutEngine
         self.commandDispatcher = commandDispatcher
         self.displayManager = displayManager
         self.accessibilityService = accessibilityService
@@ -57,13 +63,16 @@ public final class DragToSnapCoordinator {
         )
     }
 
-    /// Stops observing interactions and dismisses any active preview overlay.
+    /// Stops observing interactions and dismisses any active preview overlay or picker.
     public func stop() {
         coordinatorLogger.info("Stopping DragToSnapCoordinator")
         mouseTracker.stopTracking()
         pendingDwellTask?.cancel()
         pendingDwellTask = nil
         currentCandidateZone = nil
+        if layoutPickerManager.isVisible {
+            layoutPickerManager.hidePicker(animated: false)
+        }
         if activeDetectionResult != nil {
             activeDetectionResult = nil
             previewManager.hidePreview(animated: false)
@@ -90,10 +99,53 @@ public final class DragToSnapCoordinator {
             return
         }
 
+        // 1. If Layout Picker is currently visible, prioritize picker interaction
+        if layoutPickerManager.isVisible {
+            if let slot = layoutPickerManager.hitTestSlot(at: point) {
+                let slotZone = slot.target.zone ?? .maximize
+                let previewFrame = layoutEngine.frame(for: slotZone, in: activeDisplay.visibleFrame, gap: 0)
+                currentCandidateZone = slot.target
+                activeDetectionResult = SnapDetectionResult(
+                    target: slot.target,
+                    previewFrame: previewFrame,
+                    displayID: activeDisplay.id,
+                    isAdjacentEdge: false,
+                    isTopCenterZone: true
+                )
+                previewManager.showPreview(frame: previewFrame, displayID: activeDisplay.id)
+                return
+            } else if let pickerFrame = layoutPickerManager.pickerFrame, pickerFrame.contains(point) {
+                // Inside picker card area but not on a specific slot -> keep picker visible
+                return
+            } else if let pickerFrame = layoutPickerManager.pickerFrame, point.y < pickerFrame.minY - 24 {
+                // Moved significantly below picker -> dismiss picker and revert to edge detection
+                layoutPickerManager.hidePicker(animated: true)
+                previewManager.hidePreview(animated: true)
+                activeDetectionResult = nil
+                currentCandidateZone = nil
+            }
+        }
+
+        // 2. Evaluate edge snap targets
         let adjacentDisplays = displays.filter { $0.id != activeDisplay.id }
         let result = detector.detectZone(at: point, on: activeDisplay, adjacentDisplays: adjacentDisplays)
 
         if let result {
+            if result.isTopCenterZone {
+                // Trigger Layout Picker flyout
+                pendingDwellTask?.cancel()
+                pendingDwellTask = nil
+                currentCandidateZone = result.target
+                activeDetectionResult = result
+                layoutPickerManager.showPicker(on: activeDisplay)
+                previewManager.showPreview(frame: result.previewFrame, displayID: result.displayID)
+                return
+            }
+
+            if layoutPickerManager.isVisible {
+                layoutPickerManager.hidePicker(animated: true)
+            }
+
             if currentCandidateZone == result.target && (activeDetectionResult != nil || pendingDwellTask != nil) {
                 return
             }
@@ -112,6 +164,9 @@ public final class DragToSnapCoordinator {
             }
         } else {
             // Not within any edge trigger zone -> cancel and dismiss smoothly
+            if layoutPickerManager.isVisible {
+                layoutPickerManager.hidePicker(animated: true)
+            }
             if currentCandidateZone != nil || activeDetectionResult != nil {
                 pendingDwellTask?.cancel()
                 pendingDwellTask = nil
@@ -128,6 +183,29 @@ public final class DragToSnapCoordinator {
         pendingDwellTask?.cancel()
         pendingDwellTask = nil
         currentCandidateZone = nil
+
+        if layoutPickerManager.isVisible {
+            let slot = layoutPickerManager.hitTestSlot(at: point)
+            layoutPickerManager.hidePicker(animated: false)
+
+            if let slot {
+                let primary = await displayManager.primaryDisplay
+                let resolvedDisplayID = activeDetectionResult?.displayID ?? (primary?.id ?? 1)
+                let displays = await displayManager.displays
+                let activeDisplay = displays.first(where: { $0.id == resolvedDisplayID }) ?? displays.first
+                let visibleFrame = activeDisplay?.visibleFrame ?? CGRect(x: 0, y: 0, width: 1920, height: 1080)
+
+                let zone = slot.target.zone ?? .maximize
+                let snapFrame = layoutEngine.frame(for: zone, in: visibleFrame, gap: 0)
+
+                activeDetectionResult = nil
+                previewManager.hidePreview(animated: false)
+                previewManager.flashSnapSuccess(frame: snapFrame)
+
+                try? await commandDispatcher.dispatch(.snap(slot.target, targetDisplayID: resolvedDisplayID))
+                return
+            }
+        }
 
         if let activeResult = activeDetectionResult {
             activeDetectionResult = nil

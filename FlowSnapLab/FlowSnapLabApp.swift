@@ -352,6 +352,65 @@ struct FlowSnapLabView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
+                GroupBox("Top-Edge Snap Layout Picker (US-SNAP-007)") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack {
+                            Text("Windows 11-Style Top-Edge Flyout:")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                            Spacer()
+                            Text("Top-Center Dwell")
+                                .font(.system(.caption, design: .monospaced))
+                                .foregroundStyle(.secondary)
+                        }
+
+                        HStack(spacing: 8) {
+                            Button("Show Picker (Primary)") {
+                                Task {
+                                    let displays = await displayManager.displays
+                                    if let primary = displays.first(where: { $0.isPrimary }) ?? displays.first {
+                                        SnapLayoutPickerManager.shared.showPicker(on: primary)
+                                    }
+                                }
+                            }
+                            .buttonStyle(.borderedProminent)
+
+                            Button("Hide Picker") {
+                                SnapLayoutPickerManager.shared.hidePicker(animated: true)
+                            }
+                            .buttonStyle(.bordered)
+
+                            Button("Snap Left 70%") {
+                                triggerSnap(.leftTwoThirds)
+                            }
+                            .buttonStyle(.bordered)
+                            .disabled(focusedWindow == nil || !isTrusted)
+
+                            Button("Snap Center 1/3") {
+                                triggerSnap(.centerThird)
+                            }
+                            .buttonStyle(.bordered)
+                            .disabled(focusedWindow == nil || !isTrusted)
+                        }
+
+                        // Embedded Mini Layout Picker View for visual inspection
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Live Picker Component Preview:")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+
+                            SnapLayoutPickerView(
+                                templates: LayoutTemplate.standardTemplates,
+                                hoveredSlotId: "twoColAsym-left"
+                            )
+                            .scaleEffect(0.9)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                        }
+                    }
+                    .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+
                 GroupBox("Actions") {
                     HStack(spacing: 12) {
                         Button("Inspect Focused Window") {
