@@ -59,6 +59,13 @@
 | **LayoutRatio**              | Named multi-window partition ratio (60/40, 80/20...)  | "Window split ratio or division scheme"        | `LayoutRatio`              | ADR-0004, Codable enum                        |
 | **PreferencesStore**         | Observable store persisting user settings and gaps    | "Settings manager or preferences controller"   | `PreferencesStore`         | ADR-0004, @MainActor ObservableObject         |
 
+| **LayoutGraph**               | Spatial constraint graph representing window layout boundaries   | "Window layout tree or adjacency graph"        | `LayoutGraph`              | ADR-0005, BSP & adjacency model              |
+| **LayoutNode**                | Node in a binary space partitioning tree (leaf/split)            | "Layout tree node or branch"                   | `LayoutNode`               | ADR-0005, recursive partition                 |
+| **CollinearEdge**             | Shared boundary line between adjacent windows in layout          | "Shared divider or common border"              | `CollinearEdge`            | ADR-0005, multi-window span                   |
+| **CollinearEdgeDetector**     | Algorithm finding collinear shared edges between windows         | "Divider detection helper"                     | `CollinearEdgeDetector`    | Pure geometric detection                      |
+| **LiveResizeThrottler**       | Rate limits live window resizing events to 60fps                 | "Drag throttler or frame pacer"                | `LiveResizeThrottler`      | 16.6ms rate limiter                           |
+| **AdaptiveDividerCoordinator**| Coordinates divider hover, cursor swapping, and live resize      | "Divider drag controller"                      | `AdaptiveDividerCoordinator`| @MainActor coordination                      |
+
 ## Where to Look
 
 - **Scan codebase** to identify existing implicit terms or jargon not yet cataloged here → add them to the table.
