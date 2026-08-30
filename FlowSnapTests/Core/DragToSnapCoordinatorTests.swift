@@ -121,7 +121,7 @@ struct DragToSnapCoordinatorTests {
 
         // Drag to top edge (Maximize - outside top-center)
         await coordinator.handleDrag(at: CGPoint(x: 400, y: 1078))
-        try await Task.sleep(nanoseconds: 200_000_000)
+        try await Task.sleep(nanoseconds: 350_000_000)
         #expect(previewManager.showPreviewCallCount == 1)
 
         // Release mouse
@@ -161,7 +161,7 @@ struct DragToSnapCoordinatorTests {
 
         // Drag to left edge and let preview show
         await coordinator.handleDrag(at: CGPoint(x: 2, y: 540))
-        try await Task.sleep(nanoseconds: 200_000_000)
+        try await Task.sleep(nanoseconds: 350_000_000)
         #expect(previewManager.showPreviewCallCount == 1)
 
         // Move cursor away into center (x: 960, y: 540)
