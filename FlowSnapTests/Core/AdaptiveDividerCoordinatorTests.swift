@@ -165,4 +165,64 @@ struct AdaptiveDividerCoordinatorTests {
         #expect(sut.currentCursor == .arrow)
         #expect(mockOverlay?.lastActiveDivider == nil)
     }
+
+    @Test("Real-time overlay updates during drag while window moves are throttled, followed by atomic final snap on mouseUp")
+    func realTimeOverlayWithThrottledWindowUpdatesAndAtomicSnapOnMouseUp() async {
+        let mockWM = MockWindowManaging()
+        let display = Display(
+            id: 1,
+            frame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            visibleFrame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            scaleFactor: 2.0,
+            isPrimary: true
+        )
+        let mockDM = MockDisplayManager(displays: [display])
+        let mockOverlay = MockAdaptiveDividerOverlayManager()
+
+        final class ControlledThrottler: LiveResizeThrottling, @unchecked Sendable {
+            var allow: Bool = false
+            func shouldProcess(timestamp: TimeInterval) -> Bool { allow }
+            func reset() {}
+        }
+        let controlledThrottler = ControlledThrottler()
+
+        let coordinator = AdaptiveDividerCoordinator(
+            detector: CollinearEdgeDetector(defaultMinWidth: 200, defaultMinHeight: 150),
+            windowManager: mockWM,
+            displayManager: mockDM,
+            throttler: controlledThrottler,
+            overlayManager: mockOverlay
+        )
+
+        let w1 = ManagedWindow(id: 1, pid: 10, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let w2 = ManagedWindow(id: 2, pid: 20, title: "Right", frame: CGRect(x: 720, y: 0, width: 720, height: 900))
+        coordinator.updateWindows([w1, w2])
+
+        // 1. Mouse down on divider X=720
+        _ = await coordinator.handleMouseDown(at: CGPoint(x: 720, y: 450))
+        #expect(coordinator.isResizing == true)
+
+        // 2. Drag to X=850 with throttling active (allow = false)
+        controlledThrottler.allow = false
+        await coordinator.handleMouseDragged(to: CGPoint(x: 850, y: 450))
+
+        // Visual overlay MUST update in real-time (120Hz ProMotion)
+        #expect(mockOverlay.updateCallCount == 1)
+        #expect(mockOverlay.lastWindows.first { $0.id == 1 }?.frame.width == 850)
+        #expect(mockOverlay.lastWindows.first { $0.id == 2 }?.frame.origin.x == 850)
+        #expect(mockOverlay.lastWindows.first { $0.id == 2 }?.frame.width == 590)
+
+        // WindowManager move MUST NOT have been called due to throttling
+        #expect(mockWM.moveCallCount == 0)
+
+        // 3. Mouse up at final release position X=850
+        await coordinator.handleMouseUp(at: CGPoint(x: 850, y: 450))
+
+        // Atomic final snap MUST execute on WindowManager to guarantee 100% exact alignment
+        #expect(mockWM.moveCallCount == 2)
+        #expect(coordinator.managedWindows.first { $0.id == 1 }?.frame.width == 850)
+        #expect(coordinator.managedWindows.first { $0.id == 2 }?.frame.origin.x == 850)
+        #expect(coordinator.managedWindows.first { $0.id == 2 }?.frame.width == 590)
+        #expect(coordinator.isResizing == false)
+    }
 }

@@ -285,4 +285,80 @@ struct CollinearEdgeDetectorTests {
         #expect(rightFrameMax.width == 300) // Hard-locked at minWidth 300px
         #expect(rightFrameMax.origin.x - leftFrameMax.maxX == 16.0) // Gap preserved
     }
+
+    @Test("Default CollinearEdgeDetector enforces 380px minWidth and 260px minHeight")
+    func defaultDimensionsAndStrict380pxClamping() {
+        let defaultDetector = CollinearEdgeDetector()
+        #expect(defaultDetector.defaultMinWidth == 380.0)
+        #expect(defaultDetector.defaultMinHeight == 260.0)
+
+        let display = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let left = ManagedWindow(id: 1, pid: 1, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let right = ManagedWindow(id: 2, pid: 2, title: "Right", frame: CGRect(x: 720, y: 0, width: 720, height: 900))
+
+        let dividers = defaultDetector.detectDividers(in: [left, right], containerFrame: display, gap: 10.0)
+        #expect(dividers.count == 1)
+        let divider = dividers.first!
+        // minCoord = 0 + 380 + 5 = 385.0
+        // maxCoord = 1440 - 380 - 5 = 1055.0
+        #expect(divider.minCoordinate == 385.0)
+        #expect(divider.maxCoordinate == 1055.0)
+
+        // Extreme left drag clamping
+        let clampedMin = defaultDetector.computeResizedFrames(
+            for: divider,
+            targetCoordinate: 100.0,
+            windows: [left, right],
+            containerFrame: display,
+            gap: 10.0
+        )
+        let leftMin = clampedMin[1]!
+        let rightMin = clampedMin[2]!
+        #expect(leftMin.origin.x == 0.0)
+        #expect(leftMin.width == 380.0)
+        #expect(rightMin.origin.x == 390.0)
+        #expect(rightMin.width == 1050.0)
+        #expect(rightMin.maxX == 1440.0)
+
+        // Extreme right drag clamping
+        let clampedMax = defaultDetector.computeResizedFrames(
+            for: divider,
+            targetCoordinate: 1400.0,
+            windows: [left, right],
+            containerFrame: display,
+            gap: 10.0
+        )
+        let leftMax = clampedMax[1]!
+        let rightMax = clampedMax[2]!
+        #expect(leftMax.origin.x == 0.0)
+        #expect(leftMax.width == 1050.0)
+        #expect(rightMax.origin.x == 1060.0)
+        #expect(rightMax.width == 380.0)
+        #expect(rightMax.maxX == 1440.0)
+    }
+
+    @Test("Horizontal divider clamps strictly to minHeight 260px")
+    func horizontalDividerClampsStrictlyTo260px() {
+        let defaultDetector = CollinearEdgeDetector()
+        let display = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let bottom = ManagedWindow(id: 1, pid: 1, title: "Bottom", frame: CGRect(x: 0, y: 0, width: 1440, height: 450))
+        let top = ManagedWindow(id: 2, pid: 2, title: "Top", frame: CGRect(x: 0, y: 450, width: 1440, height: 450))
+
+        let dividers = defaultDetector.detectDividers(in: [bottom, top], containerFrame: display, gap: 10.0)
+        #expect(dividers.count == 1)
+        let divider = dividers.first!
+        #expect(divider.minCoordinate == 265.0)
+        #expect(divider.maxCoordinate == 635.0)
+
+        let clampedBottom = defaultDetector.computeResizedFrames(
+            for: divider,
+            targetCoordinate: 50.0,
+            windows: [bottom, top],
+            containerFrame: display,
+            gap: 10.0
+        )
+        #expect(clampedBottom[1]?.height == 260.0)
+        #expect(clampedBottom[2]?.height == 630.0)
+        #expect(clampedBottom[2]?.maxY == 900.0)
+    }
 }

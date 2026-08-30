@@ -255,9 +255,6 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     public func handleMouseDragged(to point: CGPoint) async {
         guard isResizing, let divider = activeDivider else { return }
 
-        let now = ProcessInfo.processInfo.systemUptime
-        guard throttler.shouldProcess(timestamp: now) else { return }
-
         let gap = await resolveGap()
         let container = await resolveContainer(at: point)
         let displayWindows = filterWindows(for: container)
@@ -272,12 +269,102 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             gap: gap
         )
 
+        // 1. Real-time preview frames for visual overlay
+        var previewWindows: [ManagedWindow] = []
+        for var window in displayWindows {
+            if let newFrame = resizedFrames[window.id] {
+                var stableFrame = newFrame
+                if let initial = initialWindows[window.id] {
+                    if divider.orientation == .vertical {
+                        stableFrame.origin.y = initial.frame.origin.y
+                        stableFrame.size.height = initial.frame.size.height
+                    } else {
+                        stableFrame.origin.x = initial.frame.origin.x
+                        stableFrame.size.width = initial.frame.size.width
+                    }
+                }
+                window.frame = stableFrame
+            }
+            previewWindows.append(window)
+        }
+
+        let updatedDividers = detector.detectDividers(in: previewWindows, containerFrame: container, gap: gap, tolerance: 6.0)
+        let safeCoord = (divider.orientation == .vertical) ? point.x : point.y
+        let clampedCoord = max(divider.minCoordinate, min(divider.maxCoordinate, safeCoord))
+        let updatedActiveDivider = updatedDividers.first { $0.orientation == divider.orientation } ?? CollinearEdge(
+            id: divider.id,
+            orientation: divider.orientation,
+            coordinate: clampedCoord,
+            span: divider.span,
+            hitRect: divider.hitRect,
+            leadingWindowIDs: divider.leadingWindowIDs,
+            trailingWindowIDs: divider.trailingWindowIDs,
+            minCoordinate: divider.minCoordinate,
+            maxCoordinate: divider.maxCoordinate
+        )
+
+        // 2. Real-time visual overlay update (120Hz ProMotion responsiveness)
+        overlayManager?.update(
+            containerFrame: container,
+            windows: previewWindows,
+            dividers: updatedDividers.isEmpty ? [updatedActiveDivider] : updatedDividers,
+            activeDivider: updatedActiveDivider,
+            isDragging: true
+        )
+
+        // 3. Throttled live window manager updates
+        let now = ProcessInfo.processInfo.systemUptime
+        guard throttler.shouldProcess(timestamp: now) else { return }
+
         let primaryHeight = await displayManager.primaryScreenHeight
         for (id, frame) in resizedFrames {
             if let index = managedWindows.firstIndex(where: { $0.id == id }) {
                 var window = managedWindows[index]
 
-                // Strictly lock the orthogonal dimension to prevent any vertical/horizontal jumping
+                var stableFrame = frame
+                if let initial = initialWindows[id] {
+                    if divider.orientation == .vertical {
+                        stableFrame.origin.y = initial.frame.origin.y
+                        stableFrame.size.height = initial.frame.size.height
+                    } else {
+                        stableFrame.origin.x = initial.frame.origin.x
+                        stableFrame.size.width = initial.frame.size.width
+                    }
+                }
+
+                window.frame = stableFrame
+                managedWindows[index] = window
+                let axFrame = CoordinateTransformer.toAX(rect: stableFrame, primaryScreenHeight: primaryHeight)
+                try? await windowManager.move(window, to: axFrame)
+                await windowRegistry?.update(window)
+            }
+        }
+    }
+
+    public func handleMouseUp(at point: CGPoint) async {
+        guard isResizing, let divider = activeDivider else { return }
+        dividerLogger.debug("Ended divider resize session with final snap")
+
+        let gap = await resolveGap()
+        let container = await resolveContainer(at: point)
+        let displayWindows = filterWindows(for: container)
+        let windowsToResize = initialWindows.isEmpty ? displayWindows : Array(initialWindows.values)
+
+        // Atomic final snap on all windows in the divider to guarantee 100% exact alignment with final release position
+        let targetCoordinate = (divider.orientation == .vertical) ? point.x : point.y
+        let resizedFrames = detector.computeResizedFrames(
+            for: divider,
+            targetCoordinate: targetCoordinate,
+            windows: windowsToResize.isEmpty ? managedWindows : windowsToResize,
+            containerFrame: container,
+            gap: gap
+        )
+
+        let primaryHeight = await displayManager.primaryScreenHeight
+        for (id, frame) in resizedFrames {
+            if let index = managedWindows.firstIndex(where: { $0.id == id }) {
+                var window = managedWindows[index]
+
                 var stableFrame = frame
                 if let initial = initialWindows[id] {
                     if divider.orientation == .vertical {
@@ -297,22 +384,6 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             }
         }
 
-        let updatedDisplayWindows = filterWindows(for: container)
-        let updatedDividers = detector.detectDividers(in: updatedDisplayWindows, containerFrame: container, gap: gap, tolerance: 6.0)
-        let updatedActiveDivider = updatedDividers.first { $0.orientation == divider.orientation } ?? divider
-
-        overlayManager?.update(
-            containerFrame: container,
-            windows: updatedDisplayWindows,
-            dividers: updatedDividers,
-            activeDivider: updatedActiveDivider,
-            isDragging: true
-        )
-    }
-
-    public func handleMouseUp(at point: CGPoint) async {
-        guard isResizing else { return }
-        dividerLogger.debug("Ended divider resize session")
         isResizing = false
         activeDivider = nil
         hoveredDivider = nil
@@ -320,16 +391,14 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         throttler.reset()
         setCursor(.arrow)
 
-        let gap = await resolveGap()
-        let container = await resolveContainer(at: point)
-        let displayWindows = filterWindows(for: container)
-        let dividers = detector.detectDividers(in: displayWindows, containerFrame: container, gap: gap, tolerance: 6.0)
+        let finalDisplayWindows = filterWindows(for: container)
+        let finalDividers = detector.detectDividers(in: finalDisplayWindows, containerFrame: container, gap: gap, tolerance: 6.0)
 
-        if !dividers.isEmpty {
+        if !finalDividers.isEmpty {
             overlayManager?.show(
                 containerFrame: container,
-                windows: displayWindows,
-                dividers: dividers,
+                windows: finalDisplayWindows,
+                dividers: finalDividers,
                 activeDivider: nil,
                 isDragging: false
             )

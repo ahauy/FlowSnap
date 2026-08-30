@@ -206,9 +206,9 @@ public final class AdaptiveDividerOverlayView: NSView {
         self.activeDivider = activeDivider
         self.isDragging = isDragging
 
-        // Disable implicit layer animations during live drag for 120Hz ProMotion responsiveness
+        // Disable implicit layer animations for 120Hz ProMotion responsiveness
         CATransaction.begin()
-        CATransaction.setDisableActions(isDragging)
+        CATransaction.setDisableActions(true)
 
         renderWindowOutlines()
         renderDividerSeams()

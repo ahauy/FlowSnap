@@ -8,7 +8,7 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
     public let defaultMinWidth: CGFloat
     public let defaultMinHeight: CGFloat
 
-    public init(defaultMinWidth: CGFloat = 300.0, defaultMinHeight: CGFloat = 200.0) {
+    public init(defaultMinWidth: CGFloat = 380.0, defaultMinHeight: CGFloat = 260.0) {
         self.defaultMinWidth = defaultMinWidth
         self.defaultMinHeight = defaultMinHeight
     }
@@ -95,15 +95,15 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
             }
 
             // Min and Max X boundary constraints based on minSize
-            var minCoord: CGFloat = containerFrame.minX
+            var minCoord: CGFloat = containerFrame.minX + defaultMinWidth + (gap / 2.0)
             for w in leadingWindows {
-                let minW = w.minSize?.width ?? defaultMinWidth
+                let minW = max(defaultMinWidth, w.minSize?.width ?? defaultMinWidth)
                 minCoord = max(minCoord, w.frame.minX + minW + gap / 2.0)
             }
 
-            var maxCoord: CGFloat = containerFrame.maxX
+            var maxCoord: CGFloat = containerFrame.maxX - defaultMinWidth - (gap / 2.0)
             for w in trailingWindows {
-                let minW = w.minSize?.width ?? defaultMinWidth
+                let minW = max(defaultMinWidth, w.minSize?.width ?? defaultMinWidth)
                 maxCoord = min(maxCoord, w.frame.maxX - minW - gap / 2.0)
             }
 
@@ -196,15 +196,15 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
             }
 
             // Min and Max Y boundary constraints based on minSize
-            var minCoord: CGFloat = containerFrame.minY
+            var minCoord: CGFloat = containerFrame.minY + defaultMinHeight + (gap / 2.0)
             for w in leadingWindows {
-                let minH = w.minSize?.height ?? defaultMinHeight
+                let minH = max(defaultMinHeight, w.minSize?.height ?? defaultMinHeight)
                 minCoord = max(minCoord, w.frame.minY + minH + gap / 2.0)
             }
 
-            var maxCoord: CGFloat = containerFrame.maxY
+            var maxCoord: CGFloat = containerFrame.maxY - defaultMinHeight - (gap / 2.0)
             for w in trailingWindows {
-                let minH = w.minSize?.height ?? defaultMinHeight
+                let minH = max(defaultMinHeight, w.minSize?.height ?? defaultMinHeight)
                 maxCoord = min(maxCoord, w.frame.maxY - minH - gap / 2.0)
             }
 
@@ -260,14 +260,17 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
 
         switch divider.orientation {
         case .vertical:
-            var effectiveMin: CGFloat = max(divider.minCoordinate, containerFrame.minX + defaultMinWidth + (gap / 2.0))
+            let containerMinCoord = containerFrame.minX + defaultMinWidth + (gap / 2.0)
+            let containerMaxCoord = containerFrame.maxX - defaultMinWidth - (gap / 2.0)
+
+            var effectiveMin: CGFloat = max(divider.minCoordinate, containerMinCoord)
             for id in divider.leadingWindowIDs {
                 guard let window = windowDict[id] else { continue }
                 let minW = max(defaultMinWidth, window.minSize?.width ?? defaultMinWidth)
                 effectiveMin = max(effectiveMin, window.frame.minX + minW + (gap / 2.0))
             }
 
-            var effectiveMax: CGFloat = min(divider.maxCoordinate, containerFrame.maxX - defaultMinWidth - (gap / 2.0))
+            var effectiveMax: CGFloat = min(divider.maxCoordinate, containerMaxCoord)
             for id in divider.trailingWindowIDs {
                 guard let window = windowDict[id] else { continue }
                 let minW = max(defaultMinWidth, window.minSize?.width ?? defaultMinWidth)
@@ -284,7 +287,7 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
 
             for id in divider.leadingWindowIDs {
                 guard let window = windowDict[id] else { continue }
-                let initialMinX = window.frame.minX
+                let initialMinX = max(containerFrame.minX, window.frame.minX)
                 let newWidth = max(0, leadingEdge - initialMinX)
                 result[id] = CGRect(
                     x: initialMinX,
@@ -296,7 +299,7 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
 
             for id in divider.trailingWindowIDs {
                 guard let window = windowDict[id] else { continue }
-                let initialMaxX = window.frame.maxX
+                let initialMaxX = min(containerFrame.maxX, window.frame.maxX)
                 let newWidth = max(0, initialMaxX - trailingEdge)
                 result[id] = CGRect(
                     x: trailingEdge,
@@ -307,14 +310,17 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
             }
 
         case .horizontal:
-            var effectiveMin: CGFloat = max(divider.minCoordinate, containerFrame.minY + defaultMinHeight + (gap / 2.0))
+            let containerMinCoord = containerFrame.minY + defaultMinHeight + (gap / 2.0)
+            let containerMaxCoord = containerFrame.maxY - defaultMinHeight - (gap / 2.0)
+
+            var effectiveMin: CGFloat = max(divider.minCoordinate, containerMinCoord)
             for id in divider.leadingWindowIDs {
                 guard let window = windowDict[id] else { continue }
                 let minH = max(defaultMinHeight, window.minSize?.height ?? defaultMinHeight)
                 effectiveMin = max(effectiveMin, window.frame.minY + minH + (gap / 2.0))
             }
 
-            var effectiveMax: CGFloat = min(divider.maxCoordinate, containerFrame.maxY - defaultMinHeight - (gap / 2.0))
+            var effectiveMax: CGFloat = min(divider.maxCoordinate, containerMaxCoord)
             for id in divider.trailingWindowIDs {
                 guard let window = windowDict[id] else { continue }
                 let minH = max(defaultMinHeight, window.minSize?.height ?? defaultMinHeight)
@@ -331,7 +337,7 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
 
             for id in divider.leadingWindowIDs {
                 guard let window = windowDict[id] else { continue }
-                let initialMinY = window.frame.minY
+                let initialMinY = max(containerFrame.minY, window.frame.minY)
                 let newHeight = max(0, leadingEdge - initialMinY)
                 result[id] = CGRect(
                     x: window.frame.minX,
@@ -343,7 +349,7 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
 
             for id in divider.trailingWindowIDs {
                 guard let window = windowDict[id] else { continue }
-                let initialMaxY = window.frame.maxY
+                let initialMaxY = min(containerFrame.maxY, window.frame.maxY)
                 let newHeight = max(0, initialMaxY - trailingEdge)
                 result[id] = CGRect(
                     x: window.frame.minX,
