@@ -29,7 +29,9 @@ public struct SnapDetector: SnapDetecting, Sendable {
     public func detectZone(
         at point: CGPoint,
         on display: Display,
-        adjacentDisplays: [Display]
+        adjacentDisplays: [Display],
+        defaultRatio: LayoutRatio = .equal,
+        windowGap: CGFloat = 0
     ) -> SnapDetectionResult? {
         let frame = display.frame
         let minX = frame.minX
@@ -87,12 +89,22 @@ public struct SnapDetector: SnapDetecting, Sendable {
             return nil
         }
 
-        guard let zone = target.zone else {
-            return nil
+        let resolvedZone: LayoutZone
+        switch target {
+        case .zone(.leftHalf):
+            resolvedZone = defaultRatio.leftZone
+        case .zone(.rightHalf):
+            resolvedZone = defaultRatio.rightZone
+        default:
+            guard let zone = target.zone else {
+                return nil
+            }
+            resolvedZone = zone
         }
 
         let isTopCenter = isNearTop && (target == .maximize) && (point.x >= minX + frame.width * 0.3 && point.x <= minX + frame.width * 0.7)
-        let previewFrame = layoutEngine.frame(for: zone, in: display.visibleFrame)
+        let uniform = windowGap > 0
+        let previewFrame = layoutEngine.frame(for: resolvedZone, in: display.visibleFrame, gap: windowGap, uniform: uniform)
 
         return SnapDetectionResult(
             target: target,

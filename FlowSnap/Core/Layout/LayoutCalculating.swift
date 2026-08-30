@@ -11,11 +11,15 @@ public protocol LayoutCalculating: Sendable {
     ///   - zone: The standard partition target.
     ///   - availableFrame: The display's visible frame (excluding menu bar/dock).
     ///   - gap: Pixel gap between windows (spec §18).
+    ///   - uniform: When true, the gap is subtracted from BOTH outer edges
+    ///     (`effectiveWidth = totalWidth - 2*gap`). When false (default),
+    ///     legacy inner-only gap behavior is preserved.
     /// - Returns: Concrete pixel frame within availableFrame.
     func frame(
         for zone: LayoutZone,
         in availableFrame: CGRect,
-        gap: CGFloat
+        gap: CGFloat,
+        uniform: Bool
     ) -> CGRect
 
     /// Calculate concrete frames for windows given a layout and display area.
@@ -32,4 +36,15 @@ public protocol LayoutCalculating: Sendable {
         layout: Layout,
         gap: CGFloat
     ) -> [CGWindowID: CGRect]
+}
+
+extension LayoutCalculating {
+    /// Convenience overload preserving legacy call sites: uniform defaults to false.
+    func frame(
+        for zone: LayoutZone,
+        in availableFrame: CGRect,
+        gap: CGFloat = 0
+    ) -> CGRect {
+        frame(for: zone, in: availableFrame, gap: gap, uniform: false)
+    }
 }
