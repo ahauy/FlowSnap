@@ -67,4 +67,66 @@ struct LayoutEngineOddPixelTests {
         #expect(right.width == 751)
         #expect(right.maxX == bounds.maxX)
     }
+
+    // MARK: - US-SNAP-008: Odd Pixel Asymmetric Ratios (BR-CRW-001)
+
+    @Test func oddPixelLeft60_40_999px() {
+        let bounds = CGRect(x: 0, y: 0, width: 999, height: 800)
+        let left60 = engine.frame(for: .left60_40, in: bounds)
+        let right40 = engine.frame(for: .right40_60, in: bounds)
+
+        // effectiveWidth = 999; left60 = floor(999*0.6) = 599; right40 = 400
+        #expect(left60.width == 599)
+        #expect(right40.width == 400)
+        #expect(left60.width + right40.width == bounds.width)
+    }
+
+    @Test func oddPixelLeft80_20_999px() {
+        let bounds = CGRect(x: 0, y: 0, width: 999, height: 800)
+        let left80 = engine.frame(for: .left80_20, in: bounds)
+        let right20 = engine.frame(for: .right20_80, in: bounds)
+
+        // left80 = floor(999*0.8) = 799; right20 = 200
+        #expect(left80.width == 799)
+        #expect(right20.width == 200)
+        #expect(left80.width + right20.width == bounds.width)
+    }
+
+    @Test func oddPixel25_50_25_999px() {
+        let bounds = CGRect(x: 0, y: 0, width: 999, height: 800)
+        let col1 = engine.frame(for: .left25, in: bounds)
+        let col2 = engine.frame(for: .center50, in: bounds)
+        let col3 = engine.frame(for: .right25, in: bounds)
+
+        // q25 = floor(999*0.25) = 249; half = floor(999*0.5) = 499; remainder = 251
+        #expect(col1.width == 249)
+        #expect(col2.width == 499)
+        #expect(col3.width == 251)
+        #expect(col1.width + col2.width + col3.width == bounds.width)
+    }
+
+    @Test func oddPixelLeft70_30_999px() {
+        let bounds = CGRect(x: 0, y: 0, width: 999, height: 800)
+        let left70 = engine.frame(for: .left70_30, in: bounds)
+        let right30 = engine.frame(for: .rightOneThird, in: bounds)
+
+        // left70 = floor(999*0.7) = 699; right30 = 300
+        #expect(left70.width == 699)
+        #expect(right30.width == 300)
+        #expect(left70.width + right30.width == bounds.width)
+    }
+
+    @Test func oddPixelUniformGap_999px() {
+        let bounds = CGRect(x: 0, y: 0, width: 999, height: 800)
+
+        let left = engine.frame(for: .leftHalf, in: bounds, gap: 8, uniform: true)
+        let right = engine.frame(for: .rightHalf, in: bounds, gap: 8, uniform: true)
+
+        // effectiveWidth = 999 - 24 = 975; left = floor(975/2) = 487; right = 488
+        #expect(left.minX == 8)
+        #expect(left.width == 487)
+        #expect(right.width == 488)
+        #expect(right.maxX == bounds.maxX - 8)
+        #expect(left.width + right.width + 24 == bounds.width)
+    }
 }

@@ -315,4 +315,41 @@ struct DragToSnapCoordinatorTests {
 
         coordinator.stop()
     }
+
+    @Test func dragPreviewRespectsPreferencesStoreRatioAndGap() async throws {
+        let mouseTracker = MockMouseDragTracker()
+        let previewManager = MockSnapPreviewManager()
+        let layoutPickerManager = MockSnapLayoutPickerManager()
+        let commandDispatcher = MockCommandDispatcher()
+        let displayManager = MockDisplayManager(displays: [primaryDisplay])
+        let accessibilityService = MockAccessibilityService(isTrusted: true)
+
+        let defaults = UserDefaults(suiteName: "test-drag-coord-\(UUID().uuidString)") ?? .standard
+        let store = PreferencesStore(defaults: defaults)
+        store.setWindowGap(8)
+        store.setDefaultRatio(.sixtyForty)
+
+        let coordinator = DragToSnapCoordinator(
+            mouseTracker: mouseTracker,
+            detector: SnapDetector(edgeThreshold: 20),
+            previewManager: previewManager,
+            layoutPickerManager: layoutPickerManager,
+            commandDispatcher: commandDispatcher,
+            displayManager: displayManager,
+            accessibilityService: accessibilityService,
+            preferencesStore: store
+        )
+
+        coordinator.start()
+
+        // Drag to left outer edge
+        await coordinator.handleDrag(at: CGPoint(x: 2, y: 540))
+        try await Task.sleep(nanoseconds: 120_000_000)
+
+        #expect(previewManager.showPreviewCallCount == 1)
+        let expectedFrame = LayoutEngine().frame(for: .left60_40, in: primaryDisplay.visibleFrame, gap: 8, uniform: true)
+        #expect(previewManager.lastShownFrame == expectedFrame)
+
+        coordinator.stop()
+    }
 }

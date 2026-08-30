@@ -9,7 +9,11 @@ import Testing
 struct LayoutZoneTests {
 
     @Test func allCasesCount() {
-        #expect(LayoutZone.allCases.count == 14)
+        // 14 legacy + 7 new asymmetric/ratio zones (US-SNAP-008).
+        // Deprecated leftTwoThirds is excluded from allCases.
+        #expect(LayoutZone.allCases.count == 21)
+        #expect(LayoutZone.allCases.contains(.left60_40))
+        #expect(LayoutZone.allCases.contains(.right25))
     }
 
     @Test func normalizedRectCoordinates() {
@@ -27,6 +31,16 @@ struct LayoutZoneTests {
         #expect(LayoutZone.leftThird.normalizedRect.width == 1.0 / 3.0)
         #expect(LayoutZone.centerThird.normalizedRect.minX == 1.0 / 3.0)
         #expect(LayoutZone.rightThird.normalizedRect.minX == 2.0 / 3.0)
+
+        // US-SNAP-008 asymmetric ratios
+        #expect(LayoutZone.left60_40.normalizedRect == CGRect(x: 0, y: 0, width: 0.6, height: 1.0))
+        #expect(LayoutZone.right40_60.normalizedRect == CGRect(x: 0.6, y: 0, width: 0.4, height: 1.0))
+        #expect(LayoutZone.left80_20.normalizedRect == CGRect(x: 0, y: 0, width: 0.8, height: 1.0))
+        #expect(LayoutZone.right20_80.normalizedRect == CGRect(x: 0.8, y: 0, width: 0.2, height: 1.0))
+        #expect(LayoutZone.left25.normalizedRect == CGRect(x: 0, y: 0, width: 0.25, height: 1.0))
+        #expect(LayoutZone.center50.normalizedRect == CGRect(x: 0.25, y: 0, width: 0.5, height: 1.0))
+        #expect(LayoutZone.right25.normalizedRect == CGRect(x: 0.75, y: 0, width: 0.25, height: 1.0))
+        #expect(LayoutZone.left70_30.normalizedRect == CGRect(x: 0, y: 0, width: 0.7, height: 1.0))
     }
 
     @Test func codableSerialization() throws {

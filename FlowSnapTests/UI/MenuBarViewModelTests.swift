@@ -11,7 +11,8 @@ struct MenuBarViewModelTests {
 
     static func makeSimulatedEnvironment(
         isTrusted: Bool = true,
-        mockWindow: ManagedWindow? = nil
+        mockWindow: ManagedWindow? = nil,
+        mockSettingsPresenter: (any SettingsWindowPresenting)? = nil
     ) -> (MenuBarViewModel, MockAccessibilityService, MockWindowManaging, CommandDispatcher) {
         let primary = Display(
             id: 1,
@@ -33,7 +34,8 @@ struct MenuBarViewModelTests {
         let viewModel = MenuBarViewModel(
             accessibilityService: accessibilityService,
             commandDispatcher: commandDispatcher,
-            windowManager: windowManager
+            windowManager: windowManager,
+            settingsWindowPresenter: mockSettingsPresenter
         )
         return (viewModel, accessibilityService, windowManager, commandDispatcher)
     }
@@ -119,5 +121,23 @@ struct MenuBarViewModelTests {
         #expect(MenuBarAction.topRight.snapTarget == .topRight)
         #expect(MenuBarAction.bottomLeft.snapTarget == .bottomLeft)
         #expect(MenuBarAction.bottomRight.snapTarget == .bottomRight)
+    }
+
+    @Test func openSettingsDelegatesToSettingsPresenterAndDismisses() {
+        let mockPresenter = MockSettingsWindowPresenter()
+        let (viewModel, _, _, _) = Self.makeSimulatedEnvironment(
+            isTrusted: true,
+            mockSettingsPresenter: mockPresenter
+        )
+
+        var dismissCount = 0
+        viewModel.dismissHandler = {
+            dismissCount += 1
+        }
+
+        viewModel.openSettings()
+
+        #expect(mockPresenter.showSettingsWindowCallCount == 1)
+        #expect(dismissCount == 1)
     }
 }
