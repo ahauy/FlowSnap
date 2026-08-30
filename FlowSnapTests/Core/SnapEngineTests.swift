@@ -287,6 +287,15 @@ extension SnapEngineTests {
         // Explicit .left60_40 target is not overridden by defaultRatio .eightyTwenty
         let explicit60Frame = await engine.frame(for: .zone(.left60_40), window: window, on: display)
         #expect(explicit60Frame == LayoutEngine().frame(for: .left60_40, in: display.visibleFrame))
+
+        // Explicit .left50_50 / .right50_50 from Layout Picker are NOT overridden by defaultRatio .eightyTwenty
+        let fiftyFiftyLeftFrame = await engine.frame(for: .left50_50, window: window, on: display)
+        #expect(fiftyFiftyLeftFrame == LayoutEngine().frame(for: .left50_50, in: display.visibleFrame))
+        #expect(fiftyFiftyLeftFrame == CGRect(x: 0, y: 25, width: 720, height: 875))
+
+        let fiftyFiftyRightFrame = await engine.frame(for: .right50_50, window: window, on: display)
+        #expect(fiftyFiftyRightFrame == LayoutEngine().frame(for: .right50_50, in: display.visibleFrame))
+        #expect(fiftyFiftyRightFrame == CGRect(x: 720, y: 25, width: 720, height: 875))
     }
 
     @Test func defaultRatioCombinedWithWindowGap() async {

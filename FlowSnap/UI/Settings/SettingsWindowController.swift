@@ -36,6 +36,8 @@ public final class SettingsWindowController: NSObject, NSWindowDelegate, Setting
             if existingWindow.isMiniaturized {
                 existingWindow.deminiaturize(nil)
             }
+            existingWindow.level = .floating
+            existingWindow.orderFrontRegardless()
             existingWindow.makeKeyAndOrderFront(nil)
             NSApp.activate(ignoringOtherApps: true)
             return
@@ -48,10 +50,12 @@ public final class SettingsWindowController: NSObject, NSWindowDelegate, Setting
         newWindow.title = "FlowSnap Settings"
         newWindow.styleMask = [.titled, .closable, .miniaturizable]
         newWindow.isReleasedWhenClosed = false
+        newWindow.level = .floating
         newWindow.delegate = self
         newWindow.center()
 
         self.window = newWindow
+        newWindow.orderFrontRegardless()
         newWindow.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }

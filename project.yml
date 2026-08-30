@@ -63,6 +63,7 @@ targets:
       - path: FlowSnap/UI/MenuBar
       - path: FlowSnap/UI/LayoutPicker
       - path: FlowSnap/UI/Settings
+      - path: FlowSnap/UI/Divider
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flowsnap.lab

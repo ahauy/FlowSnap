@@ -61,4 +61,18 @@ public final class MockAccessibilityService: AccessibilityService, @unchecked Se
         guard isTrusted else { throw AccessibilityError.notTrusted }
         raiseCallCount += 1
     }
+
+    public var windowElementCallCount = 0
+    public var mockWindowElements: [CGWindowID: AXUIElement] = [:]
+    public func windowElement(for window: ManagedWindow) -> AXUIElement? {
+        guard isTrusted else { return nil }
+        windowElementCallCount += 1
+        return mockWindowElements[window.id] ?? mockFocusedElement
+    }
+
+    public var mockVisibleWindows: [ManagedWindow] = []
+    public func allVisibleManagedWindows() -> [ManagedWindow] {
+        guard isTrusted else { return [] }
+        return mockVisibleWindows
+    }
 }

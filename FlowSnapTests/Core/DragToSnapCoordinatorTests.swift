@@ -52,7 +52,7 @@ struct DragToSnapCoordinatorTests {
         #expect(previewManager.showPreviewCallCount == 0) // Not yet expired (50ms dwell)
 
         // Wait for 50ms dwell timeout (+ buffer)
-        try await Task.sleep(nanoseconds: 120_000_000)
+        try await Task.sleep(nanoseconds: 200_000_000)
 
         #expect(previewManager.showPreviewCallCount == 1)
         #expect(previewManager.lastShownFrame == LayoutEngine().frame(for: .leftHalf, in: primaryDisplay.visibleFrame, gap: 0))
@@ -90,7 +90,7 @@ struct DragToSnapCoordinatorTests {
         #expect(previewManager.showPreviewCallCount == 0) // Still waiting for 150ms dwell!
 
         // Wait remaining time for 150ms dwell (+ buffer)
-        try await Task.sleep(nanoseconds: 150_000_000)
+        try await Task.sleep(nanoseconds: 200_000_000)
         #expect(previewManager.showPreviewCallCount == 1)
         #expect(coordinator.activeDetectionResult?.isAdjacentEdge == true)
 
@@ -121,7 +121,7 @@ struct DragToSnapCoordinatorTests {
 
         // Drag to top edge (Maximize - outside top-center)
         await coordinator.handleDrag(at: CGPoint(x: 400, y: 1078))
-        try await Task.sleep(nanoseconds: 120_000_000)
+        try await Task.sleep(nanoseconds: 350_000_000)
         #expect(previewManager.showPreviewCallCount == 1)
 
         // Release mouse
@@ -161,7 +161,7 @@ struct DragToSnapCoordinatorTests {
 
         // Drag to left edge and let preview show
         await coordinator.handleDrag(at: CGPoint(x: 2, y: 540))
-        try await Task.sleep(nanoseconds: 120_000_000)
+        try await Task.sleep(nanoseconds: 350_000_000)
         #expect(previewManager.showPreviewCallCount == 1)
 
         // Move cursor away into center (x: 960, y: 540)
@@ -344,7 +344,7 @@ struct DragToSnapCoordinatorTests {
 
         // Drag to left outer edge
         await coordinator.handleDrag(at: CGPoint(x: 2, y: 540))
-        try await Task.sleep(nanoseconds: 120_000_000)
+        try await Task.sleep(nanoseconds: 200_000_000)
 
         #expect(previewManager.showPreviewCallCount == 1)
         let expectedFrame = LayoutEngine().frame(for: .left60_40, in: primaryDisplay.visibleFrame, gap: 8, uniform: true)

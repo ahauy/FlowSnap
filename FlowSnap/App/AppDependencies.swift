@@ -46,7 +46,7 @@ public final class AppDependencies {
     public lazy var mouseDragTracker: MouseDragTracking = MouseDragTracker()
     public lazy var snapDetector: SnapDetecting = SnapDetector()
     public lazy var snapPreviewManager: SnapPreviewManaging = SnapPreviewPanel.shared
-    public lazy var layoutPickerManager: SnapLayoutPickerManaging = SnapLayoutPickerManager.shared
+    public lazy var layoutPickerManager: SnapLayoutPickerManaging = SnapLayoutPickerManager(preferencesStore: preferencesStore)
     public lazy var dragToSnapCoordinator: DragToSnapCoordinator = DragToSnapCoordinator(
         mouseTracker: mouseDragTracker,
         detector: snapDetector,
@@ -56,6 +56,22 @@ public final class AppDependencies {
         displayManager: displayManager,
         accessibilityService: accessibilityService,
         preferencesStore: preferencesStore
+    )
+
+    // MARK: - Adaptive Divider
+
+    public lazy var collinearDetector: CollinearEdgeDetecting = CollinearEdgeDetector()
+    public lazy var resizeThrottler: LiveResizeThrottling = LiveResizeThrottler(fps: 60.0)
+    public lazy var adaptiveDividerOverlayPanel: AdaptiveDividerOverlayPanel = AdaptiveDividerOverlayPanel.shared
+    public lazy var adaptiveDividerCoordinator: AdaptiveDividerCoordinator = AdaptiveDividerCoordinator(
+        detector: collinearDetector,
+        windowManager: windowManager,
+        displayManager: displayManager,
+        throttler: resizeThrottler,
+        preferencesStore: preferencesStore,
+        accessibilityService: accessibilityService,
+        windowRegistry: windowRegistry,
+        overlayManager: adaptiveDividerOverlayPanel
     )
 
     public init() {}

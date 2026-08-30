@@ -1,3 +1,4 @@
+import ApplicationServices
 import CoreGraphics
 import Foundation
 @testable import FlowSnap
@@ -21,6 +22,10 @@ public final class MockWindowManaging: WindowManaging {
     }
 
     public func move(_ window: ManagedWindow, to frame: CGRect) async throws {
+        try await move(window, to: frame, element: nil)
+    }
+
+    public func move(_ window: ManagedWindow, to frame: CGRect, element: AXUIElement?) async throws {
         moveCallCount += 1
         movedWindows.append((window, frame))
     }

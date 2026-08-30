@@ -29,10 +29,10 @@ public final class SnapLayoutPickerPanel: NSPanel {
         updateView(hoveredSlotId: nil)
     }
 
-    /// Updates the hosted SwiftUI view with the current hovered slot state.
-    public func updateView(hoveredSlotId: String?) {
+    /// Updates the hosted SwiftUI view with the current hovered slot state and layout templates.
+    public func updateView(hoveredSlotId: String?, templates: [LayoutTemplate] = LayoutTemplate.standardTemplates) {
         let view = SnapLayoutPickerView(
-            templates: LayoutTemplate.standardTemplates,
+            templates: templates,
             hoveredSlotId: hoveredSlotId
         )
         if let hostingView {

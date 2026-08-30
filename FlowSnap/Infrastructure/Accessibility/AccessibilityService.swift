@@ -30,4 +30,10 @@ public protocol AccessibilityService: Sendable {
 
     /// Bring a window to the front.
     func raise(_ window: AXUIElement) throws
+
+    /// Resolves the specific AXUIElement for a given ManagedWindow.
+    func windowElement(for window: ManagedWindow) -> AXUIElement?
+
+    /// Queries all visible on-screen windows from the macOS Window Server.
+    func allVisibleManagedWindows() -> [ManagedWindow]
 }

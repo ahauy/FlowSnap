@@ -27,8 +27,8 @@ struct SnapLayoutPickerManagerTests {
         let twoCol = templates[0]
         #expect(twoCol.kind == .twoColumnEqual)
         #expect(twoCol.slots.count == 2)
-        #expect(twoCol.slots[0].target == .leftHalf)
-        #expect(twoCol.slots[1].target == .rightHalf)
+        #expect(twoCol.slots[0].target == .left50_50)
+        #expect(twoCol.slots[1].target == .right50_50)
 
         // 2. Two Column Asymmetric (70/30)
         let twoColAsym = templates[1]
@@ -53,6 +53,25 @@ struct SnapLayoutPickerManagerTests {
         #expect(fourQ.slots[1].target == .topRight)
         #expect(fourQ.slots[2].target == .bottomLeft)
         #expect(fourQ.slots[3].target == .bottomRight)
+    }
+
+    @Test func dynamicTemplatesRespectPreferencesStoreRatio() {
+        let defaults = UserDefaults(suiteName: "test-picker-dynamic-\(UUID().uuidString)") ?? .standard
+        let store = PreferencesStore(defaults: defaults)
+        store.setDefaultRatio(.eightyTwenty)
+
+        let manager = SnapLayoutPickerManager(preferencesStore: store)
+        let templates = manager.currentTemplates
+
+        #expect(templates.count == 4)
+        // Card 1: 50/50
+        #expect(templates[0].kind == .twoColumnEqual)
+        #expect(templates[0].slots[0].target == .left50_50)
+
+        // Card 2: 80/20
+        #expect(templates[1].kind == LayoutTemplateKind(rawValue: "2-Column (80/20)"))
+        #expect(templates[1].slots[0].target == .zone(.left80_20))
+        #expect(templates[1].slots[1].target == .zone(.right20_80))
     }
 
     // MARK: - TC-TOP-004: Presentation & Hit-Testing

@@ -1,0 +1,32 @@
+# FlowSnap - Universal Worktree Include Configuration
+# Supported by Orca (Stably AI), Claude Code, and modern Agent Development Environments (ADE)
+# Paths listed here will be automatically symlinked/copied to every new worktree.
+
+# --- Universal Agents Workflow & Skills ---
+.agents/
+AGENTS.md
+GEMINI.md
+CLAUDE.md
+CODEBUDDY.md
+QODER.md
+opencode.jsonc
+
+# --- IDE & AI Tooling Rules ---
+.cursorrules
+.windsurfrules
+.mcp.json
+
+# --- AI Configuration & Graph Directories ---
+.code-review-graph/
+.claude/
+.codebuddy/
+.cursor/
+.gemini/
+.kiro/
+.qoder/
+.vscode/
+
+# --- Environment & Local Overrides ---
+.env
+.env.local
+.env.*.local

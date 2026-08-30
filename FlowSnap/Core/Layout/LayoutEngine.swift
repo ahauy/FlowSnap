@@ -84,9 +84,9 @@ public struct LayoutEngine: LayoutCalculating, Sendable {
         let r25X = zoneOriginX + q25Width + halfWidth + (2 * safeGap)
 
         switch zone {
-        case .leftHalf:
+        case .leftHalf, .left50_50:
             return CGRect(x: zoneOriginX, y: originY, width: leftWidth, height: totalHeight)
-        case .rightHalf:
+        case .rightHalf, .right50_50:
             return CGRect(x: rightX, y: originY, width: rightWidth, height: totalHeight)
         case .topHalf:
             return CGRect(x: zoneOriginX, y: topY, width: effectiveWidth, height: topHeight)

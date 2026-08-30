@@ -421,7 +421,7 @@ _Mục tiêu: Đưa trải nghiệm xếp cửa sổ lên tầm Tiling Window Ma
     - `docs/features/custom-ratios-window-gaps/README.md`
     - `docs/user-guides/custom-ratios-window-gaps.md`
 
-- [ ] **US-SNAP-009: Kéo Đường Phân cách Chung Đa Cửa sổ (Adaptive Multi-Window Divider Resize)**
+- [x] **US-SNAP-009: Kéo Đường Phân cách Chung Đa Cửa sổ (Adaptive Multi-Window Divider Resize)**
   - **Slug:** `adaptive-divider-resize`
   - **Effort:** L
   - **Context-budget:** multi-session
@@ -430,15 +430,15 @@ _Mục tiêu: Đưa trải nghiệm xếp cửa sổ lên tầm Tiling Window Ma
   - **Blocks:** `US-SNAP-010`
   - **Mô tả:** Cho phép kéo đường phân cách chung giữa các cửa sổ liền kề trong cùng layout để cùng lúc resize tất cả các cửa sổ có cạnh chung (collinear edge) mà không làm vỡ layout.
   - **Acceptance Criteria (AC):**
-    - [ ] Xây dựng cấu trúc dữ liệu `LayoutGraph` (BSP Tree / Constraint Graph) lưu mối quan hệ không gian giữa các cửa sổ đang thuộc cùng layout quản lý.
-    - [ ] Phát hiện cạnh chung trùng phương (Collinear Edge Detection): Khi con trỏ chuột hover vào khoảng phân cách giữa 2 hoặc 3 cửa sổ liền kề, đổi con trỏ thành resize cursor (`NSCursor.resizeLeftRight` hoặc `resizeUpDown`).
-    - [ ] Khi kéo đường phân cách chung: Resize đồng thời tất cả các cửa sổ có cạnh chạm vào đường đó (ví dụ kéo đường phân cách dọc sang phải thì VS Code rộng ra, cả Chrome và Terminal bên phải cùng thu hẹp lại).
-    - [ ] Tôn trọng kích thước tối thiểu (`minSize`) của từng ứng dụng, chặn không cho kéo đè làm mất cửa sổ.
+    - [x] Xây dựng cấu trúc dữ liệu `LayoutGraph` (BSP Tree / Constraint Graph) lưu mối quan hệ không gian giữa các cửa sổ đang thuộc cùng layout quản lý.
+    - [x] Phát hiện cạnh chung trùng phương (Collinear Edge Detection): Khi con trỏ chuột hover vào khoảng phân cách giữa 2 hoặc 3 cửa sổ liền kề, đổi con trỏ thành resize cursor (`NSCursor.resizeLeftRight` hoặc `resizeUpDown`).
+    - [x] Khi kéo đường phân cách chung: Resize đồng thời tất cả các cửa sổ có cạnh chạm vào đường đó (ví dụ kéo đường phân cách dọc sang phải thì VS Code rộng ra, cả Chrome và Terminal bên phải cùng thu hẹp lại).
+    - [x] Tôn trọng kích thước tối thiểu (`minSize`) của từng ứng dụng, chặn không cho kéo đè làm mất cửa sổ.
   - **Tasks:**
-    - [ ] `Domain`: Xây dựng cấu trúc `LayoutNode` và `LayoutGraph` biểu diễn cây phân chia không gian.
-    - [ ] `Core`: Cài đặt thuật toán phát hiện cạnh chung `CollinearEdgeDetector.swift`.
-    - [ ] `Core`: Cơ chế Live Resize điều tiết tần suất gọi Accessibility API (Debounce/Throttle) để giữ 60fps không giật lag.
-    - [ ] `Tests`: Test case mô phỏng layout 3 cửa sổ dạng chữ T (T-junction resize).
+    - [x] `Domain`: Xây dựng cấu trúc `LayoutNode` và `LayoutGraph` biểu diễn cây phân chia không gian.
+    - [x] `Core`: Cài đặt thuật toán phát hiện cạnh chung `CollinearEdgeDetector.swift`.
+    - [x] `Core`: Cơ chế Live Resize điều tiết tần suất gọi Accessibility API (Debounce/Throttle) để giữ 60fps không giật lag.
+    - [x] `Tests`: Test case mô phỏng layout 3 cửa sổ dạng chữ T (T-junction resize).
   - **Deliverables khi [x]:**
     - `.specify/features/adaptive-divider-resize/baseline.md` (SIGNED-OFF)
     - `docs/features/adaptive-divider-resize/README.md`
@@ -450,7 +450,7 @@ _Mục tiêu: Đưa trải nghiệm xếp cửa sổ lên tầm Tiling Window Ma
 
 _Mục tiêu: Xây dựng trung tâm điều khiển cấu hình tiện dụng, cho phép người dùng tùy biến phím tắt và thiết lập trải nghiệm theo ý muốn._
 
-- [ ] **US-SNAP-010: Giao diện Cài đặt SwiftUI & Tùy biến Phím tắt (Settings UI & Shortcut Customization)**
+- [x] **US-SNAP-010: Giao diện Cài đặt SwiftUI & Tùy biến Phím tắt (Settings UI & Shortcut Customization)**
   - **Slug:** `settings-shortcut-customization`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -459,15 +459,15 @@ _Mục tiêu: Xây dựng trung tâm điều khiển cấu hình tiện dụng, 
   - **Blocks:** `US-WORK-011`
   - **Mô tả:** Xây dựng cửa sổ Settings trực quan bằng SwiftUI cho phép cấu hình khởi động cùng hệ thống, điều chỉnh Window Gap, gán phím tắt tùy biến và xem quyền hạn.
   - **Acceptance Criteria (AC):**
-    - [ ] Cửa sổ Settings chia thành 4 tabs rõ ràng: General (Launch at login qua `SMAppService`, Gaps), Shortcuts (ghi phím tắt mới), Applications (quy tắc riêng từng app), About.
-    - [ ] Cho phép người dùng nhấp vào từng hành động snap để bắt tổ hợp phím mới (`ShortcutRecorderField`), kiểm tra xung đột với phím tắt hệ thống macOS.
-    - [ ] Tùy chọn bật/tắt tính năng Drag-to-snap, chỉnh độ trễ kích hoạt preview.
-    - [ ] Dữ liệu cấu hình tự động lưu trữ và đồng bộ tức thì qua `PreferencesStore` (`UserDefaults`).
+    - [x] Cửa sổ Settings chia thành 4 tabs rõ ràng: General (Launch at login qua `SMAppService`, Gaps), Shortcuts (ghi phím tắt mới), Applications (quy tắc riêng từng app), About.
+    - [x] Cho phép người dùng nhấp vào từng hành động snap để bắt tổ hợp phím mới (`ShortcutRecorderField`), kiểm tra xung đột với phím tắt hệ thống macOS.
+    - [x] Tùy chọn bật/tắt tính năng Drag-to-snap, chỉnh độ trễ kích hoạt preview.
+    - [x] Dữ liệu cấu hình tự động lưu trữ và đồng bộ tức thì qua `PreferencesStore` (`UserDefaults`).
   - **Tasks:**
-    - [ ] `UI`: Cài đặt `SettingsView.swift`, `GeneralSettingsView.swift`, `ShortcutSettingsView.swift`.
-    - [ ] `UI`: Component `ShortcutRecorderField.swift` bắt `NSEvent` keydown và chuyển đổi sang biểu tượng phím tắt (`⌘`, `⌥`, `⌃`, `⇧`).
-    - [ ] `Persistence`: Cài đặt `PreferencesStore.swift` lưu trữ trạng thái với `@AppStorage` và Combine publisher.
-    - [ ] `Tests`: Unit test serialization phím tắt và migration cấu hình.
+    - [x] `UI`: Cài đặt `SettingsView.swift`, `GeneralSettingsView.swift`, `ShortcutSettingsView.swift`.
+    - [x] `UI`: Component `ShortcutRecorderField.swift` bắt `NSEvent` keydown và chuyển đổi sang biểu tượng phím tắt (`⌘`, `⌥`, `⌃`, `⇧`).
+    - [x] `Persistence`: Cài đặt `PreferencesStore.swift` lưu trữ trạng thái với `@AppStorage` và Combine publisher.
+    - [x] `Tests`: Unit test serialization phím tắt và migration cấu hình.
   - **Deliverables khi [x]:**
     - `.specify/features/settings-shortcut-customization/baseline.md` (SIGNED-OFF)
     - `docs/features/settings-shortcut-customization/README.md`

@@ -68,6 +68,34 @@ public final class MockGlobalHotkeyManager: GlobalHotkeyManaging, @unchecked Sen
         return result
     }
 
+    @MainActor
+    @discardableResult
+    public func registerShortcuts(
+        from preferencesStore: PreferencesStore,
+        action: @escaping @Sendable (WindowCommand) -> Void
+    ) -> [HotkeyBinding] {
+        unregisterAll()
+        var idCounter: UInt32 = 1
+        var result: [HotkeyBinding] = []
+
+        for actionType in ShortcutAction.allCases {
+            guard let shortcut = preferencesStore.shortcut(for: actionType) else {
+                continue
+            }
+            let binding = HotkeyBinding(
+                id: idCounter,
+                shortcut: shortcut,
+                command: actionType.defaultCommand
+            )
+            register(binding, action: action)
+            if let active = activeBindings.first(where: { $0.id == idCounter }) {
+                result.append(active)
+            }
+            idCounter += 1
+        }
+        return result
+    }
+
     public func unregisterAll() {
         lock.withLock {
             unregisterAllCallCount += 1

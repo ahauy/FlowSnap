@@ -27,6 +27,7 @@ struct SettingsWindowControllerTests {
         #expect(window.styleMask.contains(.closable))
         #expect(window.styleMask.contains(.miniaturizable))
         #expect(window.isReleasedWhenClosed == false)
+        #expect(window.level == .floating)
         #expect(window.isVisible == true)
 
         // Close after test

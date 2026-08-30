@@ -1,3 +1,4 @@
+import ApplicationServices
 import CoreGraphics
 import Foundation
 
@@ -19,15 +20,26 @@ public final class WindowManager: WindowManaging {
     }
 
     public func move(_ window: ManagedWindow, to frame: CGRect) async throws {
+        try await move(window, to: frame, element: nil)
+    }
+
+    public func move(_ window: ManagedWindow, to frame: CGRect, element: AXUIElement?) async throws {
         // Prevent snapping FlowSnap's own windows
         if window.pid == ProcessInfo.processInfo.processIdentifier {
             return
         }
-        guard let element = accessibilityService.focusedWindow() else {
+        let targetElement: AXUIElement
+        if let element {
+            targetElement = element
+        } else if let resolved = accessibilityService.windowElement(for: window) {
+            targetElement = resolved
+        } else if let focused = accessibilityService.focusedWindow() {
+            targetElement = focused
+        } else {
             throw AccessibilityError.cannotComplete
         }
 
-        try accessibilityService.setFrame(frame, for: element)
+        try accessibilityService.setFrame(frame, for: targetElement)
     }
 
     public func focus(_ window: ManagedWindow) async throws {
@@ -35,7 +47,12 @@ public final class WindowManager: WindowManaging {
         if window.pid == ProcessInfo.processInfo.processIdentifier {
             return
         }
-        guard let element = accessibilityService.focusedWindow() else {
+        let element: AXUIElement
+        if let targetElement = accessibilityService.windowElement(for: window) {
+            element = targetElement
+        } else if let focused = accessibilityService.focusedWindow() {
+            element = focused
+        } else {
             throw AccessibilityError.cannotComplete
         }
         try accessibilityService.raise(element)
