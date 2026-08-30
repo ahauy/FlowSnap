@@ -208,7 +208,17 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
                 hoveredDivider = nil
                 setCursor(.arrow)
             }
-            overlayManager?.hide(animated: true)
+            if !dividers.isEmpty {
+                overlayManager?.show(
+                    containerFrame: container,
+                    windows: displayWindows,
+                    dividers: dividers,
+                    activeDivider: nil,
+                    isDragging: false
+                )
+            } else {
+                overlayManager?.hide(animated: true)
+            }
         }
     }
 
@@ -251,12 +261,13 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         let gap = await resolveGap()
         let container = await resolveContainer(at: point)
         let displayWindows = filterWindows(for: container)
+        let windowsToResize = initialWindows.isEmpty ? displayWindows : Array(initialWindows.values)
 
         let targetCoordinate = (divider.orientation == .vertical) ? point.x : point.y
         let resizedFrames = detector.computeResizedFrames(
             for: divider,
             targetCoordinate: targetCoordinate,
-            windows: displayWindows.isEmpty ? managedWindows : displayWindows,
+            windows: windowsToResize.isEmpty ? managedWindows : windowsToResize,
             containerFrame: container,
             gap: gap
         )
@@ -308,7 +319,23 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         initialWindows.removeAll()
         throttler.reset()
         setCursor(.arrow)
-        overlayManager?.hide(animated: true)
+
+        let gap = await resolveGap()
+        let container = await resolveContainer(at: point)
+        let displayWindows = filterWindows(for: container)
+        let dividers = detector.detectDividers(in: displayWindows, containerFrame: container, gap: gap, tolerance: 6.0)
+
+        if !dividers.isEmpty {
+            overlayManager?.show(
+                containerFrame: container,
+                windows: displayWindows,
+                dividers: dividers,
+                activeDivider: nil,
+                isDragging: false
+            )
+        } else {
+            overlayManager?.hide(animated: true)
+        }
     }
 
     private func setCursor(_ cursor: NSCursor) {

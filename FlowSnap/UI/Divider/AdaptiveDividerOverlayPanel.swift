@@ -15,6 +15,9 @@ public final class AdaptiveDividerOverlayPanel: NSPanel, AdaptiveDividerOverlayM
 
     public static let shared = AdaptiveDividerOverlayPanel()
 
+    public static let restingAlpha: CGFloat = 0.22
+    public static let activeAlpha: CGFloat = 1.0
+
     public let overlayView: AdaptiveDividerOverlayView
 
     public var isOverlayVisible: Bool {
@@ -62,16 +65,19 @@ public final class AdaptiveDividerOverlayPanel: NSPanel, AdaptiveDividerOverlayM
             isDragging: isDragging
         )
 
-        if !isOverlayVisible {
-            alphaValue = 0.0
+        let targetAlpha: CGFloat = (activeDivider != nil || isDragging) ? Self.activeAlpha : Self.restingAlpha
+
+        if !isVisible {
+            alphaValue = targetAlpha
             orderFrontRegardless()
+        } else if isDragging {
+            alphaValue = targetAlpha
+        } else if abs(alphaValue - targetAlpha) > 0.01 {
             NSAnimationContext.runAnimationGroup { context in
                 context.duration = 0.12
                 context.timingFunction = CAMediaTimingFunction(name: .easeOut)
-                animator().alphaValue = 1.0
+                animator().alphaValue = targetAlpha
             }
-        } else {
-            alphaValue = 1.0
         }
     }
 
@@ -95,9 +101,19 @@ public final class AdaptiveDividerOverlayPanel: NSPanel, AdaptiveDividerOverlayM
             isDragging: isDragging
         )
 
+        let targetAlpha: CGFloat = (activeDivider != nil || isDragging) ? Self.activeAlpha : Self.restingAlpha
+
         if !isVisible {
-            alphaValue = 1.0
+            alphaValue = targetAlpha
             orderFrontRegardless()
+        } else if isDragging || abs(alphaValue - targetAlpha) <= 0.01 {
+            alphaValue = targetAlpha
+        } else {
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.12
+                context.timingFunction = CAMediaTimingFunction(name: .easeOut)
+                animator().alphaValue = targetAlpha
+            }
         }
     }
 
@@ -170,7 +186,7 @@ public final class AdaptiveDividerOverlayView: NSView {
 
     private func setupLayers() {
         wantsLayer = true
-        layer?.masksToBounds = false
+        layer?.masksToBounds = true
         layer?.addSublayer(windowBordersContainerLayer)
         layer?.addSublayer(dividersContainerLayer)
     }
@@ -253,7 +269,7 @@ public final class AdaptiveDividerOverlayView: NSView {
         dividersContainerLayer.sublayers?.forEach { $0.removeFromSuperlayer() }
 
         for divider in dividers {
-            let isActive = (divider.id == activeDivider?.id || (activeDivider == nil && dividers.count == 1))
+            let isActive = (activeDivider != nil && divider.id == activeDivider?.id)
             let barLayer = CALayer()
             let handleLayer = CALayer()
 

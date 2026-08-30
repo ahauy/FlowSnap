@@ -284,10 +284,10 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
 
             for id in divider.leadingWindowIDs {
                 guard let window = windowDict[id] else { continue }
-                let originX = max(containerFrame.minX, window.frame.minX)
-                let newWidth = max(0, leadingEdge - originX)
+                let initialMinX = window.frame.minX
+                let newWidth = max(0, leadingEdge - initialMinX)
                 result[id] = CGRect(
-                    x: originX,
+                    x: initialMinX,
                     y: window.frame.minY,
                     width: newWidth,
                     height: window.frame.height
@@ -296,8 +296,8 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
 
             for id in divider.trailingWindowIDs {
                 guard let window = windowDict[id] else { continue }
-                let targetMaxX = min(containerFrame.maxX, window.frame.maxX)
-                let newWidth = max(0, targetMaxX - trailingEdge)
+                let initialMaxX = window.frame.maxX
+                let newWidth = max(0, initialMaxX - trailingEdge)
                 result[id] = CGRect(
                     x: trailingEdge,
                     y: window.frame.minY,
@@ -331,11 +331,11 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
 
             for id in divider.leadingWindowIDs {
                 guard let window = windowDict[id] else { continue }
-                let originY = max(containerFrame.minY, window.frame.minY)
-                let newHeight = max(0, leadingEdge - originY)
+                let initialMinY = window.frame.minY
+                let newHeight = max(0, leadingEdge - initialMinY)
                 result[id] = CGRect(
                     x: window.frame.minX,
-                    y: originY,
+                    y: initialMinY,
                     width: window.frame.width,
                     height: newHeight
                 )
@@ -343,8 +343,8 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
 
             for id in divider.trailingWindowIDs {
                 guard let window = windowDict[id] else { continue }
-                let targetMaxY = min(containerFrame.maxY, window.frame.maxY)
-                let newHeight = max(0, targetMaxY - trailingEdge)
+                let initialMaxY = window.frame.maxY
+                let newHeight = max(0, initialMaxY - trailingEdge)
                 result[id] = CGRect(
                     x: window.frame.minX,
                     y: trailingEdge,

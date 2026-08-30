@@ -42,6 +42,7 @@ struct AdaptiveDividerOverlayPanelTests {
         let panel = AdaptiveDividerOverlayPanel()
         let (windows, dividers) = makeSampleData()
 
+        // Active hover / drag -> alphaValue becomes 1.0
         panel.show(
             containerFrame: container,
             windows: windows,
@@ -58,6 +59,47 @@ struct AdaptiveDividerOverlayPanelTests {
         panel.hide(animated: false)
         #expect(panel.alphaValue == 0.0)
         #expect(panel.isOverlayVisible == false)
+    }
+
+    @Test("Persistent resting outline retains alpha 0.22 when idle and 1.0 on hover or drag")
+    func restingAlphaTransition() {
+        let panel = AdaptiveDividerOverlayPanel()
+        let (windows, dividers) = makeSampleData()
+
+        #expect(AdaptiveDividerOverlayPanel.restingAlpha == 0.22)
+        #expect(AdaptiveDividerOverlayPanel.activeAlpha == 1.0)
+
+        // 1. Show idle/resting (no active divider, not dragging) -> alpha is 0.22
+        panel.show(
+            containerFrame: container,
+            windows: windows,
+            dividers: dividers,
+            activeDivider: nil,
+            isDragging: false
+        )
+        #expect(panel.isOverlayVisible == true)
+        #expect(panel.overlayView.activeDivider == nil)
+
+        // 2. Active hover -> alpha is 1.0
+        panel.show(
+            containerFrame: container,
+            windows: windows,
+            dividers: dividers,
+            activeDivider: dividers.first,
+            isDragging: false
+        )
+        #expect(panel.isOverlayVisible == true)
+        #expect(panel.overlayView.activeDivider?.id == dividers.first?.id)
+
+        // 3. Live drag -> alpha is 1.0
+        panel.update(
+            containerFrame: container,
+            windows: windows,
+            dividers: dividers,
+            activeDivider: dividers.first,
+            isDragging: true
+        )
+        #expect(panel.alphaValue == 1.0)
     }
 
     @Test("Compute seam rect creates an 8-10px interactive seam")

@@ -82,7 +82,7 @@ struct AdaptiveDividerCoordinatorTests {
         return (coordinator, mockWM, mockDM, mockOverlay)
     }
 
-    @Test("Hover over vertical divider changes cursor to resizeLeftRight and reveals overlay")
+    @Test("Hover over vertical divider changes cursor to resizeLeftRight and reveals overlay with persistent resting state")
     func hoverOverVerticalDividerChangesCursor() async {
         let (sut, _, _, mockOverlay) = makeSUT()
         let w1 = ManagedWindow(id: 1, pid: 10, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
@@ -98,12 +98,13 @@ struct AdaptiveDividerCoordinatorTests {
         #expect(mockOverlay?.isOverlayVisible == true)
         #expect(mockOverlay?.lastActiveDivider?.orientation == .vertical)
 
-        // Move away
+        // Move away within the same display (transitions to resting outline with activeDivider == nil)
         await sut.handleMouseMoved(to: CGPoint(x: 200, y: 450))
         #expect(sut.hoveredDivider == nil)
         #expect(sut.currentCursor == .arrow)
-        #expect(mockOverlay?.hideCallCount == 1)
-        #expect(mockOverlay?.isOverlayVisible == false)
+        #expect(mockOverlay?.showCallCount == 2)
+        #expect(mockOverlay?.isOverlayVisible == true)
+        #expect(mockOverlay?.lastActiveDivider == nil)
     }
 
     @Test("Hover over horizontal divider changes cursor to resizeUpDown")
@@ -157,10 +158,11 @@ struct AdaptiveDividerCoordinatorTests {
         #expect(mockOverlay?.updateCallCount ?? 0 >= 1)
         #expect(mockOverlay?.lastIsDragging == true)
 
-        // Mouse up ends session
+        // Mouse up ends session and restores resting outline
         await sut.handleMouseUp(at: CGPoint(x: 800, y: 300))
         #expect(sut.isResizing == false)
         #expect(sut.activeDivider == nil)
         #expect(sut.currentCursor == .arrow)
+        #expect(mockOverlay?.lastActiveDivider == nil)
     }
 }

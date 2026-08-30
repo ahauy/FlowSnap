@@ -237,4 +237,52 @@ struct CollinearEdgeDetectorTests {
         // Verify left window maxX meets right window minX with zero overlap
         #expect(resizedLeft[1]?.maxX == resizedLeft[2]?.minX)
     }
+
+    @Test("Hard wall screen boundaries enforce strict minX and maxX walls with minWidth 300px")
+    func hardWallScreenBoundariesWithZeroDrift() {
+        let hardWallDetector = CollinearEdgeDetector(defaultMinWidth: 300, defaultMinHeight: 200)
+        let display = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let left = ManagedWindow(id: 1, pid: 1, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let right = ManagedWindow(id: 2, pid: 2, title: "Right", frame: CGRect(x: 720, y: 0, width: 720, height: 900))
+
+        let dividers = hardWallDetector.detectDividers(in: [left, right], containerFrame: display, gap: 16.0)
+        #expect(dividers.count == 1)
+        let divider = dividers.first!
+
+        // 1. Extreme drag left past minimum width (e.g. target X = 50)
+        let clampedMin = hardWallDetector.computeResizedFrames(
+            for: divider,
+            targetCoordinate: 50,
+            windows: [left, right],
+            containerFrame: display,
+            gap: 16.0
+        )
+        // Leading window minWidth is 300; gap is 16; divider locked at 308 (leadingEdge = 300, trailingEdge = 316)
+        let leftFrame = clampedMin[1]!
+        let rightFrame = clampedMin[2]!
+        #expect(leftFrame.origin.x == 0) // Strictly locked to container minX
+        #expect(leftFrame.width == 300) // Hard-locked at minWidth 300px
+        #expect(rightFrame.origin.x == 316) // trailingEdge = 308 + 8 = 316
+        #expect(rightFrame.maxX == 1440) // Strictly locked to container maxX
+        #expect(rightFrame.width == 1124) // 1440 - 316 = 1124
+        #expect(rightFrame.origin.x - leftFrame.maxX == 16.0) // Gap preserved
+
+        // 2. Extreme drag right past minimum width (e.g. target X = 1400)
+        let clampedMax = hardWallDetector.computeResizedFrames(
+            for: divider,
+            targetCoordinate: 1400,
+            windows: [left, right],
+            containerFrame: display,
+            gap: 16.0
+        )
+        // Trailing window minWidth is 300; divider locked at 1132 (leadingEdge = 1124, trailingEdge = 1140)
+        let leftFrameMax = clampedMax[1]!
+        let rightFrameMax = clampedMax[2]!
+        #expect(leftFrameMax.origin.x == 0) // Strictly locked to container minX
+        #expect(leftFrameMax.width == 1124) // 1124 - 0 = 1124
+        #expect(rightFrameMax.origin.x == 1140) // trailingEdge = 1132 + 8 = 1140
+        #expect(rightFrameMax.maxX == 1440) // Strictly locked to container maxX
+        #expect(rightFrameMax.width == 300) // Hard-locked at minWidth 300px
+        #expect(rightFrameMax.origin.x - leftFrameMax.maxX == 16.0) // Gap preserved
+    }
 }
