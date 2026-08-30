@@ -15,7 +15,15 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     private let displayManager: DisplayManaging
     private let throttler: LiveResizeThrottling
     private let preferencesStore: PreferencesStore?
+    private let accessibilityService: AccessibilityService?
+    private let windowRegistry: WindowRegistry?
 
+    private var moveMonitor: Any?
+    private var downMonitor: Any?
+    private var dragMonitor: Any?
+    private var upMonitor: Any?
+
+    public private(set) var isTracking: Bool = false
     public private(set) var managedWindows: [ManagedWindow] = []
     public private(set) var activeDivider: CollinearEdge?
     public private(set) var hoveredDivider: CollinearEdge?
@@ -27,17 +35,96 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         windowManager: WindowManaging,
         displayManager: DisplayManaging,
         throttler: LiveResizeThrottling = LiveResizeThrottler(fps: 60.0),
-        preferencesStore: PreferencesStore? = nil
+        preferencesStore: PreferencesStore? = nil,
+        accessibilityService: AccessibilityService? = nil,
+        windowRegistry: WindowRegistry? = nil
     ) {
         self.detector = detector
         self.windowManager = windowManager
         self.displayManager = displayManager
         self.throttler = throttler
         self.preferencesStore = preferencesStore
+        self.accessibilityService = accessibilityService
+        self.windowRegistry = windowRegistry
     }
+
+    // MARK: - Lifecycle
+
+    public func start() {
+        guard !isTracking else { return }
+        isTracking = true
+        dividerLogger.debug("Starting AdaptiveDividerCoordinator global monitors")
+
+        moveMonitor = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self, self.isTracking else { return }
+                let point = NSEvent.mouseLocation
+                await self.refreshWindowsIfNeeded()
+                await self.handleMouseMoved(to: point)
+            }
+        }
+
+        downMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self, self.isTracking else { return }
+                let point = NSEvent.mouseLocation
+                await self.refreshWindowsIfNeeded()
+                _ = await self.handleMouseDown(at: point)
+            }
+        }
+
+        dragMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDragged) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self, self.isTracking else { return }
+                let point = NSEvent.mouseLocation
+                await self.handleMouseDragged(to: point)
+            }
+        }
+
+        upMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseUp) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self, self.isTracking else { return }
+                let point = NSEvent.mouseLocation
+                await self.handleMouseUp(at: point)
+            }
+        }
+    }
+
+    public func stop() {
+        guard isTracking else { return }
+        dividerLogger.debug("Stopping AdaptiveDividerCoordinator global monitors")
+        if let moveMonitor { NSEvent.removeMonitor(moveMonitor); self.moveMonitor = nil }
+        if let downMonitor { NSEvent.removeMonitor(downMonitor); self.downMonitor = nil }
+        if let dragMonitor { NSEvent.removeMonitor(dragMonitor); self.dragMonitor = nil }
+        if let upMonitor { NSEvent.removeMonitor(upMonitor); self.upMonitor = nil }
+        isTracking = false
+        isResizing = false
+        activeDivider = nil
+        hoveredDivider = nil
+        setCursor(.arrow)
+    }
+
+    // MARK: - Window Management
 
     public func updateWindows(_ windows: [ManagedWindow]) {
         self.managedWindows = windows
+    }
+
+    private func refreshWindowsIfNeeded() async {
+        if isResizing { return }
+        if let registry = windowRegistry {
+            let tracked = await registry.allWindows
+            if tracked.count >= 2 {
+                self.managedWindows = tracked
+                return
+            }
+        }
+        if let service = accessibilityService {
+            let visible = service.allVisibleManagedWindows()
+            if visible.count >= 2 {
+                self.managedWindows = visible
+            }
+        }
     }
 
     private func resolveContainer(at point: CGPoint) async -> CGRect {
@@ -110,12 +197,15 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             gap: gap
         )
 
+        let primaryHeight = await displayManager.primaryScreenHeight
         for (id, frame) in resizedFrames {
             if let index = managedWindows.firstIndex(where: { $0.id == id }) {
                 var window = managedWindows[index]
                 window.frame = frame
                 managedWindows[index] = window
-                try? await windowManager.move(window, to: frame)
+                let axFrame = CoordinateTransformer.toAX(rect: frame, primaryScreenHeight: primaryHeight)
+                try? await windowManager.move(window, to: axFrame)
+                await windowRegistry?.update(window)
             }
         }
     }

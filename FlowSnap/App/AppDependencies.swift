@@ -58,5 +58,19 @@ public final class AppDependencies {
         preferencesStore: preferencesStore
     )
 
+    // MARK: - Adaptive Divider
+
+    public lazy var collinearDetector: CollinearEdgeDetecting = CollinearEdgeDetector()
+    public lazy var resizeThrottler: LiveResizeThrottling = LiveResizeThrottler(fps: 60.0)
+    public lazy var adaptiveDividerCoordinator: AdaptiveDividerCoordinator = AdaptiveDividerCoordinator(
+        detector: collinearDetector,
+        windowManager: windowManager,
+        displayManager: displayManager,
+        throttler: resizeThrottler,
+        preferencesStore: preferencesStore,
+        accessibilityService: accessibilityService,
+        windowRegistry: windowRegistry
+    )
+
     public init() {}
 }

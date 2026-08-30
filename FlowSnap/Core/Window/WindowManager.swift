@@ -1,3 +1,4 @@
+import ApplicationServices
 import CoreGraphics
 import Foundation
 
@@ -23,7 +24,12 @@ public final class WindowManager: WindowManaging {
         if window.pid == ProcessInfo.processInfo.processIdentifier {
             return
         }
-        guard let element = accessibilityService.focusedWindow() else {
+        let element: AXUIElement
+        if let targetElement = accessibilityService.windowElement(for: window) {
+            element = targetElement
+        } else if let focused = accessibilityService.focusedWindow() {
+            element = focused
+        } else {
             throw AccessibilityError.cannotComplete
         }
 
@@ -35,7 +41,12 @@ public final class WindowManager: WindowManaging {
         if window.pid == ProcessInfo.processInfo.processIdentifier {
             return
         }
-        guard let element = accessibilityService.focusedWindow() else {
+        let element: AXUIElement
+        if let targetElement = accessibilityService.windowElement(for: window) {
+            element = targetElement
+        } else if let focused = accessibilityService.focusedWindow() {
+            element = focused
+        } else {
             throw AccessibilityError.cannotComplete
         }
         try accessibilityService.raise(element)

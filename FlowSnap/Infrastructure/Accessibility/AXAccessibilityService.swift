@@ -268,4 +268,57 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
         let hash = UInt32(bitPattern: Int32(pid)) ^ UInt32(max(0, Int(frame.origin.x)))
         return CGWindowID(hash)
     }
+
+    // MARK: - Specific Window Resolution
+
+    public func windowElement(for window: ManagedWindow) -> AXUIElement? {
+        guard isTrusted else { return nil }
+        let axWindows = windows(of: window.pid)
+        if axWindows.count == 1 {
+            return axWindows.first
+        }
+        for el in axWindows {
+            if let f = frame(of: el) {
+                let deltaX = abs(f.origin.x - window.frame.origin.x)
+                let deltaY = abs(f.origin.y - window.frame.origin.y)
+                let deltaW = abs(f.size.width - window.frame.size.width)
+                let deltaH = abs(f.size.height - window.frame.size.height)
+                if deltaX < 30 && deltaY < 30 && deltaW < 30 && deltaH < 30 {
+                    return el
+                }
+            }
+        }
+        return axWindows.first
+    }
+
+    public func allVisibleManagedWindows() -> [ManagedWindow] {
+        guard isTrusted else { return [] }
+        let windowList = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
+        var results: [ManagedWindow] = []
+        let currentPID = ProcessInfo.processInfo.processIdentifier
+
+        for info in windowList {
+            guard let layer = info[kCGWindowLayer as String] as? Int, layer == 0 else { continue }
+            guard let pid = info[kCGWindowOwnerPID as String] as? pid_t, pid != currentPID else { continue }
+            guard let boundsDict = info[kCGWindowBounds as String] as? [String: Any],
+                  let windowBounds = CGRect(dictionaryRepresentation: boundsDict as CFDictionary) else { continue }
+
+            if windowBounds.width < 100 || windowBounds.height < 100 { continue }
+
+            let windowNumber = info[kCGWindowNumber as String] as? CGWindowID ?? 0
+            let title = (info[kCGWindowName as String] as? String) ?? (info[kCGWindowOwnerName as String] as? String) ?? "Window"
+
+            results.append(ManagedWindow(
+                id: windowNumber,
+                pid: pid,
+                bundleIdentifier: nil,
+                title: title,
+                frame: windowBounds,
+                isMinimized: false,
+                isResizable: true,
+                kind: .normal
+            ))
+        }
+        return results
+    }
 }

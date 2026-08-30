@@ -41,11 +41,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Start Drag-to-Snap observation
         dependencies.dragToSnapCoordinator.start()
+
+        // Start Adaptive Multi-Window Divider observation
+        dependencies.adaptiveDividerCoordinator.start()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         dependencies.hotkeyManager.unregisterAll()
         dependencies.dragToSnapCoordinator.stop()
+        dependencies.adaptiveDividerCoordinator.stop()
         cancellables.removeAll()
     }
 }

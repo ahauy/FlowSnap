@@ -9,7 +9,7 @@ import Foundation
 public struct SnapEngine: Sendable {
 
     private let layoutEngine: LayoutCalculating
-    private let windowRegistry: WindowRegistry
+    public let windowRegistry: WindowRegistry
     private let displayManager: (any DisplayManaging)?
     private let preferencesStore: PreferencesStore?
 

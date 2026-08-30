@@ -153,6 +153,10 @@ public final class CommandDispatcher: CommandDispatching {
 
         // Move window via WindowManager atomically with smart ordering
         try await windowManager.move(window, to: axFrame)
+        var updatedWindow = window
+        updatedWindow.frame = targetAppKitFrame
+        await snapEngine.windowRegistry.update(updatedWindow)
+
         dispatcherLogger.info("Executed snap \(String(describing: target)) on window \(window.id) -> frame \(String(describing: axFrame))")
 
         _ = await morphTask
