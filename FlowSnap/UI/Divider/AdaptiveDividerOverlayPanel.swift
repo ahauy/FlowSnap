@@ -205,6 +205,24 @@ public final class AdaptiveDividerOverlayView: NSView {
     private func renderWindowOutlines() {
         windowBordersContainerLayer.sublayers?.forEach { $0.removeFromSuperlayer() }
 
+        // 1. Full Screen / Desktop Workspace Container Border Outline
+        let containerBorder = CAShapeLayer()
+        let containerInsetRect = bounds.insetBy(
+            dx: Self.hairlineBorderWidth / 2.0,
+            dy: Self.hairlineBorderWidth / 2.0
+        )
+        containerBorder.path = CGPath(
+            roundedRect: containerInsetRect,
+            cornerWidth: 12.0,
+            cornerHeight: 12.0,
+            transform: nil
+        )
+        containerBorder.fillColor = nil
+        containerBorder.strokeColor = NSColor.controlAccentColor.withAlphaComponent(0.45).cgColor
+        containerBorder.lineWidth = Self.hairlineBorderWidth * 1.5
+        windowBordersContainerLayer.addSublayer(containerBorder)
+
+        // 2. Individual Window Outlines
         for window in windows {
             let localRect = window.frame.offsetBy(
                 dx: -containerFrame.minX,
