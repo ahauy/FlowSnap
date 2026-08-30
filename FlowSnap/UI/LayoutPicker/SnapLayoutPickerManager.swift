@@ -13,6 +13,7 @@ public final class SnapLayoutPickerManager: SnapLayoutPickerManaging {
     private let panel: SnapLayoutPickerPanel
     private let previewManager: SnapPreviewManaging
     private let layoutEngine: LayoutCalculating
+    private let preferencesStore: PreferencesStore?
 
     private var isPresenting: Bool = false
     public private(set) var activeDisplayID: CGDirectDisplayID?
@@ -26,14 +27,21 @@ public final class SnapLayoutPickerManager: SnapLayoutPickerManaging {
         isPresenting ? panel.frame : nil
     }
 
+    public var currentTemplates: [LayoutTemplate] {
+        let ratio = preferencesStore?.defaultRatio ?? .equal
+        return LayoutTemplate.templates(for: ratio)
+    }
+
     public init(
         panel: SnapLayoutPickerPanel = SnapLayoutPickerPanel(),
         previewManager: SnapPreviewManaging = SnapPreviewPanel.shared,
-        layoutEngine: LayoutCalculating = LayoutEngine()
+        layoutEngine: LayoutCalculating = LayoutEngine(),
+        preferencesStore: PreferencesStore? = nil
     ) {
         self.panel = panel
         self.previewManager = previewManager
         self.layoutEngine = layoutEngine
+        self.preferencesStore = preferencesStore
     }
 
     // MARK: - Presentation & Dismissal
@@ -51,7 +59,7 @@ public final class SnapLayoutPickerManager: SnapLayoutPickerManaging {
         activeDisplayID = display.id
         isPresenting = true
         currentHoveredSlot = nil
-        panel.updateView(hoveredSlotId: nil)
+        panel.updateView(hoveredSlotId: nil, templates: currentTemplates)
 
         panel.setFrame(targetFrame, display: true)
         panel.alphaValue = 1.0
@@ -118,7 +126,7 @@ public final class SnapLayoutPickerManager: SnapLayoutPickerManaging {
         let cardGeoWidth: CGFloat = 88
         let cardGeoHeight: CGFloat = 56
 
-        let templates = LayoutTemplate.standardTemplates
+        let templates = currentTemplates
         var detectedSlot: LayoutSlot?
 
         for (index, template) in templates.enumerated() {
@@ -151,7 +159,7 @@ public final class SnapLayoutPickerManager: SnapLayoutPickerManaging {
 
         if detectedSlot != currentHoveredSlot {
             currentHoveredSlot = detectedSlot
-            panel.updateView(hoveredSlotId: detectedSlot?.id)
+            panel.updateView(hoveredSlotId: detectedSlot?.id, templates: currentTemplates)
         }
 
         return detectedSlot

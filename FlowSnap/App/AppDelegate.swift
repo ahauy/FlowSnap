@@ -28,6 +28,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Observe custom shortcut changes in PreferencesStore to re-register hotkeys dynamically
         preferences.$customShortcuts
             .dropFirst()
+            .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
                 self.dependencies.hotkeyManager.registerShortcuts(from: self.dependencies.preferencesStore) { command in
