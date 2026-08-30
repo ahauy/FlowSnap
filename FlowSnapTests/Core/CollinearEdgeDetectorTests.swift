@@ -221,5 +221,20 @@ struct CollinearEdgeDetectorTests {
         #expect(resized[1]?.width == 1140)
         #expect(resized[2]?.origin.x == 1140)
         #expect(resized[2]?.width == 300)
+
+        // Attempt to drag divider all the way to X=50 (which would give left window width < minWidth)
+        let resizedLeft = detector.computeResizedFrames(
+            for: vDivider,
+            targetCoordinate: 50,
+            windows: [left, right],
+            containerFrame: displayBounds
+        )
+
+        // Clamped at minX (0) + defaultMinWidth (200) = 200
+        #expect(resizedLeft[1]?.width == 200)
+        #expect(resizedLeft[2]?.origin.x == 200)
+        #expect(resizedLeft[2]?.width == 1240)
+        // Verify left window maxX meets right window minX with zero overlap
+        #expect(resizedLeft[1]?.maxX == resizedLeft[2]?.minX)
     }
 }
