@@ -164,6 +164,8 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         }
     }
 
+    public private(set) var initialWindows: [CGWindowID: ManagedWindow] = [:]
+
     public func handleMouseDown(at point: CGPoint) async -> Bool {
         let gap = await resolveGap()
         let container = await resolveContainer(at: point)
@@ -175,6 +177,11 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
 
         activeDivider = divider
         isResizing = true
+        var initMap: [CGWindowID: ManagedWindow] = [:]
+        for w in managedWindows {
+            initMap[w.id] = w
+        }
+        self.initialWindows = initMap
         dividerLogger.debug("Started divider resize session on \(divider.orientation.rawValue, privacy: .public) divider at \(divider.coordinate, privacy: .public)")
         return true
     }
@@ -201,9 +208,22 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         for (id, frame) in resizedFrames {
             if let index = managedWindows.firstIndex(where: { $0.id == id }) {
                 var window = managedWindows[index]
-                window.frame = frame
+
+                // Strictly lock the orthogonal dimension to prevent any vertical/horizontal jumping
+                var stableFrame = frame
+                if let initial = initialWindows[id] {
+                    if divider.orientation == .vertical {
+                        stableFrame.origin.y = initial.frame.origin.y
+                        stableFrame.size.height = initial.frame.size.height
+                    } else {
+                        stableFrame.origin.x = initial.frame.origin.x
+                        stableFrame.size.width = initial.frame.size.width
+                    }
+                }
+
+                window.frame = stableFrame
                 managedWindows[index] = window
-                let axFrame = CoordinateTransformer.toAX(rect: frame, primaryScreenHeight: primaryHeight)
+                let axFrame = CoordinateTransformer.toAX(rect: stableFrame, primaryScreenHeight: primaryHeight)
                 try? await windowManager.move(window, to: axFrame)
                 await windowRegistry?.update(window)
             }
@@ -216,6 +236,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         isResizing = false
         activeDivider = nil
         hoveredDivider = nil
+        initialWindows.removeAll()
         throttler.reset()
         setCursor(.arrow)
     }

@@ -159,8 +159,35 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
             _ = AXValueGetValue(val as! AXValue, .cgPoint, &currentPos)
         }
 
+        var currentSize = CGSize.zero
+        var currentSizeVal: AnyObject?
+        if AXUIElementCopyAttributeValue(window, kAXSizeAttribute as CFString, &currentSizeVal) == .success,
+           let val = currentSizeVal {
+            // swiftlint:disable:next force_cast
+            _ = AXValueGetValue(val as! AXValue, .cgSize, &currentSize)
+        }
+
+        let posChanged = abs(currentPos.x - frame.origin.x) >= 0.5 || abs(currentPos.y - frame.origin.y) >= 0.5
+        let sizeChanged = abs(currentSize.width - frame.size.width) >= 0.5 || abs(currentSize.height - frame.size.height) >= 0.5
+
+        guard posChanged || sizeChanged else { return }
+
         var origin = frame.origin
         var size = frame.size
+
+        if posChanged && !sizeChanged {
+            guard let posValue = AXValueCreate(.cgPoint, &origin) else { throw AccessibilityError.invalidGeometry }
+            let res = AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, posValue)
+            guard res == .success else { throw AccessibilityError.cannotComplete }
+            return
+        }
+
+        if sizeChanged && !posChanged {
+            guard let sizeValue = AXValueCreate(.cgSize, &size) else { throw AccessibilityError.invalidGeometry }
+            let res = AXUIElementSetAttributeValue(window, kAXSizeAttribute as CFString, sizeValue)
+            guard res == .success else { throw AccessibilityError.cannotComplete }
+            return
+        }
 
         guard let posValue = AXValueCreate(.cgPoint, &origin),
               let sizeValue = AXValueCreate(.cgSize, &size) else {
@@ -296,6 +323,7 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
         let windowList = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
         var results: [ManagedWindow] = []
         let currentPID = ProcessInfo.processInfo.processIdentifier
+        let primaryHeight = NSScreen.screens.first?.frame.height ?? 1080
 
         for info in windowList {
             guard let layer = info[kCGWindowLayer as String] as? Int, layer == 0 else { continue }
@@ -307,13 +335,14 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
 
             let windowNumber = info[kCGWindowNumber as String] as? CGWindowID ?? 0
             let title = (info[kCGWindowName as String] as? String) ?? (info[kCGWindowOwnerName as String] as? String) ?? "Window"
+            let appKitFrame = CoordinateTransformer.toAppKit(rect: windowBounds, primaryScreenHeight: primaryHeight)
 
             results.append(ManagedWindow(
                 id: windowNumber,
                 pid: pid,
                 bundleIdentifier: nil,
                 title: title,
-                frame: windowBounds,
+                frame: appKitFrame,
                 isMinimized: false,
                 isResizable: true,
                 kind: .normal
