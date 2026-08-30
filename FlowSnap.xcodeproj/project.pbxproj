@@ -20,6 +20,7 @@
 		10A885FF3E711D83B1DB40CD /* CollinearEdgeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5479161AF3BC41351914C8 /* CollinearEdgeDetector.swift */; };
 		1151B12C1F11349473627AAE /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D161FB100C76864DFB4BC2 /* MenuBarView.swift */; };
 		12765875CA661C560263763A /* SettingsWindowControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A60EBD2236857FB85336329 /* SettingsWindowControllerTests.swift */; };
+		129E787FCC505FB5111F2976 /* AdaptiveDividerOverlayManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BA0883D33E22B7D2455E77 /* AdaptiveDividerOverlayManaging.swift */; };
 		13BCA276C5541976035965A8 /* CollinearEdgeDetecting.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCB4A52BE25333EC1A13E27A /* CollinearEdgeDetecting.swift */; };
 		1503E7F565EBA2C6031C6B00 /* DisplayManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1DC342D46E4BDB27182C07 /* DisplayManaging.swift */; };
 		1542AEF9EF3E838F289F7361 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63733F0E866C2305895BB57F /* AppDelegate.swift */; };
@@ -116,7 +117,9 @@
 		74028649E241B224525349CC /* ShortcutActionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FC56E2FF156F8B93AC51D9C /* ShortcutActionTests.swift */; };
 		75BE58EEA11154242E5DB6CB /* CollinearEdge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41286519A88864BE9AC2A8D8 /* CollinearEdge.swift */; };
 		773CF5A195D3A53E1497B865 /* LiveResizeThrottling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BF373B21DFA7D783417F846 /* LiveResizeThrottling.swift */; };
+		796A996124A643BC38EAEE0E /* AdaptiveDividerOverlayPanelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C76085B35C77A4D2A1DCBF0 /* AdaptiveDividerOverlayPanelTests.swift */; };
 		7E1A6BE7BFD56068F27B0B4E /* Workspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C45EBED36C097796E6CD70A /* Workspace.swift */; };
+		7E644EEA826A608700C77F3A /* AdaptiveDividerOverlayManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BA0883D33E22B7D2455E77 /* AdaptiveDividerOverlayManaging.swift */; };
 		7E7E25795E30579C89A15B0B /* WorkspaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52B3EF81167806134CD93A0 /* WorkspaceManager.swift */; };
 		81D4A8D2D4BA79CFF9BA9F1D /* Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E52A8E94F9EB5A1D0F44862 /* Display.swift */; };
 		822A1EA7F662ED25A095C516 /* SystemSettingsRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DDE2E77E406CFDF8547F5FE /* SystemSettingsRouter.swift */; };
@@ -160,6 +163,7 @@
 		B64E7C593055CCEC723AFB9C /* ApplicationRulesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C46DA3A268479EBFE769CEFD /* ApplicationRulesView.swift */; };
 		B7658400AFD7FF27C798A78F /* GhostMorphPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ABE6409E670E0592E4AC677 /* GhostMorphPanel.swift */; };
 		B87BAB2BEA6E07AF71CE5057 /* DisplayManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79930ED10BB9BB64F86CBEE6 /* DisplayManagerTests.swift */; };
+		BAC9015D5AB2AF59D797745A /* AdaptiveDividerOverlayPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339DB49B98038CD95CDAF347 /* AdaptiveDividerOverlayPanel.swift */; };
 		BBEB3C815C54C1DA5F725350 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01516D7EAF5546C728E483AC /* SettingsView.swift */; };
 		BC87EDADF108289AED7D9AA2 /* AdaptiveDividerCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA69149664035E0F4CAB412 /* AdaptiveDividerCoordinatorTests.swift */; };
 		BDBA1165D640585414C372F7 /* SnapLayoutPickerPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4478153F69D2D41C613786 /* SnapLayoutPickerPanel.swift */; };
@@ -193,6 +197,7 @@
 		E677B0930CE62F640F9CED07 /* LiveResizeThrottler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F838495330FF5060A2A1CB1D /* LiveResizeThrottler.swift */; };
 		E90138B69F2EB77E70272374 /* KeyboardShortcutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B93DD58D0543436170428F /* KeyboardShortcutTests.swift */; };
 		E9747EFC045C877FF77A29D4 /* DividerOrientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED30A9FC328733C69F0580A /* DividerOrientation.swift */; };
+		EB21210BCA5DA5847A0054BD /* AdaptiveDividerOverlayPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 339DB49B98038CD95CDAF347 /* AdaptiveDividerOverlayPanel.swift */; };
 		ECF84AB658E05DDDA3322AB1 /* LayoutZone.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD1416DBF6D078EC3420DDC1 /* LayoutZone.swift */; };
 		EDBBFB35DE035BFA9CD5A122 /* SystemSettingsRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DDE2E77E406CFDF8547F5FE /* SystemSettingsRouter.swift */; };
 		F219F7C4DB5C2EF001820B45 /* LayoutGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB17D99BB5262DA1C6C19E4 /* LayoutGraph.swift */; };
@@ -235,6 +240,7 @@
 		2C89272307DF009DD9B63777 /* CollinearEdgeDetectorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollinearEdgeDetectorTests.swift; sourceTree = "<group>"; };
 		2E1DC342D46E4BDB27182C07 /* DisplayManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayManaging.swift; sourceTree = "<group>"; };
 		2FC56E2FF156F8B93AC51D9C /* ShortcutActionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutActionTests.swift; sourceTree = "<group>"; };
+		339DB49B98038CD95CDAF347 /* AdaptiveDividerOverlayPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveDividerOverlayPanel.swift; sourceTree = "<group>"; };
 		34C2CE7E99F6B9239288BEE1 /* WindowEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowEvent.swift; sourceTree = "<group>"; };
 		3BA69149664035E0F4CAB412 /* AdaptiveDividerCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveDividerCoordinatorTests.swift; sourceTree = "<group>"; };
 		3C35869412EF6395FFA95073 /* PreferencesStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesStoreTests.swift; sourceTree = "<group>"; };
@@ -249,6 +255,7 @@
 		41286519A88864BE9AC2A8D8 /* CollinearEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollinearEdge.swift; sourceTree = "<group>"; };
 		44396BAC6B83274360A58E6E /* MockSettingsWindowPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSettingsWindowPresenter.swift; sourceTree = "<group>"; };
 		4BF373B21DFA7D783417F846 /* LiveResizeThrottling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveResizeThrottling.swift; sourceTree = "<group>"; };
+		4C76085B35C77A4D2A1DCBF0 /* AdaptiveDividerOverlayPanelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveDividerOverlayPanelTests.swift; sourceTree = "<group>"; };
 		4F91DA228E94E526F2A61D18 /* LayoutEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutEngineTests.swift; sourceTree = "<group>"; };
 		56104E88ECCBCB9B36C272D0 /* LayoutSlot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutSlot.swift; sourceTree = "<group>"; };
 		57413B20AF57620434884EF1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -282,6 +289,7 @@
 		8ED30A9FC328733C69F0580A /* DividerOrientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerOrientation.swift; sourceTree = "<group>"; };
 		90B696D10DEDDB99239B2616 /* MenuBarSnapshotRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarSnapshotRenderer.swift; sourceTree = "<group>"; };
 		917233E614F66482F68EB4C8 /* SnapPreviewPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapPreviewPanel.swift; sourceTree = "<group>"; };
+		92BA0883D33E22B7D2455E77 /* AdaptiveDividerOverlayManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveDividerOverlayManaging.swift; sourceTree = "<group>"; };
 		9329DD1D2BB54E77B49F4DF2 /* SpaceManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceManaging.swift; sourceTree = "<group>"; };
 		94FAC609D843724BE2A35D6C /* SnapLayoutPickerSnapshotRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapLayoutPickerSnapshotRenderer.swift; sourceTree = "<group>"; };
 		96C37D1A8C736ADE0A6350BB /* ShortcutSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutSettingsView.swift; sourceTree = "<group>"; };
@@ -473,6 +481,7 @@
 		662186505D04B727685872D3 /* Layout */ = {
 			isa = PBXGroup;
 			children = (
+				92BA0883D33E22B7D2455E77 /* AdaptiveDividerOverlayManaging.swift */,
 				41286519A88864BE9AC2A8D8 /* CollinearEdge.swift */,
 				8ED30A9FC328733C69F0580A /* DividerOrientation.swift */,
 				99CCBFB82F9AFF970639431B /* Layout.swift */,
@@ -597,6 +606,7 @@
 		B1E0D674DA707B1A28F1D97B /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				4C76085B35C77A4D2A1DCBF0 /* AdaptiveDividerOverlayPanelTests.swift */,
 				90B696D10DEDDB99239B2616 /* MenuBarSnapshotRenderer.swift */,
 				A1B38366ACAB309B3578DAB7 /* MenuBarViewModelTests.swift */,
 				2C14B0FFF6C5A9ED1B049179 /* SettingsSnapshotRenderer.swift */,
@@ -663,6 +673,7 @@
 		D5059571A404238053EB4D37 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				FE372F2119FD0D5BB8953C24 /* Divider */,
 				3962405C19679E7B7086131F /* LayoutPicker */,
 				975F5FA17AD0166B5BBD311F /* MenuBar */,
 				68773B8D0FD725F68A2018F4 /* Settings */,
@@ -768,6 +779,14 @@
 				6D6B40BD6F953D389B15ACFB /* MockWindowManaging.swift */,
 			);
 			path = Mocks;
+			sourceTree = "<group>";
+		};
+		FE372F2119FD0D5BB8953C24 /* Divider */ = {
+			isa = PBXGroup;
+			children = (
+				339DB49B98038CD95CDAF347 /* AdaptiveDividerOverlayPanel.swift */,
+			);
+			path = Divider;
 			sourceTree = "<group>";
 		};
 		FE57CF9B222965B56FA9F9CF /* FlowSnapLab */ = {
@@ -898,6 +917,8 @@
 				53E3894A4E60F57A8C2FA027 /* AccessibilityService.swift in Sources */,
 				6F27AA59E804FED8ECBBD1DA /* AdaptiveDividerCoordinating.swift in Sources */,
 				6EE8FCF08FABDAAE25900ED0 /* AdaptiveDividerCoordinator.swift in Sources */,
+				129E787FCC505FB5111F2976 /* AdaptiveDividerOverlayManaging.swift in Sources */,
+				EB21210BCA5DA5847A0054BD /* AdaptiveDividerOverlayPanel.swift in Sources */,
 				591678F7BD12481CAA299B64 /* ApplicationRulesView.swift in Sources */,
 				75BE58EEA11154242E5DB6CB /* CollinearEdge.swift in Sources */,
 				CA7D12040FC8C842297F752C /* CollinearEdgeDetecting.swift in Sources */,
@@ -978,6 +999,7 @@
 			files = (
 				1DCFEA9586881AF7E980332B /* AccessibilityServiceTests.swift in Sources */,
 				BC87EDADF108289AED7D9AA2 /* AdaptiveDividerCoordinatorTests.swift in Sources */,
+				796A996124A643BC38EAEE0E /* AdaptiveDividerOverlayPanelTests.swift in Sources */,
 				96D14580170931B6B471417B /* CollinearEdgeDetectorTests.swift in Sources */,
 				B36CC00511E63F9A7FC8E8DE /* CommandDispatcherTests.swift in Sources */,
 				54FCA3E5976F94ECCE1E445A /* CoordinateTransformerTests.swift in Sources */,
@@ -1027,6 +1049,8 @@
 				1984D02B3B4D16EBE860150A /* AccessibilityService.swift in Sources */,
 				C68F5279C3D92D63D923B40D /* AdaptiveDividerCoordinating.swift in Sources */,
 				2BABA3B3091EDF7F81EB1A85 /* AdaptiveDividerCoordinator.swift in Sources */,
+				7E644EEA826A608700C77F3A /* AdaptiveDividerOverlayManaging.swift in Sources */,
+				BAC9015D5AB2AF59D797745A /* AdaptiveDividerOverlayPanel.swift in Sources */,
 				1542AEF9EF3E838F289F7361 /* AppDelegate.swift in Sources */,
 				576107A30EE0111CD35DAFB0 /* AppDependencies.swift in Sources */,
 				B64E7C593055CCEC723AFB9C /* ApplicationRulesView.swift in Sources */,

@@ -62,6 +62,7 @@ public final class AppDependencies {
 
     public lazy var collinearDetector: CollinearEdgeDetecting = CollinearEdgeDetector()
     public lazy var resizeThrottler: LiveResizeThrottling = LiveResizeThrottler(fps: 60.0)
+    public lazy var adaptiveDividerOverlayPanel: AdaptiveDividerOverlayPanel = AdaptiveDividerOverlayPanel.shared
     public lazy var adaptiveDividerCoordinator: AdaptiveDividerCoordinator = AdaptiveDividerCoordinator(
         detector: collinearDetector,
         windowManager: windowManager,
@@ -69,7 +70,8 @@ public final class AppDependencies {
         throttler: resizeThrottler,
         preferencesStore: preferencesStore,
         accessibilityService: accessibilityService,
-        windowRegistry: windowRegistry
+        windowRegistry: windowRegistry,
+        overlayManager: adaptiveDividerOverlayPanel
     )
 
     public init() {}

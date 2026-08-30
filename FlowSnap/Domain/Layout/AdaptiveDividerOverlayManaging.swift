@@ -1,0 +1,31 @@
+import AppKit
+import CoreGraphics
+import Foundation
+
+/// Protocol governing the lifecycle, presentation, and visual state updates of the Adaptive Divider Overlay Panel.
+@MainActor
+public protocol AdaptiveDividerOverlayManaging: AnyObject, Sendable {
+    /// Whether the divider overlay panel is currently visible on screen.
+    var isOverlayVisible: Bool { get }
+
+    /// Presents or updates the overlay panel over the specified display container frame.
+    func show(
+        containerFrame: CGRect,
+        windows: [ManagedWindow],
+        dividers: [CollinearEdge],
+        activeDivider: CollinearEdge?,
+        isDragging: Bool
+    )
+
+    /// Updates the overlay panel's visual state during live resizing.
+    func update(
+        containerFrame: CGRect,
+        windows: [ManagedWindow],
+        dividers: [CollinearEdge],
+        activeDivider: CollinearEdge?,
+        isDragging: Bool
+    )
+
+    /// Dismisses the overlay panel, optionally with animation.
+    func hide(animated: Bool)
+}

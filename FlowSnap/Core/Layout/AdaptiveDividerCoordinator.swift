@@ -17,6 +17,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     private let preferencesStore: PreferencesStore?
     private let accessibilityService: AccessibilityService?
     private let windowRegistry: WindowRegistry?
+    private let overlayManager: AdaptiveDividerOverlayManaging?
 
     private var moveMonitor: Any?
     private var downMonitor: Any?
@@ -37,7 +38,8 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         throttler: LiveResizeThrottling = LiveResizeThrottler(fps: 60.0),
         preferencesStore: PreferencesStore? = nil,
         accessibilityService: AccessibilityService? = nil,
-        windowRegistry: WindowRegistry? = nil
+        windowRegistry: WindowRegistry? = nil,
+        overlayManager: AdaptiveDividerOverlayManaging? = nil
     ) {
         self.detector = detector
         self.windowManager = windowManager
@@ -46,6 +48,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         self.preferencesStore = preferencesStore
         self.accessibilityService = accessibilityService
         self.windowRegistry = windowRegistry
+        self.overlayManager = overlayManager
     }
 
     // MARK: - Lifecycle
@@ -54,6 +57,34 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         guard !isTracking else { return }
         isTracking = true
         dividerLogger.debug("Starting AdaptiveDividerCoordinator global monitors")
+
+        if let overlayPanel = overlayManager as? AdaptiveDividerOverlayPanel {
+            overlayPanel.overlayView.onDirectMouseDown = { [weak self] point, _ in
+                Task { @MainActor [weak self] in
+                    guard let self, self.isTracking else { return }
+                    await self.refreshWindowsIfNeeded()
+                    _ = await self.handleMouseDown(at: point)
+                }
+            }
+            overlayPanel.overlayView.onDirectMouseDragged = { [weak self] point in
+                Task { @MainActor [weak self] in
+                    guard let self, self.isTracking else { return }
+                    await self.handleMouseDragged(to: point)
+                }
+            }
+            overlayPanel.overlayView.onDirectMouseUp = { [weak self] point in
+                Task { @MainActor [weak self] in
+                    guard let self, self.isTracking else { return }
+                    await self.handleMouseUp(at: point)
+                }
+            }
+            overlayPanel.overlayView.onDirectMouseMoved = { [weak self] point in
+                Task { @MainActor [weak self] in
+                    guard let self, self.isTracking else { return }
+                    await self.handleMouseMoved(to: point)
+                }
+            }
+        }
 
         moveMonitor = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
             Task { @MainActor [weak self] in
@@ -102,6 +133,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         activeDivider = nil
         hoveredDivider = nil
         setCursor(.arrow)
+        overlayManager?.hide(animated: false)
     }
 
     // MARK: - Window Management
@@ -164,11 +196,19 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             case .horizontal:
                 setCursor(.resizeUpDown)
             }
+            overlayManager?.show(
+                containerFrame: container,
+                windows: displayWindows,
+                dividers: dividers,
+                activeDivider: divider,
+                isDragging: false
+            )
         } else {
             if hoveredDivider != nil {
                 hoveredDivider = nil
                 setCursor(.arrow)
             }
+            overlayManager?.hide(animated: true)
         }
     }
 
@@ -191,6 +231,13 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             initMap[w.id] = w
         }
         self.initialWindows = initMap
+        overlayManager?.show(
+            containerFrame: container,
+            windows: displayWindows,
+            dividers: dividers,
+            activeDivider: divider,
+            isDragging: true
+        )
         dividerLogger.debug("Started divider resize session on \(divider.orientation.rawValue, privacy: .public) divider at \(divider.coordinate, privacy: .public)")
         return true
     }
@@ -238,6 +285,18 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
                 await windowRegistry?.update(window)
             }
         }
+
+        let updatedDisplayWindows = filterWindows(for: container)
+        let updatedDividers = detector.detectDividers(in: updatedDisplayWindows, containerFrame: container, gap: gap, tolerance: 6.0)
+        let updatedActiveDivider = updatedDividers.first { $0.orientation == divider.orientation } ?? divider
+
+        overlayManager?.update(
+            containerFrame: container,
+            windows: updatedDisplayWindows,
+            dividers: updatedDividers,
+            activeDivider: updatedActiveDivider,
+            isDragging: true
+        )
     }
 
     public func handleMouseUp(at point: CGPoint) async {
@@ -249,6 +308,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         initialWindows.removeAll()
         throttler.reset()
         setCursor(.arrow)
+        overlayManager?.hide(animated: true)
     }
 
     private func setCursor(_ cursor: NSCursor) {
