@@ -15,7 +15,7 @@ struct FlowSnapApp: App {
         .menuBarExtraStyle(.window)
 
         Settings {
-            SettingsView()
+            SettingsView(store: appDelegate.dependencies.preferencesStore)
         }
     }
 }

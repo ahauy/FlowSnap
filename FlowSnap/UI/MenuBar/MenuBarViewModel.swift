@@ -26,17 +26,20 @@ public final class MenuBarViewModel {
     private let accessibilityService: AccessibilityService
     private let commandDispatcher: CommandDispatcher
     private let windowManager: WindowManaging
+    private let settingsWindowPresenter: (any SettingsWindowPresenting)?
 
     // MARK: - Initialization
 
     public init(
         accessibilityService: AccessibilityService,
         commandDispatcher: CommandDispatcher,
-        windowManager: WindowManaging
+        windowManager: WindowManaging,
+        settingsWindowPresenter: (any SettingsWindowPresenting)? = nil
     ) {
         self.accessibilityService = accessibilityService
         self.commandDispatcher = commandDispatcher
         self.windowManager = windowManager
+        self.settingsWindowPresenter = settingsWindowPresenter
         self.isAccessibilityTrusted = accessibilityService.isTrusted
     }
 
@@ -90,7 +93,12 @@ public final class MenuBarViewModel {
 
     /// Opens the application settings window.
     public func openSettings() {
-        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        if let settingsWindowPresenter {
+            settingsWindowPresenter.showSettingsWindow()
+        } else {
+            NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+            NSApp.activate(ignoringOtherApps: true)
+        }
         dismissHandler?()
     }
 

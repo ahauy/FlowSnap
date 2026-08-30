@@ -5,9 +5,11 @@ import SwiftUI
 /// See spec §41.
 struct SettingsView: View {
 
+    var store: PreferencesStore?
+
     var body: some View {
         TabView {
-            GeneralSettingsView()
+            GeneralSettingsView(store: store ?? PreferencesStore())
                 .tabItem {
                     Label("General", systemImage: "gear")
                 }
