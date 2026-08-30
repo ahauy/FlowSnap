@@ -15,4 +15,8 @@ public protocol AdaptiveDividerCoordinating: AnyObject {
     func handleMouseDown(at point: CGPoint) async -> Bool
     func handleMouseDragged(to point: CGPoint) async
     func handleMouseUp(at point: CGPoint) async
+
+    /// Aborts an in-flight divider drag, restoring every window it touched to
+    /// the frame it held when the drag began. A no-op when not resizing.
+    func cancelResize() async
 }

@@ -94,12 +94,15 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
         let kind = classifyKind(windowElement, isResizable: isResizable)
         let windowId = resolveWindowID(for: pid, frame: windowFrame)
 
+        let primaryHeight = NSScreen.screens.first?.frame.height ?? 1080
+        let appKitFrame = CoordinateTransformer.toAppKit(rect: windowFrame, primaryScreenHeight: primaryHeight)
+
         return ManagedWindow(
             id: windowId,
             pid: pid,
             bundleIdentifier: runningApp?.bundleIdentifier,
             title: title,
-            frame: windowFrame,
+            frame: appKitFrame,
             isMinimized: isMinimized,
             isResizable: isResizable,
             kind: kind
@@ -151,12 +154,11 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
     public func setFrame(_ frame: CGRect, for window: AXUIElement) throws {
         guard isTrusted else { throw AccessibilityError.notTrusted }
 
-        var currentPos = CGPoint.zero
-        var currentPosVal: AnyObject?
-        if AXUIElementCopyAttributeValue(window, kAXPositionAttribute as CFString, &currentPosVal) == .success,
-           let val = currentPosVal {
-            // swiftlint:disable:next force_cast
-            _ = AXValueGetValue(val as! AXValue, .cgPoint, &currentPos)
+        var origin = frame.origin
+        var size = frame.size
+        guard let posValue = AXValueCreate(.cgPoint, &origin),
+              let sizeValue = AXValueCreate(.cgSize, &size) else {
+            throw AccessibilityError.invalidGeometry
         }
 
         var currentSize = CGSize.zero
@@ -167,55 +169,18 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
             _ = AXValueGetValue(val as! AXValue, .cgSize, &currentSize)
         }
 
-        let posXChanged = abs(currentPos.x - frame.origin.x) >= 0.5
-        let posYChanged = abs(currentPos.y - frame.origin.y) >= 0.5
-        let sizeWChanged = abs(currentSize.width - frame.size.width) >= 0.5
-        let sizeHChanged = abs(currentSize.height - frame.size.height) >= 0.5
-
-        let posChanged = posXChanged || posYChanged
-        let sizeChanged = sizeWChanged || sizeHChanged
-
-        guard posChanged || sizeChanged else { return }
-
-        var origin = CGPoint(
-            x: posXChanged ? frame.origin.x : currentPos.x,
-            y: posYChanged ? frame.origin.y : currentPos.y
-        )
-        var size = CGSize(
-            width: sizeWChanged ? frame.size.width : currentSize.width,
-            height: sizeHChanged ? frame.size.height : currentSize.height
-        )
-
-        if posChanged && !sizeChanged {
-            guard let posValue = AXValueCreate(.cgPoint, &origin) else { throw AccessibilityError.invalidGeometry }
-            let res = AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, posValue)
-            guard res == .success else { throw AccessibilityError.cannotComplete }
-            return
-        }
-
-        if sizeChanged && !posChanged {
-            guard let sizeValue = AXValueCreate(.cgSize, &size) else { throw AccessibilityError.invalidGeometry }
-            let res = AXUIElementSetAttributeValue(window, kAXSizeAttribute as CFString, sizeValue)
-            guard res == .success else { throw AccessibilityError.cannotComplete }
-            return
-        }
-
-        guard let posValue = AXValueCreate(.cgPoint, &origin),
-              let sizeValue = AXValueCreate(.cgSize, &size) else {
-            throw AccessibilityError.invalidGeometry
-        }
-
-        // Smart ordering to prevent visual overflow:
-        // Moving right: set position first, then size.
-        // Moving left: set size first, then position.
-        if frame.origin.x >= currentPos.x {
-            _ = AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, posValue)
-            let sizeResult = AXUIElementSetAttributeValue(window, kAXSizeAttribute as CFString, sizeValue)
-            guard sizeResult == .success else { throw AccessibilityError.cannotComplete }
-        } else {
+        // 2-phase setFrame ordering for Shrink vs Expand:
+        // Shrink (new size <= current size): set size first to release space, then position.
+        // Expand (new size > current size): set position first into available space, then size.
+        let isShrinking = currentSize != .zero && (frame.size.width * frame.size.height) <= (currentSize.width * currentSize.height)
+        if isShrinking {
             _ = AXUIElementSetAttributeValue(window, kAXSizeAttribute as CFString, sizeValue)
             let posResult = AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, posValue)
             guard posResult == .success else { throw AccessibilityError.cannotComplete }
+        } else {
+            _ = AXUIElementSetAttributeValue(window, kAXPositionAttribute as CFString, posValue)
+            let sizeResult = AXUIElementSetAttributeValue(window, kAXSizeAttribute as CFString, sizeValue)
+            guard sizeResult == .success else { throw AccessibilityError.cannotComplete }
         }
     }
 
@@ -312,21 +277,9 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
     public func windowElement(for window: ManagedWindow) -> AXUIElement? {
         guard isTrusted else { return nil }
         let axWindows = windows(of: window.pid)
-        if axWindows.count == 1 {
-            return axWindows.first
-        }
-        for el in axWindows {
-            if let f = frame(of: el) {
-                let deltaX = abs(f.origin.x - window.frame.origin.x)
-                let deltaY = abs(f.origin.y - window.frame.origin.y)
-                let deltaW = abs(f.size.width - window.frame.size.width)
-                let deltaH = abs(f.size.height - window.frame.size.height)
-                if deltaX < 30 && deltaY < 30 && deltaW < 30 && deltaH < 30 {
-                    return el
-                }
-            }
-        }
-        return axWindows.first
+        let primaryHeight = NSScreen.screens.first?.frame.height ?? 1080
+        let targetAXFrame = CoordinateTransformer.toAX(rect: window.frame, primaryScreenHeight: primaryHeight)
+        return matchWindowElement(in: axWindows, targetAXFrame: targetAXFrame)
     }
 
     public func allVisibleManagedWindows() -> [ManagedWindow] {
@@ -335,6 +288,7 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
         var results: [ManagedWindow] = []
         let currentPID = ProcessInfo.processInfo.processIdentifier
         let primaryHeight = NSScreen.screens.first?.frame.height ?? 1080
+        var axWindowsCache: [pid_t: [AXUIElement]] = [:]
 
         for info in windowList {
             guard let layer = info[kCGWindowLayer as String] as? Int, layer == 0 else { continue }
@@ -348,6 +302,20 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
             let title = (info[kCGWindowName as String] as? String) ?? (info[kCGWindowOwnerName as String] as? String) ?? "Window"
             let appKitFrame = CoordinateTransformer.toAppKit(rect: windowBounds, primaryScreenHeight: primaryHeight)
 
+            let axWindows = axWindowsCache[pid] ?? {
+                let list = windows(of: pid)
+                axWindowsCache[pid] = list
+                return list
+            }()
+
+            var isResizable = true
+            var kind: WindowKind = .normal
+
+            if let matchedElement = matchWindowElement(in: axWindows, targetAXFrame: windowBounds) {
+                isResizable = checkResizable(matchedElement)
+                kind = classifyKind(matchedElement, isResizable: isResizable)
+            }
+
             results.append(ManagedWindow(
                 id: windowNumber,
                 pid: pid,
@@ -355,10 +323,29 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
                 title: title,
                 frame: appKitFrame,
                 isMinimized: false,
-                isResizable: true,
-                kind: .normal
+                isResizable: isResizable,
+                kind: kind
             ))
         }
         return results
+    }
+
+    private func matchWindowElement(in axWindows: [AXUIElement], targetAXFrame: CGRect) -> AXUIElement? {
+        guard !axWindows.isEmpty else { return nil }
+        if axWindows.count == 1 {
+            return axWindows.first
+        }
+        for el in axWindows {
+            if let f = frame(of: el) {
+                let deltaX = abs(f.origin.x - targetAXFrame.origin.x)
+                let deltaY = abs(f.origin.y - targetAXFrame.origin.y)
+                let deltaW = abs(f.size.width - targetAXFrame.size.width)
+                let deltaH = abs(f.size.height - targetAXFrame.size.height)
+                if deltaX < 30 && deltaY < 30 && deltaW < 30 && deltaH < 30 {
+                    return el
+                }
+            }
+        }
+        return axWindows.first
     }
 }
