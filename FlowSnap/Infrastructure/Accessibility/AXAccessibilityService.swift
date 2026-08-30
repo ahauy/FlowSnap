@@ -167,13 +167,24 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
             _ = AXValueGetValue(val as! AXValue, .cgSize, &currentSize)
         }
 
-        let posChanged = abs(currentPos.x - frame.origin.x) >= 0.5 || abs(currentPos.y - frame.origin.y) >= 0.5
-        let sizeChanged = abs(currentSize.width - frame.size.width) >= 0.5 || abs(currentSize.height - frame.size.height) >= 0.5
+        let posXChanged = abs(currentPos.x - frame.origin.x) >= 0.5
+        let posYChanged = abs(currentPos.y - frame.origin.y) >= 0.5
+        let sizeWChanged = abs(currentSize.width - frame.size.width) >= 0.5
+        let sizeHChanged = abs(currentSize.height - frame.size.height) >= 0.5
+
+        let posChanged = posXChanged || posYChanged
+        let sizeChanged = sizeWChanged || sizeHChanged
 
         guard posChanged || sizeChanged else { return }
 
-        var origin = frame.origin
-        var size = frame.size
+        var origin = CGPoint(
+            x: posXChanged ? frame.origin.x : currentPos.x,
+            y: posYChanged ? frame.origin.y : currentPos.y
+        )
+        var size = CGSize(
+            width: sizeWChanged ? frame.size.width : currentSize.width,
+            height: sizeHChanged ? frame.size.height : currentSize.height
+        )
 
         if posChanged && !sizeChanged {
             guard let posValue = AXValueCreate(.cgPoint, &origin) else { throw AccessibilityError.invalidGeometry }

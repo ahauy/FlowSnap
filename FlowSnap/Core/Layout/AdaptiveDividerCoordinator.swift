@@ -141,12 +141,20 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         return await preferencesStore.windowGap
     }
 
+    private func filterWindows(for container: CGRect) -> [ManagedWindow] {
+        managedWindows.filter { window in
+            let intersection = window.frame.intersection(container)
+            return !intersection.isNull && intersection.width > 20 && intersection.height > 20
+        }
+    }
+
     public func handleMouseMoved(to point: CGPoint) async {
         guard !isResizing else { return }
 
         let gap = await resolveGap()
         let container = await resolveContainer(at: point)
-        let dividers = detector.detectDividers(in: managedWindows, containerFrame: container, gap: gap, tolerance: 6.0)
+        let displayWindows = filterWindows(for: container)
+        let dividers = detector.detectDividers(in: displayWindows, containerFrame: container, gap: gap, tolerance: 6.0)
 
         if let divider = detector.hitTestDivider(at: point, in: dividers) {
             hoveredDivider = divider
@@ -169,7 +177,8 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     public func handleMouseDown(at point: CGPoint) async -> Bool {
         let gap = await resolveGap()
         let container = await resolveContainer(at: point)
-        let dividers = detector.detectDividers(in: managedWindows, containerFrame: container, gap: gap, tolerance: 6.0)
+        let displayWindows = filterWindows(for: container)
+        let dividers = detector.detectDividers(in: displayWindows, containerFrame: container, gap: gap, tolerance: 6.0)
 
         guard let divider = detector.hitTestDivider(at: point, in: dividers) else {
             return false
@@ -178,7 +187,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         activeDivider = divider
         isResizing = true
         var initMap: [CGWindowID: ManagedWindow] = [:]
-        for w in managedWindows {
+        for w in displayWindows {
             initMap[w.id] = w
         }
         self.initialWindows = initMap
@@ -194,12 +203,13 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
 
         let gap = await resolveGap()
         let container = await resolveContainer(at: point)
+        let displayWindows = filterWindows(for: container)
 
         let targetCoordinate = (divider.orientation == .vertical) ? point.x : point.y
         let resizedFrames = detector.computeResizedFrames(
             for: divider,
             targetCoordinate: targetCoordinate,
-            windows: managedWindows,
+            windows: displayWindows.isEmpty ? managedWindows : displayWindows,
             containerFrame: container,
             gap: gap
         )

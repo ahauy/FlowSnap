@@ -260,14 +260,14 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
 
         switch divider.orientation {
         case .vertical:
-            var effectiveMin: CGFloat = divider.minCoordinate
+            var effectiveMin: CGFloat = max(divider.minCoordinate, containerFrame.minX + defaultMinWidth + (gap / 2.0))
             for id in divider.leadingWindowIDs {
                 guard let window = windowDict[id] else { continue }
                 let minW = window.minSize?.width ?? defaultMinWidth
                 effectiveMin = max(effectiveMin, window.frame.minX + minW + (gap / 2.0))
             }
 
-            var effectiveMax: CGFloat = divider.maxCoordinate
+            var effectiveMax: CGFloat = min(divider.maxCoordinate, containerFrame.maxX - defaultMinWidth - (gap / 2.0))
             for id in divider.trailingWindowIDs {
                 guard let window = windowDict[id] else { continue }
                 let minW = window.minSize?.width ?? defaultMinWidth
@@ -305,14 +305,14 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting, Sendable {
             }
 
         case .horizontal:
-            var effectiveMin: CGFloat = divider.minCoordinate
+            var effectiveMin: CGFloat = max(divider.minCoordinate, containerFrame.minY + defaultMinHeight + (gap / 2.0))
             for id in divider.leadingWindowIDs {
                 guard let window = windowDict[id] else { continue }
                 let minH = window.minSize?.height ?? defaultMinHeight
                 effectiveMin = max(effectiveMin, window.frame.minY + minH + (gap / 2.0))
             }
 
-            var effectiveMax: CGFloat = divider.maxCoordinate
+            var effectiveMax: CGFloat = min(divider.maxCoordinate, containerFrame.maxY - defaultMinHeight - (gap / 2.0))
             for id in divider.trailingWindowIDs {
                 guard let window = windowDict[id] else { continue }
                 let minH = window.minSize?.height ?? defaultMinHeight
