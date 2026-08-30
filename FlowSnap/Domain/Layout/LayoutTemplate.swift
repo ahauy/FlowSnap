@@ -31,13 +31,13 @@ public struct LayoutTemplate: Identifiable, Sendable, Equatable {
                 LayoutSlot(
                     id: "twoCol-left",
                     title: "Left Half (50%)",
-                    target: .leftHalf,
+                    target: .left50_50,
                     normalizedRect: CGRect(x: 0, y: 0, width: 0.5, height: 1.0)
                 ),
                 LayoutSlot(
                     id: "twoCol-right",
                     title: "Right Half (50%)",
-                    target: .rightHalf,
+                    target: .right50_50,
                     normalizedRect: CGRect(x: 0.5, y: 0, width: 0.5, height: 1.0)
                 )
             ]

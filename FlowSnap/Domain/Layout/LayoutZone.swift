@@ -33,6 +33,10 @@ public enum LayoutZone: String, Sendable, Codable, Hashable, CaseIterable {
     case right25
     case left70_30
 
+    // MARK: - Explicit 50/50 ratios (Preserves Layout Picker 50/50 independent of defaultRatio)
+    case left50_50
+    case right50_50
+
     /// All non-deprecated zones. `leftTwoThirds` is intentionally excluded;
     /// use `left70_30` (same normalizedRect).
     public static let allCases: [LayoutZone] = [
@@ -41,14 +45,15 @@ public enum LayoutZone: String, Sendable, Codable, Hashable, CaseIterable {
         .maximize, .rightOneThird, .leftThird, .centerThird, .rightThird,
         .left60_40, .right40_60, .left80_20, .right20_80,
         .left25, .center50, .right25, .left70_30,
+        .left50_50, .right50_50
     ]
 
     /// Normalized bounding box (0...1 coordinates with top-left origin).
     public var normalizedRect: CGRect {
         switch self {
-        case .leftHalf:
+        case .leftHalf, .left50_50:
             CGRect(x: 0, y: 0, width: 0.5, height: 1.0)
-        case .rightHalf:
+        case .rightHalf, .right50_50:
             CGRect(x: 0.5, y: 0, width: 0.5, height: 1.0)
         case .topHalf:
             CGRect(x: 0, y: 0, width: 1.0, height: 0.5)

@@ -27,8 +27,8 @@ struct SnapLayoutPickerManagerTests {
         let twoCol = templates[0]
         #expect(twoCol.kind == .twoColumnEqual)
         #expect(twoCol.slots.count == 2)
-        #expect(twoCol.slots[0].target == .leftHalf)
-        #expect(twoCol.slots[1].target == .rightHalf)
+        #expect(twoCol.slots[0].target == .left50_50)
+        #expect(twoCol.slots[1].target == .right50_50)
 
         // 2. Two Column Asymmetric (70/30)
         let twoColAsym = templates[1]
