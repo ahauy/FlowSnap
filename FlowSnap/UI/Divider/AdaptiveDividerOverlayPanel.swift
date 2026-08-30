@@ -165,7 +165,7 @@ public final class AdaptiveDividerOverlayView: NSView {
 
     // MARK: - Constants
 
-    public static let seamThickness: CGFloat = 10.0
+    public static let seamThickness: CGFloat = 18.0
     public static let accentBarThickness: CGFloat = 3.0
     public static let hairlineBorderWidth: CGFloat = 1.5
     public static let windowCornerRadius: CGFloat = 10.0
@@ -221,24 +221,7 @@ public final class AdaptiveDividerOverlayView: NSView {
     private func renderWindowOutlines() {
         windowBordersContainerLayer.sublayers?.forEach { $0.removeFromSuperlayer() }
 
-        // 1. Full Screen / Desktop Workspace Container Border Outline
-        let containerBorder = CAShapeLayer()
-        let containerInsetRect = bounds.insetBy(
-            dx: Self.hairlineBorderWidth / 2.0,
-            dy: Self.hairlineBorderWidth / 2.0
-        )
-        containerBorder.path = CGPath(
-            roundedRect: containerInsetRect,
-            cornerWidth: 12.0,
-            cornerHeight: 12.0,
-            transform: nil
-        )
-        containerBorder.fillColor = nil
-        containerBorder.strokeColor = NSColor.controlAccentColor.withAlphaComponent(0.45).cgColor
-        containerBorder.lineWidth = Self.hairlineBorderWidth * 1.5
-        windowBordersContainerLayer.addSublayer(containerBorder)
-
-        // 2. Individual Window Outlines
+        // Individual Window Outlines (without intrusive desktop workspace container border)
         for window in windows {
             let localRect = window.frame.offsetBy(
                 dx: -containerFrame.minX,
@@ -270,86 +253,100 @@ public final class AdaptiveDividerOverlayView: NSView {
 
         for divider in dividers {
             let isActive = (activeDivider != nil && divider.id == activeDivider?.id)
-            let barLayer = CALayer()
-            let handleLayer = CALayer()
-
-            switch divider.orientation {
-            case .vertical:
-                let localX = divider.coordinate - containerFrame.minX
-                let minY = divider.span.lowerBound - containerFrame.minY
-                let maxY = divider.span.upperBound - containerFrame.minY
-                let spanLength = max(1.0, maxY - minY)
-
-                let barRect = CGRect(
-                    x: localX - Self.accentBarThickness / 2.0,
-                    y: minY + 4.0,
-                    width: Self.accentBarThickness,
-                    height: max(1.0, spanLength - 8.0)
-                )
-                barLayer.frame = barRect
-                barLayer.cornerRadius = Self.accentBarThickness / 2.0
-
-                let centerY = (minY + maxY) / 2.0
-                handleLayer.frame = CGRect(
-                    x: localX - Self.handleThickness / 2.0,
-                    y: centerY - Self.handleLength / 2.0,
-                    width: Self.handleThickness,
-                    height: Self.handleLength
-                )
-                handleLayer.cornerRadius = Self.handleThickness / 2.0
-
-            case .horizontal:
-                let localY = divider.coordinate - containerFrame.minY
-                let minX = divider.span.lowerBound - containerFrame.minX
-                let maxX = divider.span.upperBound - containerFrame.minX
-                let spanLength = max(1.0, maxX - minX)
-
-                let barRect = CGRect(
-                    x: minX + 4.0,
-                    y: localY - Self.accentBarThickness / 2.0,
-                    width: max(1.0, spanLength - 8.0),
-                    height: Self.accentBarThickness
-                )
-                barLayer.frame = barRect
-                barLayer.cornerRadius = Self.accentBarThickness / 2.0
-
-                let centerX = (minX + maxX) / 2.0
-                handleLayer.frame = CGRect(
-                    x: centerX - Self.handleLength / 2.0,
-                    y: localY - Self.handleThickness / 2.0,
-                    width: Self.handleLength,
-                    height: Self.handleThickness
-                )
-                handleLayer.cornerRadius = Self.handleThickness / 2.0
-            }
-
-            // Accent bar glowing styling
-            if isActive {
-                barLayer.backgroundColor = NSColor.controlAccentColor.cgColor
-                barLayer.shadowColor = NSColor.controlAccentColor.cgColor
-                barLayer.shadowOpacity = isDragging ? 0.95 : 0.85
-                barLayer.shadowRadius = isDragging ? 6.0 : 4.5
-                barLayer.shadowOffset = .zero
-                barLayer.opacity = 1.0
-
-                handleLayer.backgroundColor = NSColor.white.cgColor
-                handleLayer.shadowColor = NSColor.black.withAlphaComponent(0.5).cgColor
-                handleLayer.shadowOpacity = 0.6
-                handleLayer.shadowRadius = 2.5
-                handleLayer.shadowOffset = .zero
-                handleLayer.opacity = 1.0
-            } else {
-                barLayer.backgroundColor = NSColor.white.withAlphaComponent(0.3).cgColor
-                barLayer.shadowOpacity = 0.0
-                barLayer.opacity = 0.4
-
-                handleLayer.backgroundColor = NSColor.white.withAlphaComponent(0.5).cgColor
-                handleLayer.shadowOpacity = 0.0
-                handleLayer.opacity = 0.0
-            }
-
+            let (barLayer, handleLayer) = makeDividerLayers(for: divider, isActive: isActive)
             dividersContainerLayer.addSublayer(barLayer)
             dividersContainerLayer.addSublayer(handleLayer)
+        }
+    }
+
+    private func makeDividerLayers(
+        for divider: CollinearEdge,
+        isActive: Bool
+    ) -> (barLayer: CALayer, handleLayer: CALayer) {
+        let barLayer = CALayer()
+        let handleLayer = CALayer()
+
+        let (barRect, handleRect) = computeBarAndHandleRects(for: divider)
+        barLayer.frame = barRect
+        barLayer.cornerRadius = Self.accentBarThickness / 2.0
+        handleLayer.frame = handleRect
+        handleLayer.cornerRadius = Self.handleThickness / 2.0
+
+        applyDividerLayerStyling(barLayer: barLayer, handleLayer: handleLayer, isActive: isActive)
+        return (barLayer, handleLayer)
+    }
+
+    private func computeBarAndHandleRects(
+        for divider: CollinearEdge
+    ) -> (barRect: CGRect, handleRect: CGRect) {
+        switch divider.orientation {
+        case .vertical:
+            let localX = divider.coordinate - containerFrame.minX
+            let minY = divider.span.lowerBound - containerFrame.minY
+            let maxY = divider.span.upperBound - containerFrame.minY
+            let spanLength = max(1.0, maxY - minY)
+            let centerY = (minY + maxY) / 2.0
+
+            let barRect = CGRect(
+                x: localX - Self.accentBarThickness / 2.0,
+                y: minY + 4.0,
+                width: Self.accentBarThickness,
+                height: max(1.0, spanLength - 8.0)
+            )
+            let handleRect = CGRect(
+                x: localX - Self.handleThickness / 2.0,
+                y: centerY - Self.handleLength / 2.0,
+                width: Self.handleThickness,
+                height: Self.handleLength
+            )
+            return (barRect, handleRect)
+
+        case .horizontal:
+            let localY = divider.coordinate - containerFrame.minY
+            let minX = divider.span.lowerBound - containerFrame.minX
+            let maxX = divider.span.upperBound - containerFrame.minX
+            let spanLength = max(1.0, maxX - minX)
+            let centerX = (minX + maxX) / 2.0
+
+            let barRect = CGRect(
+                x: minX + 4.0,
+                y: localY - Self.accentBarThickness / 2.0,
+                width: max(1.0, spanLength - 8.0),
+                height: Self.accentBarThickness
+            )
+            let handleRect = CGRect(
+                x: centerX - Self.handleLength / 2.0,
+                y: localY - Self.handleThickness / 2.0,
+                width: Self.handleLength,
+                height: Self.handleThickness
+            )
+            return (barRect, handleRect)
+        }
+    }
+
+    private func applyDividerLayerStyling(barLayer: CALayer, handleLayer: CALayer, isActive: Bool) {
+        if isActive {
+            barLayer.backgroundColor = NSColor.controlAccentColor.cgColor
+            barLayer.shadowColor = NSColor.controlAccentColor.cgColor
+            barLayer.shadowOpacity = isDragging ? 0.95 : 0.85
+            barLayer.shadowRadius = isDragging ? 6.0 : 4.5
+            barLayer.shadowOffset = .zero
+            barLayer.opacity = 1.0
+
+            handleLayer.backgroundColor = NSColor.white.cgColor
+            handleLayer.shadowColor = NSColor.black.withAlphaComponent(0.5).cgColor
+            handleLayer.shadowOpacity = 0.6
+            handleLayer.shadowRadius = 2.5
+            handleLayer.shadowOffset = .zero
+            handleLayer.opacity = 1.0
+        } else {
+            barLayer.backgroundColor = NSColor.white.withAlphaComponent(0.3).cgColor
+            barLayer.shadowOpacity = 0.0
+            barLayer.opacity = 0.4
+
+            handleLayer.backgroundColor = NSColor.white.withAlphaComponent(0.5).cgColor
+            handleLayer.shadowOpacity = 0.0
+            handleLayer.opacity = 0.0
         }
     }
 
@@ -513,7 +510,13 @@ public final class AdaptiveDividerOverlayView: NSView {
     }
 
     private func convertToScreen(_ localPoint: NSPoint) -> CGPoint {
-        CGPoint(
+        // BUG-06: use NSWindow's coordinate conversion to correctly handle multi-monitor
+        // setups where containerFrame.minX may be negative (display left of primary).
+        if let screenPoint = window?.convertPoint(toScreen: localPoint) {
+            return CGPoint(x: screenPoint.x, y: screenPoint.y)
+        }
+        // Fallback before panel is attached to a window (e.g. during unit tests).
+        return CGPoint(
             x: localPoint.x + containerFrame.minX,
             y: localPoint.y + containerFrame.minY
         )
