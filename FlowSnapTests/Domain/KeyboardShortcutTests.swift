@@ -1,3 +1,4 @@
+import AppKit
 import Carbon
 import Foundation
 import Testing
@@ -5,7 +6,7 @@ import Testing
 
 /// Tests for KeyboardShortcut and HotkeyBinding domain models.
 ///
-/// Traces to: US-SNAP-004.3 & TC-HOTKEY-001..004.
+/// Traces to: US-SNAP-004.3, US-SNAP-010, TC-HOTKEY-001..004, TC-SET-002.
 struct KeyboardShortcutTests {
 
     @Test func arrowKeyGlyphs() {
@@ -32,9 +33,28 @@ struct KeyboardShortcutTests {
         #expect(q4.displayString == "⌃⌥4")
     }
 
+    @Test func letterAndSpecialKeys() {
+        let cmdShiftP = KeyboardShortcut(keyCode: 35, carbonModifiers: UInt32(cmdKey | shiftKey))
+        #expect(cmdShiftP.displayString == "⇧⌘P")
+
+        let ctrlReturn = KeyboardShortcut(keyCode: 36, carbonModifiers: UInt32(controlKey))
+        #expect(ctrlReturn.displayString == "⌃↩")
+
+        let optSpace = KeyboardShortcut(keyCode: 49, carbonModifiers: UInt32(optionKey))
+        #expect(optSpace.displayString == "⌥Space")
+    }
+
     @Test func multipleModifiersOrder() {
         let allMods = KeyboardShortcut(keyCode: 123, carbonModifiers: UInt32(controlKey | optionKey | shiftKey | cmdKey))
         #expect(allMods.displayString == "⌃⌥⇧⌘←")
+    }
+
+    @Test func carbonModifiersFromNSEventFlags() {
+        let flags: NSEvent.ModifierFlags = [.control, .option]
+        let carbon = KeyboardShortcut.carbonModifiers(from: flags)
+        #expect(carbon & UInt32(controlKey) != 0)
+        #expect(carbon & UInt32(optionKey) != 0)
+        #expect(carbon & UInt32(shiftKey) == 0)
     }
 
     @Test func codableAndEquality() throws {

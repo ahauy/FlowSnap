@@ -8,54 +8,75 @@ import Testing
 struct SettingsSnapshotRenderer {
 
     @Test func renderSettingsScreenshots() async throws {
-        let outputDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/custom-ratios-window-gaps")
-        try FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true)
+        let outputDirs = [
+            URL(fileURLWithPath: "docs/user-guides/images/settings-shortcut-customization"),
+            URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/settings-shortcut-customization"),
+            URL(fileURLWithPath: "docs/user-guides/images/custom-ratios-window-gaps"),
+            URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/custom-ratios-window-gaps")
+        ]
 
-        // 1. Render GeneralSettingsView with 8px Gap and 70/30 Ratio
-        let suiteName1 = "SettingsSnapshot_General_\(UUID().uuidString)"
-        let defaults1 = UserDefaults(suiteName: suiteName1) ?? .standard
-        let store1 = PreferencesStore(defaults: defaults1)
-        store1.setWindowGap(8)
-        store1.setDefaultRatio(.seventyThirty)
-
-        let generalSettingsView = GeneralSettingsView(store: store1)
-            .frame(width: 480, height: 280)
-            .background(Color(nsColor: .windowBackgroundColor))
-
-        if let generalData = renderViewToPNG(view: generalSettingsView, size: CGSize(width: 480, height: 280)) {
-            let url = outputDir.appendingPathComponent("01_general_settings_view.png")
-            try generalData.write(to: url)
+        for dir in outputDirs {
+            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         }
 
-        // 2. Render Full SettingsView with Tab Navigation (General tab selected)
-        let suiteName2 = "SettingsSnapshot_Tabs_\(UUID().uuidString)"
-        let defaults2 = UserDefaults(suiteName: suiteName2) ?? .standard
-        let store2 = PreferencesStore(defaults: defaults2)
-        store2.setWindowGap(4)
-        store2.setDefaultRatio(.equal)
+        let defaults = UserDefaults(suiteName: "SettingsSnapshot_\(UUID().uuidString)") ?? .standard
+        let store = PreferencesStore(defaults: defaults)
+        store.setWindowGap(8)
+        store.setDefaultRatio(.seventyThirty)
 
-        let fullSettingsView = SettingsView(store: store2)
+        // 1. Render GeneralSettingsView
+        let generalView = GeneralSettingsView(store: store)
+            .frame(width: 540, height: 380)
             .background(Color(nsColor: .windowBackgroundColor))
 
-        if let fullData = renderViewToPNG(view: fullSettingsView, size: CGSize(width: 500, height: 400)) {
-            let url = outputDir.appendingPathComponent("02_settings_window_tabs.png")
-            try fullData.write(to: url)
+        if let data = renderViewToPNG(view: generalView, size: CGSize(width: 540, height: 380)) {
+            for dir in outputDirs {
+                try? data.write(to: dir.appendingPathComponent("01_general_settings_view.png"))
+            }
         }
 
-        // 3. Render GeneralSettingsView with 16px Tiling Gap Preset
-        let suiteName3 = "SettingsSnapshot_16px_\(UUID().uuidString)"
-        let defaults3 = UserDefaults(suiteName: suiteName3) ?? .standard
-        let store3 = PreferencesStore(defaults: defaults3)
-        store3.setWindowGap(16)
-        store3.setDefaultRatio(.threeColumn25_50_25)
-
-        let tilingSettingsView = GeneralSettingsView(store: store3)
-            .frame(width: 480, height: 280)
+        // 2. Render ShortcutSettingsView
+        let shortcutView = ShortcutSettingsView(store: store)
+            .frame(width: 540, height: 440)
             .background(Color(nsColor: .windowBackgroundColor))
 
-        if let tilingData = renderViewToPNG(view: tilingSettingsView, size: CGSize(width: 480, height: 280)) {
-            let url = outputDir.appendingPathComponent("03_general_settings_16px_tiling.png")
-            try tilingData.write(to: url)
+        if let data = renderViewToPNG(view: shortcutView, size: CGSize(width: 540, height: 440)) {
+            for dir in outputDirs {
+                try? data.write(to: dir.appendingPathComponent("02_shortcuts_tab.png"))
+            }
+        }
+
+        // 3. Render ApplicationRulesView
+        let rulesView = ApplicationRulesView()
+            .frame(width: 540, height: 400)
+            .background(Color(nsColor: .windowBackgroundColor))
+
+        if let data = renderViewToPNG(view: rulesView, size: CGSize(width: 540, height: 400)) {
+            for dir in outputDirs {
+                try? data.write(to: dir.appendingPathComponent("03_application_rules_tab.png"))
+            }
+        }
+
+        // 4. Render AboutSettingsView
+        let aboutView = AboutSettingsView()
+            .frame(width: 540, height: 400)
+            .background(Color(nsColor: .windowBackgroundColor))
+
+        if let data = renderViewToPNG(view: aboutView, size: CGSize(width: 540, height: 400)) {
+            for dir in outputDirs {
+                try? data.write(to: dir.appendingPathComponent("04_about_settings_tab.png"))
+            }
+        }
+
+        // 5. Render Full SettingsView
+        let fullSettingsView = SettingsView(store: store)
+            .background(Color(nsColor: .windowBackgroundColor))
+
+        if let data = renderViewToPNG(view: fullSettingsView, size: CGSize(width: 560, height: 460)) {
+            for dir in outputDirs {
+                try? data.write(to: dir.appendingPathComponent("05_full_settings_window.png"))
+                try? data.write(to: dir.appendingPathComponent("02_settings_window_tabs.png"))
+            }
         }
     }
 

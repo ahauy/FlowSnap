@@ -13,7 +13,13 @@ public struct SystemSettingsRouter: Sendable {
 
     /// Opens System Settings to Privacy & Security > Accessibility.
     @MainActor
+    public static func openAccessibilitySettings() {
+        NSWorkspace.shared.open(accessibilityURL)
+    }
+
+    /// Opens System Settings to Privacy & Security > Accessibility.
+    @MainActor
     public func openAccessibilitySettings() {
-        NSWorkspace.shared.open(Self.accessibilityURL)
+        Self.openAccessibilitySettings()
     }
 }

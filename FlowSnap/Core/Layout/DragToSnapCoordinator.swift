@@ -7,7 +7,7 @@ private let coordinatorLogger = Logger(subsystem: "com.flowsnap", category: "Dra
 /// Coordinates real-time mouse drag tracking, snap zone detection, HUD overlay preview, and window snap dispatch.
 ///
 /// Implements adaptive dwell thresholds (100ms outer vs 250ms multi-monitor adjacent) and smooth preview dismissal.
-/// Conforms to `@MainActor`. See spec §30, §32.
+/// Conforms to `@MainActor`. See spec §30, §32, US-SNAP-010.
 @MainActor
 public final class DragToSnapCoordinator {
 
@@ -86,6 +86,7 @@ public final class DragToSnapCoordinator {
 
     public func handleDrag(at point: CGPoint) async {
         guard accessibilityService.isTrusted else { return }
+        guard preferencesStore?.isDragToSnapEnabled ?? true else { return }
 
         let displays = await displayManager.displays
         let resolvedDisplay: Display?
@@ -166,8 +167,11 @@ public final class DragToSnapCoordinator {
             currentCandidateZone = result.target
             pendingDwellTask?.cancel()
 
-            // Adaptive dwell: 50ms for outer boundary vs 150ms for internal adjacent monitor border
-            let dwellNanos: UInt64 = result.isAdjacentEdge ? 150_000_000 : 50_000_000
+            // Adaptive dwell: outer boundary vs internal adjacent monitor border
+            let baseDwellSec = preferencesStore?.dragPreviewDwellDelay ?? 0.05
+            let dwellNanos: UInt64 = result.isAdjacentEdge
+                ? UInt64((baseDwellSec + 0.10) * 1_000_000_000)
+                : UInt64(baseDwellSec * 1_000_000_000)
 
             pendingDwellTask = Task { @MainActor [weak self] in
                 try? await Task.sleep(nanoseconds: dwellNanos)

@@ -1,18 +1,17 @@
 import SwiftUI
 
-/// General preferences: gaps, launch at login, etc.
+/// General preferences: gaps, ratios, drag-to-snap, launch at login.
 ///
-/// Binds to the actor-based `PreferencesStore` for the window gap (BR-CRW-002)
-/// and default layout ratio (BR-CRW-006). US-SNAP-008.
-struct GeneralSettingsView: View {
+/// Binds to `PreferencesStore` (BR-CRW-002, BR-CRW-006, US-SNAP-010).
+public struct GeneralSettingsView: View {
 
     @ObservedObject var store: PreferencesStore
 
-    init(store: PreferencesStore = PreferencesStore()) {
+    public init(store: PreferencesStore) {
         self.store = store
     }
 
-    var body: some View {
+    public var body: some View {
         Form {
             Section("Window Gap") {
                 Picker("Window Gap", selection: gapBinding) {
@@ -25,7 +24,7 @@ struct GeneralSettingsView: View {
                 GapPreview(gap: store.windowGap, frame: CGSize(width: 180, height: 36))
             }
 
-            Section("Default Ratio") {
+            Section("Default Split Ratio") {
                 Picker("Default Ratio", selection: ratioBinding) {
                     ForEach(LayoutRatio.allCases, id: \.self) { ratio in
                         Text(ratio.displayName).tag(ratio)
@@ -33,11 +32,23 @@ struct GeneralSettingsView: View {
                 }
             }
 
+            Section("Drag to Snap") {
+                Toggle("Enable Drag to Snap", isOn: dragToSnapBinding)
+
+                if store.isDragToSnapEnabled {
+                    Picker("Preview Delay", selection: dwellDelayBinding) {
+                        Text("Instant (50 ms)").tag(0.05)
+                        Text("Normal (150 ms)").tag(0.15)
+                        Text("Relaxed (300 ms)").tag(0.30)
+                    }
+                }
+            }
+
             Section("Launch") {
-                Toggle("Launch at login", isOn: .constant(false))
+                Toggle("Launch at login", isOn: launchAtLoginBinding)
             }
         }
-        .padding()
+        .padding(16)
     }
 
     // MARK: - Bindings
@@ -53,6 +64,27 @@ struct GeneralSettingsView: View {
         Binding(
             get: { store.defaultRatio },
             set: { store.setDefaultRatio($0) }
+        )
+    }
+
+    private var dragToSnapBinding: Binding<Bool> {
+        Binding(
+            get: { store.isDragToSnapEnabled },
+            set: { store.setDragToSnapEnabled($0) }
+        )
+    }
+
+    private var dwellDelayBinding: Binding<Double> {
+        Binding(
+            get: { store.dragPreviewDwellDelay },
+            set: { store.setDragPreviewDwellDelay($0) }
+        )
+    }
+
+    private var launchAtLoginBinding: Binding<Bool> {
+        Binding(
+            get: { store.launchAtLogin },
+            set: { store.setLaunchAtLogin($0) }
         )
     }
 }
