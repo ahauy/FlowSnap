@@ -361,4 +361,117 @@ struct CollinearEdgeDetectorTests {
         #expect(clampedBottom[2]?.height == 630.0)
         #expect(clampedBottom[2]?.maxY == 900.0)
     }
+
+    @Test("floorWidth and floorHeight strictly respect explicit minSize over default fallback")
+    func floorWidthAndFloorHeightStrictlyRespectMinSize() {
+        let detector = CollinearEdgeDetector(defaultMinWidth: 380.0, defaultMinHeight: 260.0)
+        let customMinWindow = ManagedWindow(
+            id: 1,
+            pid: 10,
+            title: "CustomMin",
+            frame: CGRect(x: 0, y: 0, width: 700, height: 600),
+            minSize: CGSize(width: 550, height: 420)
+        )
+        #expect(detector.floorWidth(of: customMinWindow) == 550.0)
+        #expect(detector.floorHeight(of: customMinWindow) == 420.0)
+    }
+
+    @Test("computeResizedFrames never penetrates custom minSize window with gap")
+    func computeResizedFramesNeverPenetratesCustomMinSizeWithGap() {
+        let detector = CollinearEdgeDetector()
+        let display = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let left = ManagedWindow(
+            id: 1, pid: 1, title: "Left",
+            frame: CGRect(x: 0, y: 0, width: 720, height: 900),
+            minSize: CGSize(width: 600, height: 400)
+        )
+        let right = ManagedWindow(
+            id: 2, pid: 2, title: "Right",
+            frame: CGRect(x: 720, y: 0, width: 720, height: 900)
+        )
+
+        let dividers = detector.detectDividers(in: [left, right], containerFrame: display, gap: 16.0)
+        #expect(dividers.count == 1)
+        let divider = dividers.first!
+        // minCoord = 0 + 600 + 8 = 608.0
+        #expect(divider.minCoordinate == 608.0)
+
+        let clamped = detector.computeResizedFrames(
+            for: divider,
+            targetCoordinate: 100.0,
+            windows: [left, right],
+            containerFrame: display,
+            gap: 16.0
+        )
+
+        let leftFrame = clamped[1]!
+        let rightFrame = clamped[2]!
+        #expect(leftFrame.width == 600.0)
+        #expect(leftFrame.maxX == 600.0)
+        #expect(rightFrame.origin.x == 616.0) // 608 + 8 = 616
+        #expect(rightFrame.origin.x - leftFrame.maxX == 16.0)
+    }
+
+    @Test("Non-resizable windows (such as System Settings) are excluded from divider detection")
+    func nonResizableWindowsExcludedFromDividerDetection() {
+        let detector = CollinearEdgeDetector()
+        let display = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let settingsWindow = ManagedWindow(
+            id: 1, pid: 100, title: "System Settings",
+            frame: CGRect(x: 0, y: 0, width: 720, height: 900),
+            isResizable: false,
+            kind: .unsupported
+        )
+        let editorWindow = ManagedWindow(
+            id: 2, pid: 200, title: "Xcode",
+            frame: CGRect(x: 720, y: 0, width: 720, height: 900),
+            isResizable: true,
+            kind: .normal
+        )
+
+        let dividers = detector.detectDividers(in: [settingsWindow, editorWindow], containerFrame: display)
+        #expect(dividers.isEmpty)
+    }
+
+    @Test("Overlapping foreground window occludes background divider line")
+    func foregroundWindowOccludesBackgroundDivider() {
+        let detector = CollinearEdgeDetector()
+        let display = CGRect(x: 0, y: 0, width: 1440, height: 900)
+
+        // Frontmost window (z-order 0) placed on top in the middle of the screen
+        let floatingTopWindow = ManagedWindow(
+            id: 99, pid: 999, title: "Floating Dialog",
+            frame: CGRect(x: 400, y: 0, width: 640, height: 900),
+            isResizable: true,
+            kind: .normal
+        )
+        // Background tiled windows
+        let leftWindow = ManagedWindow(
+            id: 1, pid: 100, title: "Left Tiled",
+            frame: CGRect(x: 0, y: 0, width: 720, height: 900),
+            isResizable: true,
+            kind: .normal
+        )
+        let rightWindow = ManagedWindow(
+            id: 2, pid: 200, title: "Right Tiled",
+            frame: CGRect(x: 720, y: 0, width: 720, height: 900),
+            isResizable: true,
+            kind: .normal
+        )
+
+        // With floatingTopWindow in front (index 0), the seam at X=720 is fully occluded
+        let dividersWithOcclusion = detector.detectDividers(
+            in: [floatingTopWindow, leftWindow, rightWindow],
+            containerFrame: display
+        )
+        #expect(dividersWithOcclusion.isEmpty)
+
+        // Without the floating window in front, the divider is detected normally
+        let dividersNormal = detector.detectDividers(
+            in: [leftWindow, rightWindow],
+            containerFrame: display
+        )
+        #expect(dividersNormal.count == 1)
+        #expect(dividersNormal.first?.coordinate == 720)
+    }
 }

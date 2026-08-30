@@ -26,7 +26,7 @@ struct AdaptiveDividerOverlayPanelTests {
         return ([w1, w2], [divider])
     }
 
-    @Test("Panel is initialized with floating non-activating transparent properties")
+    @Test("Panel is initialized with floating non-activating transparent properties and selective mouse events")
     func panelInitialization() {
         let panel = AdaptiveDividerOverlayPanel()
         #expect(panel.isOpaque == false)
@@ -138,14 +138,14 @@ struct AdaptiveDividerOverlayPanelTests {
         )
 
         let vSeam = view.computeSeamRect(for: vDivider)
-        #expect(vSeam.origin.x == 715) // 720 - 5.0
-        #expect(vSeam.width == 10.0)
+        #expect(vSeam.origin.x == 711) // 720 - 9.0
+        #expect(vSeam.width == 18.0)
         #expect(vSeam.origin.y == 100)
         #expect(vSeam.height == 700)
 
         let hSeam = view.computeSeamRect(for: hDivider)
-        #expect(hSeam.origin.y == 445) // 450 - 5.0
-        #expect(hSeam.height == 10.0)
+        #expect(hSeam.origin.y == 441) // 450 - 9.0
+        #expect(hSeam.height == 18.0)
         #expect(hSeam.origin.x == 200)
         #expect(hSeam.width == 1000)
     }
@@ -206,7 +206,7 @@ struct AdaptiveDividerOverlayPanelTests {
         view.onDirectMouseDragged = { point in mouseDraggedPoint = point }
         view.onDirectMouseUp = { point in mouseUpPoint = point }
 
-        let downEvent = NSEvent.mouseEvent(
+        guard let downEvent = NSEvent.mouseEvent(
             with: .leftMouseDown,
             location: NSPoint(x: 720, y: 450),
             modifierFlags: [],
@@ -216,12 +216,15 @@ struct AdaptiveDividerOverlayPanelTests {
             eventNumber: 1,
             clickCount: 1,
             pressure: 1.0
-        )!
+        ) else {
+            Issue.record("Failed to create mouseDown event")
+            return
+        }
         view.mouseDown(with: downEvent)
         #expect(mouseDownPoint == CGPoint(x: 720, y: 450))
         #expect(view.isDragging == true)
 
-        let dragEvent = NSEvent.mouseEvent(
+        guard let dragEvent = NSEvent.mouseEvent(
             with: .leftMouseDragged,
             location: NSPoint(x: 750, y: 450),
             modifierFlags: [],
@@ -231,11 +234,14 @@ struct AdaptiveDividerOverlayPanelTests {
             eventNumber: 2,
             clickCount: 1,
             pressure: 1.0
-        )!
+        ) else {
+            Issue.record("Failed to create mouseDragged event")
+            return
+        }
         view.mouseDragged(with: dragEvent)
         #expect(mouseDraggedPoint == CGPoint(x: 750, y: 450))
 
-        let upEvent = NSEvent.mouseEvent(
+        guard let upEvent = NSEvent.mouseEvent(
             with: .leftMouseUp,
             location: NSPoint(x: 750, y: 450),
             modifierFlags: [],
@@ -245,10 +251,33 @@ struct AdaptiveDividerOverlayPanelTests {
             eventNumber: 3,
             clickCount: 1,
             pressure: 0.0
-        )!
+        ) else {
+            Issue.record("Failed to create mouseUp event")
+            return
+        }
         view.mouseUp(with: upEvent)
         #expect(mouseUpPoint == CGPoint(x: 750, y: 450))
         #expect(view.isDragging == false)
+    }
+
+    @Test("Window outlines render individual windows without desktop workspace container border")
+    func windowOutlinesRenderWithoutDesktopContainerBorder() {
+        let panel = AdaptiveDividerOverlayPanel()
+        let view = panel.overlayView
+        let (windows, dividers) = makeSampleData()
+
+        view.updateState(
+            containerFrame: container,
+            windows: windows,
+            dividers: dividers,
+            activeDivider: nil,
+            isDragging: false
+        )
+
+        // Window borders container layer should only contain shapes for individual windows (count == 2)
+        // without an intrusive full-screen container border outline
+        let windowBordersLayer = view.layer?.sublayers?.first
+        #expect(windowBordersLayer?.sublayers?.count == 2)
     }
 
     @Test("Secondary display offset is strictly isolated")
@@ -277,9 +306,9 @@ struct AdaptiveDividerOverlayPanelTests {
         )
 
         let seam = view.computeSeamRect(for: divider)
-        // In local view coordinates, localX = 2400 - 1440 = 960, half thickness = 5 -> origin.x = 955
-        #expect(seam.origin.x == 955)
-        #expect(seam.width == 10.0)
+        // In local view coordinates, localX = 2400 - 1440 = 960, half thickness = 9 -> origin.x = 951
+        #expect(seam.origin.x == 951)
+        #expect(seam.width == 18.0)
         #expect(seam.height == 1080)
     }
 }

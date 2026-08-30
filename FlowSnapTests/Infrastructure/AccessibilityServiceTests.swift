@@ -52,4 +52,30 @@ struct AccessibilityServiceTests {
         service.openSystemSettings()
         #expect(service.openSettingsCallCount == 1)
     }
+
+    @Test func allVisibleManagedWindowsHonorsIsTrustedAndProvidesResizableStatus() {
+        let fixedWindow = ManagedWindow(
+            id: 10, pid: 100, title: "System Settings",
+            frame: CGRect(x: 0, y: 0, width: 600, height: 500),
+            isResizable: false,
+            kind: .unsupported
+        )
+        let resizableWindow = ManagedWindow(
+            id: 20, pid: 200, title: "Safari",
+            frame: CGRect(x: 600, y: 0, width: 800, height: 900),
+            isResizable: true,
+            kind: .normal
+        )
+
+        let untrustedService = MockAccessibilityService(isTrusted: false)
+        untrustedService.mockVisibleWindows = [fixedWindow, resizableWindow]
+        #expect(untrustedService.allVisibleManagedWindows().isEmpty)
+
+        let trustedService = MockAccessibilityService(isTrusted: true)
+        trustedService.mockVisibleWindows = [fixedWindow, resizableWindow]
+        let results = trustedService.allVisibleManagedWindows()
+        #expect(results.count == 2)
+        #expect(results.first { $0.id == 10 }?.isResizable == false)
+        #expect(results.first { $0.id == 20 }?.isResizable == true)
+    }
 }
