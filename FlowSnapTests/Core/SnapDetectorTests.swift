@@ -167,4 +167,163 @@ struct SnapDetectorTests {
         #expect(cornerResult?.isTopCenterZone == false)
         #expect(detector.isTopCenterZone(at: cornerTopPoint, on: primaryDisplay) == false)
     }
+
+    // MARK: - US-SNAP-008: Default Ratio & Window Gap Preview Resolution
+
+    @Test func detectZoneWithSixtyFortyRatio() {
+        let leftPoint = CGPoint(x: 2, y: 540)
+        let leftResult = detector.detectZone(
+            at: leftPoint,
+            on: primaryDisplay,
+            adjacentDisplays: [],
+            defaultRatio: .sixtyForty,
+            windowGap: 0
+        )
+        #expect(leftResult != nil)
+        #expect(leftResult?.target == .left)
+        #expect(leftResult?.previewFrame == layoutEngine.frame(for: .left60_40, in: primaryDisplay.visibleFrame))
+        #expect(leftResult?.previewFrame.width == 1920 * 0.6)
+
+        let rightPoint = CGPoint(x: 1918, y: 540)
+        let rightResult = detector.detectZone(
+            at: rightPoint,
+            on: primaryDisplay,
+            adjacentDisplays: [],
+            defaultRatio: .sixtyForty,
+            windowGap: 0
+        )
+        #expect(rightResult != nil)
+        #expect(rightResult?.target == .right)
+        #expect(rightResult?.previewFrame == layoutEngine.frame(for: .right40_60, in: primaryDisplay.visibleFrame))
+        #expect(rightResult?.previewFrame.width == 1920 * 0.4)
+        #expect(rightResult?.previewFrame.minX == 1920 * 0.6)
+    }
+
+    @Test func detectZoneWithSeventyThirtyRatio() {
+        let leftPoint = CGPoint(x: 2, y: 540)
+        let leftResult = detector.detectZone(
+            at: leftPoint,
+            on: primaryDisplay,
+            adjacentDisplays: [],
+            defaultRatio: .seventyThirty,
+            windowGap: 0
+        )
+        #expect(leftResult != nil)
+        #expect(leftResult?.previewFrame == layoutEngine.frame(for: .left70_30, in: primaryDisplay.visibleFrame))
+
+        let rightPoint = CGPoint(x: 1918, y: 540)
+        let rightResult = detector.detectZone(
+            at: rightPoint,
+            on: primaryDisplay,
+            adjacentDisplays: [],
+            defaultRatio: .seventyThirty,
+            windowGap: 0
+        )
+        #expect(rightResult != nil)
+        #expect(rightResult?.previewFrame == layoutEngine.frame(for: .rightOneThird, in: primaryDisplay.visibleFrame))
+    }
+
+    @Test func detectZoneWithEightyTwentyRatio() {
+        let leftPoint = CGPoint(x: 2, y: 540)
+        let leftResult = detector.detectZone(
+            at: leftPoint,
+            on: primaryDisplay,
+            adjacentDisplays: [],
+            defaultRatio: .eightyTwenty,
+            windowGap: 0
+        )
+        #expect(leftResult != nil)
+        #expect(leftResult?.previewFrame == layoutEngine.frame(for: .left80_20, in: primaryDisplay.visibleFrame))
+
+        let rightPoint = CGPoint(x: 1918, y: 540)
+        let rightResult = detector.detectZone(
+            at: rightPoint,
+            on: primaryDisplay,
+            adjacentDisplays: [],
+            defaultRatio: .eightyTwenty,
+            windowGap: 0
+        )
+        #expect(rightResult != nil)
+        #expect(rightResult?.previewFrame == layoutEngine.frame(for: .right20_80, in: primaryDisplay.visibleFrame))
+    }
+
+    @Test func detectZoneWithThreeColumnRatio() {
+        let leftPoint = CGPoint(x: 2, y: 540)
+        let leftResult = detector.detectZone(
+            at: leftPoint,
+            on: primaryDisplay,
+            adjacentDisplays: [],
+            defaultRatio: .threeColumn25_50_25,
+            windowGap: 0
+        )
+        #expect(leftResult != nil)
+        #expect(leftResult?.previewFrame == layoutEngine.frame(for: .left25, in: primaryDisplay.visibleFrame))
+
+        let rightPoint = CGPoint(x: 1918, y: 540)
+        let rightResult = detector.detectZone(
+            at: rightPoint,
+            on: primaryDisplay,
+            adjacentDisplays: [],
+            defaultRatio: .threeColumn25_50_25,
+            windowGap: 0
+        )
+        #expect(rightResult != nil)
+        #expect(rightResult?.previewFrame == layoutEngine.frame(for: .right25, in: primaryDisplay.visibleFrame))
+    }
+
+    @Test func detectZoneWithWindowGapAndDefaultRatio() {
+        let leftPoint = CGPoint(x: 2, y: 540)
+        let leftResult = detector.detectZone(
+            at: leftPoint,
+            on: primaryDisplay,
+            adjacentDisplays: [],
+            defaultRatio: .sixtyForty,
+            windowGap: 8
+        )
+        #expect(leftResult != nil)
+        let expectedLeft = layoutEngine.frame(for: .left60_40, in: primaryDisplay.visibleFrame, gap: 8, uniform: true)
+        #expect(leftResult?.previewFrame == expectedLeft)
+
+        let rightPoint = CGPoint(x: 1918, y: 540)
+        let rightResult = detector.detectZone(
+            at: rightPoint,
+            on: primaryDisplay,
+            adjacentDisplays: [],
+            defaultRatio: .sixtyForty,
+            windowGap: 8
+        )
+        #expect(rightResult != nil)
+        let expectedRight = layoutEngine.frame(for: .right40_60, in: primaryDisplay.visibleFrame, gap: 8, uniform: true)
+        #expect(rightResult?.previewFrame == expectedRight)
+    }
+
+    @Test func detectZoneWithWindowGapForNonHalfTargets() {
+        // Maximize with gap
+        let maxPoint = CGPoint(x: 400, y: 1078)
+        let maxResult = detector.detectZone(
+            at: maxPoint,
+            on: primaryDisplay,
+            adjacentDisplays: [],
+            defaultRatio: .eightyTwenty,
+            windowGap: 8
+        )
+        #expect(maxResult != nil)
+        #expect(maxResult?.target == .maximize)
+        let expectedMax = layoutEngine.frame(for: .maximize, in: primaryDisplay.visibleFrame, gap: 8, uniform: true)
+        #expect(maxResult?.previewFrame == expectedMax)
+
+        // Corner with gap
+        let cornerPoint = CGPoint(x: 2, y: 1000)
+        let cornerResult = detector.detectZone(
+            at: cornerPoint,
+            on: primaryDisplay,
+            adjacentDisplays: [],
+            defaultRatio: .sixtyForty,
+            windowGap: 8
+        )
+        #expect(cornerResult != nil)
+        #expect(cornerResult?.target == .topLeft)
+        let expectedTopLeft = layoutEngine.frame(for: .topLeft, in: primaryDisplay.visibleFrame, gap: 8, uniform: true)
+        #expect(cornerResult?.previewFrame == expectedTopLeft)
+    }
 }

@@ -400,7 +400,7 @@ _Mục tiêu: Đưa tính năng được yêu thích nhất của Windows 11 lê
 
 _Mục tiêu: Đưa trải nghiệm xếp cửa sổ lên tầm Tiling Window Manager chuyên nghiệp — kéo đường phân cách chung để co giãn đồng thời nhiều cửa sổ bám cạnh mà không làm vỡ bố cục._
 
-- [ ] **US-SNAP-008: Tỷ lệ Bố cục Tùy chỉnh (60/40, 70/30) & Khoảng cách Cửa sổ (Custom Ratios & Window Gaps)**
+- [x] **US-SNAP-008: Tỷ lệ Bố cục Tùy chỉnh (60/40, 70/30) & Khoảng cách Cửa sổ (Custom Ratios & Window Gaps)**
   - **Slug:** `custom-ratios-window-gaps`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -409,13 +409,13 @@ _Mục tiêu: Đưa trải nghiệm xếp cửa sổ lên tầm Tiling Window Ma
   - **Blocks:** `US-SNAP-009`
   - **Mô tả:** Hỗ trợ chia màn hình theo tỷ lệ bất đối xứng (60/40, 70/30, 80/20) và cho phép cấu hình khoảng hở viền thẩm mỹ (Window Gap: 0px, 4px, 8px, 16px).
   - **Acceptance Criteria (AC):**
-    - [ ] `LayoutEngine` hỗ trợ tính toán tọa độ theo tỷ lệ tùy biến (60/40, 70/30, 80/20, 3 cột 25/50/25).
-    - [ ] Cấu hình khoảng hở viền (Window Gap: 0px, 4px, 8px, 12px, 16px) tự động bù trừ khoảng cách giữa các cửa sổ liền kề và mép ngoài màn hình.
-    - [ ] Lưu cấu hình Gap và Default Ratio vào `PreferencesStore` cục bộ.
+    - [x] `LayoutEngine` hỗ trợ tính toán tọa độ theo tỷ lệ tùy biến (60/40, 70/30, 80/20, 3 cột 25/50/25).
+    - [x] Cấu hình khoảng hở viền (Window Gap: 0px, 4px, 8px, 12px, 16px) tự động bù trừ khoảng cách giữa các cửa sổ liền kề và mép ngoài màn hình.
+    - [x] Lưu cấu hình Gap và Default Ratio vào `PreferencesStore` cục bộ.
   - **Tasks:**
-    - [ ] `Domain`: Thêm trường `gapSize: CGFloat` và `customRatio: LayoutRatio` vào cấu hình Layout.
-    - [ ] `Core`: Nâng cấp thuật toán `LayoutEngine` tính toán khoảng trừ padding giữa các zones.
-    - [ ] `Tests`: Test kiểm tra kích thước frame và khoảng cách viền chính xác từng pixel.
+    - [x] `Domain`: Thêm trường `gapSize: CGFloat` và `customRatio: LayoutRatio` vào cấu hình Layout.
+    - [x] `Core`: Nâng cấp thuật toán `LayoutEngine` tính toán khoảng trừ padding giữa các zones.
+    - [x] `Tests`: Test kiểm tra kích thước frame và khoảng cách viền chính xác từng pixel.
   - **Deliverables khi [x]:**
     - `.specify/features/custom-ratios-window-gaps/baseline.md` (SIGNED-OFF)
     - `docs/features/custom-ratios-window-gaps/README.md`

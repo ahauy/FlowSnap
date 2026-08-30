@@ -133,4 +133,103 @@ struct LayoutEngineTests {
         #expect(col3 == CGRect(x: 1280, y: 0, width: 640, height: 1080))
         #expect(col1.width + col2.width + col3.width == bounds.width)
     }
+
+    // MARK: - US-SNAP-008: Asymmetric Ratios (60/40, 80/20, 25/50/25)
+
+    @Test func sixtyFortySplit_1920x1080() {
+        let bounds = CGRect(x: 0, y: 0, width: 1920, height: 1080)
+
+        let left60 = engine.frame(for: .left60_40, in: bounds)
+        let right40 = engine.frame(for: .right40_60, in: bounds)
+
+        #expect(left60 == CGRect(x: 0, y: 0, width: 1152, height: 1080))
+        #expect(right40 == CGRect(x: 1152, y: 0, width: 768, height: 1080))
+        #expect(left60.width + right40.width == bounds.width)
+    }
+
+    @Test func eightyTwentySplit_1920x1080() {
+        let bounds = CGRect(x: 0, y: 0, width: 1920, height: 1080)
+
+        let left80 = engine.frame(for: .left80_20, in: bounds)
+        let right20 = engine.frame(for: .right20_80, in: bounds)
+
+        #expect(left80 == CGRect(x: 0, y: 0, width: 1536, height: 1080))
+        #expect(right20 == CGRect(x: 1536, y: 0, width: 384, height: 1080))
+        #expect(left80.width + right20.width == bounds.width)
+    }
+
+    @Test func threeColumn25_50_25Split_1920x1080() {
+        let bounds = CGRect(x: 0, y: 0, width: 1920, height: 1080)
+
+        let col1 = engine.frame(for: .left25, in: bounds)
+        let col2 = engine.frame(for: .center50, in: bounds)
+        let col3 = engine.frame(for: .right25, in: bounds)
+
+        #expect(col1 == CGRect(x: 0, y: 0, width: 480, height: 1080))
+        #expect(col2 == CGRect(x: 480, y: 0, width: 960, height: 1080))
+        #expect(col3 == CGRect(x: 1440, y: 0, width: 480, height: 1080))
+        #expect(col1.width + col2.width + col3.width == bounds.width)
+    }
+
+    @Test func seventyThirtySplit_UsesLeft70_30() {
+        let bounds = CGRect(x: 0, y: 0, width: 1920, height: 1080)
+
+        let left70 = engine.frame(for: .left70_30, in: bounds)
+        let right30 = engine.frame(for: .rightOneThird, in: bounds)
+
+        #expect(left70 == CGRect(x: 0, y: 0, width: 1344, height: 1080))
+        #expect(right30 == CGRect(x: 1344, y: 0, width: 576, height: 1080))
+        #expect(left70.width + right30.width == bounds.width)
+    }
+
+    // MARK: - US-SNAP-008: Uniform Gap (BR-CRW-003)
+
+    @Test func uniformGap_InsetsBothOuterEdges() {
+        let bounds = CGRect(x: 0, y: 0, width: 1000, height: 800)
+
+        let left = engine.frame(for: .leftHalf, in: bounds, gap: 8, uniform: true)
+        let right = engine.frame(for: .rightHalf, in: bounds, gap: 8, uniform: true)
+
+        // effectiveWidth = 1000 - 3*8 = 976; left = 488, right = 488
+        // left minX = 8, maxX = 496; right minX = 8 + 488 + 8 = 504, maxX = 504 + 488 = 992 (bounds.maxX - 8)
+        #expect(left.minX == 8)
+        #expect(left.width == 488)
+        #expect(right.maxX == bounds.maxX - 8)
+        #expect(right.minX == CGFloat(8 + 488 + 8))
+        #expect(left.width + right.width + CGFloat(3 * 8) == bounds.width)
+    }
+
+    @Test func legacyGap_OnlyInnerGutter() {
+        let bounds = CGRect(x: 0, y: 0, width: 1000, height: 800)
+
+        let left = engine.frame(for: .leftHalf, in: bounds, gap: 8, uniform: false)
+        let right = engine.frame(for: .rightHalf, in: bounds, gap: 8, uniform: false)
+
+        // Legacy: outer edges flush, only inner gutter (BR-CRW-004)
+        #expect(left.minX == 0)
+        #expect(right.maxX == bounds.maxX)
+        #expect(right.minX - left.maxX == 8)
+    }
+
+    @Test func uniformGap_ThreeColumn_InsetsOuterEdges() {
+        let bounds = CGRect(x: 0, y: 0, width: 1000, height: 800)
+
+        let col1 = engine.frame(for: .left25, in: bounds, gap: 8, uniform: true)
+        let col2 = engine.frame(for: .center50, in: bounds, gap: 8, uniform: true)
+        let col3 = engine.frame(for: .right25, in: bounds, gap: 8, uniform: true)
+
+        #expect(col1.minX == 8)
+        #expect(col3.maxX == bounds.maxX - 8) // outer right edge inset by gap
+        #expect(col2.minX - col1.maxX == 8)
+        #expect(col3.minX - col2.maxX == 8)
+    }
+
+    @Test func uniformGap_ZeroGap_MatchesLegacy() {
+        let bounds = CGRect(x: 0, y: 0, width: 1000, height: 800)
+
+        let uniformZero = engine.frame(for: .leftHalf, in: bounds, gap: 0, uniform: true)
+        let legacyZero = engine.frame(for: .leftHalf, in: bounds, gap: 0, uniform: false)
+
+        #expect(uniformZero == legacyZero)
+    }
 }

@@ -36,6 +36,8 @@ public enum SnapTarget: Hashable, Sendable, Codable {
     public static let maximize = SnapTarget.zone(.maximize)
 
     // MARK: - Convenience Shorthands (Asymmetric & Thirds)
+    public static let left70_30 = SnapTarget.zone(.left70_30)
+    @available(*, deprecated, renamed: "left70_30")
     public static let leftTwoThirds = SnapTarget.zone(.leftTwoThirds)
     public static let rightOneThird = SnapTarget.zone(.rightOneThird)
     public static let leftThird = SnapTarget.zone(.leftThird)

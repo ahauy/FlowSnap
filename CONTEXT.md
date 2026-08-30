@@ -56,6 +56,8 @@
 | **LayoutTemplate**           | Predefined multi-window layout grouping in picker     | "Picker layout card or pattern"                | `LayoutTemplate`           | 50/50, 70/30, 3-column, 4-quarters            |
 | **LayoutSlot**               | Interactive partition tile inside a LayoutTemplate    | "Picker layout tile or zone cell"              | `LayoutSlot`               | Hit-testable target mapping to SnapTarget     |
 | **AppDependencies**          | Root DI container for services and stores             | "Global service locator or singleton list"     | `AppDependencies`          | @MainActor DI container                       |
+| **LayoutRatio**              | Named multi-window partition ratio (60/40, 80/20...)  | "Window split ratio or division scheme"        | `LayoutRatio`              | ADR-0004, Codable enum                        |
+| **PreferencesStore**         | Observable store persisting user settings and gaps    | "Settings manager or preferences controller"   | `PreferencesStore`         | ADR-0004, @MainActor ObservableObject         |
 
 ## Where to Look
 

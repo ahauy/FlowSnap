@@ -19,6 +19,7 @@ public final class DragToSnapCoordinator {
     private let commandDispatcher: CommandDispatching
     private let displayManager: DisplayManaging
     private let accessibilityService: AccessibilityService
+    private let preferencesStore: PreferencesStore?
 
     private var pendingDwellTask: Task<Void, Never>?
     public private(set) var activeDetectionResult: SnapDetectionResult?
@@ -32,7 +33,8 @@ public final class DragToSnapCoordinator {
         layoutEngine: LayoutCalculating = LayoutEngine(),
         commandDispatcher: CommandDispatching,
         displayManager: DisplayManaging,
-        accessibilityService: AccessibilityService
+        accessibilityService: AccessibilityService,
+        preferencesStore: PreferencesStore? = nil
     ) {
         self.mouseTracker = mouseTracker
         self.detector = detector
@@ -42,6 +44,7 @@ public final class DragToSnapCoordinator {
         self.commandDispatcher = commandDispatcher
         self.displayManager = displayManager
         self.accessibilityService = accessibilityService
+        self.preferencesStore = preferencesStore
     }
 
     /// Starts observing drag-to-snap interactions.
@@ -99,11 +102,15 @@ public final class DragToSnapCoordinator {
             return
         }
 
+        let defaultRatio = preferencesStore?.defaultRatio ?? .equal
+        let windowGap = preferencesStore?.windowGap ?? 0
+        let uniform = windowGap > 0
+
         // 1. If Layout Picker is currently visible, prioritize picker interaction
         if layoutPickerManager.isVisible {
             if let slot = layoutPickerManager.hitTestSlot(at: point) {
                 let slotZone = slot.target.zone ?? .maximize
-                let previewFrame = layoutEngine.frame(for: slotZone, in: activeDisplay.visibleFrame, gap: 0)
+                let previewFrame = layoutEngine.frame(for: slotZone, in: activeDisplay.visibleFrame, gap: windowGap, uniform: uniform)
                 currentCandidateZone = slot.target
                 activeDetectionResult = SnapDetectionResult(
                     target: slot.target,
@@ -128,7 +135,13 @@ public final class DragToSnapCoordinator {
 
         // 2. Evaluate edge snap targets
         let adjacentDisplays = displays.filter { $0.id != activeDisplay.id }
-        let result = detector.detectZone(at: point, on: activeDisplay, adjacentDisplays: adjacentDisplays)
+        let result = detector.detectZone(
+            at: point,
+            on: activeDisplay,
+            adjacentDisplays: adjacentDisplays,
+            defaultRatio: defaultRatio,
+            windowGap: windowGap
+        )
 
         if let result {
             if result.isTopCenterZone {
@@ -195,8 +208,10 @@ public final class DragToSnapCoordinator {
                 let activeDisplay = displays.first(where: { $0.id == resolvedDisplayID }) ?? displays.first
                 let visibleFrame = activeDisplay?.visibleFrame ?? CGRect(x: 0, y: 0, width: 1920, height: 1080)
 
+                let windowGap = preferencesStore?.windowGap ?? 0
+                let uniform = windowGap > 0
                 let zone = slot.target.zone ?? .maximize
-                let snapFrame = layoutEngine.frame(for: zone, in: visibleFrame, gap: 0)
+                let snapFrame = layoutEngine.frame(for: zone, in: visibleFrame, gap: windowGap, uniform: uniform)
 
                 activeDetectionResult = nil
                 previewManager.hidePreview(animated: false)

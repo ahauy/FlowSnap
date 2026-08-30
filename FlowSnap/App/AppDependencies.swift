@@ -12,6 +12,8 @@ public final class AppDependencies {
     public lazy var accessibilityService: AccessibilityService = AXAccessibilityService()
     public lazy var displayManager: DisplayManaging = DisplayManager()
     public lazy var hotkeyManager: GlobalHotkeyManaging = GlobalHotkeyManager()
+    public lazy var preferencesStore: PreferencesStore = PreferencesStore()
+    public lazy var settingsWindowController: SettingsWindowController = SettingsWindowController(preferencesStore: preferencesStore)
 
     // MARK: - Core Services
 
@@ -21,7 +23,8 @@ public final class AppDependencies {
     public lazy var snapEngine: SnapEngine = SnapEngine(
         layoutEngine: layoutEngine,
         windowRegistry: windowRegistry,
-        displayManager: displayManager
+        displayManager: displayManager,
+        preferencesStore: preferencesStore
     )
     public lazy var commandDispatcher: CommandDispatcher = CommandDispatcher(
         windowManager: windowManager,
@@ -34,7 +37,8 @@ public final class AppDependencies {
     public lazy var menuBarViewModel: MenuBarViewModel = MenuBarViewModel(
         accessibilityService: accessibilityService,
         commandDispatcher: commandDispatcher,
-        windowManager: windowManager
+        windowManager: windowManager,
+        settingsWindowPresenter: settingsWindowController
     )
 
     // MARK: - Drag to Snap
@@ -50,7 +54,8 @@ public final class AppDependencies {
         layoutPickerManager: layoutPickerManager,
         commandDispatcher: commandDispatcher,
         displayManager: displayManager,
-        accessibilityService: accessibilityService
+        accessibilityService: accessibilityService,
+        preferencesStore: preferencesStore
     )
 
     public init() {}

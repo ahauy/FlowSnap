@@ -48,7 +48,7 @@ public struct LayoutTemplate: Identifiable, Sendable, Equatable {
                 LayoutSlot(
                     id: "twoColAsym-left",
                     title: "Left (70%)",
-                    target: .leftTwoThirds,
+                    target: .left70_30,
                     normalizedRect: CGRect(x: 0, y: 0, width: 0.7, height: 1.0)
                 ),
                 LayoutSlot(

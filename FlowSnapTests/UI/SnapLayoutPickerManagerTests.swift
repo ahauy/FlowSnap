@@ -34,7 +34,7 @@ struct SnapLayoutPickerManagerTests {
         let twoColAsym = templates[1]
         #expect(twoColAsym.kind == .twoColumnAsymmetric)
         #expect(twoColAsym.slots.count == 2)
-        #expect(twoColAsym.slots[0].target == .leftTwoThirds)
+        #expect(twoColAsym.slots[0].target == .left70_30)
         #expect(twoColAsym.slots[1].target == .rightOneThird)
 
         // 3. Three Column Equal
