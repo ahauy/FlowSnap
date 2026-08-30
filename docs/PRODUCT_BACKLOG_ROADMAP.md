@@ -450,7 +450,7 @@ _Mục tiêu: Đưa trải nghiệm xếp cửa sổ lên tầm Tiling Window Ma
 
 _Mục tiêu: Xây dựng trung tâm điều khiển cấu hình tiện dụng, cho phép người dùng tùy biến phím tắt và thiết lập trải nghiệm theo ý muốn._
 
-- [ ] **US-SNAP-010: Giao diện Cài đặt SwiftUI & Tùy biến Phím tắt (Settings UI & Shortcut Customization)**
+- [x] **US-SNAP-010: Giao diện Cài đặt SwiftUI & Tùy biến Phím tắt (Settings UI & Shortcut Customization)**
   - **Slug:** `settings-shortcut-customization`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -459,15 +459,15 @@ _Mục tiêu: Xây dựng trung tâm điều khiển cấu hình tiện dụng, 
   - **Blocks:** `US-WORK-011`
   - **Mô tả:** Xây dựng cửa sổ Settings trực quan bằng SwiftUI cho phép cấu hình khởi động cùng hệ thống, điều chỉnh Window Gap, gán phím tắt tùy biến và xem quyền hạn.
   - **Acceptance Criteria (AC):**
-    - [ ] Cửa sổ Settings chia thành 4 tabs rõ ràng: General (Launch at login qua `SMAppService`, Gaps), Shortcuts (ghi phím tắt mới), Applications (quy tắc riêng từng app), About.
-    - [ ] Cho phép người dùng nhấp vào từng hành động snap để bắt tổ hợp phím mới (`ShortcutRecorderField`), kiểm tra xung đột với phím tắt hệ thống macOS.
-    - [ ] Tùy chọn bật/tắt tính năng Drag-to-snap, chỉnh độ trễ kích hoạt preview.
-    - [ ] Dữ liệu cấu hình tự động lưu trữ và đồng bộ tức thì qua `PreferencesStore` (`UserDefaults`).
+    - [x] Cửa sổ Settings chia thành 4 tabs rõ ràng: General (Launch at login qua `SMAppService`, Gaps), Shortcuts (ghi phím tắt mới), Applications (quy tắc riêng từng app), About.
+    - [x] Cho phép người dùng nhấp vào từng hành động snap để bắt tổ hợp phím mới (`ShortcutRecorderField`), kiểm tra xung đột với phím tắt hệ thống macOS.
+    - [x] Tùy chọn bật/tắt tính năng Drag-to-snap, chỉnh độ trễ kích hoạt preview.
+    - [x] Dữ liệu cấu hình tự động lưu trữ và đồng bộ tức thì qua `PreferencesStore` (`UserDefaults`).
   - **Tasks:**
-    - [ ] `UI`: Cài đặt `SettingsView.swift`, `GeneralSettingsView.swift`, `ShortcutSettingsView.swift`.
-    - [ ] `UI`: Component `ShortcutRecorderField.swift` bắt `NSEvent` keydown và chuyển đổi sang biểu tượng phím tắt (`⌘`, `⌥`, `⌃`, `⇧`).
-    - [ ] `Persistence`: Cài đặt `PreferencesStore.swift` lưu trữ trạng thái với `@AppStorage` và Combine publisher.
-    - [ ] `Tests`: Unit test serialization phím tắt và migration cấu hình.
+    - [x] `UI`: Cài đặt `SettingsView.swift`, `GeneralSettingsView.swift`, `ShortcutSettingsView.swift`.
+    - [x] `UI`: Component `ShortcutRecorderField.swift` bắt `NSEvent` keydown và chuyển đổi sang biểu tượng phím tắt (`⌘`, `⌥`, `⌃`, `⇧`).
+    - [x] `Persistence`: Cài đặt `PreferencesStore.swift` lưu trữ trạng thái với `@AppStorage` và Combine publisher.
+    - [x] `Tests`: Unit test serialization phím tắt và migration cấu hình.
   - **Deliverables khi [x]:**
     - `.specify/features/settings-shortcut-customization/baseline.md` (SIGNED-OFF)
     - `docs/features/settings-shortcut-customization/README.md`

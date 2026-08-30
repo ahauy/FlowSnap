@@ -1,20 +1,24 @@
 import SwiftUI
 
-/// Main settings window with tab navigation.
+/// Main settings window with 4 tab navigation.
 ///
-/// See spec §41.
-struct SettingsView: View {
+/// Traces to: US-SNAP-010, spec §41.
+public struct SettingsView: View {
 
-    var store: PreferencesStore?
+    @ObservedObject var store: PreferencesStore
 
-    var body: some View {
+    public init(store: PreferencesStore? = nil) {
+        self.store = store ?? PreferencesStore()
+    }
+
+    public var body: some View {
         TabView {
-            GeneralSettingsView(store: store ?? PreferencesStore())
+            GeneralSettingsView(store: store)
                 .tabItem {
                     Label("General", systemImage: "gear")
                 }
 
-            ShortcutSettingsView()
+            ShortcutSettingsView(store: store)
                 .tabItem {
                     Label("Shortcuts", systemImage: "keyboard")
                 }
@@ -23,7 +27,12 @@ struct SettingsView: View {
                 .tabItem {
                     Label("App Rules", systemImage: "app.badge.checkmark")
                 }
+
+            AboutSettingsView()
+                .tabItem {
+                    Label("About", systemImage: "info.circle")
+                }
         }
-        .frame(width: 500, height: 400)
+        .frame(minWidth: 540, idealWidth: 580, maxWidth: 650, minHeight: 440, idealHeight: 480, maxHeight: 560)
     }
 }

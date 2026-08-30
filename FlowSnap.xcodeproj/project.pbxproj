@@ -11,10 +11,12 @@
 		01A707D092D019168CED1743 /* DragToSnapCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1770CC3CBCA9243288328731 /* DragToSnapCoordinatorTests.swift */; };
 		01E00C6006103DACA95CD23A /* AccessibilityPermissionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43019770C882BE99A2A24A2 /* AccessibilityPermissionProvider.swift */; };
 		02D75FB018860A3CAD26075C /* ShortcutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C37D1A8C736ADE0A6350BB /* ShortcutSettingsView.swift */; };
+		0791499F6A58E24C1DF833CF /* ShortcutAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE3E5EDCA53C428942BEA28 /* ShortcutAction.swift */; };
 		085C44182063C920AFD99B7A /* MouseDragTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6315D6754B25CC7092C6F0B4 /* MouseDragTracker.swift */; };
 		0BA06492FD9D0846DC8C7AE8 /* LayoutZoneTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C1425FD59382AD5120BE19 /* LayoutZoneTests.swift */; };
 		0C87D451692ACA9945DF7D08 /* MenuBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08FA844B145B9202F72B62F4 /* MenuBarViewModel.swift */; };
 		0D0C536AE6805ADD51D25BEC /* KeyboardShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = D37AE49DFA333D20E705391E /* KeyboardShortcut.swift */; };
+		0D7840E12B21A8418CE310E2 /* ShortcutAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AE3E5EDCA53C428942BEA28 /* ShortcutAction.swift */; };
 		1151B12C1F11349473627AAE /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D161FB100C76864DFB4BC2 /* MenuBarView.swift */; };
 		12765875CA661C560263763A /* SettingsWindowControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A60EBD2236857FB85336329 /* SettingsWindowControllerTests.swift */; };
 		1503E7F565EBA2C6031C6B00 /* DisplayManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1DC342D46E4BDB27182C07 /* DisplayManaging.swift */; };
@@ -45,6 +47,7 @@
 		36BEFDDF36D7745CA5A4D818 /* SnapPreviewPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917233E614F66482F68EB4C8 /* SnapPreviewPanel.swift */; };
 		39014ECFAEFC838D75C42FF3 /* AccessibilityError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76D0B80FCFB6F792B006F531 /* AccessibilityError.swift */; };
 		39D2D804B959BB2733D9588C /* SnapDetectionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1BACB9CF1191FBA5D92E29 /* SnapDetectionResult.swift */; };
+		3A8C854CAF3D059812D3EF4C /* AboutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 410E5B0C45CA9208DCED5FA9 /* AboutSettingsView.swift */; };
 		3CD93327ECE020CBA3191C57 /* SnapEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F6FCCD453ED6DA21D35F89 /* SnapEngine.swift */; };
 		3CE25CB7975B6329B271F0E8 /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE0245EE1CAFDD5CF0D07F1 /* PreferencesStore.swift */; };
 		3CE531AFED45D08A277DE28D /* WindowPlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D8C206B74A7A3730798DAB /* WindowPlacement.swift */; };
@@ -85,19 +88,23 @@
 		5D514036E10395D778F332BE /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D161FB100C76864DFB4BC2 /* MenuBarView.swift */; };
 		5E4B331D10EA7EA19428B380 /* MenuBarAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653A6E84B108C9D50A69E0B9 /* MenuBarAction.swift */; };
 		5EE65B389046FAADC099922B /* AccessibilityError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76D0B80FCFB6F792B006F531 /* AccessibilityError.swift */; };
+		6037FFFED5F59C7EC61F7594 /* AboutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 410E5B0C45CA9208DCED5FA9 /* AboutSettingsView.swift */; };
 		603C49BD23A32046D90446A1 /* SpaceManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9329DD1D2BB54E77B49F4DF2 /* SpaceManaging.swift */; };
 		60C278D190E66675A0A8F0DF /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE0245EE1CAFDD5CF0D07F1 /* PreferencesStore.swift */; };
 		629E6A7E06CFD4F8789D0FEC /* WindowManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E59D7D6510043500BD6E2B0 /* WindowManaging.swift */; };
 		6356BDE551800283E1BE9468 /* SnapPreviewSnapshotRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062079EDEE1DEE1DD6F161B8 /* SnapPreviewSnapshotRenderer.swift */; };
 		647FAAFE999A08F132D60470 /* InputMonitoringPermissionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9E6AF4238A49FEFBA48A402 /* InputMonitoringPermissionProvider.swift */; };
 		658710E4275C74AC337552AD /* CoordinateTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5CDE4302888B2B4A80F528 /* CoordinateTransformer.swift */; };
+		66751825433CDD86EC0B952A /* ShortcutRecorderField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C628F89D21AC1C3BF76990 /* ShortcutRecorderField.swift */; };
 		6832A5DE45B15A04224F4B23 /* SpaceManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9329DD1D2BB54E77B49F4DF2 /* SpaceManaging.swift */; };
 		68A4ED8B4E5BC219E36A9330 /* GhostMorphPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ABE6409E670E0592E4AC677 /* GhostMorphPanel.swift */; };
 		697ACF8092404B958E943367 /* GlobalHotkeyManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6421FE8A5A8FAB80D70143 /* GlobalHotkeyManaging.swift */; };
 		6B05453A55ABA43055647AFD /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BAE579B66B6963D174EC2EE /* SettingsWindowController.swift */; };
 		6B20456958CE8793C35AB039 /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CE9C61ABB086757AADC21CB /* GeneralSettingsView.swift */; };
 		6C6527A2A62AE38E08EA5991 /* SnapPreviewPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917233E614F66482F68EB4C8 /* SnapPreviewPanel.swift */; };
+		6F7D8EDAEE080948FAA34760 /* ShortcutRecorderField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C628F89D21AC1C3BF76990 /* ShortcutRecorderField.swift */; };
 		6F89CDBD125A3554DE63B747 /* MouseDragTracking.swift in Sources */ = {isa = PBXBuildFile; fileRef = C421941EF1203585A4824A56 /* MouseDragTracking.swift */; };
+		74028649E241B224525349CC /* ShortcutActionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FC56E2FF156F8B93AC51D9C /* ShortcutActionTests.swift */; };
 		7E1A6BE7BFD56068F27B0B4E /* Workspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C45EBED36C097796E6CD70A /* Workspace.swift */; };
 		7E7E25795E30579C89A15B0B /* WorkspaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52B3EF81167806134CD93A0 /* WorkspaceManager.swift */; };
 		81D4A8D2D4BA79CFF9BA9F1D /* Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E52A8E94F9EB5A1D0F44862 /* Display.swift */; };
@@ -190,8 +197,10 @@
 		08FA844B145B9202F72B62F4 /* MenuBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarViewModel.swift; sourceTree = "<group>"; };
 		0E59D7D6510043500BD6E2B0 /* WindowManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManaging.swift; sourceTree = "<group>"; };
 		0F9B9E6D18AEB5716E9CAEE2 /* FlowSnapLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlowSnapLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13C628F89D21AC1C3BF76990 /* ShortcutRecorderField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorderField.swift; sourceTree = "<group>"; };
 		157702A6B1E69AED76E1142E /* AccessibilityServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityServiceTests.swift; sourceTree = "<group>"; };
 		1770CC3CBCA9243288328731 /* DragToSnapCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragToSnapCoordinatorTests.swift; sourceTree = "<group>"; };
+		1AE3E5EDCA53C428942BEA28 /* ShortcutAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutAction.swift; sourceTree = "<group>"; };
 		1C5A4325641893ECDB8B3793 /* GlobalHotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotkeyManager.swift; sourceTree = "<group>"; };
 		1C8140860715C5605A9A5D22 /* FlowSnapApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowSnapApp.swift; sourceTree = "<group>"; };
 		1DDCF67D6AF358E7276AA0AB /* WindowClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowClassification.swift; sourceTree = "<group>"; };
@@ -200,6 +209,7 @@
 		2BAE579B66B6963D174EC2EE /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
 		2C14B0FFF6C5A9ED1B049179 /* SettingsSnapshotRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSnapshotRenderer.swift; sourceTree = "<group>"; };
 		2E1DC342D46E4BDB27182C07 /* DisplayManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayManaging.swift; sourceTree = "<group>"; };
+		2FC56E2FF156F8B93AC51D9C /* ShortcutActionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutActionTests.swift; sourceTree = "<group>"; };
 		34C2CE7E99F6B9239288BEE1 /* WindowEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowEvent.swift; sourceTree = "<group>"; };
 		3C35869412EF6395FFA95073 /* PreferencesStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesStoreTests.swift; sourceTree = "<group>"; };
 		3C4478153F69D2D41C613786 /* SnapLayoutPickerPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapLayoutPickerPanel.swift; sourceTree = "<group>"; };
@@ -209,6 +219,7 @@
 		3EA9B4CE1F11DA1B1DAD55C7 /* LayoutRatio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutRatio.swift; sourceTree = "<group>"; };
 		3F5CDE4302888B2B4A80F528 /* CoordinateTransformer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoordinateTransformer.swift; sourceTree = "<group>"; };
 		40AE155D33959E6CDC872DAA /* WindowCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowCommand.swift; sourceTree = "<group>"; };
+		410E5B0C45CA9208DCED5FA9 /* AboutSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutSettingsView.swift; sourceTree = "<group>"; };
 		44396BAC6B83274360A58E6E /* MockSettingsWindowPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSettingsWindowPresenter.swift; sourceTree = "<group>"; };
 		4F91DA228E94E526F2A61D18 /* LayoutEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutEngineTests.swift; sourceTree = "<group>"; };
 		56104E88ECCBCB9B36C272D0 /* LayoutSlot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutSlot.swift; sourceTree = "<group>"; };
@@ -350,6 +361,7 @@
 				66B93DD58D0543436170428F /* KeyboardShortcutTests.swift */,
 				83C1425FD59382AD5120BE19 /* LayoutZoneTests.swift */,
 				D8276D33EFA9437CFA5D20EF /* ManagedWindowTests.swift */,
+				2FC56E2FF156F8B93AC51D9C /* ShortcutActionTests.swift */,
 			);
 			path = Domain;
 			sourceTree = "<group>";
@@ -439,10 +451,12 @@
 		68773B8D0FD725F68A2018F4 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				410E5B0C45CA9208DCED5FA9 /* AboutSettingsView.swift */,
 				C46DA3A268479EBFE769CEFD /* ApplicationRulesView.swift */,
 				5CE9C61ABB086757AADC21CB /* GeneralSettingsView.swift */,
 				01516D7EAF5546C728E483AC /* SettingsView.swift */,
 				2BAE579B66B6963D174EC2EE /* SettingsWindowController.swift */,
+				13C628F89D21AC1C3BF76990 /* ShortcutRecorderField.swift */,
 				96C37D1A8C736ADE0A6350BB /* ShortcutSettingsView.swift */,
 			);
 			path = Settings;
@@ -519,6 +533,7 @@
 			children = (
 				ECE5E8FFB2338A216810243A /* HotkeyBinding.swift */,
 				D37AE49DFA333D20E705391E /* KeyboardShortcut.swift */,
+				1AE3E5EDCA53C428942BEA28 /* ShortcutAction.swift */,
 			);
 			path = Hotkeys;
 			sourceTree = "<group>";
@@ -825,6 +840,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A9A0F47914A6FB47FB2FB644 /* AXAccessibilityService.swift in Sources */,
+				6037FFFED5F59C7EC61F7594 /* AboutSettingsView.swift in Sources */,
 				39014ECFAEFC838D75C42FF3 /* AccessibilityError.swift in Sources */,
 				01E00C6006103DACA95CD23A /* AccessibilityPermissionProvider.swift in Sources */,
 				53E3894A4E60F57A8C2FA027 /* AccessibilityService.swift in Sources */,
@@ -860,6 +876,8 @@
 				3CE25CB7975B6329B271F0E8 /* PreferencesStore.swift in Sources */,
 				501E8A1681B3C18375BCB7D4 /* SettingsView.swift in Sources */,
 				6B05453A55ABA43055647AFD /* SettingsWindowController.swift in Sources */,
+				0791499F6A58E24C1DF833CF /* ShortcutAction.swift in Sources */,
+				6F7D8EDAEE080948FAA34760 /* ShortcutRecorderField.swift in Sources */,
 				A050850FB8DE80B4654C9296 /* ShortcutSettingsView.swift in Sources */,
 				2946C04BA80503DEB94D6099 /* SnapDetecting.swift in Sources */,
 				AA5A3906210BB4BAC19ECF69 /* SnapDetectionResult.swift in Sources */,
@@ -922,6 +940,7 @@
 				543FC39F63AB6FD6E43F9270 /* PreferencesStoreTests.swift in Sources */,
 				FB7B60583FEFC8AC497972F8 /* SettingsSnapshotRenderer.swift in Sources */,
 				12765875CA661C560263763A /* SettingsWindowControllerTests.swift in Sources */,
+				74028649E241B224525349CC /* ShortcutActionTests.swift in Sources */,
 				563581780C923099E97C6830 /* SnapDetectorTests.swift in Sources */,
 				DD662910DCAD20C33B693FBA /* SnapEngineTests.swift in Sources */,
 				E57C62351AC10FCD6B532820 /* SnapLayoutPickerManagerTests.swift in Sources */,
@@ -936,6 +955,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				30E8AE8738EC4532C54D15CF /* AXAccessibilityService.swift in Sources */,
+				3A8C854CAF3D059812D3EF4C /* AboutSettingsView.swift in Sources */,
 				5EE65B389046FAADC099922B /* AccessibilityError.swift in Sources */,
 				E14FEB1B270148B926026E5B /* AccessibilityPermissionProvider.swift in Sources */,
 				1984D02B3B4D16EBE860150A /* AccessibilityService.swift in Sources */,
@@ -973,6 +993,8 @@
 				60C278D190E66675A0A8F0DF /* PreferencesStore.swift in Sources */,
 				BBEB3C815C54C1DA5F725350 /* SettingsView.swift in Sources */,
 				42A5D7B2904A0A18E2AEEEAA /* SettingsWindowController.swift in Sources */,
+				0D7840E12B21A8418CE310E2 /* ShortcutAction.swift in Sources */,
+				66751825433CDD86EC0B952A /* ShortcutRecorderField.swift in Sources */,
 				02D75FB018860A3CAD26075C /* ShortcutSettingsView.swift in Sources */,
 				B1362B8BA53ECC223C1B4307 /* SnapDetecting.swift in Sources */,
 				39D2D804B959BB2733D9588C /* SnapDetectionResult.swift in Sources */,
