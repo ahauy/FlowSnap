@@ -68,6 +68,13 @@
 | **LiveResizeThrottler**       | Rate limits live window resizing events to 60fps                 | "Drag throttler or frame pacer"                | `LiveResizeThrottler`      | 16.6ms rate limiter                           |
 | **AdaptiveDividerCoordinator**| Coordinates divider hover, cursor swapping, and live resize      | "Divider drag controller"                      | `AdaptiveDividerCoordinator`| @MainActor coordination                      |
 
+| **WorkspaceManager**          | @MainActor orchestrator for workspace capture & restore          | "Workspace save/restore service"               | `WorkspaceManager`         | US-WORK-011, ObservableObject, owns store+AX  |
+| **WorkspaceStore**            | Actor persisting workspaces to JSON atomically                   | "workspaces.json reader/writer"                | `WorkspaceStore`           | US-WORK-011, corrupt-file parking             |
+| **ZoneInference**             | Pure max-IoU match of a window frame to a LayoutZone             | "Which zone is this window in?"                | `ZoneInference`            | US-WORK-011, deterministic tie-break          |
+| **RestoreSummary**            | Outcome of one restore pass (placed count + skipped apps)        | "What happened when I restored"                | `RestoreSummary`           | US-WORK-011, SkippedApp + SkipReason          |
+| **ApplicationLaunching**      | Protocol to launch an app and await its first window             | "App launcher abstraction"                     | `ApplicationLaunching`     | US-WORK-011, NSWorkspace impl, public API only |
+| **WorkspaceViewModel**        | Thin façade holding workspace UI state over the manager          | "Workspace sheet/settings state"               | `WorkspaceViewModel`       | US-WORK-011, keeps MenuBarViewModel thin      |
+
 ## Where to Look
 
 - **Scan codebase** to identify existing implicit terms or jargon not yet cataloged here → add them to the table.

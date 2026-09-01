@@ -41,3 +41,30 @@
   1. **Z-Order Occlusion Filtering**: Implemented multi-window occlusion detection in `CollinearEdgeDetector.detect` and `seamPair`. Windows positioned higher in the front-to-back stacking order (index $k < \max(i, j)$) that cross or cover background seam coordinates dynamically clip the visible divider span or completely discard occluded seams.
   2. **Stacking Order Preservation**: Updated `AdaptiveDividerCoordinator.refreshWindowsIfNeeded` to prioritize live WindowServer stacking order from `accessibilityService.allVisibleManagedWindows()`, ensuring foreground windows (floating dialogs, picture-in-picture, unmanaged windows) always shield dividers from hover highlighting and click capture.
   - Expanded test suite to 188 passing unit tests in 29 suites with 100% pass rate.
+- v1.8 — 2026-08-31 — Clean-Workspace Idle State & Click-Through Restoration:
+  1. **Idle overlay fully retired (`restingAlpha` 0.22 → 0.0)**: leaving the pointer off a seam now
+     shows *nothing* on screen. `show(containerFrame:…)` early-returns to `hide(animated:)` unless
+     `activeDivider != nil || isDragging`, so a resting presentation can no longer be requested.
+     `update(…)` keeps the conditional target alpha for the drag→release fade.
+  2. **`endSession()` no longer re-presents resting outlines**: the post-drag branch that called
+     `show(activeDivider: nil)` was replaced with a single `hide(animated: true)`, so the seam fades
+     out once the drag commits instead of lingering at low alpha.
+  3. **Hover-gated presentation**: `handleMouseMoved(to:)` presents only when `detector.hitTestDivider`
+     returns a seam (`if let activeDivider = hovered`), rather than whenever the display has any
+     dividers — the panel is now invisible for the whole time the pointer is away from a seam.
+  4. **Click-through restored (`ignoresMouseEvents` false → true)**: reverting the v1.6 "Selective
+     Click Capture" experiment. With the panel accepting hits, a click inside the 18pt seam reached
+     the overlay but the underlying window never received its own mouse-down, so apps whose custom
+     title bar / toolbar buttons sit near the seam (Chrome tabs, Xcode navigator toggles) stopped
+     responding. Seam hit-testing, drag start and cursor shape are owned by the coordinator's global
+     `NSEvent` monitors (`.mouseMoved` / `.leftMouseDown` / `.leftMouseDragged` / `.leftMouseUp`),
+     which need no window-level event delivery; `AdaptiveDividerOverlayView.hitTest`,
+     `resetCursorRects()` and `cursorUpdate(with:)` remain in place but are dormant while the panel
+     is click-through.
+  5. **Test alignment**: `AdaptiveDividerOverlayPanelTests` still asserted the v1.6 contract and
+     failed against this behaviour. Updated 3 tests — initialization now expects
+     `ignoresMouseEvents == true`; the idle case expects `isOverlayVisible == false`; the former
+     "persistent resting outline at 0.22" suite became "overlay is fully hidden when idle and opaque
+     on hover or drag" (`restingAlpha == 0.0`, hover → visible, drag → alpha 1.0).
+     `AdaptiveDividerCoordinatorTests` were updated alongside the hover/endSession branches.
+  - Full suite: 261 tests in 35 suites, 100% pass rate.
