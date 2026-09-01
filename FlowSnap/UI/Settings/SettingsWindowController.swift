@@ -9,6 +9,12 @@ public protocol SettingsWindowPresenting: AnyObject, Sendable {
     func showSettingsWindow()
 }
 
+/// Floating panel subclass ensuring the settings panel can become key and accept user interactions.
+final class SettingsFloatingPanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { true }
+}
+
 /// Controller responsible for managing the lifecycle and presentation of the Settings window.
 ///
 /// Ensures the window is properly brought to front and FlowSnap is activated via `NSApp.activate(ignoringOtherApps: true)`
@@ -19,18 +25,20 @@ public final class SettingsWindowController: NSObject, NSWindowDelegate, Setting
     // MARK: - Properties
 
     public private(set) var window: NSWindow?
-    private let preferencesStore: PreferencesStore
+    public let preferencesStore: PreferencesStore
+    public let workspaceManager: WorkspaceManager?
 
     // MARK: - Initialization
 
-    public init(preferencesStore: PreferencesStore) {
+    public init(preferencesStore: PreferencesStore, workspaceManager: WorkspaceManager? = nil) {
         self.preferencesStore = preferencesStore
+        self.workspaceManager = workspaceManager
         super.init()
     }
 
     // MARK: - SettingsWindowPresenting
 
-    /// Presents and focuses the settings window, activating the application.
+    /// Presents and focuses the settings window as a floating overlay above other windows.
     public func showSettingsWindow() {
         if let existingWindow = window {
             if existingWindow.isMiniaturized {
@@ -43,14 +51,17 @@ public final class SettingsWindowController: NSObject, NSWindowDelegate, Setting
             return
         }
 
-        let settingsView = SettingsView(store: preferencesStore)
+        let settingsView = SettingsView(store: preferencesStore, workspaceManager: workspaceManager)
         let hostingController = NSHostingController(rootView: settingsView)
 
-        let newWindow = NSWindow(contentViewController: hostingController)
+        let newWindow = SettingsFloatingPanel(contentViewController: hostingController)
         newWindow.title = "FlowSnap Settings"
-        newWindow.styleMask = [.titled, .closable, .miniaturizable]
+        newWindow.styleMask = [.titled, .closable, .miniaturizable, .nonactivatingPanel]
         newWindow.isReleasedWhenClosed = false
         newWindow.level = .floating
+        newWindow.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
+        newWindow.isFloatingPanel = true
+        newWindow.becomesKeyOnlyIfNeeded = false
         newWindow.delegate = self
         newWindow.center()
 

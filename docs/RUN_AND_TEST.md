@@ -53,8 +53,9 @@ xcodebuild -project FlowSnap.xcodeproj -scheme FlowSnapLab -destination 'platfor
 > ⭐️ **Quy tắc bắt buộc:** Mỗi khi AI hoàn thành một User Story / Tính năng mới (kết thúc Phase 6 và cập nhật tài liệu), AI **phải tự động thực thi lệnh mở ứng dụng** `FlowSnapLab.app` để người dùng có thể kiểm thử trực tiếp trên máy thật ngay lập tức.
 
 
-killall FlowSnap FlowSnapLab 2>/dev/null || true
-tccutil reset Accessibility com.flowsnap.lab
-tccutil reset Accessibility com.flowsnap.app
-open ~/Library/Developer/Xcode/DerivedData/FlowSnap-*/Build/Products/Debug/FlowSnapLab.app
-open ~/Library/Developer/Xcode/DerivedData/FlowSnap-*/Build/Products/Debug/FlowSnap.app
+cd ~/Documents/PROJECT/FlowSnap && \
+xcodebuild build -project FlowSnap.xcodeproj -scheme FlowSnap -destination 'platform=macOS' 2>&1 | grep -E "(error:|BUILD)" && \
+pkill -x FlowSnap 2>/dev/null; sleep 0.3; \
+tccutil reset Accessibility com.flowsnap.app; \
+open ~/Library/Developer/Xcode/DerivedData/FlowSnap-hjptlbvoundbuuanhlzudkreqckc/Build/Products/Debug/FlowSnap.app
+

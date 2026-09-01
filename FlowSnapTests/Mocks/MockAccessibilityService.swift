@@ -71,8 +71,58 @@ public final class MockAccessibilityService: AccessibilityService, @unchecked Se
     }
 
     public var mockVisibleWindows: [ManagedWindow] = []
+
+    /// Overrides the window list with arbitrary logic, evaluated per read.
+    ///
+    /// Models an app that is not running yet and only draws a window once it has
+    /// been launched: the test decides visibility from observable state (e.g. the
+    /// launcher's attempt count) rather than from a brittle "Nth read" counter, so
+    /// it keeps working if the restore pass changes how often it re-reads.
+    public var visibleWindowsProvider: (() -> [ManagedWindow])?
+    public private(set) var visibleWindowsReadCount = 0
+
     public func allVisibleManagedWindows() -> [ManagedWindow] {
         guard isTrusted else { return [] }
+        visibleWindowsReadCount += 1
+        if let visibleWindowsProvider { return visibleWindowsProvider() }
         return mockVisibleWindows
+    }
+
+    /// Explicit per-pid AX window lists. When a pid is absent the mock falls back to
+    /// filtering the on-screen list, so tests that only care about "a window exists"
+    /// keep working while tests about minimized/off-Space windows can override it.
+    public var managedWindowsByPID: [pid_t: [ManagedWindow]] = [:]
+
+    public func managedWindows(of pid: pid_t) -> [ManagedWindow] {
+        resolvedWindows(of: pid).map(\.window)
+    }
+
+    /// Elements handed back by `resolvedWindows(of:)`, keyed by window id.
+    ///
+    /// Tests that assert *which* window a restore wrote to read this back: the
+    /// element is the only identity that survives the move.
+    public var mockElementByWindowID: [CGWindowID: AXUIElement] = [:]
+
+    public func resolvedWindows(of pid: pid_t) -> [ResolvedWindow] {
+        guard isTrusted else { return [] }
+        let windows: [ManagedWindow]
+        if let explicit = managedWindowsByPID[pid] {
+            windows = explicit
+        } else {
+            windows = allVisibleManagedWindows().filter { $0.pid == pid }
+        }
+        return windows.map { ResolvedWindow(window: $0, element: mockElementByWindowID[$0.id]) }
+    }
+
+    public private(set) var unminimizeCallCount = 0
+
+    public func unminimize(_ window: AXUIElement) throws {
+        unminimizeCallCount += 1
+    }
+
+    public private(set) var exitFullScreenCallCount = 0
+
+    public func exitFullScreen(_ window: AXUIElement) throws {
+        exitFullScreenCallCount += 1
     }
 }

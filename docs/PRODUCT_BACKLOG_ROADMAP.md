@@ -479,7 +479,7 @@ _Mục tiêu: Xây dựng trung tâm điều khiển cấu hình tiện dụng, 
 
 _Mục tiêu: Bước chuyển dịch từ một tiện ích Snap thông thường thành một Workspace Operating Layer — ghi nhớ và khôi phục toàn bộ không gian làm việc theo ý định._
 
-- [ ] **US-WORK-011: Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspace Snapshot & Intent Restoration)**
+- [x] **US-WORK-011: Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspace Snapshot & Intent Restoration)**
   - **Slug:** `workspace-snapshot-restoration`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -488,16 +488,16 @@ _Mục tiêu: Bước chuyển dịch từ một tiện ích Snap thông thườ
   - **Blocks:** `US-WORK-012`
   - **Mô tả:** Lưu trữ bố cục làm việc hiện tại thành một Workspace (lưu ý định bố trí ứng dụng - WindowPlacement, không lưu pixel cứng) và khôi phục lại khi cần.
   - **Acceptance Criteria (AC):**
-    - [ ] Người dùng chọn "Save Workspace", nhập tên định danh (ví dụ: "Coding", "Design", "Research") kèm icon.
-    - [ ] Thu thập trạng thái các cửa sổ đang mở: Lưu theo cấu trúc `WindowPlacement` (Bundle Identifier -> Vùng bố cục tương đối / Tỷ lệ zone), không lưu tọa độ pixel cứng để đảm bảo tính di động (portable across displays).
-    - [ ] Lưu trữ an toàn vào file JSON tại `~/Library/Application Support/FlowSnap/workspaces.json`.
-    - [ ] Khi kích hoạt "Restore Workspace", FlowSnap tự động tìm các cửa sổ của các app tương ứng (dù đang nằm ở đâu) và điều phối về đúng các vị trí đã định nghĩa trên màn hình hiện tại.
+    - [x] Người dùng chọn "Save Workspace", nhập tên định danh (ví dụ: "Coding", "Design", "Research") kèm icon.
+    - [x] Thu thập trạng thái các cửa sổ đang mở: Lưu theo cấu trúc `WindowPlacement` (Bundle Identifier -> Vùng bố cục tương đối / Tỷ lệ zone), không lưu tọa độ pixel cứng để đảm bảo tính di động (portable across displays).
+    - [x] Lưu trữ an toàn vào file JSON tại `~/Library/Application Support/FlowSnap/workspaces.json`.
+    - [x] Khi kích hoạt "Restore Workspace", FlowSnap tự động tìm các cửa sổ của các app tương ứng (dù đang nằm ở đâu) và điều phối về đúng các vị trí đã định nghĩa trên màn hình hiện tại.
   - **Tasks:**
-    - [ ] `Domain`: Cập nhật `Workspace.swift` và `WindowPlacement.swift` với đầy đủ Codable, Hashable.
-    - [ ] `Persistence`: Cài đặt `WorkspaceStore.swift` sử dụng Swift Actor để đọc/ghi file JSON bất đồng bộ an toàn luồng.
-    - [ ] `Core`: Cài đặt `WorkspaceManager.swift` giải quyết thuật toán ánh xạ cửa sổ đang chạy vào các placement slots.
-    - [ ] `UI`: Thêm menu quản lý danh sách Workspace trong Popover và Settings.
-    - [ ] `Tests`: Kiểm tra khả năng khôi phục layout trên màn hình có kích thước khác so với lúc lưu.
+    - [x] `Domain`: Cập nhật `Workspace.swift` và `WindowPlacement.swift` với đầy đủ Codable, Hashable.
+    - [x] `Persistence`: Cài đặt `WorkspaceStore.swift` sử dụng Swift Actor để đọc/ghi file JSON bất đồng bộ an toàn luồng.
+    - [x] `Core`: Cài đặt `WorkspaceManager.swift` giải quyết thuật toán ánh xạ cửa sổ đang chạy vào các placement slots.
+    - [x] `UI`: Thêm menu quản lý danh sách Workspace trong Popover và Settings.
+    - [x] `Tests`: Kiểm tra khả năng khôi phục layout trên màn hình có kích thước khác so với lúc lưu.
   - **Deliverables khi [x]:**
     - `.specify/features/workspace-snapshot-restoration/baseline.md` (SIGNED-OFF)
     - `docs/features/workspace-snapshot-restoration/README.md`

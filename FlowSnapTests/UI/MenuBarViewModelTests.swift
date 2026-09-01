@@ -9,11 +9,18 @@ import Testing
 @MainActor
 struct MenuBarViewModelTests {
 
+    struct TestEnvironment {
+        let viewModel: MenuBarViewModel
+        let accessibilityService: MockAccessibilityService
+        let windowManager: MockWindowManaging
+        let commandDispatcher: CommandDispatcher
+    }
+
     static func makeSimulatedEnvironment(
         isTrusted: Bool = true,
         mockWindow: ManagedWindow? = nil,
         mockSettingsPresenter: (any SettingsWindowPresenting)? = nil
-    ) -> (MenuBarViewModel, MockAccessibilityService, MockWindowManaging, CommandDispatcher) {
+    ) -> TestEnvironment {
         let primary = Display(
             id: 1,
             frame: CGRect(x: 0, y: 0, width: 1440, height: 900),
@@ -37,17 +44,22 @@ struct MenuBarViewModelTests {
             windowManager: windowManager,
             settingsWindowPresenter: mockSettingsPresenter
         )
-        return (viewModel, accessibilityService, windowManager, commandDispatcher)
+        return TestEnvironment(
+            viewModel: viewModel,
+            accessibilityService: accessibilityService,
+            windowManager: windowManager,
+            commandDispatcher: commandDispatcher
+        )
     }
 
     @Test func accessibilityPermissionStateObservation() {
         // TC-MENU-001: Untrusted state
-        let (untrustedVM, _, _, _) = Self.makeSimulatedEnvironment(isTrusted: false)
-        #expect(untrustedVM.isAccessibilityTrusted == false)
+        let untrustedEnv = Self.makeSimulatedEnvironment(isTrusted: false)
+        #expect(untrustedEnv.viewModel.isAccessibilityTrusted == false)
 
         // Trusted state
-        let (trustedVM, _, _, _) = Self.makeSimulatedEnvironment(isTrusted: true)
-        #expect(trustedVM.isAccessibilityTrusted == true)
+        let trustedEnv = Self.makeSimulatedEnvironment(isTrusted: true)
+        #expect(trustedEnv.viewModel.isAccessibilityTrusted == true)
     }
 
     @Test func triggerSnapDispatchesCommandAndDismisses() async throws {
@@ -59,45 +71,45 @@ struct MenuBarViewModelTests {
             frame: CGRect(x: 100, y: 100, width: 800, height: 600),
             kind: .normal
         )
-        let (viewModel, _, windowManager, dispatcher) = Self.makeSimulatedEnvironment(
+        let env = Self.makeSimulatedEnvironment(
             isTrusted: true,
             mockWindow: window
         )
 
         var dismissCount = 0
-        viewModel.dismissHandler = {
+        env.viewModel.dismissHandler = {
             dismissCount += 1
         }
 
-        try await viewModel.triggerSnapAsync(.leftHalf)
+        try await env.viewModel.triggerSnapAsync(.leftHalf)
 
-        #expect(dispatcher.lastExecutedCommand == .snap(.left))
-        #expect(windowManager.moveCallCount == 1)
+        #expect(env.commandDispatcher.lastExecutedCommand == .snap(.left))
+        #expect(env.windowManager.moveCallCount == 1)
         #expect(dismissCount == 1)
     }
 
     @Test func triggerSnapWhenUntrustedRequestsPermission() async throws {
         // TC-MENU-001 / TC-MENU-002: Guard against untrusted snap
-        let (viewModel, accessibilityService, windowManager, _) = Self.makeSimulatedEnvironment(isTrusted: false)
+        let env = Self.makeSimulatedEnvironment(isTrusted: false)
 
         var dismissCount = 0
-        viewModel.dismissHandler = {
+        env.viewModel.dismissHandler = {
             dismissCount += 1
         }
 
-        try await viewModel.triggerSnapAsync(.rightHalf)
+        try await env.viewModel.triggerSnapAsync(.rightHalf)
 
-        #expect(accessibilityService.openSettingsCallCount == 1)
-        #expect(windowManager.moveCallCount == 0)
+        #expect(env.accessibilityService.openSettingsCallCount == 1)
+        #expect(env.windowManager.moveCallCount == 0)
         #expect(dismissCount == 0)
     }
 
     @Test func requestAccessibilityPermissionDelegation() {
         // TC-MENU-003: Direct permission request
-        let (viewModel, accessibilityService, _, _) = Self.makeSimulatedEnvironment(isTrusted: false)
+        let env = Self.makeSimulatedEnvironment(isTrusted: false)
 
-        viewModel.requestAccessibilityPermission()
-        #expect(accessibilityService.openSettingsCallCount == 1)
+        env.viewModel.requestAccessibilityPermission()
+        #expect(env.accessibilityService.openSettingsCallCount == 1)
     }
 
     @Test func menuBarActionDomainMappingAndBadges() {
@@ -125,19 +137,53 @@ struct MenuBarViewModelTests {
 
     @Test func openSettingsDelegatesToSettingsPresenterAndDismisses() {
         let mockPresenter = MockSettingsWindowPresenter()
-        let (viewModel, _, _, _) = Self.makeSimulatedEnvironment(
+        let env = Self.makeSimulatedEnvironment(
             isTrusted: true,
             mockSettingsPresenter: mockPresenter
         )
 
         var dismissCount = 0
-        viewModel.dismissHandler = {
+        env.viewModel.dismissHandler = {
             dismissCount += 1
         }
 
-        viewModel.openSettings()
+        env.viewModel.openSettings()
 
         #expect(mockPresenter.showSettingsWindowCallCount == 1)
         #expect(dismissCount == 1)
+    }
+
+    @Test func workspaceViewModelInitializedWhenWorkspaceManagerProvided() {
+        let accessibilityService = MockAccessibilityService(isTrusted: true)
+        let windowManager = MockWindowManaging()
+        let displayManager = DisplayManager(displayProvider: { [] })
+        let snapEngine = SnapEngine(windowRegistry: WindowRegistry(), displayManager: displayManager)
+        let commandDispatcher = CommandDispatcher(
+            windowManager: windowManager,
+            snapEngine: snapEngine,
+            displayManager: displayManager
+        )
+        let workspaceManager = WorkspaceManager(
+            accessibilityService: accessibilityService,
+            windowManager: windowManager,
+            displayManager: displayManager,
+            layoutEngine: LayoutEngine()
+        )
+
+        let viewModel = MenuBarViewModel(
+            accessibilityService: accessibilityService,
+            commandDispatcher: commandDispatcher,
+            windowManager: windowManager,
+            workspaceManager: workspaceManager
+        )
+
+        #expect(viewModel.workspaceViewModel != nil)
+    }
+
+    @Test func appDependenciesWiresWorkspaceManagerProperly() {
+        let dependencies = AppDependencies()
+        #expect(dependencies.menuBarViewModel.workspaceViewModel != nil)
+        let controllerManager = dependencies.settingsWindowController.workspaceManager
+        #expect(dependencies.workspaceManager === controllerManager)
     }
 }

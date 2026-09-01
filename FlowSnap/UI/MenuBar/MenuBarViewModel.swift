@@ -28,18 +28,25 @@ public final class MenuBarViewModel {
     private let windowManager: WindowManaging
     private let settingsWindowPresenter: (any SettingsWindowPresenting)?
 
+    /// Workspace save/restore. `nil` when there is no workspace support (so the
+    /// menu bar still constructs in contexts without it, and existing tests are
+    /// unaffected); the Workspaces section hides itself when this is `nil`.
+    public let workspaceViewModel: WorkspaceViewModel?
+
     // MARK: - Initialization
 
     public init(
         accessibilityService: AccessibilityService,
         commandDispatcher: CommandDispatcher,
         windowManager: WindowManaging,
-        settingsWindowPresenter: (any SettingsWindowPresenting)? = nil
+        settingsWindowPresenter: (any SettingsWindowPresenting)? = nil,
+        workspaceManager: WorkspaceManager? = nil
     ) {
         self.accessibilityService = accessibilityService
         self.commandDispatcher = commandDispatcher
         self.windowManager = windowManager
         self.settingsWindowPresenter = settingsWindowPresenter
+        self.workspaceViewModel = workspaceManager.map { WorkspaceViewModel(manager: $0) }
         self.isAccessibilityTrusted = accessibilityService.isTrusted
     }
 
@@ -63,6 +70,18 @@ public final class MenuBarViewModel {
 
     // MARK: - User Actions
 
+    /// Dismisses any open MenuBarExtra window/panel so that settings or snapped windows receive focus.
+    public func dismissMenuBarWindow() {
+        for window in NSApp.windows {
+            let isOverlay = window is SnapPreviewPanel || window is AdaptiveDividerOverlayPanel
+            let isSettings = window === (settingsWindowPresenter as? SettingsWindowController)?.window
+            if !isOverlay && !isSettings && window.isVisible {
+                window.orderOut(nil)
+            }
+        }
+        dismissHandler?()
+    }
+
     /// Triggers a snap action asynchronously, awaiting command completion and invoking dismissal.
     public func triggerSnapAsync(_ action: MenuBarAction) async throws {
         guard isAccessibilityTrusted else {
@@ -70,8 +89,8 @@ public final class MenuBarViewModel {
             return
         }
 
+        dismissMenuBarWindow()
         try await commandDispatcher.dispatch(.snap(action.snapTarget))
-        dismissHandler?()
     }
 
     /// Triggers a snap action synchronously from UI events.
@@ -93,13 +112,13 @@ public final class MenuBarViewModel {
 
     /// Opens the application settings window.
     public func openSettings() {
+        dismissMenuBarWindow()
         if let settingsWindowPresenter {
             settingsWindowPresenter.showSettingsWindow()
         } else {
             NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
             NSApp.activate(ignoringOtherApps: true)
         }
-        dismissHandler?()
     }
 
     /// Cleanly terminates the FlowSnap application.

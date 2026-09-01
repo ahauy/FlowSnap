@@ -15,7 +15,7 @@ public final class AdaptiveDividerOverlayPanel: NSPanel, AdaptiveDividerOverlayM
 
     public static let shared = AdaptiveDividerOverlayPanel()
 
-    public static let restingAlpha: CGFloat = 0.22
+    public static let restingAlpha: CGFloat = 0.0
     public static let activeAlpha: CGFloat = 1.0
 
     public let overlayView: AdaptiveDividerOverlayView
@@ -40,7 +40,7 @@ public final class AdaptiveDividerOverlayPanel: NSPanel, AdaptiveDividerOverlayM
         level = .floating + 1
         hasShadow = false
         isReleasedWhenClosed = false
-        ignoresMouseEvents = false
+        ignoresMouseEvents = true
         collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         contentView = view
     }
@@ -53,6 +53,11 @@ public final class AdaptiveDividerOverlayPanel: NSPanel, AdaptiveDividerOverlayM
         activeDivider: CollinearEdge?,
         isDragging: Bool
     ) {
+        guard activeDivider != nil || isDragging else {
+            hide(animated: true)
+            return
+        }
+
         if frame != containerFrame {
             setFrame(containerFrame, display: true)
         }
@@ -65,7 +70,7 @@ public final class AdaptiveDividerOverlayPanel: NSPanel, AdaptiveDividerOverlayM
             isDragging: isDragging
         )
 
-        let targetAlpha: CGFloat = (activeDivider != nil || isDragging) ? Self.activeAlpha : Self.restingAlpha
+        let targetAlpha: CGFloat = Self.activeAlpha
 
         if !isVisible {
             alphaValue = targetAlpha
