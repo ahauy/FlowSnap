@@ -26,8 +26,17 @@ public enum WindowKind: String, Codable, Sendable, Hashable {
     /// Could not determine window type.
     case unknown
 
-    /// Whether this window kind is eligible for snap operations.
+    /// Whether this window kind is eligible for snap operations (live snapping and capture).
     public var isSnappable: Bool {
         self == .normal
+    }
+
+    /// Whether this window kind is eligible for workspace *restore* operations.
+    ///
+    /// Full-screen windows are restorable because restore exits full-screen first,
+    /// then repositions the window into the saved zone. They are intentionally
+    /// excluded from `isSnappable` so the capture picker never offers them.
+    public var isRestorable: Bool {
+        self == .normal || self == .fullscreen
     }
 }
