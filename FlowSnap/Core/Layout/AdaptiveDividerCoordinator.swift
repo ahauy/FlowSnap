@@ -474,12 +474,12 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         lastPresentedWindows = displayWindows
         lastPresentedContainer = container
 
-        if !dividers.isEmpty {
+        if let activeDivider = hovered {
             overlayManager?.show(
                 containerFrame: container,
                 windows: displayWindows,
                 dividers: dividers,
-                activeDivider: hovered,
+                activeDivider: activeDivider,
                 isDragging: false
             )
         } else {
@@ -712,17 +712,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         lastPresentedWindows = finalDisplayWindows
         lastPresentedContainer = container
 
-        if !finalDividers.isEmpty {
-            overlayManager?.show(
-                containerFrame: container,
-                windows: finalDisplayWindows,
-                dividers: finalDividers,
-                activeDivider: nil,
-                isDragging: false
-            )
-        } else {
-            overlayManager?.hide(animated: true)
-        }
+        overlayManager?.hide(animated: true)
     }
 
     /// Dispatches resized frames to WindowManager using a 2-phase ordering:

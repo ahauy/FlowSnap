@@ -39,7 +39,34 @@ public final class WindowManager: WindowManaging {
             throw AccessibilityError.cannotComplete
         }
 
+        // A minimized window accepts AX position/size writes but stays in the Dock,
+        // so the user sees nothing. Clear the flag first (best-effort: some apps
+        // reject the write, and a partially restored window still beats none).
+        if window.isMinimized {
+            do {
+                try accessibilityService.unminimize(targetElement)
+            } catch {
+                NSLog("[WindowManager] Unminimize failed for \(window.title): \(error.localizedDescription)")
+            }
+        }
+
+        // A full-screen window cannot be repositioned while in full-screen mode;
+        // macOS returns success but silently ignores the AX frame writes. Exit
+        // full-screen first, then wait for the animation to complete before
+        // calling setFrame (best-effort: some apps reject the write).
+        if window.kind == .fullscreen {
+            do {
+                try accessibilityService.exitFullScreen(targetElement)
+                // 700 ms covers the standard macOS full-screen exit animation
+                // (typically 0.5 s) plus a small margin for slower machines.
+                try await Task.sleep(nanoseconds: 700_000_000)
+            } catch {
+                NSLog("[WindowManager] ExitFullScreen failed for \(window.title): \(error.localizedDescription)")
+            }
+        }
+
         try accessibilityService.setFrame(frame, for: targetElement)
+
     }
 
     public func focus(_ window: ManagedWindow) async throws {

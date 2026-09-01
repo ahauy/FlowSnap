@@ -13,7 +13,10 @@ public final class AppDependencies {
     public lazy var displayManager: DisplayManaging = DisplayManager()
     public lazy var hotkeyManager: GlobalHotkeyManaging = GlobalHotkeyManager()
     public lazy var preferencesStore: PreferencesStore = PreferencesStore()
-    public lazy var settingsWindowController: SettingsWindowController = SettingsWindowController(preferencesStore: preferencesStore)
+    public lazy var settingsWindowController: SettingsWindowController = SettingsWindowController(
+        preferencesStore: preferencesStore,
+        workspaceManager: workspaceManager
+    )
 
     // MARK: - Core Services
 
@@ -32,13 +35,35 @@ public final class AppDependencies {
         displayManager: displayManager
     )
 
+    // MARK: - Workspace
+
+    /// Owns workspace capture/restore and publishes the saved list.
+    ///
+    /// Shares the app's `accessibilityService`, `windowManager` and
+    /// `displayManager` rather than letting `WorkspaceManager` build its own, so
+    /// there is a single AX connection and one window-cache lifecycle. `preferencesStore`
+    /// is shared too, so restore recomputes geometry against the gap the user set
+    /// in Settings (BR-WORK-007).
+    ///
+    /// Lazy because its init kicks off a store load; nothing needs it until a UI
+    /// surface first reads the list.
+    public lazy var workspaceManager: WorkspaceManager = WorkspaceManager(
+        accessibilityService: accessibilityService,
+        windowManager: windowManager,
+        displayManager: displayManager,
+        layoutEngine: layoutEngine,
+        launcher: AppLauncher(accessibilityService: accessibilityService),
+        preferences: preferencesStore
+    )
+
     // MARK: - View Models
 
     public lazy var menuBarViewModel: MenuBarViewModel = MenuBarViewModel(
         accessibilityService: accessibilityService,
         commandDispatcher: commandDispatcher,
         windowManager: windowManager,
-        settingsWindowPresenter: settingsWindowController
+        settingsWindowPresenter: settingsWindowController,
+        workspaceManager: workspaceManager
     )
 
     // MARK: - Drag to Snap
