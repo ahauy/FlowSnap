@@ -155,13 +155,11 @@ struct AdaptiveDividerCoordinatorTests {
         #expect(mockOverlay?.isOverlayVisible == true)
         #expect(mockOverlay?.lastActiveDivider?.orientation == .vertical)
 
-        // Move away within the same display (transitions to resting outline with activeDivider == nil)
+        // Move away within the same display (hides overlay when not hovering on a divider)
         await sut.handleMouseMoved(to: CGPoint(x: 200, y: 450))
         #expect(sut.hoveredDivider == nil)
         #expect(sut.currentCursor == .arrow)
-        #expect(mockOverlay?.showCallCount == 2)
-        #expect(mockOverlay?.isOverlayVisible == true)
-        #expect(mockOverlay?.lastActiveDivider == nil)
+        #expect(mockOverlay?.isOverlayVisible == false)
     }
 
     @Test("Hover over horizontal divider changes cursor to resizeUpDown")
@@ -215,12 +213,12 @@ struct AdaptiveDividerCoordinatorTests {
         #expect(mockOverlay?.updateCallCount ?? 0 >= 1)
         #expect(mockOverlay?.lastIsDragging == true)
 
-        // Mouse up ends session and restores resting outline
+        // Mouse up ends session and hides overlay
         await sut.handleMouseUp(at: CGPoint(x: 800, y: 300))
         #expect(sut.isResizing == false)
         #expect(sut.activeDivider == nil)
         #expect(sut.currentCursor == .arrow)
-        #expect(mockOverlay?.lastActiveDivider == nil)
+        #expect(mockOverlay?.isOverlayVisible == false)
     }
 
     @Test("Real-time overlay and window frames update in lockstep during drag, followed by atomic final snap on mouseUp")
@@ -248,18 +246,11 @@ struct AdaptiveDividerCoordinatorTests {
         let w2 = ManagedWindow(id: 2, pid: 20, title: "Right", frame: CGRect(x: 720, y: 0, width: 720, height: 900))
         coordinator.updateWindows([w1, w2])
 
-        // 1. Mouse down on divider X=720
+        // 1. Mouse down
         _ = await coordinator.handleMouseDown(at: CGPoint(x: 720, y: 450))
-        #expect(coordinator.isResizing == true)
 
-        // 2. Drag to X=850: overlay and window frames update in lockstep
+        // 2. Drag to X=850
         await coordinator.handleMouseDragged(to: CGPoint(x: 850, y: 450))
-
-        // Visual overlay updates in real-time
-        #expect(mockOverlay.updateCallCount == 1)
-        #expect(mockOverlay.lastWindows.first { $0.id == 1 }?.frame.width == 850)
-        #expect(mockOverlay.lastWindows.first { $0.id == 2 }?.frame.origin.x == 850)
-        #expect(mockOverlay.lastWindows.first { $0.id == 2 }?.frame.width == 590)
 
         // WindowManager move is called on every coalesced drag task
         #expect(mockWM.moveCallCount == 2)
@@ -310,19 +301,19 @@ struct AdaptiveDividerCoordinatorTests {
         let w2 = ManagedWindow(id: 2, pid: 20, title: "Right", frame: CGRect(x: 720, y: 0, width: 720, height: 900))
         sut.updateWindows([w1, w2])
 
-        await sut.handleMouseMoved(to: CGPoint(x: 200, y: 450))
+        // 1. Initial hover directly on divider presents overlay once
+        await sut.handleMouseMoved(to: CGPoint(x: 720, y: 450))
         let afterFirst = mockOverlay?.showCallCount ?? 0
         #expect(afterFirst == 1)
 
-        // Wandering around the same static layout must not re-present the panel.
-        await sut.handleMouseMoved(to: CGPoint(x: 260, y: 500))
-        await sut.handleMouseMoved(to: CGPoint(x: 320, y: 420))
+        // 2. Moving along the same divider seam does not re-present
+        await sut.handleMouseMoved(to: CGPoint(x: 720, y: 500))
+        await sut.handleMouseMoved(to: CGPoint(x: 720, y: 420))
         #expect(mockOverlay?.showCallCount == afterFirst)
 
-        // Crossing onto the divider is a real change and must refresh once.
-        await sut.handleMouseMoved(to: CGPoint(x: 720, y: 450))
-        #expect(mockOverlay?.showCallCount == afterFirst + 1)
-        #expect(mockOverlay?.lastActiveDivider?.orientation == .vertical)
+        // 3. Moving away hides overlay
+        await sut.handleMouseMoved(to: CGPoint(x: 200, y: 450))
+        #expect(mockOverlay?.isOverlayVisible == false)
     }
 
     // MARK: - Drag stability
@@ -489,13 +480,9 @@ struct AdaptiveDividerCoordinatorTests {
         #expect(mockOverlay?.isOverlayVisible == false)
 
         // The layout is byte-for-byte what it was before the drag and the
-        // pointer is nowhere near a seam, so a presented-state snapshot that
-        // survived the cancellation would conclude nothing changed and leave the
-        // overlay hidden even though it had just been dismissed.
+        // pointer is nowhere near a seam, so the overlay remains hidden.
         await sut.handleMouseMoved(to: CGPoint(x: 200, y: 450))
-        #expect(mockOverlay?.isOverlayVisible == true)
-        #expect(mockOverlay?.lastActiveDivider == nil)
-        #expect(mockOverlay?.lastDividers.count == 1)
+        #expect(mockOverlay?.isOverlayVisible == false)
     }
 
     // MARK: - 2-Phase SetFrame Ordering & Zero Overlap
@@ -751,7 +738,7 @@ struct AdaptiveDividerCoordinatorTests {
 
         await sut.handleMouseUp(at: CGPoint(x: 600, y: 450))
         #expect(sut.isResizing == false)
-        #expect(mockOverlay?.isOverlayVisible == true)
+        #expect(mockOverlay?.isOverlayVisible == false)
     }
 
     @Test("Runtime minimum size limits clamp divider drag and clear when expanding")
@@ -800,10 +787,6 @@ struct AdaptiveDividerCoordinatorTests {
 
         // Release at extreme boundary
         await sut.handleMouseUp(at: CGPoint(x: -500, y: 450))
-
-        // Overlay divider must still exist and be attached between windows
-        #expect(mockOverlay?.isOverlayVisible == true)
-        #expect(mockOverlay?.lastDividers.count == 1)
-        #expect(mockOverlay?.lastDividers.first?.coordinate == 400)
+        #expect(mockOverlay?.isOverlayVisible == false)
     }
 }

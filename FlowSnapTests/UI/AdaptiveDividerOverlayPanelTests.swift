@@ -26,13 +26,15 @@ struct AdaptiveDividerOverlayPanelTests {
         return ([w1, w2], [divider])
     }
 
-    @Test("Panel is initialized with floating non-activating transparent properties and selective mouse events")
+    @Test("Panel is initialized transparent and click-through so global monitors own hit testing")
     func panelInitialization() {
         let panel = AdaptiveDividerOverlayPanel()
         #expect(panel.isOpaque == false)
         #expect(panel.backgroundColor == .clear)
         #expect(panel.level == .floating + 1)
-        #expect(panel.ignoresMouseEvents == false)
+        // The seam is hit-tested from the coordinator's global mouse monitors, so
+        // the panel must never swallow clicks meant for the windows underneath it.
+        #expect(panel.ignoresMouseEvents == true)
         #expect(panel.styleMask.contains(.borderless))
         #expect(panel.styleMask.contains(.nonactivatingPanel))
     }
@@ -61,15 +63,17 @@ struct AdaptiveDividerOverlayPanelTests {
         #expect(panel.isOverlayVisible == false)
     }
 
-    @Test("Persistent resting outline retains alpha 0.22 when idle and 1.0 on hover or drag")
+    @Test("Overlay is fully hidden when idle and opaque on hover or drag")
     func restingAlphaTransition() {
         let panel = AdaptiveDividerOverlayPanel()
         let (windows, dividers) = makeSampleData()
 
-        #expect(AdaptiveDividerOverlayPanel.restingAlpha == 0.22)
+        // Clean Workspace: nothing lingers on screen when the pointer leaves the
+        // seam, so the resting alpha is 0 and `show` collapses the panel entirely.
+        #expect(AdaptiveDividerOverlayPanel.restingAlpha == 0.0)
         #expect(AdaptiveDividerOverlayPanel.activeAlpha == 1.0)
 
-        // 1. Show idle/resting (no active divider, not dragging) -> alpha is 0.22
+        // 1. Idle/resting (no active divider, not dragging) -> panel hides itself
         panel.show(
             containerFrame: container,
             windows: windows,
@@ -77,7 +81,7 @@ struct AdaptiveDividerOverlayPanelTests {
             activeDivider: nil,
             isDragging: false
         )
-        #expect(panel.isOverlayVisible == true)
+        #expect(panel.isOverlayVisible == false)
         #expect(panel.overlayView.activeDivider == nil)
 
         // 2. Active hover -> alpha is 1.0
