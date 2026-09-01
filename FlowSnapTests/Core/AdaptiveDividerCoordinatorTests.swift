@@ -757,7 +757,7 @@ struct AdaptiveDividerCoordinatorTests {
     }
 
     @Test("Divider line and windows remain attached and never separate at extreme minimum-size limits")
-    func windowsAndDividerRemainAttachedAtExtremeLimits() async {
+    func windowsAndDividerRemainAttachedAtExtremeLimits() async throws {
         let (sut, _, _, mockOverlay) = makeSUT()
         let w1 = ManagedWindow(
             id: 1, pid: 10, title: "Left",
@@ -776,8 +776,8 @@ struct AdaptiveDividerCoordinatorTests {
 
         // Extreme yank to the far left (x = -500)
         await sut.handleMouseDragged(to: CGPoint(x: -500, y: 450))
-        let leftWin1 = sut.managedWindows.first { $0.id == 1 }!
-        let rightWin1 = sut.managedWindows.first { $0.id == 2 }!
+        let leftWin1 = try #require(sut.managedWindows.first { $0.id == 1 })
+        let rightWin1 = try #require(sut.managedWindows.first { $0.id == 2 })
 
         // Must clamp cleanly at minSize width 400
         #expect(leftWin1.frame.width == 400)

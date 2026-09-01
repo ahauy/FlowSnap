@@ -15,7 +15,7 @@ struct SnapEngineTests {
         scaleFactor: 2.0
     )
 
-    @Test func consecutiveSnapsPreserveInitialPreSnapFrame() async {
+    @Test func consecutiveSnapsPreserveInitialPreSnapFrame() async throws {
         let registry = WindowRegistry()
         let engine = SnapEngine(windowRegistry: registry)
 
@@ -24,7 +24,7 @@ struct SnapEngineTests {
 
         // 1. First snap to Left Half
         let leftFrame = await engine.frame(for: .left, window: window, on: display)
-        #expect(leftFrame != nil)
+        let unwrappedLeft = try #require(leftFrame)
 
         // Verify registry recorded the initial frame
         let storedPreSnap = await registry.preSnapFrame(for: 10)
@@ -32,9 +32,9 @@ struct SnapEngineTests {
 
         // 2. Second snap to Right Half (window's current frame has changed to leftFrame)
         var windowAfterLeft = window
-        windowAfterLeft.frame = leftFrame!
+        windowAfterLeft.frame = unwrappedLeft
         let rightFrame = await engine.frame(for: .right, window: windowAfterLeft, on: display)
-        #expect(rightFrame != nil)
+        let unwrappedRight = try #require(rightFrame)
 
         // Verify registry STILL retains the original pre-snap frame, NOT leftFrame
         let retainedPreSnap = await registry.preSnapFrame(for: 10)
@@ -42,9 +42,9 @@ struct SnapEngineTests {
 
         // 3. Third snap to Maximize
         var windowAfterRight = windowAfterLeft
-        windowAfterRight.frame = rightFrame!
+        windowAfterRight.frame = unwrappedRight
         let maxFrame = await engine.frame(for: .maximize, window: windowAfterRight, on: display)
-        #expect(maxFrame != nil)
+        let unwrappedMax = try #require(maxFrame)
 
         // Still retained
         let stillRetained = await registry.preSnapFrame(for: 10)
@@ -52,7 +52,7 @@ struct SnapEngineTests {
 
         // 4. Trigger Restore
         var windowAfterMax = windowAfterRight
-        windowAfterMax.frame = maxFrame!
+        windowAfterMax.frame = unwrappedMax
         let restoredFrame = await engine.frame(for: .restore, window: windowAfterMax, on: display)
 
         #expect(restoredFrame == initialFrame)

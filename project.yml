@@ -72,3 +72,22 @@ targets:
         PRODUCT_NAME: FlowSnapLab
         ENABLE_HARDENED_RUNTIME: YES
         CODE_SIGN_IDENTITY: "-"
+
+schemes:
+  FlowSnap:
+    build:
+      targets:
+        FlowSnap: all
+        FlowSnapTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - FlowSnapTests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
