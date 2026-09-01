@@ -70,6 +70,9 @@ public protocol AccessibilityService: Sendable {
     /// is what restoration needs to bring them back (US-WORK-011).
     func managedWindows(of pid: pid_t) -> [ManagedWindow]
 
+    /// Sets a window's minimized flag, minimizing it to the Dock.
+    func minimize(_ window: AXUIElement) throws
+
     /// Clears a window's minimized flag, pulling it back onto the screen.
     func unminimize(_ window: AXUIElement) throws
 

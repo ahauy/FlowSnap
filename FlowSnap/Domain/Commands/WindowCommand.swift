@@ -25,4 +25,8 @@ public enum WindowCommand: Hashable, Sendable {
 
     case restoreWorkspace(UUID)
     case saveWorkspace(String)
+
+    // MARK: - Presets (US-WORK-012)
+
+    case restorePreset(String) // Preset ID, e.g. "builtin.coding"
 }

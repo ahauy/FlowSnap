@@ -26,6 +26,7 @@ public final class PreferencesStore: ObservableObject {
     @Published public private(set) var windowGap: CGFloat
     @Published public private(set) var defaultRatio: LayoutRatio
     @Published public private(set) var customShortcuts: [ShortcutAction: KeyboardShortcut]
+    @Published public private(set) var customPresetShortcuts: [String: KeyboardShortcut]
     @Published public private(set) var isDragToSnapEnabled: Bool
     @Published public private(set) var dragPreviewDwellDelay: Double
     @Published public private(set) var launchAtLogin: Bool
@@ -73,6 +74,14 @@ public final class PreferencesStore: ObservableObject {
             }
         }
         self.customShortcuts = loadedShortcuts
+
+        // Custom Preset Shortcuts
+        var loadedPresetShortcuts: [String: KeyboardShortcut] = [:]
+        if let data = defaults.data(forKey: "customPresetShortcuts"),
+           let dict = try? JSONDecoder().decode([String: KeyboardShortcut].self, from: data) {
+            loadedPresetShortcuts = dict
+        }
+        self.customPresetShortcuts = loadedPresetShortcuts
     }
 
     // MARK: - Window Gap (BR-CRW-002)
@@ -159,6 +168,56 @@ public final class PreferencesStore: ObservableObject {
         }
         if let data = try? JSONEncoder().encode(serializable) {
             defaults.set(data, forKey: "customShortcuts")
+        }
+    }
+
+    // MARK: - Preset Shortcuts (US-WORK-012, spec §2, contracts §3)
+
+    /// Returns the effective shortcut for a preset (customized or default from BuiltinPresetFactory).
+    public func shortcut(forPresetID id: String) -> KeyboardShortcut? {
+        if let custom = customPresetShortcuts[id] {
+            return custom
+        }
+        return BuiltinPresetFactory.preset(for: id)?.defaultShortcut
+    }
+
+    /// Assigns or unassigns a custom shortcut for a preset.
+    public func setShortcut(_ shortcut: KeyboardShortcut?, forPresetID id: String) {
+        if let shortcut = shortcut {
+            customPresetShortcuts[id] = shortcut
+        } else {
+            customPresetShortcuts.removeValue(forKey: id)
+        }
+        saveCustomPresetShortcuts()
+    }
+
+    /// Checks if a proposed shortcut conflicts with standard snap actions or other presets.
+    public func hasPresetConflict(_ shortcut: KeyboardShortcut, excludingPresetID: String? = nil) -> String? {
+        // 1. Check against standard snap shortcuts
+        if let snapConflict = hasConflict(shortcut) {
+            return "Shortcut already assigned to \(snapConflict.displayName)"
+        }
+        // 2. Check against other presets
+        for preset in BuiltinPresetFactory.allBuiltinPresets {
+            if let excluding = excludingPresetID, preset.id == excluding {
+                continue
+            }
+            if let bound = self.shortcut(forPresetID: preset.id), bound == shortcut {
+                return "Shortcut already assigned to \(preset.name) preset"
+            }
+        }
+        return nil
+    }
+
+    /// Resets all preset shortcuts to default bindings.
+    public func resetPresetShortcutsToDefault() {
+        customPresetShortcuts.removeAll()
+        defaults.removeObject(forKey: "customPresetShortcuts")
+    }
+
+    private func saveCustomPresetShortcuts() {
+        if let data = try? JSONEncoder().encode(customPresetShortcuts) {
+            defaults.set(data, forKey: "customPresetShortcuts")
         }
     }
 

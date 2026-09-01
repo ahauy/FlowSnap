@@ -266,6 +266,12 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
         guard result == .success else { throw AccessibilityError.cannotComplete }
     }
 
+    public func minimize(_ window: AXUIElement) throws {
+        guard isTrusted else { throw AccessibilityError.notTrusted }
+        let result = AXUIElementSetAttributeValue(window, kAXMinimizedAttribute as CFString, kCFBooleanTrue)
+        guard result == .success else { throw AccessibilityError.cannotComplete }
+    }
+
     public func unminimize(_ window: AXUIElement) throws {
         guard isTrusted else { throw AccessibilityError.notTrusted }
         let result = AXUIElementSetAttributeValue(window, kAXMinimizedAttribute as CFString, kCFBooleanFalse)
@@ -321,50 +327,81 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
 
     /// Returns `true` if the window is currently in macOS full-screen mode.
     ///
-    /// Detection uses three independent strategies in priority order so that the
-    /// check works even when the attribute name differs across macOS versions:
+    /// Requires the full-screen attribute AND the window's geometry to agree,
+    /// because neither signal is trustworthy on its own. Both were measured live:
     ///
-    /// 1. `"AXFullscreen"` — the spelling used by most modern window managers
-    ///    (Yabai, Amethyst, etc.) and consistent with the AX naming convention.
-    /// 2. `"AXFullScreen"` — an alternate capitalisation seen in some Apple samples.
-    /// 3. Frame-size heuristic — if the window's size matches a screen exactly
-    ///    AND the caller already confirmed it is non-resizable, the window is almost
-    ///    certainly in macOS full-screen mode (maximised windows remain resizable).
-    private func checkFullScreen(_ window: AXUIElement, isResizable: Bool) -> Bool {
+    /// - The attribute lies. Chromium/Electron answer `AXFullScreen = true` for an
+    ///   ordinary zoomed window. Brave reported `true` while its menu bar was still
+    ///   on screen (WindowServer layers 24/25/26 at y=0..30) and its frame was
+    ///   `(0,111,1440,789)` on a 1440x900 display - not full-screen by any
+    ///   definition. Trusting the attribute alone classifies such a window as
+    ///   `.fullscreen`, which makes restore call `exitFullScreen` on it; that write
+    ///   fails, and the window is then retried and skipped.
+    /// - Geometry alone would lie in the other direction: a window dragged to cover
+    ///   the desktop is not in full-screen mode, and treating it as if it were costs
+    ///   a doomed `exitFullScreen` write before every move.
+    ///
+    /// A genuine full-screen window satisfies both. Measured on a window this
+    /// process owns and toggled with `toggleFullScreen`: attribute `true` and frame
+    /// `(0,30,1440,870)` on a 1440x900 display with a 30pt menu bar - i.e. it covers
+    /// `visibleFrame`, not `frame`.
+    ///
+    /// That is why the comparison uses `visibleFrame`. The previous heuristic
+    /// compared against `screen.frame` (900 tall here), which a real full-screen
+    /// window never matches, so the heuristic branch could never fire and the
+    /// attribute branch had nothing to corroborate it.
+    ///
+    /// `isResizable` is deliberately not consulted. It is derived from the
+    /// settability of `kAXSizeAttribute`, and a real full-screen window reports that
+    /// as *settable* (measured on the probe window and on iTerm2), so gating on it
+    /// hides genuine full-screen windows.
+    private func checkFullScreen(_ window: AXUIElement) -> Bool {
+        guard let windowFrame = frame(of: window) else { return false }
+
+        // `frame(of:)` reports raw Accessibility coordinates (top-left origin on the
+        // primary display) while `NSScreen` frames are AppKit (bottom-left). Compare
+        // them in one space or every window on a secondary display is misjudged.
+        let primaryHeight = NSScreen.screens.first?.frame.height ?? 1080
+        let coversScreen = NSScreen.screens.contains { screen in
+            let target = CoordinateTransformer.toAX(
+                rect: screen.visibleFrame,
+                primaryScreenHeight: primaryHeight
+            )
+            return abs(windowFrame.width - target.width) < 5
+                && abs(windowFrame.height - target.height) < 5
+                && abs(windowFrame.origin.x - target.origin.x) < 5
+                && abs(windowFrame.origin.y - target.origin.y) < 5
+        }
+        guard coversScreen else { return false }
+
+        var claimsFullScreen = false
+        var attributeReadable = false
         for key in Self.fullscreenAttributeKeys {
             var val: AnyObject?
-            let result = AXUIElementCopyAttributeValue(window, key as CFString, &val)
-            if result == .success, let boolVal = val as? Bool {
-                if boolVal {
-                    diagPrint("[AXAccessibilityService] Full-screen detected via attribute '\(key)'")
-                }
-                return boolVal // Explicitly return false if supported but not fullscreen!
+            guard AXUIElementCopyAttributeValue(window, key as CFString, &val) == .success,
+                  let boolVal = val as? Bool else { continue }
+            attributeReadable = true
+            if boolVal {
+                diagPrint("[AXAccessibilityService] Full-screen confirmed via attribute '\(key)' + geometry")
+                claimsFullScreen = true
+                break
             }
         }
 
-        // Fallback: compare window size to every connected screen.
-        // If an app doesn't support AXFullScreen (mostly old native apps), we reinstate
-        // the strict !isResizable requirement to prevent maximized normal windows from being
-        // falsely classified as fullscreen.
-        if isResizable {
-            return false
+        // An app that does not expose the attribute at all - as opposed to exposing
+        // it as false - leaves nothing to corroborate the geometry, so fall back to
+        // the other signal macOS withholds in full-screen: it refuses to let the
+        // window be moved. A stretched-but-normal window stays movable, so this
+        // still excludes it.
+        if !attributeReadable {
+            var settable = DarwinBoolean(false)
+            let readable = AXUIElementIsAttributeSettable(window, kAXPositionAttribute as CFString, &settable)
+            claimsFullScreen = (readable == .success) && !settable.boolValue
+            if claimsFullScreen {
+                diagPrint("[AXAccessibilityService] Full-screen inferred from geometry + immovable position")
+            }
         }
-        
-        // AX and NSScreen both operate in points, so no scale conversion is needed.
-        var sizeVal: AnyObject?
-        guard AXUIElementCopyAttributeValue(window, kAXSizeAttribute as CFString, &sizeVal) == .success,
-              let axVal = sizeVal else { return false }
-        var size = CGSize.zero
-        // swiftlint:disable:next force_cast
-        guard AXValueGetValue(axVal as! AXValue, .cgSize, &size) else { return false }
-        let coveredByScreen = NSScreen.screens.contains { screen in
-            abs(size.width  - screen.frame.width)  < 5 &&
-            abs(size.height - screen.frame.height) < 5
-        }
-        if coveredByScreen {
-            diagPrint("[AXAccessibilityService] Full-screen detected via frame heuristic (\(Int(size.width)) × \(Int(size.height)))")
-        }
-        return coveredByScreen
+        return claimsFullScreen
     }
 
     private func checkMinimized(_ window: AXUIElement) -> Bool {
@@ -377,8 +414,9 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
     private func classifyKind(_ window: AXUIElement, isResizable: Bool) -> WindowKind {
         // We MUST NOT rely on !isResizable to gate fullscreen checks.
         // Chromium/Electron apps (like Zalo, Brave) report isResizable=true even in Fullscreen mode.
-        // The !isResizable check is safely reinstated inside checkFullScreen's fallback branch.
-        if checkFullScreen(window, isResizable: isResizable) {
+        // checkFullScreen corroborates the attribute against the window's geometry instead,
+        // so resizable Chromium fullscreen windows are still classified correctly.
+        if checkFullScreen(window) {
             return .fullscreen
         }
 

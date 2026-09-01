@@ -65,6 +65,7 @@ targets:
       - path: FlowSnap/UI/Settings
       - path: FlowSnap/UI/Divider
       - path: FlowSnap/UI/Workspace
+      - path: FlowSnap/UI/Components
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.flowsnap.lab

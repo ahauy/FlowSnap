@@ -12,6 +12,7 @@ public protocol WindowManaging: Sendable {
     func move(_ window: ManagedWindow, to frame: CGRect, element: AXUIElement?) async throws
     func focus(_ window: ManagedWindow) async throws
     func minimize(_ window: ManagedWindow) async throws
+    func unminimize(_ window: ManagedWindow) async throws
 }
 
 extension WindowManaging {
@@ -19,4 +20,3 @@ extension WindowManaging {
         try await move(window, to: frame)
     }
 }
-
