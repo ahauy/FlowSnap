@@ -138,6 +138,7 @@
 		796A996124A643BC38EAEE0E /* AdaptiveDividerOverlayPanelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C76085B35C77A4D2A1DCBF0 /* AdaptiveDividerOverlayPanelTests.swift */; };
 		7B93BB2704766D0220F4A57E /* WorkspaceCrossDisplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A51C6600DA4F0ACB3F097A04 /* WorkspaceCrossDisplayTests.swift */; };
 		7DD90897AF819547D4631765 /* AppLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89D44FAA3E31EFB8D81C811 /* AppLauncher.swift */; };
+		7DE338D31027DF2808355CB3 /* DiagLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67D6F7CA72DA5BE6FA8D1823 /* DiagLogger.swift */; };
 		7E1A6BE7BFD56068F27B0B4E /* Workspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C45EBED36C097796E6CD70A /* Workspace.swift */; };
 		7E2C83C02E07A52444F459A1 /* WorkspaceManagerRestoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B2CE8048890A76CCA1A345C /* WorkspaceManagerRestoreTests.swift */; };
 		7E644EEA826A608700C77F3A /* AdaptiveDividerOverlayManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BA0883D33E22B7D2455E77 /* AdaptiveDividerOverlayManaging.swift */; };
@@ -198,6 +199,7 @@
 		C0E5DB35AEA9D0D56908B907 /* RestoreSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CA3D4B71397EC9E964C91C /* RestoreSummary.swift */; };
 		C0EF9B556A04666E4F054B52 /* LayoutEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C83FDEF7A27D286A096EFAF2 /* LayoutEngine.swift */; };
 		C18D28F4BEFACD3106D1D055 /* WindowPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8DC4D44B8F281D8801C2B8C /* WindowPolicy.swift */; };
+		C31209200A73CE5ED49F89AB /* DiagLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67D6F7CA72DA5BE6FA8D1823 /* DiagLogger.swift */; };
 		C3BECE2B60221B83DDC2615F /* LiveResizeThrottler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F838495330FF5060A2A1CB1D /* LiveResizeThrottler.swift */; };
 		C496D95DD1094015E5BFECDA /* SnapPreviewManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5CFF0556705A5A4FCB45F8 /* SnapPreviewManaging.swift */; };
 		C55AB549C23D054AA66D7C42 /* WindowCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40AE155D33959E6CDC872DAA /* WindowCommand.swift */; };
@@ -313,6 +315,7 @@
 		65ABB092C0BE89F7B647DF20 /* WorkspaceManager+Capture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorkspaceManager+Capture.swift"; sourceTree = "<group>"; };
 		66B93DD58D0543436170428F /* KeyboardShortcutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutTests.swift; sourceTree = "<group>"; };
 		6796640B54466D70EFD5A929 /* MockGlobalHotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockGlobalHotkeyManager.swift; sourceTree = "<group>"; };
+		67D6F7CA72DA5BE6FA8D1823 /* DiagLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagLogger.swift; sourceTree = "<group>"; };
 		690B82FE8C496AF9D02DC126 /* MockAccessibilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAccessibilityService.swift; sourceTree = "<group>"; };
 		695ACF86831A27621CBF2F7E /* SnapDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapDetector.swift; sourceTree = "<group>"; };
 		6D6B40BD6F953D389B15ACFB /* MockWindowManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockWindowManaging.swift; sourceTree = "<group>"; };
@@ -534,6 +537,7 @@
 		57AD1716133A69290481A00B /* Workspace */ = {
 			isa = PBXGroup;
 			children = (
+				67D6F7CA72DA5BE6FA8D1823 /* DiagLogger.swift */,
 				96189A839FAD9DB60FE48251 /* WorkspaceCapturing.swift */,
 				F52B3EF81167806134CD93A0 /* WorkspaceManager.swift */,
 				65ABB092C0BE89F7B647DF20 /* WorkspaceManager+Capture.swift */,
@@ -1028,6 +1032,7 @@
 				5CA99E4A7884168E1B6E9051 /* CollinearEdgeDetector.swift in Sources */,
 				1B9118C686E4BC67368F15A4 /* CommandDispatcher.swift in Sources */,
 				B09F8CA4BF2EAA18568EF1EF /* CoordinateTransformer.swift in Sources */,
+				7DE338D31027DF2808355CB3 /* DiagLogger.swift in Sources */,
 				2BF4080A13A5F6401A0B4153 /* Display.swift in Sources */,
 				9D6455D544889D0C3E7251C5 /* DisplayManager.swift in Sources */,
 				A6BD730E62BC8F486FBB8674 /* DisplayManaging.swift in Sources */,
@@ -1184,6 +1189,7 @@
 				10A885FF3E711D83B1DB40CD /* CollinearEdgeDetector.swift in Sources */,
 				5360EBE7B4FF0382B7B44F58 /* CommandDispatcher.swift in Sources */,
 				658710E4275C74AC337552AD /* CoordinateTransformer.swift in Sources */,
+				C31209200A73CE5ED49F89AB /* DiagLogger.swift in Sources */,
 				81D4A8D2D4BA79CFF9BA9F1D /* Display.swift in Sources */,
 				1FAED231F17977A8AA86A01A /* DisplayManager.swift in Sources */,
 				1503E7F565EBA2C6031C6B00 /* DisplayManaging.swift in Sources */,

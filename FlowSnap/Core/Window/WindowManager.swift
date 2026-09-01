@@ -46,7 +46,7 @@ public final class WindowManager: WindowManaging {
             do {
                 try accessibilityService.unminimize(targetElement)
             } catch {
-                NSLog("[WindowManager] Unminimize failed for \(window.title): \(error.localizedDescription)")
+                diagPrint("[WindowManager] Unminimize failed for \(window.title): \(error.localizedDescription)")
             }
         }
 
@@ -61,11 +61,41 @@ public final class WindowManager: WindowManaging {
                 // (typically 0.5 s) plus a small margin for slower machines.
                 try await Task.sleep(nanoseconds: 700_000_000)
             } catch {
-                NSLog("[WindowManager] ExitFullScreen failed for \(window.title): \(error.localizedDescription)")
+                diagPrint("[WindowManager] ExitFullScreen failed for \(window.title): \(error.localizedDescription)")
             }
         }
 
-        try accessibilityService.setFrame(frame, for: targetElement)
+        // Tiered Backoff Retry (Bug 1 Fix)
+        let maxRetries = 3
+        diagPrint("[DIAG-MOVE] calling setFrame (\(frame.minX), \(frame.minY), \(frame.width), \(frame.height)) for '\(window.title)' kind=\(window.kind)")
+        for attempt in 1...maxRetries {
+            do {
+                try accessibilityService.setFrame(frame, for: targetElement)
+                diagPrint("[DIAG-MOVE] setFrame OK for '\(window.title)' attempt=\(attempt)")
+                break // Success
+            } catch AccessibilityError.cannotComplete {
+                diagPrint("[DIAG-MOVE] setFrame THREW cannotComplete for '\(window.title)' attempt=\(attempt)")
+                if attempt == maxRetries {
+                    diagPrint("[WindowManager] Move failed for \(window.title) after \(maxRetries) attempts (cannotComplete)")
+                    throw AccessibilityError.cannotComplete
+                }
+
+                if attempt == 1 {
+                    // Tier 1: Wait for AX tree to initialize or Space to switch
+                    try await Task.sleep(nanoseconds: 200_000_000)
+                } else if attempt == 2 {
+                    // Tier 2: Wake up the AX tree explicitly without stealing workspace focus
+                    do {
+                        try accessibilityService.raise(targetElement)
+                    } catch { /* ignore raise error, wait anyway */ }
+                    try await Task.sleep(nanoseconds: 300_000_000)
+                }
+            } catch {
+                // If it is not cannotComplete (e.g. notTrusted), fail immediately.
+                diagPrint("[DIAG-MOVE] setFrame THREW \(error) for '\(window.title)' — no retry")
+                throw error
+            }
+        }
 
     }
 
@@ -89,3 +119,5 @@ public final class WindowManager: WindowManaging {
         // AX minimize can be added when needed
     }
 }
+
+extension WindowManager {}
