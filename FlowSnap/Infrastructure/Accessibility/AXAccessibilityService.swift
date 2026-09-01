@@ -432,7 +432,10 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
                     rect: screen.frame,
                     primaryScreenHeight: primaryHeight
                 ),
-                menuBarHeight: max(0, screen.frame.height - screen.visibleFrame.height)
+                menuBarHeight: DisplayGeometry.menuBarHeight(
+                    frame: screen.frame,
+                    visibleFrame: screen.visibleFrame
+                )
             )
         }
         return Self.fillsDisplay(windowFrame, in: displays)
@@ -446,6 +449,21 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
         var frame: CGRect
         /// Height of the menu bar, in points.
         var menuBarHeight: CGFloat
+
+        /// Height of the menu bar, in points, from a display's two AppKit rects.
+        ///
+        /// Must be read off the top edge. `frame.height - visibleFrame.height` looks
+        /// equivalent and is not: `visibleFrame` excludes the Dock too, so with the
+        /// Dock at the bottom that difference is menu bar plus Dock, and demanding a
+        /// window's top edge sit that far down rejects every genuine full-screen
+        /// window. Measured with the Dock on the left, where both formulas give 30 -
+        /// which is exactly why the mistake survives local testing.
+        ///
+        /// The top edge is Dock-proof: macOS places the Dock on the left, right or
+        /// bottom, never the top, so nothing but the menu bar reduces `maxY`.
+        static func menuBarHeight(frame screenFrame: CGRect, visibleFrame: CGRect) -> CGFloat {
+            max(0, screenFrame.maxY - visibleFrame.maxY)
+        }
     }
 
     /// Pure form of `fillsDisplay`: whether `windowFrame` covers a display apart

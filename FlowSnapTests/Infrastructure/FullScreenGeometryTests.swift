@@ -92,4 +92,50 @@ struct FullScreenGeometryTests {
     @Test func emptyDisplayListMatchesNothing() {
         #expect(!AXAccessibilityService.fillsDisplay(CGRect(x: 0, y: 30, width: 1440, height: 870), in: []))
     }
+
+    // MARK: - The menu bar height must not absorb the Dock
+
+    @Test func menuBarHeightIgnoresBottomDock() {
+        // 1440x900 in AppKit space: 30pt menu bar, 70pt Dock along the bottom.
+        let screenFrame = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let visible = CGRect(x: 0, y: 70, width: 1440, height: 800)
+
+        let height = AXAccessibilityService.DisplayGeometry.menuBarHeight(
+            frame: screenFrame,
+            visibleFrame: visible
+        )
+        #expect(height == 30)
+
+        // The tempting shortcut is wrong here: it yields 100, and a full-screen
+        // window's top edge sits at 30, so it would be rejected.
+        #expect(screenFrame.height - visible.height == 100)
+    }
+
+    @Test func menuBarHeightIgnoresLeftDock() {
+        // The configuration measured on the development machine, where the two
+        // formulas agree - which is why the bottom-Dock case is easy to miss.
+        let screenFrame = CGRect(x: 0, y: 0, width: 1440, height: 900)
+        let visible = CGRect(x: 64, y: 0, width: 1376, height: 870)
+        let height = AXAccessibilityService.DisplayGeometry.menuBarHeight(
+            frame: screenFrame,
+            visibleFrame: visible
+        )
+        #expect(height == 30)
+    }
+
+    @Test func fullScreenIsStillRecognisedWithDockAtBottom() {
+        // A full-screen window covers the Dock, so its frame does not change with
+        // Dock position; only a mis-derived menu bar height could break this.
+        let dockBottom = AXAccessibilityService.DisplayGeometry(
+            frame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            menuBarHeight: AXAccessibilityService.DisplayGeometry.menuBarHeight(
+                frame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+                visibleFrame: CGRect(x: 0, y: 70, width: 1440, height: 800)
+            )
+        )
+        #expect(AXAccessibilityService.fillsDisplay(
+            CGRect(x: 0, y: 30, width: 1440, height: 870),
+            in: [dockBottom]
+        ))
+    }
 }
