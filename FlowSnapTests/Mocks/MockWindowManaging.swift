@@ -48,6 +48,38 @@ public final class MockWindowManaging: WindowManaging {
         movedWindows.append((window, frame))
     }
 
-    public func focus(_ window: ManagedWindow) async throws {}
-    public func minimize(_ window: ManagedWindow) async throws {}
+    public private(set) var focusedWindows: [ManagedWindow] = []
+    public private(set) var minimizedWindows: [ManagedWindow] = []
+    public private(set) var unminimizedWindows: [ManagedWindow] = []
+    public private(set) var focusCallCount = 0
+    public private(set) var minimizeCallCount = 0
+    public private(set) var unminimizeCallCount = 0
+
+    public var focusError: Error?
+    public var minimizeError: Error?
+    public var unminimizeError: Error?
+
+    public func focus(_ window: ManagedWindow) async throws {
+        focusCallCount += 1
+        focusedWindows.append(window)
+        if let focusError {
+            throw focusError
+        }
+    }
+
+    public func minimize(_ window: ManagedWindow) async throws {
+        minimizeCallCount += 1
+        minimizedWindows.append(window)
+        if let minimizeError {
+            throw minimizeError
+        }
+    }
+
+    public func unminimize(_ window: ManagedWindow) async throws {
+        unminimizeCallCount += 1
+        unminimizedWindows.append(window)
+        if let unminimizeError {
+            throw unminimizeError
+        }
+    }
 }

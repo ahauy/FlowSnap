@@ -114,6 +114,12 @@ public final class MockAccessibilityService: AccessibilityService, @unchecked Se
         return windows.map { ResolvedWindow(window: $0, element: mockElementByWindowID[$0.id]) }
     }
 
+    public private(set) var minimizeCallCount = 0
+
+    public func minimize(_ window: AXUIElement) throws {
+        minimizeCallCount += 1
+    }
+
     public private(set) var unminimizeCallCount = 0
 
     public func unminimize(_ window: AXUIElement) throws {

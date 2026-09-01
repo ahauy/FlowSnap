@@ -225,6 +225,12 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
         guard result == .success else { throw AccessibilityError.cannotComplete }
     }
 
+    public func minimize(_ window: AXUIElement) throws {
+        guard isTrusted else { throw AccessibilityError.notTrusted }
+        let result = AXUIElementSetAttributeValue(window, kAXMinimizedAttribute as CFString, kCFBooleanTrue)
+        guard result == .success else { throw AccessibilityError.cannotComplete }
+    }
+
     public func unminimize(_ window: AXUIElement) throws {
         guard isTrusted else { throw AccessibilityError.notTrusted }
         let result = AXUIElementSetAttributeValue(window, kAXMinimizedAttribute as CFString, kCFBooleanFalse)

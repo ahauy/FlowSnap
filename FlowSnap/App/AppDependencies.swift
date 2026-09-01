@@ -15,7 +15,27 @@ public final class AppDependencies {
     public lazy var preferencesStore: PreferencesStore = PreferencesStore()
     public lazy var settingsWindowController: SettingsWindowController = SettingsWindowController(
         preferencesStore: preferencesStore,
-        workspaceManager: workspaceManager
+        workspaceManager: workspaceManager,
+        windowGroupManager: windowGroupManager,
+        presetResolver: presetResolver,
+        commandDispatcher: commandDispatcher
+    )
+
+    // MARK: - Presets & Window Groups (US-WORK-012)
+
+    public lazy var windowGroupManager: WindowGroupManager = WindowGroupManager(
+        accessibilityService: accessibilityService,
+        windowManager: windowManager
+    )
+
+    public lazy var presetResolver: PresetResolver = PresetResolver(
+        accessibilityService: accessibilityService,
+        windowManager: windowManager,
+        displayManager: displayManager,
+        layoutEngine: layoutEngine,
+        launcher: AppLauncher(accessibilityService: accessibilityService),
+        preferencesStore: preferencesStore,
+        windowGroupManager: windowGroupManager
     )
 
     // MARK: - Core Services
@@ -32,7 +52,8 @@ public final class AppDependencies {
     public lazy var commandDispatcher: CommandDispatcher = CommandDispatcher(
         windowManager: windowManager,
         snapEngine: snapEngine,
-        displayManager: displayManager
+        displayManager: displayManager,
+        presetResolver: presetResolver
     )
 
     // MARK: - Workspace
@@ -63,7 +84,8 @@ public final class AppDependencies {
         commandDispatcher: commandDispatcher,
         windowManager: windowManager,
         settingsWindowPresenter: settingsWindowController,
-        workspaceManager: workspaceManager
+        workspaceManager: workspaceManager,
+        preferencesStore: preferencesStore
     )
 
     // MARK: - Drag to Snap
@@ -99,5 +121,6 @@ public final class AppDependencies {
         overlayManager: adaptiveDividerOverlayPanel
     )
 
-    public init() {}
+    public init() {
+        _ = self.workspaceManager}
 }

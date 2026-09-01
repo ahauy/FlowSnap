@@ -88,4 +88,8 @@ public final class WindowManager: WindowManaging {
     public func minimize(_ window: ManagedWindow) async throws {
         // AX minimize can be added when needed
     }
+
+    public func unminimize(_ window: ManagedWindow) async throws {
+        // AX unminimize
+    }
 }

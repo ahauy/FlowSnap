@@ -16,6 +16,7 @@ public final class MenuBarViewModel {
 
     public private(set) var isAccessibilityTrusted: Bool = false
     public private(set) var lastFocusedWindow: ManagedWindow?
+    public private(set) var lastPresetRestoreSummary: RestoreSummary?
 
     // MARK: - Dismissal Callback
 
@@ -27,6 +28,10 @@ public final class MenuBarViewModel {
     private let commandDispatcher: CommandDispatcher
     private let windowManager: WindowManaging
     private let settingsWindowPresenter: (any SettingsWindowPresenting)?
+    private let preferencesStore: PreferencesStore?
+
+    /// Built-in or custom workflow presets available in the menu bar.
+    public let presets: [WorkspacePreset]
 
     /// Workspace save/restore. `nil` when there is no workspace support (so the
     /// menu bar still constructs in contexts without it, and existing tests are
@@ -40,12 +45,16 @@ public final class MenuBarViewModel {
         commandDispatcher: CommandDispatcher,
         windowManager: WindowManaging,
         settingsWindowPresenter: (any SettingsWindowPresenting)? = nil,
-        workspaceManager: WorkspaceManager? = nil
+        workspaceManager: WorkspaceManager? = nil,
+        preferencesStore: PreferencesStore? = nil,
+        presets: [WorkspacePreset] = BuiltinPresetFactory.allBuiltinPresets
     ) {
         self.accessibilityService = accessibilityService
         self.commandDispatcher = commandDispatcher
         self.windowManager = windowManager
         self.settingsWindowPresenter = settingsWindowPresenter
+        self.preferencesStore = preferencesStore
+        self.presets = presets
         self.workspaceViewModel = workspaceManager.map { WorkspaceViewModel(manager: $0) }
         self.isAccessibilityTrusted = accessibilityService.isTrusted
     }
@@ -103,6 +112,45 @@ public final class MenuBarViewModel {
         Task { @MainActor in
             try? await self.triggerSnapAsync(action)
         }
+    }
+
+    // MARK: - Preset Actions (US-WORK-012)
+
+    /// Triggers a workflow preset restoration asynchronously.
+    public func triggerPresetAsync(_ preset: WorkspacePreset) async throws {
+        guard isAccessibilityTrusted else {
+            requestAccessibilityPermission()
+            return
+        }
+
+        dismissMenuBarWindow()
+        try await commandDispatcher.dispatch(.restorePreset(preset.id))
+        self.lastPresetRestoreSummary = commandDispatcher.lastRestoreSummary
+    }
+
+    /// Triggers a workflow preset synchronously from UI events.
+    public func triggerPreset(_ preset: WorkspacePreset) {
+        guard isAccessibilityTrusted else {
+            requestAccessibilityPermission()
+            return
+        }
+
+        Task { @MainActor in
+            try? await self.triggerPresetAsync(preset)
+        }
+    }
+
+    /// Clears the last preset restore summary message.
+    public func clearPresetRestoreSummary() {
+        self.lastPresetRestoreSummary = nil
+    }
+
+    /// Computes the active shortcut badge for a given preset.
+    public func shortcutBadge(for preset: WorkspacePreset) -> String {
+        if let custom = preferencesStore?.shortcut(forPresetID: preset.id) {
+            return custom.displayString
+        }
+        return preset.defaultShortcut?.displayString ?? ""
     }
 
     /// Opens macOS System Settings directly to Privacy & Security > Accessibility.

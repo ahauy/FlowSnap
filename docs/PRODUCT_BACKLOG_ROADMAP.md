@@ -503,7 +503,7 @@ _Mục tiêu: Bước chuyển dịch từ một tiện ích Snap thông thườ
     - `docs/features/workspace-snapshot-restoration/README.md`
     - `docs/user-guides/workspace-snapshot-restoration.md`
 
-- [ ] **US-WORK-012: Nhóm Cửa sổ & Workspace Presets (Window Groups & Named Presets)**
+- [x] **US-WORK-012: Nhóm Cửa sổ & Workspace Presets (Window Groups & Named Presets)**
   - **Slug:** `window-groups-presets`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -512,17 +512,17 @@ _Mục tiêu: Bước chuyển dịch từ một tiện ích Snap thông thườ
   - **Blocks:** `US-WORK-013`
   - **Mô tả:** Cung cấp sẵn các mẫu Workspace Presets thông dụng (Coding, Design, Research, Writing) và quản lý nhóm cửa sổ liên kết nhau.
   - **Acceptance Criteria (AC):**
-    - [ ] Cung cấp các Presets mẫu tích hợp sẵn:
+    - [x] Cung cấp các Presets mẫu tích hợp sẵn:
       - **Coding Preset**: VS Code (60%), Chrome (25%), Terminal (15%)
       - **Research Preset**: Browser 1 (50%), Notes/Notion (25%), Browser 2 (25%)
       - **Writing Preset**: Document Editor (70%), Reference/Dictionary (30%)
-    - [ ] Cho phép gán phím tắt kích hoạt nhanh cho từng Workspace Preset (ví dụ: `⌃⌥C` khôi phục Coding).
-    - [ ] Khái niệm `WindowGroup`: Liên kết các cửa sổ trong một nhóm để di chuyển hoặc thu nhỏ (minimize) đồng thời.
+    - [x] Cho phép gán phím tắt kích hoạt nhanh cho từng Workspace Preset (ví dụ: `⌃⌥C` khôi phục Coding).
+    - [x] Khái niệm `WindowGroup`: Liên kết các cửa sổ trong một nhóm để di chuyển hoặc thu nhỏ (minimize) đồng thời.
   - **Tasks:**
-    - [ ] `Domain`: Mở rộng `WindowGroup.swift` và các preset factories.
-    - [ ] `Core`: Tích hợp xử lý phím tắt kích hoạt workspace trong `CommandDispatcher`.
-    - [ ] `UI`: Thẻ chọn Presets trong Settings với hình minh họa trực quan.
-    - [ ] `Tests`: Test load và apply preset mẫu với các mock applications.
+    - [x] `Domain`: Mở rộng `WindowGroup.swift` và các preset factories.
+    - [x] `Core`: Tích hợp xử lý phím tắt kích hoạt workspace trong `CommandDispatcher`.
+    - [x] `UI`: Thẻ chọn Presets trong Settings với hình minh họa trực quan.
+    - [x] `Tests`: Test load và apply preset mẫu với các mock applications.
   - **Deliverables khi [x]:**
     - `.specify/features/window-groups-presets/baseline.md` (SIGNED-OFF)
     - `docs/features/window-groups-presets/README.md`
