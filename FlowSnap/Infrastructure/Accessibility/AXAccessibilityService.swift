@@ -126,10 +126,32 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
             kAXWindowsAttribute as CFString,
             &windowsValue
         )
-        guard result == .success, let list = windowsValue as? [AXUIElement], !list.isEmpty else {
+        guard result == .success, let raw = windowsValue as? [AXUIElement] else {
+            return fallbackWindowElements(of: appElement)
+        }
+        let list = raw.filter { isWindowElement($0) }
+        guard !list.isEmpty else {
             return fallbackWindowElements(of: appElement)
         }
         return list
+    }
+
+    /// Whether an element reported by `kAXWindowsAttribute` really is a window.
+    ///
+    /// Apps are not obliged to keep that list to windows, and some do not. Finder
+    /// answers it with a single `AXScrollArea` at `(0,0,1440,900)` - the desktop
+    /// behind the icons. Left in, it is snapshotted as a window, and because it is
+    /// neither resizable nor movable it was classified `.fullscreen` and offered for
+    /// restore, where every write against it is meaningless.
+    ///
+    /// Fails open when the role cannot be read: an app that will not say what the
+    /// element is gets the benefit of the doubt, matching the behaviour before this
+    /// check existed, rather than losing a window that may have been real.
+    private func isWindowElement(_ element: AXUIElement) -> Bool {
+        var roleValue: AnyObject?
+        guard AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &roleValue) == .success,
+              let role = roleValue as? String else { return true }
+        return role == (kAXWindowRole as String)
     }
 
     /// Windows recovered from `AXMainWindow` / `AXFocusedWindow`.
@@ -327,52 +349,34 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
 
     /// Returns `true` if the window is currently in macOS full-screen mode.
     ///
-    /// Requires the full-screen attribute AND the window's geometry to agree,
-    /// because neither signal is trustworthy on its own. Both were measured live:
+    /// Requires the full-screen attribute AND the geometry to agree, because
+    /// measured live, neither signal is trustworthy on its own.
     ///
-    /// - The attribute lies. Chromium/Electron answer `AXFullScreen = true` for an
-    ///   ordinary zoomed window. Brave reported `true` while its menu bar was still
-    ///   on screen (WindowServer layers 24/25/26 at y=0..30) and its frame was
-    ///   `(0,111,1440,789)` on a 1440x900 display - not full-screen by any
-    ///   definition. Trusting the attribute alone classifies such a window as
-    ///   `.fullscreen`, which makes restore call `exitFullScreen` on it; that write
-    ///   fails, and the window is then retried and skipped.
-    /// - Geometry alone would lie in the other direction: a window dragged to cover
-    ///   the desktop is not in full-screen mode, and treating it as if it were costs
-    ///   a doomed `exitFullScreen` write before every move.
+    /// The attribute lies. Chromium answers `AXFullScreen = true` for an ordinary
+    /// window: Brave reported `true` while its menu bar was still on screen
+    /// (WindowServer layers 24/25/26 at y=0..30). Trusting it classifies such a
+    /// window as `.fullscreen`, so restore calls `exitFullScreen` on it first; that
+    /// write fails, and the window is retried and then skipped.
     ///
-    /// A genuine full-screen window satisfies both. Measured on a window this
-    /// process owns and toggled with `toggleFullScreen`: attribute `true` and frame
-    /// `(0,30,1440,870)` on a 1440x900 display with a 30pt menu bar - i.e. it covers
-    /// `visibleFrame`, not `frame`.
+    /// Geometry alone lies the other way - a window dragged to fill the desktop is
+    /// not in full-screen mode, and treating it as such costs a doomed
+    /// `exitFullScreen` write before every move.
     ///
-    /// That is why the comparison uses `visibleFrame`. The previous heuristic
-    /// compared against `screen.frame` (900 tall here), which a real full-screen
-    /// window never matches, so the heuristic branch could never fire and the
-    /// attribute branch had nothing to corroborate it.
+    /// A real full-screen window satisfies both. Measured on a window this process
+    /// owns and toggled with `toggleFullScreen`: attribute `true`, frame
+    /// `(0,30,1440,870)` on a 1440x900 display with a 30pt menu bar. Note the
+    /// height is 870, not 900 - so the previous heuristic, which compared against
+    /// `screen.frame`, could never match a full-screen window and the attribute
+    /// branch had nothing corroborating it. See `fillsDisplay` for why the
+    /// comparison is a band rather than an exact match.
     ///
-    /// `isResizable` is deliberately not consulted. It is derived from the
-    /// settability of `kAXSizeAttribute`, and a real full-screen window reports that
-    /// as *settable* (measured on the probe window and on iTerm2), so gating on it
-    /// hides genuine full-screen windows.
+    /// `isResizable` is deliberately not consulted. It comes from the settability of
+    /// `kAXSizeAttribute`, and a real full-screen window reports that as *settable*
+    /// (measured on the probe window and on iTerm2), so gating on it hides genuine
+    /// full-screen windows.
     private func checkFullScreen(_ window: AXUIElement) -> Bool {
         guard let windowFrame = frame(of: window) else { return false }
-
-        // `frame(of:)` reports raw Accessibility coordinates (top-left origin on the
-        // primary display) while `NSScreen` frames are AppKit (bottom-left). Compare
-        // them in one space or every window on a secondary display is misjudged.
-        let primaryHeight = NSScreen.screens.first?.frame.height ?? 1080
-        let coversScreen = NSScreen.screens.contains { screen in
-            let target = CoordinateTransformer.toAX(
-                rect: screen.visibleFrame,
-                primaryScreenHeight: primaryHeight
-            )
-            return abs(windowFrame.width - target.width) < 5
-                && abs(windowFrame.height - target.height) < 5
-                && abs(windowFrame.origin.x - target.origin.x) < 5
-                && abs(windowFrame.origin.y - target.origin.y) < 5
-        }
-        guard coversScreen else { return false }
+        guard fillsDisplay(windowFrame) else { return false }
 
         var claimsFullScreen = false
         var attributeReadable = false
@@ -395,14 +399,95 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
         // still excludes it.
         if !attributeReadable {
             var settable = DarwinBoolean(false)
-            let readable = AXUIElementIsAttributeSettable(window, kAXPositionAttribute as CFString, &settable)
-            claimsFullScreen = (readable == .success) && !settable.boolValue
+            let readable = AXUIElementIsAttributeSettable(window, kAXPositionAttribute as CFString, &settable) == .success
+            claimsFullScreen = readable && !settable.boolValue
             if claimsFullScreen {
                 diagPrint("[AXAccessibilityService] Full-screen inferred from geometry + immovable position")
             }
         }
         return claimsFullScreen
     }
+
+    /// Whether `windowFrame` (raw Accessibility coordinates) fills a display apart
+    /// from the menu bar.
+    ///
+    /// Deliberately a band rather than an exact match against `visibleFrame`:
+    /// `visibleFrame` also subtracts the Dock, so it changes shape with the Dock's
+    /// position and auto-hide setting. Measured on one display: with the Dock on the
+    /// left, `visibleFrame` is `(64,0,1376,870)` while a genuinely full-screen
+    /// window still reports `(0,30,1440,870)` - full display width, top edge just
+    /// below the menu bar. Requiring an exact match rejected that window.
+    ///
+    /// The band is still tight enough to reject the case that motivated this check:
+    /// Brave's `AXMainWindow` reported `AXFullScreen = true` from a frame of
+    /// `(0,111,1440,789)`, because Chromium hands out the *web content* rectangle as
+    /// the window frame - 30pt menu bar plus a 40pt tab strip and a 41pt bookmarks
+    /// bar are already subtracted. Its top edge sits 111pt down, far outside the
+    /// menu-bar allowance.
+    private func fillsDisplay(_ windowFrame: CGRect) -> Bool {
+        let primaryHeight = NSScreen.screens.first?.frame.height ?? 1080
+        let displays = NSScreen.screens.map { screen in
+            DisplayGeometry(
+                frame: CoordinateTransformer.toAX(
+                    rect: screen.frame,
+                    primaryScreenHeight: primaryHeight
+                ),
+                menuBarHeight: DisplayGeometry.menuBarHeight(
+                    frame: screen.frame,
+                    visibleFrame: screen.visibleFrame
+                )
+            )
+        }
+        return Self.fillsDisplay(windowFrame, in: displays)
+    }
+
+    /// A display and the strip along its top edge that macOS reserves for the menu
+    /// bar. Pure value type so the full-screen geometry rule can be tested without
+    /// a screen, a window server, or accessibility permission.
+    struct DisplayGeometry: Sendable {
+        /// The display's bounds in raw Accessibility coordinates (top-left origin).
+        var frame: CGRect
+        /// Height of the menu bar, in points.
+        var menuBarHeight: CGFloat
+
+        /// Height of the menu bar, in points, from a display's two AppKit rects.
+        ///
+        /// Must be read off the top edge. `frame.height - visibleFrame.height` looks
+        /// equivalent and is not: `visibleFrame` excludes the Dock too, so with the
+        /// Dock at the bottom that difference is menu bar plus Dock, and demanding a
+        /// window's top edge sit that far down rejects every genuine full-screen
+        /// window. Measured with the Dock on the left, where both formulas give 30 -
+        /// which is exactly why the mistake survives local testing.
+        ///
+        /// The top edge is Dock-proof: macOS places the Dock on the left, right or
+        /// bottom, never the top, so nothing but the menu bar reduces `maxY`.
+        static func menuBarHeight(frame screenFrame: CGRect, visibleFrame: CGRect) -> CGFloat {
+            max(0, screenFrame.maxY - visibleFrame.maxY)
+        }
+    }
+
+    /// Pure form of `fillsDisplay`: whether `windowFrame` covers a display apart
+    /// from its menu bar. See `fillsDisplay` for why this is a band.
+    ///
+    /// The top edge is pinned to the menu bar line rather than merely required to be
+    /// below it. A window that also covers the menu bar is not in full-screen mode -
+    /// measured, a real full-screen window reports its top edge at the menu bar line
+    /// (y=30 on this display), never above it.
+    static func fillsDisplay(_ windowFrame: CGRect, in displays: [DisplayGeometry]) -> Bool {
+        displays.contains { display in
+            let bounds = display.frame
+            let menuBarLine = bounds.minY + display.menuBarHeight
+            let spansWidth = abs(windowFrame.width - bounds.width) <= fullScreenTolerance
+            let topAtMenuBarLine = abs(windowFrame.minY - menuBarLine) <= fullScreenTolerance
+            let reachesBottom = windowFrame.maxY >= bounds.maxY - fullScreenTolerance
+            return spansWidth && topAtMenuBarLine && reachesBottom
+        }
+    }
+
+    /// Slack, in points, allowed when matching a window frame against a display.
+    /// Covers rounding in Accessibility coordinates and the 1pt shadow inset some
+    /// apps leave at the screen edge.
+    static let fullScreenTolerance: CGFloat = 20
 
     private func checkMinimized(_ window: AXUIElement) -> Bool {
         var minVal: AnyObject?
