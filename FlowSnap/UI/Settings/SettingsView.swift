@@ -7,8 +7,14 @@ public struct SettingsView: View {
 
     @ObservedObject var store: PreferencesStore
 
-    public init(store: PreferencesStore? = nil) {
+    /// Optional so existing callers (and snapshot tests) that build
+    /// `SettingsView(store:)` keep working; the "Workspaces" tab hides itself
+    /// when this is `nil`.
+    private let workspaceManager: WorkspaceManager?
+
+    public init(store: PreferencesStore? = nil, workspaceManager: WorkspaceManager? = nil) {
         self.store = store ?? PreferencesStore()
+        self.workspaceManager = workspaceManager
     }
 
     public var body: some View {
@@ -27,6 +33,13 @@ public struct SettingsView: View {
                 .tabItem {
                     Label("App Rules", systemImage: "app.badge.checkmark")
                 }
+
+            if let workspaceManager {
+                WorkspaceSettingsView(manager: workspaceManager)
+                    .tabItem {
+                        Label("Workspaces", systemImage: "square.stack.3d.up")
+                    }
+            }
 
             AboutSettingsView()
                 .tabItem {

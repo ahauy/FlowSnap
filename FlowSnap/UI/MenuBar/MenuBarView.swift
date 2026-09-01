@@ -25,6 +25,12 @@ public struct MenuBarView: View {
             // Quick Snap Actions Grid
             snapActionsSection
 
+            // Workspaces (hidden when there is no workspace support)
+            if let workspaceVM = viewModel.workspaceViewModel {
+                Divider()
+                workspacesSection(workspaceVM)
+            }
+
             Divider()
 
             // System Management
@@ -35,6 +41,83 @@ public struct MenuBarView: View {
         .onAppear {
             viewModel.refreshState()
         }
+        .sheet(isPresented: saveSheetBinding) {
+            if let workspaceVM = viewModel.workspaceViewModel {
+                WorkspaceSaveSheet(viewModel: workspaceVM) {
+                    workspaceVM.cancelSave()
+                }
+            }
+        }
+    }
+
+    /// Drives the save sheet from the (optional) workspace view model.
+    private var saveSheetBinding: Binding<Bool> {
+        Binding(
+            get: { viewModel.workspaceViewModel?.isSavePresented ?? false },
+            set: { viewModel.workspaceViewModel?.isSavePresented = $0 }
+        )
+    }
+
+    // MARK: - Workspaces
+
+    private func workspacesSection(_ workspaceVM: WorkspaceViewModel) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text("WORKSPACES")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button {
+                    workspaceVM.presentSaveSheet()
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 11, weight: .semibold))
+                }
+                .buttonStyle(.borderless)
+                .help("Save current layout as a workspace")
+            }
+
+            WorkspaceListView(viewModel: workspaceVM)
+
+            if let summary = workspaceVM.lastRestoreSummary {
+                restoreSummaryRow(summary, workspaceVM: workspaceVM)
+            }
+            if let error = workspaceVM.errorMessage {
+                HStack(alignment: .top, spacing: 4) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.orange)
+                        .font(.system(size: 10))
+                    Text(error)
+                        .font(.system(size: 10))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(6)
+                .background(RoundedRectangle(cornerRadius: 5).fill(Color.orange.opacity(0.08)))
+            }
+        }
+    }
+
+    private func restoreSummaryRow(_ summary: RestoreSummary, workspaceVM: WorkspaceViewModel) -> some View {
+        HStack(alignment: .top, spacing: 4) {
+            Image(systemName: summary.isFullSuccess ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                .foregroundStyle(summary.isFullSuccess ? Color.green : Color.orange)
+                .font(.system(size: 10))
+            Text(summary.headline)
+                .font(.system(size: 10))
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer()
+            Button {
+                workspaceVM.clearRestoreSummary()
+            } label: {
+                Image(systemName: "xmark").font(.system(size: 9))
+            }
+            .buttonStyle(.borderless)
+        }
+        .padding(6)
+        .background(
+            RoundedRectangle(cornerRadius: 5)
+                .fill((summary.isFullSuccess ? Color.green : Color.orange).opacity(0.08))
+        )
     }
 
     // MARK: - Header
