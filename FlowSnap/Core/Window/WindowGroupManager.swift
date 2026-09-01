@@ -211,6 +211,24 @@ public final class WindowGroupManager: ObservableObject, WindowGroupManaging {
         }
     }
 
+    /// Shifts the other members of a group by `delta` when one member is dragged.
+    ///
+    /// - Parameter delta: Displacement in **Accessibility** coordinates (y grows
+    ///   downward), matching the space `WindowManaging.move` writes in.
+    ///
+    /// Every move in the codebase addresses `WindowManaging.move` in AX space —
+    /// `CommandDispatcher`, `AdaptiveDividerCoordinator` and the restore path all
+    /// convert with `CoordinateTransformer.toAX` first. `ManagedWindow.frame` is
+    /// AppKit (y grows upward), so applying an AppKit delta to it and handing the
+    /// result straight to `move` mirrors each window vertically: the members land
+    /// the wrong distance from the trigger, and off-screen once the primary display
+    /// is tall enough to push them past its bottom edge.
+    ///
+    /// Rather than convert, this reads each member's *current* AX position and
+    /// offsets that. Two things follow, both desirable: the group stays rigid
+    /// however far the trigger has already travelled, and a member whose snapshot
+    /// is stale (moved by hand since the list was built) moves from where it really
+    /// is instead of snapping back to where it used to be.
     public func handleWindowMove(triggerWindowID: CGWindowID, delta: CGPoint) async throws {
         guard !isSynchronizing else { return }
         guard let targetGroup = group(for: triggerWindowID),
@@ -224,12 +242,20 @@ public final class WindowGroupManager: ObservableObject, WindowGroupManaging {
         let allWindows = accessibilityService.allVisibleManagedWindows()
 
         for windowID in otherWindowIDs {
-            if let managedWindow = allWindows.first(where: { $0.id == windowID }) {
-                var newFrame = managedWindow.frame
-                newFrame.origin.x += delta.x
-                newFrame.origin.y += delta.y
-                try? await windowManager.move(managedWindow, to: newFrame)
+            guard let managedWindow = allWindows.first(where: { $0.id == windowID }),
+                  let element = accessibilityService.windowElement(for: managedWindow) else { continue }
+
+            // The member's *current* AX position. Without it there is no origin to
+            // offset, and guessing from the AppKit snapshot would teleport the window
+            // back to wherever it was when the list was built — worse than leaving it.
+            guard let moved = accessibilityService.frame(of: element) else {
+                groupLogger.warning("Skip group move for window \(windowID): no live AX frame.")
+                continue
             }
+            var target = moved
+            target.origin.x += delta.x
+            target.origin.y += delta.y
+            try? await windowManager.move(managedWindow, to: target, element: element)
         }
     }
 }

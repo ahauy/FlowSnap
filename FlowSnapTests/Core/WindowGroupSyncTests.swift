@@ -1,3 +1,4 @@
+import ApplicationServices
 import CoreGraphics
 import Foundation
 import Testing
@@ -136,26 +137,35 @@ struct WindowGroupSyncTests {
     }
 
     @MainActor
-    @Test("handleWindowMove shifts fellow members by delta")
+    @Test("handleWindowMove offsets each member from its live AX position")
     func testMoveDeltaSynchronization() async throws {
         let context = makeContext()
 
+        // Snapshots are AppKit (y-up); the AX tree reports y-down. Giving the two
+        // different values is what lets a test tell a correct move from a mirrored
+        // one — if both were equal the bug would be invisible.
         let win1 = ManagedWindow(
             id: 801,
             pid: 8001,
             bundleIdentifier: "com.app.one",
             title: "One",
-            frame: CGRect(x: 0, y: 0, width: 300, height: 300)
+            frame: CGRect(x: 0, y: 500, width: 300, height: 300)
         )
         let win2 = ManagedWindow(
             id: 802,
             pid: 8002,
             bundleIdentifier: "com.app.two",
             title: "Two",
-            frame: CGRect(x: 300, y: 0, width: 300, height: 300)
+            frame: CGRect(x: 300, y: 500, width: 300, height: 300)
         )
 
         context.mockAX.mockVisibleWindows = [win1, win2]
+
+        let element2 = AXUIElementCreateApplication(8002)
+        context.mockAX.mockWindowElements[802] = element2
+        // Where win2 actually sits right now, in AX space.
+        let liveAXFrame = CGRect(x: 300, y: 100, width: 300, height: 300)
+        context.mockAX.mockFrames[element2] = liveAXFrame
 
         context.manager.createGroup(name: "Pair", windowIDs: [801, 802], syncOptions: [.moveTogether])
 
@@ -163,9 +173,42 @@ struct WindowGroupSyncTests {
         try await context.manager.handleWindowMove(triggerWindowID: 801, delta: delta)
 
         #expect(context.mockWM.movedWindows.count == 1)
-        let movedWin2 = context.mockWM.movedWindows.first(where: { $0.window.id == 802 })
-        #expect(movedWin2 != nil)
-        #expect(movedWin2?.frame == CGRect(x: 350, y: 100, width: 300, height: 300))
+        let moved = context.mockWM.movedWindows.first(where: { $0.window.id == 802 })
+        #expect(moved != nil)
+
+        // The expectation is the live AX frame plus the delta. Had the code applied
+        // the delta to the AppKit snapshot instead, it would have produced
+        // (350, 600) — a vertically mirrored placement.
+        #expect(moved?.frame == CGRect(x: 350, y: 200, width: 300, height: 300))
+
+        // And the write must be addressed to the element that was measured.
+        let element = try #require(context.mockWM.movedElements.first ?? nil)
+        #expect(CFEqual(element, element2))
+    }
+
+    @MainActor
+    @Test("handleWindowMove leaves a member alone when its AX frame cannot be read")
+    func testMoveSkipsMemberWithoutLiveFrame() async throws {
+        let context = makeContext()
+
+        let win1 = ManagedWindow(
+            id: 811, pid: 8011, bundleIdentifier: "com.app.one", title: "One",
+            frame: CGRect(x: 0, y: 500, width: 300, height: 300)
+        )
+        let win2 = ManagedWindow(
+            id: 812, pid: 8012, bundleIdentifier: "com.app.two", title: "Two",
+            frame: CGRect(x: 300, y: 500, width: 300, height: 300)
+        )
+        context.mockAX.mockVisibleWindows = [win1, win2]
+        let element2 = AXUIElementCreateApplication(8012)
+        context.mockAX.mockWindowElements[812] = element2
+        // Deliberately no mockFrames entry: the element reports no position.
+
+        context.manager.createGroup(name: "Pair", windowIDs: [811, 812], syncOptions: [.moveTogether])
+        try await context.manager.handleWindowMove(triggerWindowID: 811, delta: CGPoint(x: 50, y: 100))
+
+        // Moving from the stale snapshot would teleport the window, so nothing moves.
+        #expect(context.mockWM.moveCallCount == 0)
     }
 
     @MainActor
