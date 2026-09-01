@@ -84,13 +84,17 @@ extension WorkspaceManager: WorkspaceRestoring {
         // J2.2 — the app is not running. Launch it, unless the user asked for a
         // pure reposition pass.
         if windows.isEmpty, options.launchOfflineApps {
+            diagPrint("[DIAG-RESTORE] windows empty → launching \(placement.bundleIdentifier)")
             guard await launcher.openApp(withBundleIdentifier: placement.bundleIdentifier) else {
                 // E4 — not installed, or the launch was refused.
+                diagPrint("[DIAG-RESTORE] launch refused/not-installed \(placement.bundleIdentifier)")
                 return .skipped(.notInstalled)
             }
+            diagPrint("[DIAG-RESTORE] launch accepted \(placement.bundleIdentifier)")
             let pid = launcher.runningProcessIdentifier(bundleID: placement.bundleIdentifier)
             guard let pid, await launcher.waitForFirstWindow(pid: pid, timeout: launchTimeout) else {
                 // E5 — launched but never drew a window within the budget.
+                diagPrint("[DIAG-RESTORE] waitForFirstWindow timed out \(placement.bundleIdentifier)")
                 return .skipped(.launchTimeout)
             }
             windows = matchingWindows(for: placement)
@@ -100,6 +104,7 @@ extension WorkspaceManager: WorkspaceRestoring {
             // E5/E10 — running (or the user opted out of launching) but no window
             // to move. Fewer windows than at save time is not an error for the
             // other placements.
+            diagPrint("[DIAG-RESTORE] END bundleID=\(placement.bundleIdentifier) result=skipped(noWindow)")
             return .skipped(.noWindow)
         }
 
@@ -110,6 +115,7 @@ extension WorkspaceManager: WorkspaceRestoring {
         // AdaptiveDividerCoordinator). Converting here keeps restore consistent with
         // them; skipping it lands every window vertically mirrored.
         let moved = await place(windows, placement: placement, displays: displays, options: options)
+        diagPrint("[DIAG-RESTORE] END bundleID=\(placement.bundleIdentifier) result=\(moved ? "placed" : "skipped(noWindow)")")
 
         // Reveal last, once the windows already sit where they belong: un-hiding
         // first would flash the app at its old position. A hidden app (Cmd+H) or one
@@ -198,17 +204,24 @@ extension WorkspaceManager: WorkspaceRestoring {
     /// tab-search panel, an extension view, a PiP surface) and still report success.
     private func matchingWindows(for placement: WindowPlacement) -> [ResolvedWindow] {
         var candidates: [ResolvedWindow] = []
-        if let pid = launcher.runningProcessIdentifier(bundleID: placement.bundleIdentifier) {
+        let pid = launcher.runningProcessIdentifier(bundleID: placement.bundleIdentifier)
+        if let pid {
             candidates = accessibilityService.resolvedWindows(of: pid)
         }
+        let rawCount = candidates.count
+        let details = candidates.map {
+            "'\($0.window.title)' kind=\($0.window.kind) minimized=\($0.window.isMinimized) size=(\($0.window.frame.width), \($0.window.frame.height))"
+        }.joined(separator: "; ")
+        diagPrint("[DIAG-MATCH] bundleID=\(placement.bundleIdentifier) pid=\(String(describing: pid)) axWindows(raw)=\(rawCount) details=[\(details)]")
         // Nothing addressable through AX (pid unknown, or the app exposes no AX
         // windows at all): fall back to what is currently on screen.
         if candidates.isEmpty {
-            candidates = accessibilityService.allVisibleManagedWindows()
+            let visible = accessibilityService.allVisibleManagedWindows()
                 .filter { $0.bundleIdentifier == placement.bundleIdentifier }
-                .map { ResolvedWindow(window: $0, element: nil) }
+            diagPrint("[DIAG-MATCH] bundleID=\(placement.bundleIdentifier) fallback visible windows=\(visible.count)")
+            candidates = visible.map { ResolvedWindow(window: $0, element: nil) }
         }
-        return candidates
+        let result = candidates
             .filter { window in
                 window.window.kind.isRestorable
                     && window.window.frame.width > 0
@@ -218,6 +231,8 @@ extension WorkspaceManager: WorkspaceRestoring {
                 ($0.window.frame.width * $0.window.frame.height)
                     > ($1.window.frame.width * $1.window.frame.height)
             }
+        diagPrint("[DIAG-MATCH] bundleID=\(placement.bundleIdentifier) after filter/sort=\(result.count)")
+        return result
     }
 
     /// Converts normalized proportional bounds (0...1 top-left) to concrete AppKit frame with window gap.

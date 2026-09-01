@@ -126,10 +126,51 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
             kAXWindowsAttribute as CFString,
             &windowsValue
         )
-        guard result == .success, let list = windowsValue as? [AXUIElement] else {
-            return []
+        guard result == .success, let list = windowsValue as? [AXUIElement], !list.isEmpty else {
+            return fallbackWindowElements(of: appElement)
         }
         return list
+    }
+
+    /// Windows recovered from `AXMainWindow` / `AXFocusedWindow`.
+    ///
+    /// Some apps answer `kAXWindowsAttribute` with *success and an empty list*
+    /// while their window is on screen and fully addressable — Zalo returns
+    /// `err=0, count=0`. `kAXChildrenAttribute` is no help either: it lists only
+    /// the menu bar. The single-window attributes still resolve, and the element
+    /// they return really is writable (`SET Position`/`SET Size` return `err=0`
+    /// and read back unchanged), so an app that reports no windows at all is
+    /// still restorable through them.
+    ///
+    /// The alternatives were measured, and do not work — recorded here so nobody
+    /// re-derives them:
+    /// - Hit-testing the centre of the window's own frame finds an `AXWindow`
+    ///   ancestor, but it is a *different element* from `AXMainWindow` and
+    ///   reports `AXPosition` as non-settable.
+    /// - `kAXMinimizedWindowsAttribute` does not exist. The symbol appears
+    ///   nowhere in the macOS SDK, so as a string literal it always resolves to
+    ///   `kAXErrorAttributeUnsupported` (-25205).
+    ///
+    /// Only consulted when the primary query comes back empty, so apps that
+    /// expose their windows normally never get these elements appended.
+    private func fallbackWindowElements(of appElement: AXUIElement) -> [AXUIElement] {
+        let keys: [String] = [kAXMainWindowAttribute, kAXFocusedWindowAttribute]
+        var found: [AXUIElement] = []
+        for key in keys {
+            var value: AnyObject?
+            guard AXUIElementCopyAttributeValue(appElement, key as CFString, &value) == .success,
+                  // swiftlint:disable:next force_cast
+                  let element = (value as! AXUIElement?)
+            else { continue }
+            // Nothing stops an app from answering these with a non-window
+            // element; refuse anything that is not actually a window.
+            var roleValue: AnyObject?
+            AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &roleValue)
+            guard (roleValue as? String) == (kAXWindowRole as String) else { continue }
+            guard !found.contains(where: { CFEqual($0, element) }) else { continue }
+            found.append(element)
+        }
+        return found
     }
 
     public func managedWindows(of pid: pid_t) -> [ManagedWindow] {
@@ -240,11 +281,11 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
         for key in AXAccessibilityService.fullscreenAttributeKeys {
             let result = AXUIElementSetAttributeValue(window, key as CFString, kCFBooleanFalse)
             if result == .success {
-                NSLog("[AXAccessibilityService] exitFullScreen succeeded via attribute '%@'", key)
+                diagPrint("[AXAccessibilityService] exitFullScreen succeeded via attribute '\(key)'")
                 return
             }
         }
-        NSLog("[AXAccessibilityService] exitFullScreen: all attribute writes failed")
+        diagPrint("[AXAccessibilityService] exitFullScreen: all attribute writes failed")
         throw AccessibilityError.cannotComplete
     }
 
@@ -289,17 +330,26 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
     /// 3. Frame-size heuristic — if the window's size matches a screen exactly
     ///    AND the caller already confirmed it is non-resizable, the window is almost
     ///    certainly in macOS full-screen mode (maximised windows remain resizable).
-    private func checkFullScreen(_ window: AXUIElement) -> Bool {
+    private func checkFullScreen(_ window: AXUIElement, isResizable: Bool) -> Bool {
         for key in Self.fullscreenAttributeKeys {
             var val: AnyObject?
-            if AXUIElementCopyAttributeValue(window, key as CFString, &val) == .success,
-               let boolVal = val as? Bool, boolVal {
-                NSLog("[AXAccessibilityService] Full-screen detected via attribute '%@'", key)
-                return true
+            let result = AXUIElementCopyAttributeValue(window, key as CFString, &val)
+            if result == .success, let boolVal = val as? Bool {
+                if boolVal {
+                    diagPrint("[AXAccessibilityService] Full-screen detected via attribute '\(key)'")
+                }
+                return boolVal // Explicitly return false if supported but not fullscreen!
             }
         }
 
         // Fallback: compare window size to every connected screen.
+        // If an app doesn't support AXFullScreen (mostly old native apps), we reinstate
+        // the strict !isResizable requirement to prevent maximized normal windows from being
+        // falsely classified as fullscreen.
+        if isResizable {
+            return false
+        }
+        
         // AX and NSScreen both operate in points, so no scale conversion is needed.
         var sizeVal: AnyObject?
         guard AXUIElementCopyAttributeValue(window, kAXSizeAttribute as CFString, &sizeVal) == .success,
@@ -312,8 +362,7 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
             abs(size.height - screen.frame.height) < 5
         }
         if coveredByScreen {
-            NSLog("[AXAccessibilityService] Full-screen detected via frame heuristic (%.0f × %.0f)",
-                  size.width, size.height)
+            diagPrint("[AXAccessibilityService] Full-screen detected via frame heuristic (\(Int(size.width)) × \(Int(size.height)))")
         }
         return coveredByScreen
     }
@@ -326,18 +375,10 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
     }
 
     private func classifyKind(_ window: AXUIElement, isResizable: Bool) -> WindowKind {
-        // Check full-screen BEFORE the standard role/subrole branch.
-        //
-        // A full-screen window reports kAXSizeAttribute as non-settable (macOS forbids
-        // AX resizing while in full-screen). Without this early return it would fall
-        // through to `isResizable ? .normal : .unsupported` and be misclassified as
-        // .unsupported, which silently skips the window during workspace restore and
-        // causes waitForFirstWindow to time out when the app restores to full-screen.
-        //
-        // We only call the (slightly more expensive) checkFullScreen when the attribute
-        // settability check has already confirmed the window is non-resizable, keeping
-        // the hot path for ordinary windows fast.
-        if !isResizable, checkFullScreen(window) {
+        // We MUST NOT rely on !isResizable to gate fullscreen checks.
+        // Chromium/Electron apps (like Zalo, Brave) report isResizable=true even in Fullscreen mode.
+        // The !isResizable check is safely reinstated inside checkFullScreen's fallback branch.
+        if checkFullScreen(window, isResizable: isResizable) {
             return .fullscreen
         }
 
@@ -346,18 +387,18 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
         _ = AXUIElementCopyAttributeValue(window, kAXRoleAttribute as CFString, &roleVal)
         _ = AXUIElementCopyAttributeValue(window, kAXSubroleAttribute as CFString, &subroleVal)
 
-        let role = roleVal as? String
-        let subrole = subroleVal as? String
+        let role = (roleVal as? String) ?? ""
+        let subrole = (subroleVal as? String) ?? ""
 
-        if role == (kAXWindowRole as String) {
-            if subrole == (kAXStandardWindowSubrole as String) {
+        if role == kAXWindowRole {
+            if subrole == kAXStandardWindowSubrole {
                 return isResizable ? .normal : .unsupported
-            } else if subrole == (kAXDialogSubrole as String) || subrole == (kAXSystemDialogSubrole as String) {
+            } else if subrole == kAXDialogSubrole || subrole == kAXSystemDialogSubrole {
                 return .dialog
             } else {
                 return isResizable ? .normal : .dialog
             }
-        } else if role == (kAXSheetRole as String) {
+        } else if role == kAXSheetRole {
             return .sheet
         }
 
