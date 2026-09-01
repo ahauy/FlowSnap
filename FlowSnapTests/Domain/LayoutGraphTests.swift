@@ -59,7 +59,7 @@ struct LayoutGraphTests {
     }
 
     @Test("LayoutGraph frames extraction and divider query")
-    func layoutGraphFramesExtractionAndDividerQuery() {
+    func layoutGraphFramesExtractionAndDividerQuery() throws {
         let w1 = ManagedWindow(id: 1, pid: 10, title: "W1", frame: CGRect(x: 0, y: 0, width: 500, height: 1000))
         let w2 = ManagedWindow(id: 2, pid: 20, title: "W2", frame: CGRect(x: 500, y: 0, width: 500, height: 1000))
 
@@ -79,12 +79,11 @@ struct LayoutGraphTests {
         #expect(dividers.first?.orientation == .vertical)
         #expect(dividers.first?.coordinate == 500)
 
-        let hit = graph.divider(at: CGPoint(x: 502, y: 500))
-        #expect(hit != nil)
-        #expect(hit?.coordinate == 500)
+        let hit = try #require(graph.divider(at: CGPoint(x: 502, y: 500)))
+        #expect(hit.coordinate == 500)
 
         // Applying resize
-        let resizedGraph = graph.applyingResize(divider: hit!, targetCoordinate: 600)
+        let resizedGraph = graph.applyingResize(divider: hit, targetCoordinate: 600)
         let updatedFrames = resizedGraph.frames()
         #expect(updatedFrames[1]?.width == 600)
         #expect(updatedFrames[2]?.origin.x == 600)

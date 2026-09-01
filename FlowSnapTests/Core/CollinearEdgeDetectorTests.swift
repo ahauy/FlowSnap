@@ -10,7 +10,7 @@ struct CollinearEdgeDetectorTests {
     let displayBounds = CGRect(x: 0, y: 0, width: 1440, height: 900)
 
     @Test("Detects vertical divider in standard 2-window split")
-    func detectVerticalDividerTwoWindows() {
+    func detectVerticalDividerTwoWindows() throws {
         let leftWindow = ManagedWindow(
             id: 101,
             pid: 1,
@@ -32,7 +32,7 @@ struct CollinearEdgeDetectorTests {
         )
 
         #expect(dividers.count == 1)
-        let divider = dividers.first!
+        let divider = try #require(dividers.first)
         #expect(divider.orientation == .vertical)
         #expect(divider.coordinate == 720)
         #expect(divider.span == (0...900))
@@ -43,7 +43,7 @@ struct CollinearEdgeDetectorTests {
     }
 
     @Test("Detects horizontal divider in standard 2-window stacked split")
-    func detectHorizontalDividerTwoWindows() {
+    func detectHorizontalDividerTwoWindows() throws {
         let bottomWindow = ManagedWindow(
             id: 201,
             pid: 1,
@@ -65,7 +65,7 @@ struct CollinearEdgeDetectorTests {
         )
 
         #expect(dividers.count == 1)
-        let divider = dividers.first!
+        let divider = try #require(dividers.first)
         #expect(divider.orientation == .horizontal)
         #expect(divider.coordinate == 450)
         #expect(divider.span == (0...1440))
@@ -174,13 +174,13 @@ struct CollinearEdgeDetectorTests {
     }
 
     @Test("Compute resized frames for 3-window T-junction simultaneously adjusts all windows")
-    func computeResizedFramesTJunction() {
+    func computeResizedFramesTJunction() throws {
         let w1 = ManagedWindow(id: 301, pid: 1, title: "VSCode", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
         let w2 = ManagedWindow(id: 302, pid: 2, title: "Chrome", frame: CGRect(x: 720, y: 450, width: 720, height: 450))
         let w3 = ManagedWindow(id: 303, pid: 3, title: "Terminal", frame: CGRect(x: 720, y: 0, width: 720, height: 450))
 
         let dividers = detector.detectDividers(in: [w1, w2, w3], containerFrame: displayBounds)
-        let vDivider = dividers.first { $0.orientation == .vertical }!
+        let vDivider = try #require(dividers.first { $0.orientation == .vertical })
 
         // Drag vertical divider to X=820 (+100px)
         let resized = detector.computeResizedFrames(
@@ -196,7 +196,7 @@ struct CollinearEdgeDetectorTests {
     }
 
     @Test("Clamping to minSize prevents window collapse")
-    func minSizeClampingPreventsCollapse() {
+    func minSizeClampingPreventsCollapse() throws {
         let left = ManagedWindow(id: 1, pid: 1, title: "L", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
         let right = ManagedWindow(
             id: 2,
@@ -207,7 +207,7 @@ struct CollinearEdgeDetectorTests {
         )
 
         let dividers = detector.detectDividers(in: [left, right], containerFrame: displayBounds)
-        let vDivider = dividers.first!
+        let vDivider = try #require(dividers.first)
 
         // Attempt to drag divider all the way to X=1400 (which would give right window width of 40)
         let resized = detector.computeResizedFrames(
@@ -239,7 +239,7 @@ struct CollinearEdgeDetectorTests {
     }
 
     @Test("Hard wall screen boundaries enforce strict minX and maxX walls with minWidth 300px")
-    func hardWallScreenBoundariesWithZeroDrift() {
+    func hardWallScreenBoundariesWithZeroDrift() throws {
         let hardWallDetector = CollinearEdgeDetector(defaultMinWidth: 300, defaultMinHeight: 200)
         let display = CGRect(x: 0, y: 0, width: 1440, height: 900)
         let left = ManagedWindow(id: 1, pid: 1, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
@@ -247,7 +247,7 @@ struct CollinearEdgeDetectorTests {
 
         let dividers = hardWallDetector.detectDividers(in: [left, right], containerFrame: display, gap: 16.0)
         #expect(dividers.count == 1)
-        let divider = dividers.first!
+        let divider = try #require(dividers.first)
 
         // 1. Extreme drag left past minimum width (e.g. target X = 50)
         let clampedMin = hardWallDetector.computeResizedFrames(
@@ -258,8 +258,8 @@ struct CollinearEdgeDetectorTests {
             gap: 16.0
         )
         // Leading window minWidth is 300; gap is 16; divider locked at 308 (leadingEdge = 300, trailingEdge = 316)
-        let leftFrame = clampedMin[1]!
-        let rightFrame = clampedMin[2]!
+        let leftFrame = try #require(clampedMin[1])
+        let rightFrame = try #require(clampedMin[2])
         #expect(leftFrame.origin.x == 0) // Strictly locked to container minX
         #expect(leftFrame.width == 300) // Hard-locked at minWidth 300px
         #expect(rightFrame.origin.x == 316) // trailingEdge = 308 + 8 = 316
@@ -276,8 +276,8 @@ struct CollinearEdgeDetectorTests {
             gap: 16.0
         )
         // Trailing window minWidth is 300; divider locked at 1132 (leadingEdge = 1124, trailingEdge = 1140)
-        let leftFrameMax = clampedMax[1]!
-        let rightFrameMax = clampedMax[2]!
+        let leftFrameMax = try #require(clampedMax[1])
+        let rightFrameMax = try #require(clampedMax[2])
         #expect(leftFrameMax.origin.x == 0) // Strictly locked to container minX
         #expect(leftFrameMax.width == 1124) // 1124 - 0 = 1124
         #expect(rightFrameMax.origin.x == 1140) // trailingEdge = 1132 + 8 = 1140
@@ -287,7 +287,7 @@ struct CollinearEdgeDetectorTests {
     }
 
     @Test("Default CollinearEdgeDetector enforces 380px minWidth and 260px minHeight")
-    func defaultDimensionsAndStrict380pxClamping() {
+    func defaultDimensionsAndStrict380pxClamping() throws {
         let defaultDetector = CollinearEdgeDetector()
         #expect(defaultDetector.defaultMinWidth == 380.0)
         #expect(defaultDetector.defaultMinHeight == 260.0)
@@ -298,7 +298,7 @@ struct CollinearEdgeDetectorTests {
 
         let dividers = defaultDetector.detectDividers(in: [left, right], containerFrame: display, gap: 10.0)
         #expect(dividers.count == 1)
-        let divider = dividers.first!
+        let divider = try #require(dividers.first)
         // minCoord = 0 + 380 + 5 = 385.0
         // maxCoord = 1440 - 380 - 5 = 1055.0
         #expect(divider.minCoordinate == 385.0)
@@ -312,8 +312,8 @@ struct CollinearEdgeDetectorTests {
             containerFrame: display,
             gap: 10.0
         )
-        let leftMin = clampedMin[1]!
-        let rightMin = clampedMin[2]!
+        let leftMin = try #require(clampedMin[1])
+        let rightMin = try #require(clampedMin[2])
         #expect(leftMin.origin.x == 0.0)
         #expect(leftMin.width == 380.0)
         #expect(rightMin.origin.x == 390.0)
@@ -328,8 +328,8 @@ struct CollinearEdgeDetectorTests {
             containerFrame: display,
             gap: 10.0
         )
-        let leftMax = clampedMax[1]!
-        let rightMax = clampedMax[2]!
+        let leftMax = try #require(clampedMax[1])
+        let rightMax = try #require(clampedMax[2])
         #expect(leftMax.origin.x == 0.0)
         #expect(leftMax.width == 1050.0)
         #expect(rightMax.origin.x == 1060.0)
@@ -338,7 +338,7 @@ struct CollinearEdgeDetectorTests {
     }
 
     @Test("Horizontal divider clamps strictly to minHeight 260px")
-    func horizontalDividerClampsStrictlyTo260px() {
+    func horizontalDividerClampsStrictlyTo260px() throws {
         let defaultDetector = CollinearEdgeDetector()
         let display = CGRect(x: 0, y: 0, width: 1440, height: 900)
         let bottom = ManagedWindow(id: 1, pid: 1, title: "Bottom", frame: CGRect(x: 0, y: 0, width: 1440, height: 450))
@@ -346,7 +346,7 @@ struct CollinearEdgeDetectorTests {
 
         let dividers = defaultDetector.detectDividers(in: [bottom, top], containerFrame: display, gap: 10.0)
         #expect(dividers.count == 1)
-        let divider = dividers.first!
+        let divider = try #require(dividers.first)
         #expect(divider.minCoordinate == 265.0)
         #expect(divider.maxCoordinate == 635.0)
 
@@ -377,7 +377,7 @@ struct CollinearEdgeDetectorTests {
     }
 
     @Test("computeResizedFrames never penetrates custom minSize window with gap")
-    func computeResizedFramesNeverPenetratesCustomMinSizeWithGap() {
+    func computeResizedFramesNeverPenetratesCustomMinSizeWithGap() throws {
         let detector = CollinearEdgeDetector()
         let display = CGRect(x: 0, y: 0, width: 1440, height: 900)
         let left = ManagedWindow(
@@ -392,7 +392,7 @@ struct CollinearEdgeDetectorTests {
 
         let dividers = detector.detectDividers(in: [left, right], containerFrame: display, gap: 16.0)
         #expect(dividers.count == 1)
-        let divider = dividers.first!
+        let divider = try #require(dividers.first)
         // minCoord = 0 + 600 + 8 = 608.0
         #expect(divider.minCoordinate == 608.0)
 
@@ -404,8 +404,8 @@ struct CollinearEdgeDetectorTests {
             gap: 16.0
         )
 
-        let leftFrame = clamped[1]!
-        let rightFrame = clamped[2]!
+        let leftFrame = try #require(clamped[1])
+        let rightFrame = try #require(clamped[2])
         #expect(leftFrame.width == 600.0)
         #expect(leftFrame.maxX == 600.0)
         #expect(rightFrame.origin.x == 616.0) // 608 + 8 = 616
