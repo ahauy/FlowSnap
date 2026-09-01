@@ -140,6 +140,7 @@ public final class GlobalHotkeyManager: GlobalHotkeyManaging, @unchecked Sendabl
         var idCounter: UInt32 = 1
         var registeredList: [HotkeyBinding] = []
 
+        // Standard Snap Shortcuts
         for actionType in ShortcutAction.allCases {
             guard let shortcut = preferencesStore.shortcut(for: actionType) else {
                 continue
@@ -155,6 +156,24 @@ public final class GlobalHotkeyManager: GlobalHotkeyManaging, @unchecked Sendabl
             }
             idCounter += 1
         }
+
+        // Preset Shortcuts (US-WORK-012)
+        for preset in BuiltinPresetFactory.allBuiltinPresets {
+            guard let shortcut = preferencesStore.shortcut(forPresetID: preset.id) else {
+                continue
+            }
+            let binding = HotkeyBinding(
+                id: idCounter,
+                shortcut: shortcut,
+                command: .restorePreset(preset.id)
+            )
+            register(binding, action: action)
+            if let active = activeBindings.first(where: { $0.id == idCounter }) {
+                registeredList.append(active)
+            }
+            idCounter += 1
+        }
+
         return registeredList
     }
 

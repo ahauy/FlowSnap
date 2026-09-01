@@ -31,6 +31,7 @@ public final class CommandDispatcher: CommandDispatching {
     private let windowManager: WindowManaging
     private let snapEngine: SnapEngine
     private let displayManager: DisplayManaging
+    private let presetResolver: (any PresetResolving)?
 
     /// Active pending task for latest-wins debouncing (BR-HOTKEY-005).
     private var pendingTask: Task<Void, Error>?
@@ -38,15 +39,19 @@ public final class CommandDispatcher: CommandDispatching {
 
     /// Last command successfully dispatched to a window (for observability and test assertions).
     public private(set) var lastExecutedCommand: WindowCommand?
+    /// Last summary produced by preset restoration.
+    public private(set) var lastRestoreSummary: RestoreSummary?
 
     public init(
         windowManager: WindowManaging,
         snapEngine: SnapEngine,
-        displayManager: DisplayManaging
+        displayManager: DisplayManaging,
+        presetResolver: (any PresetResolving)? = nil
     ) {
         self.windowManager = windowManager
         self.snapEngine = snapEngine
         self.displayManager = displayManager
+        self.presetResolver = presetResolver
     }
 
     /// Dispatch a command for asynchronous execution with latest-wins debouncing.
@@ -98,6 +103,19 @@ public final class CommandDispatcher: CommandDispatching {
             }
             return false
 
+        case .restorePreset(let presetID):
+            guard let preset = BuiltinPresetFactory.preset(for: presetID) else {
+                dispatcherLogger.warning("Preset not found for id '\(presetID)'")
+                return false
+            }
+            guard let presetResolver = self.presetResolver else {
+                dispatcherLogger.error("PresetResolver not configured in CommandDispatcher")
+                return false
+            }
+            let summary = try await presetResolver.restore(preset: preset, on: nil)
+            self.lastRestoreSummary = summary
+            return summary.placedCount > 0
+
         case .restoreWorkspace, .saveWorkspace:
             dispatcherLogger.info("Workspace commands will be routed in Epic 11.")
             return false
@@ -105,22 +123,12 @@ public final class CommandDispatcher: CommandDispatching {
     }
 
     private func executeSnap(_ target: SnapTarget, targetDisplayID: CGDirectDisplayID? = nil) async throws -> Bool {
-        // BR-HOTKEY-006: Guard against nil focused window
         guard let window = await windowManager.focusedWindow() else {
             dispatcherLogger.debug("No active focused window found. Aborting snap command.")
             return false
         }
 
-        // Resolve active target display (Target-Lock with fallback)
-        let display: Display?
-        if let targetDisplayID = targetDisplayID,
-           let matched = await displayManager.displays.first(where: { $0.id == targetDisplayID }) {
-            display = matched
-        } else {
-            display = await displayManager.display(for: window.frame, cursorPoint: nil)
-        }
-
-        guard let targetDisplay = display else {
+        guard let targetDisplay = await resolveDisplay(targetDisplayID: targetDisplayID, for: window) else {
             dispatcherLogger.warning("Unable to resolve display for window \(window.id).")
             return false
         }
@@ -179,5 +187,13 @@ public final class CommandDispatcher: CommandDispatching {
         try Task.checkCancellation()
         try await windowManager.move(window, to: axFrame)
         return true
+    }
+
+    private func resolveDisplay(targetDisplayID: CGDirectDisplayID?, for window: ManagedWindow) async -> Display? {
+        if let targetDisplayID = targetDisplayID,
+           let matched = await displayManager.displays.first(where: { $0.id == targetDisplayID }) {
+            return matched
+        }
+        return await displayManager.display(for: window.frame, cursorPoint: nil)
     }
 }

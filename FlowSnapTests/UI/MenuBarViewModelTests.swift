@@ -21,34 +21,63 @@ struct MenuBarViewModelTests {
         mockWindow: ManagedWindow? = nil,
         mockSettingsPresenter: (any SettingsWindowPresenting)? = nil
     ) -> TestEnvironment {
-        let primary = Display(
-            id: 1,
-            frame: CGRect(x: 0, y: 0, width: 1440, height: 900),
-            visibleFrame: CGRect(x: 0, y: 0, width: 1440, height: 900),
-            scaleFactor: 2.0,
-            isPrimary: true
-        )
-        let displayManager = DisplayManager(displayProvider: { [primary] })
+        let displayManager = DisplayManager(displayProvider: { [makePrimaryDisplay()] })
         let accessibilityService = MockAccessibilityService(isTrusted: isTrusted)
-        let windowRegistry = WindowRegistry()
-        let snapEngine = SnapEngine(windowRegistry: windowRegistry, displayManager: displayManager)
+        let snapEngine = SnapEngine(windowRegistry: WindowRegistry(), displayManager: displayManager)
         let windowManager = MockWindowManaging(mockFocusedWindow: mockWindow)
+        let prefs = PreferencesStore(defaults: UserDefaults(suiteName: "Test_Menu_\(UUID().uuidString)") ?? .standard)
+        let presetResolver = makePresetResolver(
+            accessibilityService: accessibilityService,
+            windowManager: windowManager,
+            displayManager: displayManager,
+            prefs: prefs
+        )
         let commandDispatcher = CommandDispatcher(
             windowManager: windowManager,
             snapEngine: snapEngine,
-            displayManager: displayManager
+            displayManager: displayManager,
+            presetResolver: presetResolver
         )
         let viewModel = MenuBarViewModel(
             accessibilityService: accessibilityService,
             commandDispatcher: commandDispatcher,
             windowManager: windowManager,
-            settingsWindowPresenter: mockSettingsPresenter
+            settingsWindowPresenter: mockSettingsPresenter,
+            preferencesStore: prefs
         )
         return TestEnvironment(
             viewModel: viewModel,
             accessibilityService: accessibilityService,
             windowManager: windowManager,
             commandDispatcher: commandDispatcher
+        )
+    }
+
+    private static nonisolated func makePrimaryDisplay() -> Display {
+        Display(
+            id: 1,
+            frame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            visibleFrame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            scaleFactor: 2.0,
+            isPrimary: true
+        )
+    }
+
+    private static func makePresetResolver(
+        accessibilityService: AccessibilityService,
+        windowManager: WindowManaging,
+        displayManager: DisplayManaging,
+        prefs: PreferencesStore
+    ) -> PresetResolver {
+        let groupManager = WindowGroupManager(accessibilityService: accessibilityService, windowManager: windowManager)
+        return PresetResolver(
+            accessibilityService: accessibilityService,
+            windowManager: windowManager,
+            displayManager: displayManager,
+            layoutEngine: LayoutEngine(),
+            launcher: MockApplicationLaunching(),
+            preferencesStore: prefs,
+            windowGroupManager: groupManager
         )
     }
 
@@ -185,5 +214,70 @@ struct MenuBarViewModelTests {
         #expect(dependencies.menuBarViewModel.workspaceViewModel != nil)
         let controllerManager = dependencies.settingsWindowController.workspaceManager
         #expect(dependencies.workspaceManager === controllerManager)
+        #expect(dependencies.settingsWindowController.windowGroupManager != nil)
+        #expect(dependencies.settingsWindowController.presetResolver != nil)
+    }
+
+    @Test func triggerPresetDispatchesPresetCommandAndDismisses() async throws {
+        let codingPreset = BuiltinPresetFactory.codingPreset
+        let env = Self.makeSimulatedEnvironment(isTrusted: true)
+        let vscodeWin = ManagedWindow(
+            id: 501,
+            pid: 5001,
+            bundleIdentifier: "com.microsoft.VSCode",
+            title: "VSCode",
+            frame: CGRect(x: 10, y: 10, width: 300, height: 300)
+        )
+        env.accessibilityService.mockVisibleWindows = [vscodeWin]
+
+        var dismissCount = 0
+        env.viewModel.dismissHandler = {
+            dismissCount += 1
+        }
+
+        try await env.viewModel.triggerPresetAsync(codingPreset)
+
+        #expect(env.commandDispatcher.lastExecutedCommand == .restorePreset(codingPreset.id))
+        #expect(dismissCount == 1)
+    }
+
+    @Test func triggerPresetWhenUntrustedRequestsPermission() async throws {
+        let codingPreset = BuiltinPresetFactory.codingPreset
+        let env = Self.makeSimulatedEnvironment(isTrusted: false)
+
+        var dismissCount = 0
+        env.viewModel.dismissHandler = {
+            dismissCount += 1
+        }
+
+        try await env.viewModel.triggerPresetAsync(codingPreset)
+
+        #expect(env.accessibilityService.openSettingsCallCount == 1)
+        #expect(dismissCount == 0)
+    }
+
+    @Test func shortcutBadgeReflectsPresetShortcuts() {
+        let defaults = UserDefaults(suiteName: "test-menu-prefs-\(UUID().uuidString)") ?? .standard
+        let store = PreferencesStore(defaults: defaults)
+        let accessibilityService = MockAccessibilityService(isTrusted: true)
+        let windowManager = MockWindowManaging()
+        let displayManager = DisplayManager(displayProvider: { [] })
+        let snapEngine = SnapEngine(windowRegistry: WindowRegistry(), displayManager: displayManager)
+        let commandDispatcher = CommandDispatcher(
+            windowManager: windowManager,
+            snapEngine: snapEngine,
+            displayManager: displayManager
+        )
+
+        let viewModel = MenuBarViewModel(
+            accessibilityService: accessibilityService,
+            commandDispatcher: commandDispatcher,
+            windowManager: windowManager,
+            preferencesStore: store
+        )
+
+        let codingPreset = BuiltinPresetFactory.codingPreset
+        let badge = viewModel.shortcutBadge(for: codingPreset)
+        #expect(badge == (codingPreset.defaultShortcut?.displayString ?? ""))
     }
 }

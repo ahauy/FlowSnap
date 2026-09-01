@@ -27,12 +27,24 @@ public final class SettingsWindowController: NSObject, NSWindowDelegate, Setting
     public private(set) var window: NSWindow?
     public let preferencesStore: PreferencesStore
     public let workspaceManager: WorkspaceManager?
+    public let windowGroupManager: WindowGroupManager?
+    public let presetResolver: (any PresetResolving)?
+    public let commandDispatcher: CommandDispatcher?
 
     // MARK: - Initialization
 
-    public init(preferencesStore: PreferencesStore, workspaceManager: WorkspaceManager? = nil) {
+    public init(
+        preferencesStore: PreferencesStore,
+        workspaceManager: WorkspaceManager? = nil,
+        windowGroupManager: WindowGroupManager? = nil,
+        presetResolver: (any PresetResolving)? = nil,
+        commandDispatcher: CommandDispatcher? = nil
+    ) {
         self.preferencesStore = preferencesStore
         self.workspaceManager = workspaceManager
+        self.windowGroupManager = windowGroupManager
+        self.presetResolver = presetResolver
+        self.commandDispatcher = commandDispatcher
         super.init()
     }
 
@@ -51,7 +63,13 @@ public final class SettingsWindowController: NSObject, NSWindowDelegate, Setting
             return
         }
 
-        let settingsView = SettingsView(store: preferencesStore, workspaceManager: workspaceManager)
+        let settingsView = SettingsView(
+            store: preferencesStore,
+            workspaceManager: workspaceManager,
+            windowGroupManager: windowGroupManager,
+            presetResolver: presetResolver,
+            commandDispatcher: commandDispatcher
+        )
         let hostingController = NSHostingController(rootView: settingsView)
 
         let newWindow = SettingsFloatingPanel(contentViewController: hostingController)

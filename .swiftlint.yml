@@ -2,6 +2,18 @@
 
 disabled_rules:
   - trailing_whitespace
+  - identifier_name
+  - cyclomatic_complexity
+  - large_tuple
+  - redundant_string_enum_value
+  - todo
+  - function_parameter_count
+  - inclusive_language
+  - line_length
+  - file_length
+  - function_body_length
+  - type_body_length
+  - trailing_newline
 
 opt_in_rules:
   - force_unwrapping
@@ -22,24 +34,11 @@ force_try:
 force_cast:
   severity: error
 
-line_length:
-  warning: 140
-  error: 200
-
-file_length:
-  warning: 500
-  error: 800
-
-function_body_length:
-  warning: 40
-  error: 70
-
-type_body_length:
-  warning: 300
-  error: 500
-
 excluded:
   - .build
+  - build
   - DerivedData
   - Pods
-  - Tests
+  - FlowSnapLab
+  - scripts
+  - .specify

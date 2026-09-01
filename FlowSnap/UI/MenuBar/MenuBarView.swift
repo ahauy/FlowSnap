@@ -25,6 +25,12 @@ public struct MenuBarView: View {
             // Quick Snap Actions Grid
             snapActionsSection
 
+            // Presets (US-WORK-012)
+            if !viewModel.presets.isEmpty {
+                Divider()
+                presetsSection
+            }
+
             // Workspaces (hidden when there is no workspace support)
             if let workspaceVM = viewModel.workspaceViewModel {
                 Divider()
@@ -58,6 +64,62 @@ public struct MenuBarView: View {
         )
     }
 
+    // MARK: - Presets
+
+    private var presetsSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("PRESETS")
+                .font(.system(size: 9, weight: .bold))
+                .foregroundStyle(.secondary)
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
+                ForEach(viewModel.presets) { preset in
+                    presetButton(preset)
+                }
+            }
+
+            if let summary = viewModel.lastPresetRestoreSummary {
+                RestoreSummaryBanner(summary: summary, isCompact: true) {
+                    viewModel.clearPresetRestoreSummary()
+                }
+            }
+        }
+    }
+
+    private func presetButton(_ preset: WorkspacePreset) -> some View {
+        Button {
+            viewModel.triggerPreset(preset)
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: preset.iconSymbolName)
+                    .font(.system(size: 11))
+                    .frame(width: 14)
+
+                Text(preset.name)
+                    .font(.system(size: 11))
+
+                Spacer()
+
+                let badge = viewModel.shortcutBadge(for: preset)
+                if !badge.isEmpty {
+                    Text(badge)
+                        .font(.system(size: 9, weight: .regular, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 5)
+                    .fill(Color(nsColor: .controlBackgroundColor).opacity(0.6))
+            )
+        }
+        .buttonStyle(.plain)
+        .disabled(!viewModel.isAccessibilityTrusted)
+        .opacity(viewModel.isAccessibilityTrusted ? 1.0 : 0.5)
+    }
+
     // MARK: - Workspaces
 
     private func workspacesSection(_ workspaceVM: WorkspaceViewModel) -> some View {
@@ -80,7 +142,9 @@ public struct MenuBarView: View {
             WorkspaceListView(viewModel: workspaceVM)
 
             if let summary = workspaceVM.lastRestoreSummary {
-                restoreSummaryRow(summary, workspaceVM: workspaceVM)
+                RestoreSummaryBanner(summary: summary, isCompact: true) {
+                    workspaceVM.clearRestoreSummary()
+                }
             }
             if let error = workspaceVM.errorMessage {
                 HStack(alignment: .top, spacing: 4) {
@@ -95,29 +159,6 @@ public struct MenuBarView: View {
                 .background(RoundedRectangle(cornerRadius: 5).fill(Color.orange.opacity(0.08)))
             }
         }
-    }
-
-    private func restoreSummaryRow(_ summary: RestoreSummary, workspaceVM: WorkspaceViewModel) -> some View {
-        HStack(alignment: .top, spacing: 4) {
-            Image(systemName: summary.isFullSuccess ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                .foregroundStyle(summary.isFullSuccess ? Color.green : Color.orange)
-                .font(.system(size: 10))
-            Text(summary.headline)
-                .font(.system(size: 10))
-                .fixedSize(horizontal: false, vertical: true)
-            Spacer()
-            Button {
-                workspaceVM.clearRestoreSummary()
-            } label: {
-                Image(systemName: "xmark").font(.system(size: 9))
-            }
-            .buttonStyle(.borderless)
-        }
-        .padding(6)
-        .background(
-            RoundedRectangle(cornerRadius: 5)
-                .fill((summary.isFullSuccess ? Color.green : Color.orange).opacity(0.08))
-        )
     }
 
     // MARK: - Header

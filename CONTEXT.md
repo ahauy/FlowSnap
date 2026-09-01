@@ -61,19 +61,27 @@
 | **ShortcutRecorderField**    | Interactive UI control for capturing keystrokes       | "Shortcut recorder input or key capture view"  | `ShortcutRecorderField`    | ADR-0005, SwiftUI View with FSM                 |
 | **ShortcutCategory**         | Grouping taxonomy for shortcut settings view          | "Shortcut group or section header"             | `ShortcutCategory`         | ADR-0005, CaseIterable taxonomy                 |
 
-| **LayoutGraph**               | Spatial constraint graph representing window layout boundaries   | "Window layout tree or adjacency graph"        | `LayoutGraph`              | ADR-0005, BSP & adjacency model              |
-| **LayoutNode**                | Node in a binary space partitioning tree (leaf/split)            | "Layout tree node or branch"                   | `LayoutNode`               | ADR-0005, recursive partition                 |
-| **CollinearEdge**             | Shared boundary line between adjacent windows in layout          | "Shared divider or common border"              | `CollinearEdge`            | ADR-0005, multi-window span                   |
-| **CollinearEdgeDetector**     | Algorithm finding collinear shared edges between windows         | "Divider detection helper"                     | `CollinearEdgeDetector`    | Pure geometric detection                      |
-| **LiveResizeThrottler**       | Rate limits live window resizing events to 60fps                 | "Drag throttler or frame pacer"                | `LiveResizeThrottler`      | 16.6ms rate limiter                           |
-| **AdaptiveDividerCoordinator**| Coordinates divider hover, cursor swapping, and live resize      | "Divider drag controller"                      | `AdaptiveDividerCoordinator`| @MainActor coordination                      |
+| **LayoutGraph** | Spatial constraint graph representing window layout boundaries | "Window layout tree or adjacency graph" | `LayoutGraph` | ADR-0005, BSP & adjacency model |
+| **LayoutNode** | Node in a binary space partitioning tree (leaf/split) | "Layout tree node or branch" | `LayoutNode` | ADR-0005, recursive partition |
+| **CollinearEdge** | Shared boundary line between adjacent windows in layout | "Shared divider or common border" | `CollinearEdge` | ADR-0005, multi-window span |
+| **CollinearEdgeDetector** | Algorithm finding collinear shared edges between windows | "Divider detection helper" | `CollinearEdgeDetector` | Pure geometric detection |
+| **LiveResizeThrottler** | Rate limits live window resizing events to 60fps | "Drag throttler or frame pacer" | `LiveResizeThrottler` | 16.6ms rate limiter |
+| **AdaptiveDividerCoordinator**| Coordinates divider hover, cursor swapping, and live resize | "Divider drag controller" | `AdaptiveDividerCoordinator`| @MainActor coordination |
 
-| **WorkspaceManager**          | @MainActor orchestrator for workspace capture & restore          | "Workspace save/restore service"               | `WorkspaceManager`         | US-WORK-011, ObservableObject, owns store+AX  |
-| **WorkspaceStore**            | Actor persisting workspaces to JSON atomically                   | "workspaces.json reader/writer"                | `WorkspaceStore`           | US-WORK-011, corrupt-file parking             |
-| **ZoneInference**             | Pure max-IoU match of a window frame to a LayoutZone             | "Which zone is this window in?"                | `ZoneInference`            | US-WORK-011, deterministic tie-break          |
-| **RestoreSummary**            | Outcome of one restore pass (placed count + skipped apps)        | "What happened when I restored"                | `RestoreSummary`           | US-WORK-011, SkippedApp + SkipReason          |
-| **ApplicationLaunching**      | Protocol to launch an app and await its first window             | "App launcher abstraction"                     | `ApplicationLaunching`     | US-WORK-011, NSWorkspace impl, public API only |
-| **WorkspaceViewModel**        | Thin façade holding workspace UI state over the manager          | "Workspace sheet/settings state"               | `WorkspaceViewModel`       | US-WORK-011, keeps MenuBarViewModel thin      |
+| **WorkspaceManager** | @MainActor orchestrator for workspace capture & restore | "Workspace save/restore service" | `WorkspaceManager` | US-WORK-011, ObservableObject, owns store+AX |
+| **WorkspaceStore** | Actor persisting workspaces to JSON atomically | "workspaces.json reader/writer" | `WorkspaceStore` | US-WORK-011, corrupt-file parking |
+| **ZoneInference** | Pure max-IoU match of a window frame to a LayoutZone | "Which zone is this window in?" | `ZoneInference` | US-WORK-011, deterministic tie-break |
+| **RestoreSummary** | Outcome of one restore pass (placed count + skipped apps) | "What happened when I restored" | `RestoreSummary` | US-WORK-011, SkippedApp + SkipReason |
+| **ApplicationLaunching** | Protocol to launch an app and await its first window | "App launcher abstraction" | `ApplicationLaunching` | US-WORK-011, NSWorkspace impl, public API only |
+| **WorkspaceViewModel** | Thin façade holding workspace UI state over the manager | "Workspace sheet/settings state" | `WorkspaceViewModel` | US-WORK-011, keeps MenuBarViewModel thin |
+| **WorkspacePreset** | Curated multi-window workflow template with fallback chains | "Workflow preset or layout template" | `WorkspacePreset` | US-WORK-012, ADR-0007, Codable, Sendable |
+| **PresetAppSlot** | Categorized application slot in a preset with fallback bundle IDs| "Preset app role or placeholder" | `PresetAppSlot` | US-WORK-012, ADR-0007, Codable, Sendable |
+| **PresetAppCategory** | Taxonomy of application archetypes (.editor, .browser...) | "App type or category" | `PresetAppCategory` | US-WORK-012, CaseIterable, Sendable |
+| **BuiltinPresetFactory** | Immutable factory for standard presets (Coding, Research...) | "Default preset catalog" | `BuiltinPresetFactory` | US-WORK-012, 4 standard presets, zero-disk |
+| **WindowGroup** | Dynamic linked association of ≥ 2 windows moving cohesively | "Linked window set or grouped windows" | `WindowGroup` | US-WORK-012, ADR-0007, minimum 2 members |
+| **GroupSyncOptions** | Bitmask flags controlling group sync (minimize, focus, move) | "Group synchronization settings" | `GroupSyncOptions` | US-WORK-012, OptionSet, Sendable |
+| **WindowGroupManager** | @MainActor coordinator for live window groups & re-entrancy lock | "Window group sync controller" | `WindowGroupManager` | US-WORK-012, ADR-0007, ObservableObject |
+| **PresetResolver** | Engine resolving candidate apps and applying preset layouts | "Preset application service" | `PresetResolver` | US-WORK-012, ADR-0007, PresetResolving |
 
 ## Where to Look
 
