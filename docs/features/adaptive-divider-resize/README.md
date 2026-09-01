@@ -369,7 +369,7 @@ sequenceDiagram
     Coord->>Coord: Hit-test cached dividers
     alt Mouse over seam
         Coord->>Coord: Set cursor (.resizeLeftRight / .resizeUpDown)
-        Coord->>Overlay: show(activeDivider, restingAlpha/activeAlpha)
+        Coord->>Overlay: show(activeDivider, activeAlpha = 1.0)
     else Mouse outside seam
         Coord->>Coord: Set cursor (.arrow)
         Coord->>Overlay: hide()
@@ -533,7 +533,7 @@ sequenceDiagram
     User->>Coord: MouseUp at X = 850
     Coord->>Coord: applyResizedFrames(force: true)
     Coord->>WM: Atomic Final Snap (100% exact alignment)
-    Coord->>Overlay: show(restingAlpha, activeDivider: nil)
+    Coord->>Overlay: hide(animated: true) — Clean Workspace, nothing lingers
 ```
 
 ---
