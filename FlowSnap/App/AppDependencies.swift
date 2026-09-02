@@ -7,6 +7,13 @@ import Foundation
 @MainActor
 public final class AppDependencies {
 
+    // MARK: - Event Bus
+
+    /// Single event bus shared by every service that publishes or subscribes
+    /// to `WindowEvent`. US-WORK-013 wires `WorkspaceObserver` →
+    /// `ApplicationObserver` → `WindowPolicyManager` through this bus.
+    let eventBus: EventBus = EventBus()
+
     // MARK: - Infrastructure Services
 
     public lazy var accessibilityService: AccessibilityService = AXAccessibilityService()
@@ -121,6 +128,24 @@ public final class AppDependencies {
         overlayManager: adaptiveDividerOverlayPanel
     )
 
+    // MARK: - Launch & Window Policy (US-WORK-013)
+
+    /// Bridges `NSWorkspace` lifecycle notifications to the shared `EventBus`.
+    lazy var workspaceObserver: WorkspaceObserver = WorkspaceObserver(eventBus: eventBus)
+
+    /// Wraps per-pid `AXObserver` registration for `kAXWindowCreatedNotification`.
+    lazy var applicationObserver: ApplicationObserving = ApplicationObserver(eventBus: eventBus)
+
+    /// Resolves per-app `WindowPolicy` and applies the default `.currentSpace`
+    /// to a freshly created window by writing the current display's
+    /// `visibleFrame` to the window's AX element.
+    lazy var windowPolicyManager: WindowPolicyManager = WindowPolicyManager(
+        accessibilityService: accessibilityService,
+        displayManager: displayManager
+    )
+
     public init() {
-        _ = self.workspaceManager}
+        _ = self.workspaceManager
+        _ = self.windowPolicyManager
+    }
 }
