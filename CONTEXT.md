@@ -82,6 +82,14 @@
 | **GroupSyncOptions** | Bitmask flags controlling group sync (minimize, focus, move) | "Group synchronization settings" | `GroupSyncOptions` | US-WORK-012, OptionSet, Sendable |
 | **WindowGroupManager** | @MainActor coordinator for live window groups & re-entrancy lock | "Window group sync controller" | `WindowGroupManager` | US-WORK-012, ADR-0007, ObservableObject |
 | **PresetResolver** | Engine resolving candidate apps and applying preset layouts | "Preset application service" | `PresetResolver` | US-WORK-012, ADR-0007, PresetResolving |
+| **ApplicationObserving** | Sendable protocol abstracting per-pid AXObserver window-creation detection | "AX observer seam in Domain" | `ApplicationObserving` | US-WORK-013, ADR-0008 |
+| **ApplicationObserver** | @MainActor concrete managing AXObserver lifecycle + 10s timeout + 5s dedup | "AX observer runtime" | `ApplicationObserver` | US-WORK-013, ADR-0008, Infrastructure |
+| **LaunchObservationEvent** | Sendable enum: `.windowCreated`, `.timeout`, `.failed` | "AX observer result event" | `LaunchObservationEvent` | US-WORK-013, Hashable, AsyncStream payload |
+| **LaunchObservationFailure** | Sendable enum: `.observerCreationFailed`, `.addNotificationFailed`, `.accessibilityNotAuthorized` | "AX observer failure reason" | `LaunchObservationFailure` | US-WORK-013, carries `AXErrorCode` |
+| **AXErrorCode** | Sendable RawRepresentable Int32 shim over ApplicationServices `AXError` | "AX error code wrapper" | `AXErrorCode` | US-WORK-013, Domain-safe |
+| **ApplicationObservingDefaults** | Compile-time constants: `windowCreationTimeout = 10s`, `launchDedupWindow = 5s` | "Default timeouts for app launch observer" | `ApplicationObservingDefaults` | US-WORK-013, Domain enum |
+| **WorkspaceObserver** | @MainActor NSWorkspace bridge publishing `.applicationLaunched(pid, bundleID:)` | "Workspace lifecycle observer" | `WorkspaceObserver` | US-WORK-013, Infrastructure |
+| **WindowPolicyManager** | @MainActor resolver applying `.currentSpace` / `.currentDisplay` policies via AccessibilityService | "Per-app policy applier" | `WindowPolicyManager` | US-WORK-013, ADR-0008 |
 
 ## Where to Look
 

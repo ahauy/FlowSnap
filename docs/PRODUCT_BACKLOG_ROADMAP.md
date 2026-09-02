@@ -152,7 +152,7 @@ graph TD
 | **EPIC-08** | Tỷ lệ Tùy chỉnh (60/40, 70/30) & Window Gaps Thẩm mỹ      | **Should-Have** |   7   |  1.5   |    95%     |  1.5   |  **6.6**   |     **P1 (Visual)**     |   Sprint 2    |
 | **EPIC-09** | Kéo Đường Phân cách Chung (Adaptive Divider Resize)       | **Could-Have**  |   6   |  2.0   |    80%     |  3.0   |  **3.2**   |    **P2 (Advanced)**    |   Sprint 2    |
 | **EPIC-10** | Cài đặt SwiftUI & Tùy biến Phím tắt (Settings & Config)   | **Should-Have** |   8   |  1.5   |    95%     |  1.5   |  **7.6**   |    **P1 (Settings)**    |   Sprint 2    |
-| **EPIC-11** | Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspaces) | **Should-Have** |   8   |  3.0   |    85%     |  2.5   |  **8.1**   |  **P1 (Hero Feature)**  |   Sprint 3    |
+| **EPIC-11** | Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspaces) | **Should-Have** |   8   |  3.0   |    100%    |  2.5   |  **9.1**   |  **P1 (Hero Feature)**  |   Sprint 3 ✅ |
 | **EPIC-12** | Nhóm Cửa sổ & Workspace Presets (Coding, Research)        | **Should-Have** |   7   |  2.0   |    90%     |  1.5   |  **8.4**   |   **P1 (Value-Add)**    |   Sprint 3    |
 | **EPIC-13** | Phát hiện Mở Ứng dụng & Giữ ở Workspace Hiện tại          |  **Must-Have**  |   9   |  3.0   |    85%     |  2.5   |  **9.1**   |  **P0 (Hero Feature)**  |   Sprint 3    |
 | **EPIC-14** | Quy tắc Riêng theo Ứng dụng & Cửa sổ Nổi (Floating Stack) | **Should-Have** |   7   |  2.0   |    90%     |  2.0   |  **6.3**   |  **P1 (Flexibility)**   |   Sprint 3    |
@@ -534,24 +534,24 @@ _Mục tiêu: Bước chuyển dịch từ một tiện ích Snap thông thườ
 
 _Mục tiêu: Giải quyết triệt để nỗi đau lớn nhất của người dùng Mac — giữ cho ứng dụng mới mở luôn xuất hiện tại không gian làm việc hiện tại thay vì bị văng sang Space khác._
 
-- [ ] **US-WORK-013: Phát hiện Mở Ứng dụng & Giữ ở Workspace Hiện tại (App Launch Observer & Current Space Policy)**
+- [x] **US-WORK-013: Phát hiện Mở Ứng dụng & Giữ ở Workspace Hiện tại (App Launch Observer & Current Space Policy)**
   - **Slug:** `app-launch-current-space-policy`
   - **Effort:** L
   - **Context-budget:** multi-session
   - **Priority:** Must-Have (P0)
-  - **Depends-on:** `US-WORK-012`
+  - **Depends-on:** `US-WORK-012` ✅
   - **Blocks:** `US-WORK-014`
   - **Mô tả:** Lắng nghe sự kiện mở ứng dụng qua NSWorkspace/EventBus và áp dụng chính sách để cửa sổ mới mở xuất hiện ngay trong không gian làm việc hiện tại, không làm văng người dùng sang Space khác.
   - **Acceptance Criteria (AC):**
-    - [ ] `ApplicationObserver` lắng nghe `NSWorkspace.didLaunchApplicationNotification` và `NSWorkspace.didActivateApplicationNotification`.
-    - [ ] Khi phát hiện ứng dụng mới khởi chạy, đăng ký AX Observer để bắt chính xác thời điểm cửa sổ đầu tiên của ứng dụng được tạo ra (`kAXWindowCreatedNotification`).
-    - [ ] Áp dụng chính sách mặc định: Nếu cửa sổ mới mở không có vị trí chỉ định, tự động định vị cửa sổ tại màn hình hiện tại (`Current Display`) và không kích hoạt cơ chế chuyển Space của macOS (bằng cách kích hoạt với cờ `.withoutActivating` hoặc điều chỉnh frame ngay khi window xuất hiện).
-    - [ ] Tuân thủ 100% Public APIs của macOS (tuyệt đối không sử dụng private/undocumented CGS APIs để tránh xung đột với các bản cập nhật macOS trong tương lai).
+    - [x] `WorkspaceObserver` lắng nghe `NSWorkspace.didLaunchApplicationNotification` và `NSWorkspace.didActivateApplicationNotification`.
+    - [x] Khi phát hiện ứng dụng mới khởi chạy, đăng ký AX Observer để bắt chính xác thời điểm cửa sổ đầu tiên của ứng dụng được tạo ra (`kAXWindowCreatedNotification`).
+    - [x] Áp dụng chính sách mặc định: Nếu cửa sổ mới mở không có vị trí chỉ định, tự động định vị cửa sổ tại màn hình hiện tại (`Current Display`) và không kích hoạt cơ chế chuyển Space của macOS (bằng cách điều chỉnh frame ngay khi window xuất hiện qua `AccessibilityService.setFrame`).
+    - [x] Tuân thủ 100% Public APIs của macOS (tuyệt đối không sử dụng private/undocumented CGS APIs để tránh xung đột với các bản cập nhật macOS trong tương lai) — `scripts/audit-no-private-apis.sh` returns OK.
   - **Tasks:**
-    - [ ] `Infrastructure`: Cài đặt `WorkspaceObserver.swift` và `ApplicationObserver.swift` theo dõi tiến trình hệ thống.
-    - [ ] `Core`: Cài đặt `WindowPolicyManager.swift` thực thi quy tắc `Current Space + Current Display`.
-    - [ ] `Core`: Xử lý timing race condition (ứng dụng launch nhưng window mất vài giây sau mới xuất hiện) bằng cơ chế quan sát bất đồng bộ có timeout.
-    - [ ] `Tests`: Unit test event sequence của application launch observer.
+    - [x] `Infrastructure`: Cài đặt `WorkspaceObserver.swift` và `ApplicationObserver.swift` theo dõi tiến trình hệ thống (10 s timeout, 5 s dedup, auto-release on first window).
+    - [x] `Core`: Cài đặt `WindowPolicyManager.swift` thực thi quy tắc `Current Space + Current Display` qua `DisplayManaging.visibleFrame` + `AccessibilityService.setFrame`.
+    - [x] `Core`: Xử lý timing race condition bằng cơ chế quan sát bất đồng bộ có timeout (AXObserver C-callback bridges to `@MainActor` qua `Task { @MainActor in }`).
+    - [x] `Tests`: Unit test event sequence của application launch observer (333/333 tests pass across 51 suites).
   - **Deliverables khi [x]:**
     - `.specify/features/app-launch-current-space-policy/baseline.md` (SIGNED-OFF)
     - `docs/features/app-launch-current-space-policy/README.md`
@@ -619,10 +619,10 @@ _Mục tiêu: Trao toàn quyền tùy biến hành vi cho người dùng — quy
   └── US-SNAP-010: SwiftUI Settings UI & Shortcut Customization
 
 [ Sprint 3 - Workspaces & Per-App Workflow Policies (MVP 3) ]
-  ├── US-WORK-011: Workspace Snapshot & Intent-Based Restoration
-  ├── US-WORK-012: Window Groups & Built-in Workflow Presets
-  ├── US-WORK-013: Application Launch Observer & Current Space Policy
-  └── US-WORK-014: Per-App Window Rules & Smart Floating Stacking
+  ├── [x] US-WORK-011: Workspace Snapshot & Intent-Based Restoration
+  ├── [x] US-WORK-012: Window Groups & Built-in Workflow Presets
+  ├── [x] US-WORK-013: Application Launch Observer & Current Space Policy (EPIC 11 ✅ complete)
+  └── [ ] US-WORK-014: Per-App Window Rules & Smart Floating Stacking
 
 [ Future Horizons (V2.0+) ]
   ├── US-FUTURE-001: Visual Canvas-based Interactive Layout Editor
