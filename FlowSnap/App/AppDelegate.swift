@@ -44,12 +44,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Start Adaptive Multi-Window Divider observation
         dependencies.adaptiveDividerCoordinator.start()
+
+        // US-WORK-013: start launch + window-policy observation. The order
+        // matters: `workspaceObserver` must be started before
+        // `applicationObserver` so that the latter's `EventBus` subscription
+        // to `.applicationLaunched` is wired up before any notification fires.
+        dependencies.workspaceObserver.startObserving()
+        dependencies.eventBus.subscribe(dependencies.windowPolicyManager) { [weak self] event in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+                await self.dependencies.windowPolicyManager.handle(event: event)
+            }
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         dependencies.hotkeyManager.unregisterAll()
         dependencies.dragToSnapCoordinator.stop()
         dependencies.adaptiveDividerCoordinator.stop()
+        dependencies.workspaceObserver.stopObserving()
+        dependencies.eventBus.unsubscribe(dependencies.windowPolicyManager)
         cancellables.removeAll()
     }
 }
