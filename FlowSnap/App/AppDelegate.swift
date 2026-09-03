@@ -72,6 +72,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         dependencies.dragToSnapCoordinator.stop()
         dependencies.adaptiveDividerCoordinator.stop()
         dependencies.workspaceObserver.stopObserving()
+        dependencies.displayHotPlugObserver.stopObserving()
         dependencies.eventBus.unsubscribe(dependencies.windowPolicyManager)
         cancellables.removeAll()
     }
