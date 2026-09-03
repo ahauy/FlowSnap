@@ -1,4 +1,4 @@
-import ApplicationServices
+@preconcurrency import ApplicationServices
 import CoreGraphics
 import Foundation
 
@@ -10,9 +10,14 @@ import Foundation
 public final class WindowManager: WindowManaging {
 
     private let accessibilityService: AccessibilityService
+    private let fullScreenEscapeCoordinator: FullScreenEscapeCoordinating
 
-    public init(accessibilityService: AccessibilityService) {
+    public init(
+        accessibilityService: AccessibilityService,
+        fullScreenEscapeCoordinator: FullScreenEscapeCoordinating = FullScreenEscapeCoordinator.shared
+    ) {
         self.accessibilityService = accessibilityService
+        self.fullScreenEscapeCoordinator = fullScreenEscapeCoordinator
     }
 
     public func focusedWindow() async -> ManagedWindow? {
@@ -52,14 +57,19 @@ public final class WindowManager: WindowManaging {
 
         // A full-screen window cannot be repositioned while in full-screen mode;
         // macOS returns success but silently ignores the AX frame writes. Exit
-        // full-screen first, then wait for the animation to complete before
-        // calling setFrame (best-effort: some apps reject the write).
+        // full-screen first via the multi-tier escape coordinator with adaptive
+        // space transition waiting before calling setFrame.
         if window.kind == .fullscreen {
             do {
-                try accessibilityService.exitFullScreen(targetElement)
-                // 700 ms covers the standard macOS full-screen exit animation
-                // (typically 0.5 s) plus a small margin for slower machines.
-                try await Task.sleep(nanoseconds: 700_000_000)
+                _ = try await fullScreenEscapeCoordinator.exitFullScreen(
+                    for: targetElement,
+                    pid: window.pid,
+                    isFullScreenChecker: { [weak self] in
+                        guard let self else { return false }
+                        guard let currentFrame = self.accessibilityService.frame(of: targetElement) else { return false }
+                        return currentFrame == window.frame
+                    }
+                )
             } catch {
                 diagPrint("[WindowManager] ExitFullScreen failed for \(window.title): \(error.localizedDescription)")
             }
