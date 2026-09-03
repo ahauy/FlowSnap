@@ -10,11 +10,11 @@
 
 When working across multiple displays (such as a MacBook connected to an external 4K monitor or an ultra-wide screen), moving windows between displays by dragging them across screen borders is cumbersome and disruptive:
 
-- You have to click, hold, and drag a large window across the boundary.
-- The window often ends up misaligned, oversized, or awkwardly cut off if the two monitors have different resolutions (e.g. 4K vs 1080p).
-- You lose your mouse cursor on the other monitor and spend valuable seconds searching for it.
+- You have to click, hold, and drag a large window across the physical screen boundary.
+- The window often ends up misaligned, oversized, or awkwardly cut off if the two monitors have different resolutions (e.g., 4K vs 1080p).
+- You lose your mouse cursor on the other monitor and spend valuable seconds searching for where it landed.
 
-**FlowSnap's Cross-Display Window Throw** makes this instantaneous and effortless:
+**FlowSnap's Cross-Display Window Throw** makes this instantaneous, predictable, and effortless with global keyboard shortcuts:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
@@ -32,55 +32,74 @@ When working across multiple displays (such as a MacBook connected to an externa
 
 ---
 
-## ⌨️ 2. Default Shortcuts & How to Use
+## 🚀 2. Step-by-Step Instructions
+
+### Step 1: Throw a Window to Adjacent Displays with Instant Cursor Warping
+
+![Cross-Display Topology & Window Throw](./images/cross-display-window-throw/01_cross_display_topology_throw.png)
+
+1. **① Select your active window**: Click into the window you wish to move (such as your code editor, browser, or terminal) on your current screen.
+2. **② Press the throw shortcut**:
+   - Press **`⌃⌥⇧→`** (`Ctrl + Option + Shift + Right Arrow`) to throw the window to the monitor on your right.
+   - Press **`⌃⌥⇧←`** (`Ctrl + Option + Shift + Left Arrow`) to throw the window to the monitor on your left.
+3. **③ Instant re-snapping & mouse cursor alignment**:
+   - The window teleports to the destination screen immediately (under 25 milliseconds).
+   - If the window was snapped to the **Left Half**, it cleanly snaps to the **Left Half** of the new monitor, automatically taking into account the new monitor's menu bar, dock, and your configured window gaps.
+   - **Your mouse cursor automatically jumps to the center of the window**, so you can start typing or scrolling right away without hunting for your pointer.
+
+---
+
+### Step 2: Customize Display Navigation Shortcuts in Settings
+
+![Display Navigation Shortcuts in Settings](./images/cross-display-window-throw/02_shortcuts_settings_navigation.png)
+
+1. Open FlowSnap **Preferences...** by clicking the FlowSnap menu bar icon and choosing **Preferences...** (or press **`⌘,`**).
+2. Select the **Shortcuts** tab and scroll to the **Display Navigation** section:
+   - **① Move to Next Display** (default: `⌃⌥⇧→`): Click the key combination badge to record a custom shortcut.
+   - **② Move to Previous Display** (default: `⌃⌥⇧←`): Click to record your preferred alternative keys.
+3. Press **`⎋`** (Escape) at any time to cancel recording, or press **`⌫`** (Delete) to restore the default shortcut.
+
+---
+
+### Step 3: Throw Free-Floating Windows with Proportional Scaling
+
+![Proportional Relative Scaling for Floating Windows](./images/cross-display-window-throw/03_proportional_relative_scaling.png)
+
+1. **① Free-floating windows keep their relative proportions**:
+   - If a window is not snapped (for example, a floating Notes or Terminal window occupying 40% width and 50% height on your MacBook screen), FlowSnap calculates its relative position and size percentages.
+2. **② Safe destination placement & edge clamping**:
+   - On the destination monitor (e.g., an external 3840×2160 4K display), the window expands proportionally to occupy the exact same 40% width and 50% height.
+   - FlowSnap's built-in safety system ensures the window is never placed off-screen, maintaining a minimum size of 200×200 points and keeping all window controls visible.
+
+---
+
+## ⌨️ 3. Quick Shortcut Reference
 
 | Action                       | Default Shortcut                               | Behavior                                                               |
 | :--------------------------- | :--------------------------------------------- | :--------------------------------------------------------------------- |
 | **Move to Next Display**     | `⌃⌥⇧→` (`Ctrl + Option + Shift + Right Arrow`) | Moves the focused window to the next monitor to the right (cyclic).    |
 | **Move to Previous Display** | `⌃⌥⇧←` (`Ctrl + Option + Shift + Left Arrow`)  | Moves the focused window to the previous monitor to the left (cyclic). |
 
-### How It Works:
+---
 
-1. Focus the window you want to move (e.g. your code editor, browser, or terminal).
-2. Press `⌃⌥⇧→`.
-3. The window instantly teleports to the next monitor.
-4. **Your mouse cursor automatically jumps to the center of the window on the new monitor**, ready for immediate scrolling or clicking!
+## 💡 4. Tips & Best Practices
+
+- **Cyclic Wrap-Around**: If you have 2 or 3 monitors arranged side-by-side, pressing `⌃⌥⇧→` on your rightmost screen immediately cycles the window back to your leftmost screen. You never need to remember which screen is "first" or "last".
+- **Works with Tiled & Floating Layouts**: Whether you are using side-by-side splits or floating scratchpads, FlowSnap automatically chooses the right strategy (semantic re-snap vs. proportional scaling).
+- **Smooth Visual Continuity**: FlowSnap triggers a subtle ghost-morph outline so your eyes can naturally follow the window across physical screens.
 
 ---
 
-## 📐 3. Smart Layout Adaptation
-
-FlowSnap is target-aware when throwing windows:
-
-- **If the window was Snapped (e.g. Left Half, Right Half, Maximize)**:
-  - FlowSnap recalculates the snap frame for the target display, honoring that display's resolution, safe area (Menu Bar, Dock), and your configured **Window Gap**.
-- **If the window was Free-Floating**:
-  - FlowSnap maintains its exact proportional size and position relative to the destination screen. A window occupying 40% width on your laptop will occupy 40% width on your 4K display.
-  - Built-in `FrameClampingHelper` guarantees the window never opens off-screen or trapped under the dock.
-
----
-
-## ⚙️ 4. Customizing Shortcuts in Settings
-
-1. Click the **FlowSnap icon** in the macOS menu bar and select **Preferences...** (or press `⌘,`).
-2. Open the **Shortcuts** tab.
-3. Scroll down to the **Display Navigation** section:
-   - **Move to Next Display** (default: `⌃⌥⇧→`)
-   - **Move to Previous Display** (default: `⌃⌥⇧←`)
-4. Click on any shortcut recorder field to record your preferred custom key combination.
-
----
-
-## 💡 5. Frequently Asked Questions (FAQ)
+## ❓ 5. Frequently Asked Questions (FAQ)
 
 ### Q: What happens if I only have one display connected?
 
-**A:** FlowSnap detects that only 1 display is active and safely ignores the shortcut (`no-op`). There is zero screen flicker, zero audio error beep, and no delay.
+**A:** FlowSnap detects that only 1 display is connected and safely ignores the command (`no-op`). There is zero screen flicker, zero audio error beep, and no delay.
 
 ### Q: Does this move windows across displays if they are arranged vertically in macOS Settings?
 
-**A:** Yes! FlowSnap automatically sorts displays primarily from left to right (`minX`), and secondarily from top to bottom (`minY`), providing a deterministic cyclic order across any multi-monitor topology.
+**A:** Yes! FlowSnap sorts displays primarily from left to right (`minX`), and secondarily from top to bottom (`minY`), providing a deterministic cyclic order across any multi-monitor arrangement.
 
 ### Q: Does this feature use private macOS APIs?
 
-**A:** No. FlowSnap uses 100% public Apple APIs (`NSScreen`, `CGWarpMouseCursorPosition`, and `AXUIElement`), ensuring complete safety and future macOS compatibility.
+**A:** No. FlowSnap uses 100% public Apple APIs (`NSScreen`, `CGWarpMouseCursorPosition`, and `AXUIElement`), ensuring complete privacy, safety, and compatibility across macOS 14 Sonoma and macOS 15 Sequoia.
