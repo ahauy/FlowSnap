@@ -49,6 +49,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // matters: `workspaceObserver` must be started before
         // `applicationObserver` so that the latter's `EventBus` subscription
         // to `.applicationLaunched` is wired up before any notification fires.
+        dependencies.windowPolicyManager.prePopulateExistingWindows()
         dependencies.workspaceObserver.startObserving()
         dependencies.eventBus.subscribe(dependencies.windowPolicyManager) { [weak self] event in
             Task { @MainActor [weak self] in
