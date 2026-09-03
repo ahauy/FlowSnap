@@ -76,4 +76,13 @@ public final class MockApplicationLaunching: ApplicationLaunching, @unchecked Se
         revealAttempts.append(bundleID)
         return !unrevealableBundleIDs.contains(bundleID)
     }
+
+    /// Bundle ids unhidden after being placed.
+    public private(set) var unhideAttempts: [String] = []
+
+    @discardableResult
+    public func unhide(bundleID: String) -> Bool {
+        unhideAttempts.append(bundleID)
+        return true
+    }
 }
