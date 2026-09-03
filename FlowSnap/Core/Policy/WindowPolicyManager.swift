@@ -144,6 +144,19 @@ final class WindowPolicyManager {
 
     // MARK: - EventBus integration (T-013-B2 & T-014-05)
 
+    private var appliedWindowIDs: Set<CGWindowID> = []
+
+    /// Pre-populates existing windows at startup so pre-existing windows are not treated as newly created.
+    public func prePopulateExistingWindows() {
+        let currentIDs = accessibilityService.allVisibleManagedWindows().map(\.id)
+        appliedWindowIDs.formUnion(currentIDs)
+    }
+
+    /// Marks a window as already handled (e.g. by workspace restore) so launch policies do not re-apply.
+    public func markHandled(windowID: CGWindowID) {
+        appliedWindowIDs.insert(windowID)
+    }
+
     /// Handle a `WindowEvent` from the shared `EventBus`.
     func handle(event: WindowEvent) async {
         switch event {
@@ -156,6 +169,9 @@ final class WindowPolicyManager {
 
     /// Resolve `windowID` to a `ManagedWindow` (AX-backed) and apply the resolved policy.
     private func applyForWindowID(_ windowID: CGWindowID, pid: pid_t) async {
+        guard !appliedWindowIDs.contains(windowID) else {
+            return
+        }
         var resolved: [ResolvedWindow] = accessibilityService.resolvedWindows(of: pid)
         if resolved.isEmpty {
             try? await Task.sleep(nanoseconds: 50_000_000)
@@ -166,6 +182,11 @@ final class WindowPolicyManager {
                 ?? resolved.first else {
             return
         }
+        guard !appliedWindowIDs.contains(match.window.id) else {
+            return
+        }
+        appliedWindowIDs.insert(match.window.id)
+        appliedWindowIDs.insert(windowID)
         do {
             try await applyPolicy(for: match.window)
         } catch {

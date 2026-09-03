@@ -241,6 +241,76 @@ struct WindowPolicyManagerTests {
         let target = manager.focusStack.removeFloatingWindow(windowID: 99)
         #expect(target == nil)
     }
+
+    @Test func appliedPolicyIsOnlyAppliedOncePerWindow() async throws {
+        let primary = Display(
+            id: 1,
+            frame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            visibleFrame: CGRect(x: 0, y: 25, width: 1440, height: 875),
+            scaleFactor: 2.0,
+            isPrimary: true
+        )
+        let display = MockDisplayManager(displays: [primary])
+        let ax = MockAccessibilityService(isTrusted: true)
+        let element = makeAXUIElement()
+        let window = ManagedWindow(
+            id: 88,
+            pid: 888,
+            bundleIdentifier: "com.apple.Terminal",
+            title: "Terminal",
+            frame: CGRect(x: 720, y: 25, width: 720, height: 875)
+        )
+        ax.mockWindowElements[window.id] = element
+        ax.mockElementByWindowID[window.id] = element
+        ax.managedWindowsByPID[window.pid] = [window]
+
+        let manager = WindowPolicyManager(
+            accessibilityService: ax,
+            displayManager: display
+        )
+
+        // First creation event applies policy
+        await manager.handle(event: .applicationWindowCreated(pid: 888, windowID: 88))
+        #expect(ax.setFrameCallCount == 1)
+
+        // Second duplicate creation event (e.g. from app re-activation) is deduped and ignored!
+        await manager.handle(event: .applicationWindowCreated(pid: 888, windowID: 88))
+        #expect(ax.setFrameCallCount == 1)
+    }
+
+    @Test func prePopulateExistingWindowsIgnoresPreExistingWindows() async throws {
+        let primary = Display(
+            id: 1,
+            frame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            visibleFrame: CGRect(x: 0, y: 25, width: 1440, height: 875),
+            scaleFactor: 2.0,
+            isPrimary: true
+        )
+        let display = MockDisplayManager(displays: [primary])
+        let ax = MockAccessibilityService(isTrusted: true)
+        let element = makeAXUIElement()
+        let preExisting = ManagedWindow(
+            id: 77,
+            pid: 777,
+            bundleIdentifier: "com.apple.Terminal",
+            title: "Terminal",
+            frame: CGRect(x: 720, y: 25, width: 720, height: 875)
+        )
+        ax.mockVisibleWindows = [preExisting]
+        ax.mockWindowElements[preExisting.id] = element
+        ax.mockElementByWindowID[preExisting.id] = element
+        ax.managedWindowsByPID[preExisting.pid] = [preExisting]
+
+        let manager = WindowPolicyManager(
+            accessibilityService: ax,
+            displayManager: display
+        )
+        manager.prePopulateExistingWindows()
+
+        // Focus activation on pre-existing window must NOT apply policy or overwrite frame!
+        await manager.handle(event: .applicationWindowCreated(pid: 777, windowID: 77))
+        #expect(ax.setFrameCallCount == 0)
+    }
 }
 
 // MARK: - Helpers
