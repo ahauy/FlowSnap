@@ -1,6 +1,6 @@
 {
-  "version": "1.2.0",
-  "releaseDate": "2026-08-29",
-  "highlights": "Agent/tool-call contract validator, multi-harness hook sync (Antigravity + Claude Code), single-source version resolution & safe-sync guard",
-  "changelogUrl": "https://github.com/ahauy/universal-agents-workflow/releases"
+  "version": "1.3.0",
+  "releaseDate": "2026-09-03",
+  "highlights": "Per-App Window Policies, Smart Floating Stack, Current Space Anchoring, Workspace Presets & Adaptive Collinear Divider Resizing",
+  "changelogUrl": "https://github.com/ahauy/FlowSnap/releases"
 }
