@@ -288,6 +288,17 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
         guard result == .success else { throw AccessibilityError.cannotComplete }
     }
 
+    @discardableResult
+    public func raise(window: ManagedWindow) -> Bool {
+        guard let element = windowElement(for: window) else { return false }
+        do {
+            try raise(element)
+            return true
+        } catch {
+            return false
+        }
+    }
+
     public func minimize(_ window: AXUIElement) throws {
         guard isTrusted else { throw AccessibilityError.notTrusted }
         let result = AXUIElementSetAttributeValue(window, kAXMinimizedAttribute as CFString, kCFBooleanTrue)

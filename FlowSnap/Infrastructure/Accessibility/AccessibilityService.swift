@@ -55,6 +55,10 @@ public protocol AccessibilityService: Sendable {
     /// Bring a window to the front.
     func raise(_ window: AXUIElement) throws
 
+    /// Bring a managed window to the front via its underlying AXUIElement.
+    @discardableResult
+    func raise(window: ManagedWindow) -> Bool
+
     /// Resolves the specific AXUIElement for a given ManagedWindow.
     func windowElement(for window: ManagedWindow) -> AXUIElement?
 
