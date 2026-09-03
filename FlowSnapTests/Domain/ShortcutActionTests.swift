@@ -45,5 +45,22 @@ struct ShortcutActionTests {
         #expect(ShortcutAction.maximize.defaultCommand == .maximize)
         #expect(ShortcutAction.restore.defaultCommand == .restore)
         #expect(ShortcutAction.topLeft.defaultCommand == .snap(.zone(.topLeft)))
+        #expect(ShortcutAction.nextDisplay.defaultCommand == .moveToNextDisplay)
+        #expect(ShortcutAction.previousDisplay.defaultCommand == .moveToPreviousDisplay)
+    }
+
+    @Test func displayNavigationShortcutsIntegrity() {
+        let next = ShortcutAction.nextDisplay.defaultShortcut
+        #expect(next != nil)
+        #expect(next?.keyCode == 124) // Arrow right
+        #expect(next?.displayString == "⌃⌥⇧→")
+
+        let prev = ShortcutAction.previousDisplay.defaultShortcut
+        #expect(prev != nil)
+        #expect(prev?.keyCode == 123) // Arrow left
+        #expect(prev?.displayString == "⌃⌥⇧←")
+
+        #expect(ShortcutAction.nextDisplay.category == .displays)
+        #expect(ShortcutAction.previousDisplay.category == .displays)
     }
 }

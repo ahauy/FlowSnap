@@ -100,10 +100,11 @@ struct PresetActivationIntegrationTests {
         context.mockAX.mockVisibleWindows = [vscodeWin, safariWin]
 
         // Fire coding preset and immediately fire research preset
-        async let firstTask: Void = context.dispatcher.dispatch(.restorePreset("builtin.coding"))
-        async let secondTask: Void = context.dispatcher.dispatch(.restorePreset("builtin.research"))
+        let firstTask = Task { try await context.dispatcher.dispatch(.restorePreset("builtin.coding")) }
+        await Task.yield()
+        let secondTask = Task { try await context.dispatcher.dispatch(.restorePreset("builtin.research")) }
 
-        _ = try await (firstTask, secondTask)
+        _ = try await (firstTask.value, secondTask.value)
 
         #expect(context.dispatcher.lastExecutedCommand == .restorePreset("builtin.research"))
     }
