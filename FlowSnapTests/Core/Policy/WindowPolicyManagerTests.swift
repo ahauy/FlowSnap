@@ -117,6 +117,130 @@ struct WindowPolicyManagerTests {
             try await manager.applyPolicy(for: window)
         }
     }
+
+    @Test func assignedLayoutAppliesCanonicalZoneFrame() async throws {
+        let primary = Display(
+            id: 1,
+            frame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            visibleFrame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            scaleFactor: 1.0,
+            isPrimary: true
+        )
+        let display = MockDisplayManager(displays: [primary])
+        let ax = MockAccessibilityService(isTrusted: true)
+        let element = makeAXUIElement()
+        let window = ManagedWindow(
+            id: 10,
+            pid: 100,
+            bundleIdentifier: "com.microsoft.VSCode",
+            title: "VS Code",
+            frame: .zero
+        )
+        ax.mockWindowElements[window.id] = element
+
+        let manager = WindowPolicyManager(
+            accessibilityService: ax,
+            displayManager: display
+        )
+        manager.setPolicy(.assignedLayout(.leftHalf), forBundleID: "com.microsoft.VSCode")
+
+        try await manager.applyPolicy(for: window)
+
+        #expect(ax.setFrameCallCount == 1)
+        #expect(ax.lastSetFrame == CGRect(x: 0, y: 0, width: 720, height: 900))
+    }
+
+    @Test func rememberPositionRestoresClampedFrame() async throws {
+        let primary = Display(
+            id: 1,
+            frame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            visibleFrame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            scaleFactor: 1.0,
+            isPrimary: true
+        )
+        let display = MockDisplayManager(displays: [primary])
+        let ax = MockAccessibilityService(isTrusted: true)
+        let element = makeAXUIElement()
+        let window = ManagedWindow(
+            id: 20,
+            pid: 200,
+            bundleIdentifier: "com.spotify.client",
+            title: "Spotify",
+            frame: .zero
+        )
+        ax.mockWindowElements[window.id] = element
+
+        let suiteName = "WindowPolicyManagerTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let store = PreferencesStore(defaults: defaults)
+        // Save frame outside the 1440x900 screen
+        store.saveRememberedFrame(CGRect(x: 2000, y: 100, width: 800, height: 600), forBundleID: "com.spotify.client")
+
+        let manager = WindowPolicyManager(
+            accessibilityService: ax,
+            displayManager: display,
+            preferencesStore: store
+        )
+        manager.setPolicy(.rememberPosition, forBundleID: "com.spotify.client")
+
+        try await manager.applyPolicy(for: window)
+
+        #expect(ax.setFrameCallCount == 1)
+        let applied = try #require(ax.lastSetFrame)
+        #expect(applied.maxX <= 1440)
+        #expect(applied.width == 800)
+        #expect(applied.height == 600)
+    }
+
+    @Test func appPolicyRuleOverridesDefaultPolicy() throws {
+        let suiteName = "WindowPolicyManagerPrecedenceTests-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        let store = PreferencesStore(defaults: defaults)
+        let rule = AppPolicyRule(
+            bundleID: "com.slack.Slack",
+            appName: "Slack",
+            policy: .floating
+        )
+        store.setAppRule(rule)
+
+        let ax = MockAccessibilityService(isTrusted: true)
+        let display = MockDisplayManager(displays: [])
+        let manager = WindowPolicyManager(
+            accessibilityService: ax,
+            displayManager: display,
+            preferencesStore: store
+        )
+
+        #expect(manager.policy(forBundleID: "com.slack.Slack") == .floating)
+        #expect(manager.policy(forBundleID: "com.unregistered.app") == .currentSpace)
+    }
+
+    @Test func floatingWindowRecordsInFocusStack() async throws {
+        let display = MockDisplayManager(displays: [])
+        let ax = MockAccessibilityService(isTrusted: true)
+        let window = ManagedWindow(
+            id: 99,
+            pid: 999,
+            bundleIdentifier: "ru.keepcoder.Telegram",
+            title: "Telegram",
+            frame: .zero
+        )
+        let manager = WindowPolicyManager(
+            accessibilityService: ax,
+            displayManager: display
+        )
+        manager.setPolicy(.floating, forBundleID: "ru.keepcoder.Telegram")
+
+        try await manager.applyPolicy(for: window)
+
+        #expect(ax.setFrameCallCount == 0)
+        let target = manager.focusStack.removeFloatingWindow(windowID: 99)
+        #expect(target == nil)
+    }
 }
 
 // MARK: - Helpers

@@ -56,6 +56,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 await self.dependencies.windowPolicyManager.handle(event: event)
             }
         }
+        if let observer = dependencies.applicationObserver as? AnyObject {
+            dependencies.eventBus.subscribe(observer) { [weak self] event in
+                guard case .applicationLaunched(let pid, let bundleID) = event else { return }
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
+                    await self.dependencies.applicationObserver.observe(pid: pid, bundleID: bundleID)
+                }
+            }
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {

@@ -90,6 +90,9 @@
 | **ApplicationObservingDefaults** | Compile-time constants: `windowCreationTimeout = 10s`, `launchDedupWindow = 5s` | "Default timeouts for app launch observer" | `ApplicationObservingDefaults` | US-WORK-013, Domain enum |
 | **WorkspaceObserver** | @MainActor NSWorkspace bridge publishing `.applicationLaunched(pid, bundleID:)` | "Workspace lifecycle observer" | `WorkspaceObserver` | US-WORK-013, Infrastructure |
 | **WindowPolicyManager** | @MainActor resolver applying `.currentSpace` / `.currentDisplay` policies via AccessibilityService | "Per-app policy applier" | `WindowPolicyManager` | US-WORK-013, ADR-0008 |
+| **AppPolicyRule** | Configurable per-bundleID policy mapping entity | "App rule definition" | `AppPolicyRule` | US-WORK-014, ADR-0009, Codable, Identifiable |
+| **RememberedFrameStore** | Component persisting last-closed window frames per app with bounds clamping | "Saved frame storage" | `RememberedFrameStore` | US-WORK-014, ADR-0009, @MainActor |
+| **SmartFocusStack** | MRU focus tracking restoring focus to underlying tiled windows upon floating app dismissal | "Focus restoration stack" | `SmartFocusStack` | US-WORK-014, ADR-0009, @MainActor |
 
 ## Where to Look
 

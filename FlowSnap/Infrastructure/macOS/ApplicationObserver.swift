@@ -174,26 +174,34 @@ extension ApplicationObserver {
     /// Keeps the ApplicationServices calls out of `init` so the test path
     /// never has to mock `AXObserverCreate` — passing a custom `register`
     /// closure skips this function entirely.
+    ///
+    /// Launches a lightweight async window detector (checking layer-0 windows
+    /// every 100ms for up to 3s per RISK-LAUNCH-001) to reliably catch the
+    /// first window even before macOS finishes its launch animation.
     nonisolated fileprivate static func makeLiveRegistration() -> RegistrationFactory {
         return { pid, bundleID, onWindowCreated in
-            // Placeholder for the real ApplicationServices wiring.
-            //
-            // The live wiring would:
-            //   1. AXObserverCreate(pid, callback, &observer)
-            //   2. AXObserverAddNotification(observer, appElement,
-            //        kAXWindowCreatedNotification, refCon)
-            //   3. CFRunLoopAddSource(...)
-            //
-            // It is intentionally left as a returning-no-op here because
-            // the test path is the implementation under test. The full
-            // wiring is exercised manually against the running app.
-            //
-            // The runtime path is isolated from the type system so the
-            // Domain protocol contract is still honored: every outcome
-            // value is `Sendable` and the callback is `@MainActor @Sendable`.
             _ = bundleID
-            _ = onWindowCreated
-            _ = pid
+
+            Task { @MainActor in
+                for _ in 0..<30 {
+                    try? await Task.sleep(nanoseconds: 100_000_000)
+                    let options: CGWindowListOption = [.optionOnScreenOnly, .excludeDesktopElements]
+                    let windowList = CGWindowListCopyWindowInfo(options, kCGNullWindowID) as? [[String: Any]] ?? []
+                    for info in windowList {
+                        guard let ownerPID = info[kCGWindowOwnerPID as String] as? pid_t, ownerPID == pid,
+                              let layer = info[kCGWindowLayer as String] as? Int, layer == 0,
+                              let boundsDict = info[kCGWindowBounds as String] as? [String: Any],
+                              let bounds = CGRect(dictionaryRepresentation: boundsDict as CFDictionary),
+                              bounds.width >= 100, bounds.height >= 100,
+                              let windowNumber = info[kCGWindowNumber as String] as? CGWindowID else {
+                            continue
+                        }
+                        onWindowCreated(pid, windowNumber)
+                        return
+                    }
+                }
+            }
+
             return .registered(pid: pid, windowIDHint: nil)
         }
     }

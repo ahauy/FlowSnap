@@ -29,30 +29,35 @@ schema-version: "1.1"
 
 ## 📑 Mục lục
 
-1. [Tầm nhìn sản phẩm & Chân dung người dùng (Product Vision & Personas)](#1-tầm-nhìn-sản-phẩm--chân-dung-người-dùng)
-2. [Phân tích hiện trạng AS-IS vs TO-BE (Gap Analysis)](#2-phân-tích-hiện-trạng-as-is-vs-to-be)
-3. [Bảng ma trận ưu tiên MoSCoW & RICE](#3-bảng-ma-trận-ưu-tiên-moscow--rice)
-4. [Phân rã nghiệp vụ chi tiết & Checklist công việc (Epics & Backlog Tracking)](#4-phân-rã-nghiệp-vụ-chi-tiết--checklist-công-việc)
-   - [Sprint 0: Setup & Architecture Baseline](#sprint-0-project-setup--architecture-baseline)
-   - [Epic 1: Accessibility Permission & Focused Window Discovery](#epic-01-accessibility-permission--focused-window-discovery)
-   - [Epic 2: Core Layout Calculation & Basic Snap Engine](#epic-02-core-layout-calculation--basic-snap-engine)
-   - [Epic 3: Display-Aware Coordinate System & Multi-Monitor Support](#epic-03-display-aware-coordinate-system--multi-monitor-support)
-   - [Epic 4: Global Hotkeys & Command Dispatcher Daemon](#epic-04-global-hotkeys--command-dispatcher-daemon)
-   - [Epic 5: Menu Bar Status Item & Quick Snap Controls](#epic-05-menu-bar-status-item--quick-snap-controls)
-   - [Epic 6: Interactive Drag-to-Snap & HUD Snap Preview Overlay](#epic-06-interactive-drag-to-snap--hud-snap-preview-overlay)
-   - [Epic 7: Windows 11-Style Top-Edge Snap Layout Picker](#epic-07-windows-11-style-top-edge-snap-layout-picker)
-   - [Epic 8: Adaptive Multi-Window Resize (Shared Collinear Divider) & Gaps](#epic-08-adaptive-multi-window-resize-shared-collinear-divider--gaps)
-   - [Epic 9: SwiftUI Settings UI & Custom Shortcut Management](#epic-09-swiftui-settings-ui--custom-shortcut-management)
-   - [Epic 10: Workspace Snapshots & Intent-Based Multi-Window Restoration](#epic-10-workspace-snapshots--intent-based-multi-window-restoration)
-   - [Epic 11: Application Launch Observer & Current Space Preservation](#epic-11-application-launch-observer--current-space-preservation)
-   - [Epic 12: Per-App Window Policies & Smart Floating Stacking](#epic-12-per-app-window-policies--smart-floating-stacking)
-5. [Lộ trình phát hành theo Giai đoạn & Sprint (Release Roadmap)](#5-lộ-trình-phát-hành-theo-giai-đoạn--sprint)
-6. [Quy chuẩn định nghĩa hoàn thành (Definition of Done - DoD)](#6-quy-chuẩn-định-nghĩa-hoàn-thành-definition-of-done)
-7. [Phân tích Kỹ thuật Chuyên sâu, Rủi ro Hệ thống & Kế hoạch Phát hành (macOS System Strategy)](#7-phân-tích-kỹ-thuật-chuyên-sâu-rủi-ro-hệ-thống--kế-hoạch-phát-hành)
-   - [7.1 Hệ tọa độ ngược giữa AppKit và Accessibility API](#71-hệ-tọa-độ-ngược-giữa-appkit-và-accessibility-api)
-   - [7.2 Giới hạn macOS Spaces & Nguyên tắc Zero Private API](#72-giới-hạn-macos-spaces--nguyên-tắc-zero-private-api)
-   - [7.3 Ngân sách độ trễ & Tối ưu hiệu năng (Performance Latency Budget)](#73-ngân-sách-độ-trễ--tối-ưu-hiệu-năng-performance-latency-budget)
-   - [7.4 Kế hoạch Đóng gói & Ký số macOS (Code Signing, Notarization & Distribution)](#74-kế-hoạch-đóng-gói--ký-số-macos-code-signing-notarization--distribution)
+- [📋 FlowSnap — Product Backlog, Business Requirements \& Execution Roadmap](#-flowsnap--product-backlog-business-requirements--execution-roadmap)
+  - [📑 Mục lục](#-mục-lục)
+  - [1. Tầm nhìn sản phẩm \& Chân dung người dùng](#1-tầm-nhìn-sản-phẩm--chân-dung-người-dùng)
+    - [1.1. Tầm nhìn (Product Vision)](#11-tầm-nhìn-product-vision)
+    - [1.2. Chân dung người dùng mục tiêu (User Personas)](#12-chân-dung-người-dùng-mục-tiêu-user-personas)
+  - [2. Phân tích hiện trạng AS-IS vs TO-BE](#2-phân-tích-hiện-trạng-as-is-vs-to-be)
+  - [3. Bảng ma trận ưu tiên MoSCoW \& RICE](#3-bảng-ma-trận-ưu-tiên-moscow--rice)
+  - [4. Phân rã nghiệp vụ chi tiết \& Checklist công việc](#4-phân-rã-nghiệp-vụ-chi-tiết--checklist-công-việc)
+    - [Sprint 0: Project Setup \& Architecture Baseline](#sprint-0-project-setup--architecture-baseline)
+    - [EPIC 01: Accessibility Permission \& Focused Window Discovery](#epic-01-accessibility-permission--focused-window-discovery)
+    - [EPIC 02: Core Layout Calculation \& Basic Snap Engine](#epic-02-core-layout-calculation--basic-snap-engine)
+    - [EPIC 03: Display-Aware Coordinate System \& Multi-Monitor Support](#epic-03-display-aware-coordinate-system--multi-monitor-support)
+    - [EPIC 04: Global Hotkeys \& Command Dispatcher Daemon](#epic-04-global-hotkeys--command-dispatcher-daemon)
+    - [EPIC 05: Menu Bar Status Item \& Quick Snap Controls](#epic-05-menu-bar-status-item--quick-snap-controls)
+    - [EPIC 06: Interactive Drag-to-Snap \& HUD Snap Preview Overlay](#epic-06-interactive-drag-to-snap--hud-snap-preview-overlay)
+    - [EPIC 07: Windows 11-Style Top-Edge Snap Layout Picker](#epic-07-windows-11-style-top-edge-snap-layout-picker)
+    - [EPIC 08: Adaptive Multi-Window Resize (Shared Collinear Divider) \& Gaps](#epic-08-adaptive-multi-window-resize-shared-collinear-divider--gaps)
+    - [EPIC 09: SwiftUI Settings UI \& Custom Shortcut Management](#epic-09-swiftui-settings-ui--custom-shortcut-management)
+    - [EPIC 10: Workspace Snapshots \& Intent-Based Multi-Window Restoration](#epic-10-workspace-snapshots--intent-based-multi-window-restoration)
+    - [EPIC 11: Application Launch Observer \& Current Space Preservation](#epic-11-application-launch-observer--current-space-preservation)
+    - [EPIC 12: Per-App Window Policies \& Smart Floating Stacking](#epic-12-per-app-window-policies--smart-floating-stacking)
+  - [5. Lộ trình phát hành theo Giai đoạn \& Sprint](#5-lộ-trình-phát-hành-theo-giai-đoạn--sprint)
+  - [6. Quy chuẩn định nghĩa hoàn thành (Definition of Done - DoD)](#6-quy-chuẩn-định-nghĩa-hoàn-thành-definition-of-done---dod)
+  - [7. Phân tích Kỹ thuật Chuyên sâu, Rủi ro Hệ thống \& Kế hoạch Phát hành](#7-phân-tích-kỹ-thuật-chuyên-sâu-rủi-ro-hệ-thống--kế-hoạch-phát-hành)
+    - [7.1. Hệ tọa độ ngược giữa AppKit và Accessibility API](#71-hệ-tọa-độ-ngược-giữa-appkit-và-accessibility-api)
+    - [7.2. Giới hạn macOS Spaces \& Nguyên tắc Zero Private API](#72-giới-hạn-macos-spaces--nguyên-tắc-zero-private-api)
+    - [7.3. Ngân sách độ trễ \& Tối ưu hiệu năng (Performance Latency Budget)](#73-ngân-sách-độ-trễ--tối-ưu-hiệu-năng-performance-latency-budget)
+    - [7.4. Kế hoạch Đóng gói \& Ký số macOS (Code Signing, Notarization \& Distribution)](#74-kế-hoạch-đóng-gói--ký-số-macos-code-signing-notarization--distribution)
+  - [📝 Hướng Dẫn Vận Hành Cho AI Agent (`/command-continue-project`)](#-hướng-dẫn-vận-hành-cho-ai-agent-command-continue-project)
 
 ---
 
@@ -152,7 +157,7 @@ graph TD
 | **EPIC-08** | Tỷ lệ Tùy chỉnh (60/40, 70/30) & Window Gaps Thẩm mỹ      | **Should-Have** |   7   |  1.5   |    95%     |  1.5   |  **6.6**   |     **P1 (Visual)**     |   Sprint 2    |
 | **EPIC-09** | Kéo Đường Phân cách Chung (Adaptive Divider Resize)       | **Could-Have**  |   6   |  2.0   |    80%     |  3.0   |  **3.2**   |    **P2 (Advanced)**    |   Sprint 2    |
 | **EPIC-10** | Cài đặt SwiftUI & Tùy biến Phím tắt (Settings & Config)   | **Should-Have** |   8   |  1.5   |    95%     |  1.5   |  **7.6**   |    **P1 (Settings)**    |   Sprint 2    |
-| **EPIC-11** | Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspaces) | **Should-Have** |   8   |  3.0   |    100%    |  2.5   |  **9.1**   |  **P1 (Hero Feature)**  |   Sprint 3 ✅ |
+| **EPIC-11** | Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspaces) | **Should-Have** |   8   |  3.0   |    100%    |  2.5   |  **9.1**   |  **P1 (Hero Feature)**  |  Sprint 3 ✅  |
 | **EPIC-12** | Nhóm Cửa sổ & Workspace Presets (Coding, Research)        | **Should-Have** |   7   |  2.0   |    90%     |  1.5   |  **8.4**   |   **P1 (Value-Add)**    |   Sprint 3    |
 | **EPIC-13** | Phát hiện Mở Ứng dụng & Giữ ở Workspace Hiện tại          |  **Must-Have**  |   9   |  3.0   |    85%     |  2.5   |  **9.1**   |  **P0 (Hero Feature)**  |   Sprint 3    |
 | **EPIC-14** | Quy tắc Riêng theo Ứng dụng & Cửa sổ Nổi (Floating Stack) | **Should-Have** |   7   |  2.0   |    90%     |  2.0   |  **6.3**   |  **P1 (Flexibility)**   |   Sprint 3    |
@@ -563,7 +568,7 @@ _Mục tiêu: Giải quyết triệt để nỗi đau lớn nhất của ngườ
 
 _Mục tiêu: Trao toàn quyền tùy biến hành vi cho người dùng — quy định cửa sổ nào được nổi tạm thời, cửa sổ nào luôn bám vào một layout cố định._
 
-- [ ] **US-WORK-014: Quy tắc Riêng cho Từng Ứng dụng & Cửa sổ Nổi Thông minh (Per-App Rules & Smart Floating Stack)**
+- [x] **US-WORK-014: Quy tắc Riêng cho Từng Ứng dụng & Cửa sổ Nổi Thông minh (Per-App Rules & Smart Floating Stack)**
   - **Slug:** `per-app-rules-floating-stack`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -572,18 +577,18 @@ _Mục tiêu: Trao toàn quyền tùy biến hành vi cho người dùng — quy
   - **Blocks:** _(none)_
   - **Mô tả:** Cho phép người dùng thiết lập quy tắc chuyên biệt cho từng app (ví dụ Telegram luôn Floating, Spotify luôn nhớ vị trí, VS Code luôn snap 60% bên trái) và cơ chế Smart Window Stack khi có app tạm mở đè lên.
   - **Acceptance Criteria (AC):**
-    - [ ] Cung cấp các chính sách cửa sổ linh hoạt trong `WindowPolicy`:
+    - [x] Cung cấp các chính sách cửa sổ linh hoạt trong `WindowPolicy`:
       - `Current Space`: Luôn mở ở Space hiện tại
       - `Floating`: Cửa sổ nổi tự do, không bị ép vào layout dạng lưới
       - `Remember Position`: Luôn mở lại đúng vị trí frame đã đóng lần trước
       - `Assigned Layout`: Tự động snap vào một zone định sẵn (ví dụ: VS Code luôn mở Left 60%)
-    - [ ] Cơ chế `Smart Window Stack`: Khi mở một app dạng Floating (như Telegram/Slack), cửa sổ này hiển thị nổi phía trên mà không làm xáo trộn bố cục các cửa sổ đang chia đôi bên dưới.
-    - [ ] Khi đóng app nổi, tiêu điểm (focus) tự động trả lại cho ứng dụng làm việc gần nhất bên dưới một cách tự nhiên.
+    - [x] Cơ chế `Smart Window Stack`: Khi mở một app dạng Floating (như Telegram/Slack), cửa sổ này hiển thị nổi phía trên mà không làm xáo trộn bố cục các cửa sổ đang chia đôi bên dưới.
+    - [x] Khi đóng app nổi, tiêu điểm (focus) tự động trả lại cho ứng dụng làm việc gần nhất bên dưới một cách tự nhiên.
   - **Tasks:**
-    - [ ] `Domain`: Hoàn thiện `WindowPolicy.swift` với đầy đủ các rule types và options.
-    - [ ] `Core`: `WindowPolicyManager` áp dụng rule tương ứng mỗi khi nhận `windowCreated` event.
-    - [ ] `UI`: Thêm tab "Applications" trong Settings cho phép người dùng chọn app từ danh sách `/Applications` và gán policy.
-    - [ ] `Tests`: Kiểm tra priority rule precedence (App-specific rule ghi đè Default rule).
+    - [x] `Domain`: Hoàn thiện `WindowPolicy.swift` với đầy đủ các rule types và options.
+    - [x] `Core`: `WindowPolicyManager` áp dụng rule tương ứng mỗi khi nhận `windowCreated` event.
+    - [x] `UI`: Thêm tab "Applications" trong Settings cho phép người dùng chọn app từ danh sách `/Applications` và gán policy.
+    - [x] `Tests`: Kiểm tra priority rule precedence (App-specific rule ghi đè Default rule).
   - **Deliverables khi [x]:**
     - `.specify/features/per-app-rules-floating-stack/baseline.md` (SIGNED-OFF)
     - `docs/features/per-app-rules-floating-stack/README.md`
@@ -622,7 +627,7 @@ _Mục tiêu: Trao toàn quyền tùy biến hành vi cho người dùng — quy
   ├── [x] US-WORK-011: Workspace Snapshot & Intent-Based Restoration
   ├── [x] US-WORK-012: Window Groups & Built-in Workflow Presets
   ├── [x] US-WORK-013: Application Launch Observer & Current Space Policy (EPIC 11 ✅ complete)
-  └── [ ] US-WORK-014: Per-App Window Rules & Smart Floating Stacking
+  └── [x] US-WORK-014: Per-App Window Rules & Smart Floating Stacking (EPIC 12 ✅ complete)
 
 [ Future Horizons (V2.0+) ]
   ├── US-FUTURE-001: Visual Canvas-based Interactive Layout Editor
