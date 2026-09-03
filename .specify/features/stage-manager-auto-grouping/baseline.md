@@ -1,9 +1,9 @@
-# Domain Baseline: Stage Manager Multi-Window Auto-Grouping (US-WORK-017)
+# Domain Baseline: Stage Manager Multi-Window Auto-Grouping (US-WORK-018)
 
 - **Version**: 1.0.0
 - **Status**: SIGNED-OFF v1.0 (Confirmation Gate 1 Approved)
 - **Feature Slug**: `stage-manager-auto-grouping`
-- **Related Roadmap Item**: `US-WORK-017` (Epic 14 — Stage Manager Co-existence & Fullscreen Harmony)
+- **Related Roadmap Item**: `US-WORK-018` (Epic 14 — Stage Manager Co-existence & Fullscreen Harmony)
 
 ---
 

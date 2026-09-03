@@ -44,6 +44,22 @@ public struct GeneralSettingsView: View {
                 }
             }
 
+            Section("Stage Manager") {
+                Toggle("Auto-group windows on restore", isOn: stageManagerAutoGroupingBinding)
+                    .help("When enabled, FlowSnap bundles all restored workspace windows onto a single stage.")
+
+                HStack {
+                    Text("macOS Stage Manager")
+                    Spacer()
+                    Button("Desktop & Dock Settings…") {
+                        if let url = URL(string: "x-apple.systempreferences:com.apple.Desktop-Settings.extension") {
+                            NSWorkspace.shared.open(url)
+                        }
+                    }
+                    .buttonStyle(.link)
+                }
+            }
+
             Section("Launch") {
                 Toggle("Launch at login", isOn: launchAtLoginBinding)
             }
@@ -85,6 +101,13 @@ public struct GeneralSettingsView: View {
         Binding(
             get: { store.launchAtLogin },
             set: { store.setLaunchAtLogin($0) }
+        )
+    }
+
+    private var stageManagerAutoGroupingBinding: Binding<Bool> {
+        Binding(
+            get: { store.isStageManagerAutoGroupingEnabled },
+            set: { store.setStageManagerAutoGroupingEnabled($0) }
         )
     }
 }

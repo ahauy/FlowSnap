@@ -1,4 +1,4 @@
-# Stage Manager Multi-Window Auto-Grouping (US-WORK-017)
+# Stage Manager Multi-Window Auto-Grouping (US-WORK-018)
 
 ## 1. Overview
 

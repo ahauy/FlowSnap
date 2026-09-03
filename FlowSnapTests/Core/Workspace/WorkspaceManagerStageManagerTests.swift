@@ -5,7 +5,7 @@ import Testing
 
 @testable import FlowSnap
 
-/// Unit test suite for US-WORK-017 (Stage Manager Multi-Window Auto-Grouping).
+/// Unit test suite for US-WORK-018 (Stage Manager Multi-Window Auto-Grouping).
 ///
 /// Traces to: test-plan.md (TC-SMA-003, TC-SMA-004, TC-SMA-005, TC-SMA-006).
 @MainActor

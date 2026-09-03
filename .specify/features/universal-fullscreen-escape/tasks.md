@@ -1,7 +1,7 @@
-# Tasks: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-018)
+# Tasks: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-019)
 
 - **Feature**: `universal-fullscreen-escape`
-- **Story ID**: `US-WORK-018`
+- **Story ID**: `US-WORK-019`
 - **Status**: Completed (Phase 5)
 
 ---

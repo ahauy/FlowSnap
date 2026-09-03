@@ -1,4 +1,4 @@
-# Functional Specification: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-018)
+# Functional Specification: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-019)
 
 ## 1. Requirements (`REQ-FSE-###`)
 
@@ -7,7 +7,7 @@
     1. Tier 0: Direct `AXFullscreen` / `AXFullScreen = false` attribute write.
     2. Tier 1: Interactive press of the window's full screen button (`kAXFullScreenButtonAttribute` + `kAXPressAction`).
     3. Tier 2: Synthesized macOS full screen shortcut (`Control + Command + F`) via `CGEvent` to the target process PID.
-  - _Derived from_: `US-WORK-018`, `ASM-FSE-001`, `BR-FSE-001`.
+  - _Derived from_: `US-WORK-019`, `ASM-FSE-001`, `BR-FSE-001`.
 
 - **`REQ-FSE-002` (Fast-Path Optimization for Standard Cocoa Apps)**:
   - If Tier 0 succeeds, the system SHALL immediately complete the signal phase without querying the UI tree or dispatching keyboard events.
@@ -28,20 +28,20 @@
 
 - **`REQ-FSE-006` (Seam & Interface Integration)**:
   - The escape functionality SHALL be encapsulated behind `FullScreenEscapeCoordinating` and integrated into `AccessibilityServing.exitFullScreen`, `WindowManager.move`, and `WorkspaceManager+Restore`.
-  - _Derived from_: `US-WORK-018`, `ADR-0012`.
+  - _Derived from_: `US-WORK-019`, `ADR-0012`.
 
 ---
 
 ## 2. User Stories & Acceptance Scenarios
 
-### `US-WORK-018-01`: Standard Cocoa Native Window Escape (Safari / Finder / TextEdit)
+### `US-WORK-019-01`: Standard Cocoa Native Window Escape (Safari / Finder / TextEdit)
 
 - **Given**: A standard Cocoa window is in macOS Full Screen mode.
 - **When**: FlowSnap initiates `exitFullScreen(window, element)`.
 - **Then**: Tier 0 (`AXFullscreen = false`) succeeds within < 2ms.
 - **And**: FlowSnap enters the adaptive polling loop and returns as soon as the space exit animation completes.
 
-### `US-WORK-018-02`: Electron / Chromium Application Escape (VS Code / Brave / Antigravity)
+### `US-WORK-019-02`: Electron / Chromium Application Escape (VS Code / Brave / Antigravity)
 
 - **Given**: An Electron window is in macOS Full Screen mode and returns `cannotComplete` on `AXFullscreen = false`.
 - **When**: FlowSnap initiates `exitFullScreen(window, element)`.
@@ -49,7 +49,7 @@
 - **And**: FlowSnap queries `kAXFullScreenButtonAttribute` and executes `kAXPressAction`.
 - **And**: The window exits full screen back to Desktop Space.
 
-### `US-WORK-018-03`: Custom App Escape via Synthesized `⌃⌘F` Keystroke
+### `US-WORK-019-03`: Custom App Escape via Synthesized `⌃⌘F` Keystroke
 
 - **Given**: A window is in Full Screen mode where attribute write fails and no AX Full Screen button element is present.
 - **When**: FlowSnap initiates `exitFullScreen(window, element)`.
@@ -57,7 +57,7 @@
 - **And**: FlowSnap activates the target application and posts `⌃⌘F` via `CGEvent` to the target PID.
 - **And**: WindowServer triggers the full screen exit.
 
-### `US-WORK-018-04`: Early Return via Adaptive Polling
+### `US-WORK-019-04`: Early Return via Adaptive Polling
 
 - **Given**: An escape trigger has been sent to a window.
 - **When**: The window exits full screen at 300ms.

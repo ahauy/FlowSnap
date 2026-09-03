@@ -42,7 +42,7 @@ extension WorkspaceManager: WorkspaceRestoring {
         // unplugged mid-restore.
         let displays = await displayManager.displays
 
-        let stageManagerActive = stageManagerDetector.isStageManagerEnabled
+        let stageManagerActive = preferences.isStageManagerAutoGroupingEnabled && stageManagerDetector.isStageManagerEnabled
         var placed = 0
         var skipped: [SkippedApp] = []
 

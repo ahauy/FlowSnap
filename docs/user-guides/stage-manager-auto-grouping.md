@@ -1,4 +1,4 @@
-# 📖 User Guide: Stage Manager Multi-Window Auto-Grouping (US-WORK-017)
+# 📖 User Guide: Stage Manager Multi-Window Auto-Grouping (US-WORK-018)
 
 > **Target Audience:** FlowSnap Mac Users working with macOS Stage Manager, Multi-Window Workspaces, and Multi-App Workflows (e.g. Coding, Research, Writing)  
 > **Applies to:** FlowSnap 1.0+ (macOS 13 Ventura, macOS 14 Sonoma & macOS 15 Sequoia)  

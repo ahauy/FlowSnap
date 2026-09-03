@@ -1,4 +1,4 @@
-# Test Plan: Stage Manager Multi-Window Auto-Grouping (US-WORK-017)
+# Test Plan: Stage Manager Multi-Window Auto-Grouping (US-WORK-018)
 
 **Feature slug**: `stage-manager-auto-grouping`
 **Baseline version**: 1.0 (SIGNED-OFF)

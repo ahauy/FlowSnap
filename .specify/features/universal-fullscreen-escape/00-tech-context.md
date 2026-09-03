@@ -1,4 +1,4 @@
-# Tech Context: FlowSnap (US-WORK-018)
+# Tech Context: FlowSnap (US-WORK-019)
 
 > Source: YAML frontmatter in `docs/PRODUCT_BACKLOG_ROADMAP.md` (schema-version 1.1).
 > This file is the single source of truth for tech-stack facts. Every subagent
@@ -16,7 +16,7 @@
 - **lint**: SwiftLint (`.swiftlint.yml`) — zero force unwrap / try / cast, file < 800 LOC, function < 50 LOC
 - **code intelligence**: `code-review-graph` (uvx) — local Tree-sitter AST + SQLite graph
 
-## Relevant Subsystems for US-WORK-018
+## Relevant Subsystems for US-WORK-019
 
 - `Domain/`: `ManagedWindow`, `WindowKind` (.fullscreen), `WindowPlacement`, `Workspace`
 - `Core/`: `WindowManaging` / `WindowManager`, `WorkspaceManager` (`WorkspaceManager+Restore`), `CoordinateTransformer`
