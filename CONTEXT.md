@@ -96,6 +96,11 @@
 | **DisplayNavigator** | Spatial engine ordering displays left-to-right with cyclic wrap-around | "Display navigation helper" | `DisplayNavigator` | US-DISP-015, ADR-0010, Core |
 | **RelativeFrameScaler** | Proportional geometric transformer mapping frames between displays | "Cross-display frame scaler" | `RelativeFrameScaler` | US-DISP-015, ADR-0010, Pure Geometric |
 | **CursorWarping** | CoreGraphics cursor relocation to target window center maintaining focus | "Mouse warp on throw" | `CursorWarping` | US-DISP-015, ADR-0010, Infrastructure |
+| **TopologyFingerprint** | Deterministic SHA-256 hash uniquely identifying a display configuration | "Display setup fingerprint or monitor hash" | `TopologyFingerprint` | US-DISP-016, ADR-0011, Domain |
+| **DisplayTopologyProfile** | Saved window arrangement snapshot mapped to a TopologyFingerprint | "Multi-monitor workspace profile" | `DisplayTopologyProfile` | US-DISP-016, ADR-0011, Domain / Persistence |
+| **DisplayHotPlugObserver** | Debounced observer listening to `didChangeScreenParametersNotification` | "Display plug/unplug listener" | `DisplayHotPlugObserver` | US-DISP-016, ADR-0011, Infrastructure |
+| **FrameClampingHelper** | Geometric helper fitting window frames inside display bounds with safe titlebar | "Window frame bounds clamper" | `FrameClampingHelper` | US-DISP-016, ADR-0011, Core |
+| **TopologyProfileManager** | Coordinator executing hot-unplug clamping and reconnect auto-restoration | "Display topology profile manager" | `TopologyProfileManager` | US-DISP-016, ADR-0011, Core |
 
 ## Where to Look
 
