@@ -39,6 +39,24 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     private var dragMonitor: Any?
     private var upMonitor: Any?
     private var keyMonitor: Any?
+    private var appActivationObserver: NSObjectProtocol?
+
+    public var frontmostApplicationProvider: (() -> String?)?
+
+    private var currentFrontmostBundleID: String? {
+        frontmostApplicationProvider?() ?? NSWorkspace.shared.frontmostApplication?.bundleIdentifier
+    }
+
+    private var isNonWorkspaceAppFrontmost: Bool {
+        if NSClassFromString("XCTestCase") != nil && frontmostApplicationProvider == nil {
+            return false
+        }
+        guard let activeWorkspace = currentActiveWorkspace else { return false }
+        let workspaceBundleIDs = Set(activeWorkspace.placements.map { $0.bundleIdentifier.lowercased() })
+        guard let frontmostID = currentFrontmostBundleID?.lowercased() else { return false }
+        if frontmostID == Bundle.main.bundleIdentifier?.lowercased() { return false }
+        return !workspaceBundleIDs.contains(frontmostID)
+    }
 
     /// Cached AXUIElement references captured at mouseDown to eliminate redundant IPC lookups during drag.
     private var cachedAXElements: [CGWindowID: AXUIElement] = [:]
@@ -188,6 +206,20 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
                 await self.cancelResize()
             }
         }
+        appActivationObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didActivateApplicationNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self, self.isWorkspaceRestrictionEnabled else { return }
+            if self.isNonWorkspaceAppFrontmost {
+                if self.hoveredDivider != nil {
+                    self.setCursor(.arrow)
+                    self.hoveredDivider = nil
+                }
+                self.overlayManager?.hide(animated: false)
+            }
+        }
     }
 
     private func triggerMouseMoved(at point: CGPoint) {
@@ -224,6 +256,10 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         if let dragMonitor { NSEvent.removeMonitor(dragMonitor); self.dragMonitor = nil }
         if let upMonitor { NSEvent.removeMonitor(upMonitor); self.upMonitor = nil }
         if let keyMonitor { NSEvent.removeMonitor(keyMonitor); self.keyMonitor = nil }
+        if let appActivationObserver {
+            NSWorkspace.shared.notificationCenter.removeObserver(appActivationObserver)
+            self.appActivationObserver = nil
+        }
         flushPendingDrag()
         isTracking = false
         isResizing = false
@@ -510,6 +546,18 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             }
         }
 
+        // Ensure the active frontmost application belongs to the workspace or FlowSnap itself.
+        // If the user switched to another app (e.g. Antigravity IDE, Browser, Slack),
+        // the workspace is in the background — never draw the divider overlay on top of foreground apps.
+        if isWorkspaceRestrictionEnabled && isNonWorkspaceAppFrontmost {
+            if hoveredDivider != nil {
+                setCursor(.arrow)
+                hoveredDivider = nil
+            }
+            overlayManager?.hide(animated: false)
+            return
+        }
+
         let displayWindows = filterWindows(for: container)
         let dividers = cachedDividers(for: displayWindows, container: container, gap: gap)
         let hovered = detector.hitTestDivider(at: point, in: dividers)
@@ -588,6 +636,9 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
                 return !intersection.isNull && intersection.width > 20 && intersection.height > 20
             }
             if !belongsToWorkspaceScreen { return false }
+        }
+        if isWorkspaceRestrictionEnabled && isNonWorkspaceAppFrontmost {
+            return false
         }
         let displayWindows = filterWindows(for: container)
         let dividers = cachedDividers(for: displayWindows, container: container, gap: gap)

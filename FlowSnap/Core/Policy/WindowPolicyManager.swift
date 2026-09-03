@@ -15,6 +15,7 @@ final class WindowPolicyManager {
     private let preferencesStore: PreferencesStore?
     private let layoutEngine: LayoutEngine
     public let focusStack: SmartFocusStack
+    public weak var workspaceManager: WorkspaceManager?
 
     private var policies: [String: WindowPolicy] = [:]
 
@@ -26,13 +27,15 @@ final class WindowPolicyManager {
         displayManager: any DisplayManaging,
         preferencesStore: PreferencesStore? = nil,
         layoutEngine: LayoutEngine = LayoutEngine(),
-        focusStack: SmartFocusStack = SmartFocusStack()
+        focusStack: SmartFocusStack = SmartFocusStack(),
+        workspaceManager: WorkspaceManager? = nil
     ) {
         self.accessibilityService = accessibilityService
         self.displayManager = displayManager
         self.preferencesStore = preferencesStore
         self.layoutEngine = layoutEngine
         self.focusStack = focusStack
+        self.workspaceManager = workspaceManager
     }
 
     /// Set the policy for a specific app (in-memory override).
@@ -53,7 +56,20 @@ final class WindowPolicyManager {
     /// US-WORK-014: Full dispatching supporting `.currentSpace`, `.currentDisplay`,
     /// `.floating`, `.rememberPosition`, and `.assignedLayout(LayoutZone)`.
     public func applyPolicy(for window: ManagedWindow) async throws {
+        // If a workspace is actively restoring, do not intercept newly launched windows
+        if let workspaceManager, workspaceManager.isRestoring {
+            return
+        }
+
         let bundleID = window.bundleIdentifier
+        // If the window belongs to the active workspace, preserve workspace placement and do not force .currentSpace (snap full)
+        if let bundleID,
+           let activeWorkspace = workspaceManager?.activeWorkspace,
+           activeWorkspace.placements.contains(where: { $0.bundleIdentifier.lowercased() == bundleID.lowercased() }) {
+            focusStack.recordFocus(windowID: window.id, isFloating: false)
+            return
+        }
+
         let resolvedPolicy = bundleID.map { self.policy(forBundleID: $0) } ?? defaultPolicy
 
         switch resolvedPolicy {

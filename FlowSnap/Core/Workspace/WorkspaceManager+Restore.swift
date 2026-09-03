@@ -29,6 +29,12 @@ extension WorkspaceManager: WorkspaceRestoring {
             throw RestoreError.accessibilityDenied
         }
 
+        guard restoringID == nil else {
+            return RestoreSummary(placedCount: 0, totalPlacements: 0, skipped: [])
+        }
+        restoringID = workspace.id
+        defer { restoringID = nil }
+
         let placements = workspace.orderedPlacements
 
         // E8 — an empty workspace is a no-op, not an error: the menu item is
