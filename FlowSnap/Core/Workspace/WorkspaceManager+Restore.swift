@@ -42,15 +42,36 @@ extension WorkspaceManager: WorkspaceRestoring {
         // unplugged mid-restore.
         let displays = await displayManager.displays
 
+        let stageManagerActive = stageManagerDetector.isStageManagerEnabled
         var placed = 0
         var skipped: [SkippedApp] = []
 
-        for placement in placements {
-            switch await restore(placement, displays: displays, options: options) {
+        for (index, placement) in placements.enumerated() {
+            let isAnchor = (index == 0)
+            switch await restore(
+                placement,
+                displays: displays,
+                options: options,
+                stageManagerActive: stageManagerActive,
+                isAnchor: isAnchor
+            ) {
             case .placed:
                 placed += 1
             case .skipped(let reason):
                 skipped.append(SkippedApp(bundleIdentifier: placement.bundleIdentifier, reason: reason))
+            }
+        }
+
+        // BR-SMA-004: When Stage Manager is active, re-raise the primary window of the Anchor App
+        // so that keyboard focus is firmly retained by the user's primary application.
+        if stageManagerActive, placed > 0, let anchorPlacement = placements.first {
+            let anchorWindows = matchingWindows(for: anchorPlacement)
+            if let primaryAnchor = anchorWindows.first {
+                if let el = primaryAnchor.element {
+                    try? accessibilityService.raise(el)
+                } else {
+                    accessibilityService.raise(window: primaryAnchor.window)
+                }
             }
         }
 
@@ -77,7 +98,9 @@ extension WorkspaceManager: WorkspaceRestoring {
     private func restore(
         _ placement: WindowPlacement,
         displays: [Display],
-        options: RestoreOptions
+        options: RestoreOptions,
+        stageManagerActive: Bool = false,
+        isAnchor: Bool = false
     ) async -> PlacementResult {
         var windows = matchingWindows(for: placement)
 
@@ -123,8 +146,27 @@ extension WorkspaceManager: WorkspaceRestoring {
         // every move succeeded — the "it restored but I can't see it" half of the
         // reported defect. Best-effort: a refused activation must not downgrade a
         // placed window to a skipped one.
+        //
+        // BR-SMA-002, BR-SMA-003: When Stage Manager is active, only the Anchor App
+        // is activated via reveal(); secondary apps are unhidden and raised via kAXRaiseAction
+        // without calling app.activate(), preventing macOS from swapping stages.
         if moved {
-            launcher.reveal(bundleID: placement.bundleIdentifier)
+            if stageManagerActive {
+                if isAnchor {
+                    launcher.reveal(bundleID: placement.bundleIdentifier)
+                } else {
+                    launcher.unhide(bundleID: placement.bundleIdentifier)
+                    for window in windows {
+                        if let el = window.element {
+                            try? accessibilityService.raise(el)
+                        } else {
+                            accessibilityService.raise(window: window.window)
+                        }
+                    }
+                }
+            } else {
+                launcher.reveal(bundleID: placement.bundleIdentifier)
+            }
         }
 
         return moved ? .placed : .skipped(.noWindow)

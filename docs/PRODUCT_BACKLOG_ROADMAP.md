@@ -662,7 +662,7 @@ _Mục tiêu: Xóa bỏ rào cản thao tác khi kết nối màn hình rời �
 
 _Mục tiêu: Giải quyết triệt để 2 vấn đề xung đột cố hữu của macOS — giữ Stage Manager bật mà vẫn phục hồi được Workspace đa cửa sổ song song, đồng thời cho phép thoát Native Full Screen mượt mà trên mọi ứng dụng (kể cả Electron/VS Code)._
 
-- [ ] **US-WORK-017: Tương thích Stage Manager & Tự động Gom nhóm Cửa sổ khi Restore (Stage Manager Multi-Window Auto-Grouping)**
+- [x] **US-WORK-017: Tương thích Stage Manager & Tự động Gom nhóm Cửa sổ khi Restore (Stage Manager Multi-Window Auto-Grouping)**
   - **Slug:** `stage-manager-auto-grouping`
   - **Effort:** L
   - **Context-budget:** multi-session
@@ -671,13 +671,21 @@ _Mục tiêu: Giải quyết triệt để 2 vấn đề xung đột cố hữu 
   - **Blocks:** _(none)_
   - **Mô tả:** Khi người dùng bấm "Restore" một Workspace (ví dụ 2 app 50/50) trong khi Stage Manager đang BẬT (`GloballyEnabled = 1`), FlowSnap tự động gom tất cả các app trong Workspace vào cùng một Sân khấu (Stage) duy nhất thay vì để macOS đẩy từng app vào dải thu nhỏ bên cạnh.
   - **Acceptance Criteria (AC):**
-    - [ ] Kiểm tra trạng thái Stage Manager qua `defaults read com.apple.WindowManager GloballyEnabled`.
-    - [ ] Khi Stage Manager = ON: Thay vì gọi `app.activate()` tuần tự từng app làm kích hoạt cơ chế đảo Stage của macOS, FlowSnap sử dụng cơ chế `Smart Stage Coordination`: kích hoạt App chính đầu tiên, sau đó đưa các app kế tiếp lên mặt phẳng hiển thị qua `kAXRaiseAction` và giả lập thao tác Shift-Group.
-    - [ ] Đảm bảo sau khi Restore hoàn tất: Cả 2-3 cửa sổ trong Workspace cùng hiển thị đồng thời trên một Stage duy nhất với tỷ lệ chính xác (50/50, 60/40), không có cửa sổ nào bị đẩy vào dải Stage Manager bên cạnh.
+    - [x] Kiểm tra trạng thái Stage Manager qua `defaults read com.apple.WindowManager GloballyEnabled`.
+    - [x] Khi Stage Manager = ON: Thay vì gọi `app.activate()` tuần tự từng app làm kích hoạt cơ chế đảo Stage của macOS, FlowSnap sử dụng cơ chế `Smart Stage Coordination`: kích hoạt App chính đầu tiên, sau đó đưa các app kế tiếp lên mặt phẳng hiển thị qua `kAXRaiseAction` và giả lập thao tác Shift-Group.
+    - [x] Đảm bảo sau khi Restore hoàn tất: Cả 2-3 cửa sổ trong Workspace cùng hiển thị đồng thời trên một Stage duy nhất với tỷ lệ chính xác (50/50, 60/40), không có cửa sổ nào bị đẩy vào dải Stage Manager bên cạnh.
   - **Tasks:**
-    - [ ] `Infrastructure`: Cài đặt `StageManagerDetector.swift` đọc trạng thái cấu hình Stage Manager từ `com.apple.WindowManager`.
-    - [ ] `Core`: Cập nhật `WorkspaceManager+Restore.swift` nhánh xử lý `restoreWithStageManagerEnabled` sử dụng `kAXRaiseAction`.
-    - [ ] `Tests`: Test suite giả lập môi trường Stage Manager và xác nhận thứ tự gọi AXRaise không gây ra race condition.
+    - [x] `Infrastructure`: Cài đặt `StageManagerDetector.swift` đọc trạng thái cấu hình Stage Manager từ `com.apple.WindowManager`.
+    - [x] `Core`: Cập nhật `WorkspaceManager+Restore.swift` nhánh xử lý `restoreWithStageManagerEnabled` sử dụng `kAXRaiseAction`.
+    - [x] `Tests`: Test suite giả lập môi trường Stage Manager và xác nhận thứ tự gọi AXRaise không gây ra race condition (400 tests passing).
+  - **Deliverables khi [x]:**
+    - [x] Feature Spec: `.specify/features/stage-manager-auto-grouping/spec.md`
+    - [x] Technical Plan: `.specify/features/stage-manager-auto-grouping/plan.md`
+    - [x] Tasks Breakdown: `.specify/features/stage-manager-auto-grouping/tasks.md`
+    - [x] Architecture Decision Record: `adr/0013-stage-manager-auto-grouping.md`
+    - [x] Technical Docs: `docs/features/stage-manager-auto-grouping/README.md`
+    - [x] End-User Guide: `docs/user-guides/stage-manager-auto-grouping.md` (kèm visual screenshots)
+    - [x] Test Plan: `.specify/features/stage-manager-auto-grouping/test-plan.md`
 
 - [x] **US-WORK-018: Thoát Toàn màn hình Đa nền tảng (Universal Fullscreen Escape for Electron/Native Apps)**
   - **Slug:** `universal-fullscreen-escape`
@@ -789,8 +797,8 @@ _Mục tiêu: Đem lại trải nghiệm thao tác tức thì kiểu Raycast/Alf
   ├── [Sprint 4: Multi-Monitor Excellence]  ──► [ COMPLETED ✅ ]
   │     ├── [x] US-DISP-015: Cross-Display Window Throw (⌃⌥⇧→ / ⌃⌥⇧←)
   │     └── [x] US-DISP-016: Display Topology Profiles & Hot-Plug Rebalancer (EPIC 13 ✅ complete)
-  ├── [Sprint 5: Stage Manager & Fullscreen Harmony]
-  │     ├── [ ] US-WORK-017: Stage Manager Multi-Window Auto-Grouping on Restore
+  ├── [Sprint 5: Stage Manager & Fullscreen Harmony]  ──► [ COMPLETED ✅ ]
+  │     ├── [x] US-WORK-017: Stage Manager Multi-Window Auto-Grouping on Restore (EPIC 14 ✅ complete)
   │     └── [x] US-WORK-018: Universal Fullscreen Escape (Electron/Native Button & ⌃⌘F) ✅ complete
   └── [Sprint 6: Quick Floating Utility & Always-On-Top]
         ├── [ ] US-SNAP-019: Quick Floating Scratchpad & Calculator Overlay (⌥Space)

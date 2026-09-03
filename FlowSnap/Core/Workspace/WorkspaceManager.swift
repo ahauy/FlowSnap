@@ -47,6 +47,7 @@ public final class WorkspaceManager: ObservableObject {
     let layoutEngine: any LayoutCalculating
     let launcher: any ApplicationLaunching
     let preferences: PreferencesStore
+    let stageManagerDetector: any StageManagerDetecting
 
     /// How long to wait for a launched app's first window (BR-WORK-003).
     let launchTimeout: TimeInterval
@@ -63,6 +64,7 @@ public final class WorkspaceManager: ObservableObject {
         layoutEngine: any LayoutCalculating = LayoutEngine(),
         launcher: (any ApplicationLaunching)? = nil,
         preferences: PreferencesStore = PreferencesStore(),
+        stageManagerDetector: (any StageManagerDetecting)? = nil,
         launchTimeout: TimeInterval = LaunchTiming.windowTimeout,
         ownBundleIdentifier: String? = Bundle.main.bundleIdentifier,
         loadAtInit: Bool = true
@@ -80,6 +82,7 @@ public final class WorkspaceManager: ObservableObject {
         // have to hand-build a launcher.
         self.launcher = launcher ?? AppLauncher(accessibilityService: accessibilityService)
         self.preferences = preferences
+        self.stageManagerDetector = stageManagerDetector ?? StageManagerDetector()
         self.launchTimeout = launchTimeout
         self.ownBundleIdentifier = ownBundleIdentifier
         if loadAtInit {

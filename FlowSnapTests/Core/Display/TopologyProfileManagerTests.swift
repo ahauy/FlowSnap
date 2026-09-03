@@ -51,7 +51,7 @@ struct TopologyProfileManagerTests {
         let win2 = makeManagedWindow(id: 102, bundleID: "com.microsoft.VSCode", frame: CGRect(x: 2000, y: 100, width: 960, height: 1000))
         mockAX.mockVisibleWindows = [win1, win2]
 
-        let userDefaults = UserDefaults(suiteName: "TestTopologySuite_\(UUID().uuidString)")!
+        let userDefaults = UserDefaults(suiteName: "TestTopologySuite_\(UUID().uuidString)") ?? .standard
         let manager = TopologyProfileManager(
             displayManager: mockDisplay,
             accessibilityService: mockAX,
@@ -80,7 +80,7 @@ struct TopologyProfileManagerTests {
         let win = makeManagedWindow(id: 101, bundleID: "com.microsoft.VSCode", frame: CGRect(x: 1800, y: 100, width: 1200, height: 800))
         mockAX.mockVisibleWindows = [win]
 
-        let userDefaults = UserDefaults(suiteName: "TestTopologySuite_\(UUID().uuidString)")!
+        let userDefaults = UserDefaults(suiteName: "TestTopologySuite_\(UUID().uuidString)") ?? .standard
         let manager = TopologyProfileManager(
             displayManager: mockDisplay,
             accessibilityService: mockAX,
@@ -115,7 +115,7 @@ struct TopologyProfileManagerTests {
         let winCode = makeManagedWindow(id: 102, bundleID: "com.microsoft.VSCode", frame: CGRect(x: 200, y: 200, width: 600, height: 500))
         mockAX.mockVisibleWindows = [winSafari, winCode]
 
-        let userDefaults = UserDefaults(suiteName: "TestTopologySuite_\(UUID().uuidString)")!
+        let userDefaults = UserDefaults(suiteName: "TestTopologySuite_\(UUID().uuidString)") ?? .standard
         let manager = TopologyProfileManager(
             displayManager: mockDisplay,
             accessibilityService: mockAX,
@@ -154,7 +154,7 @@ struct TopologyProfileManagerTests {
         let winSafari = makeManagedWindow(id: 101, bundleID: "com.apple.Safari", frame: CGRect(x: 100, y: 100, width: 600, height: 500))
         mockAX.mockVisibleWindows = [winSafari]
 
-        let userDefaults = UserDefaults(suiteName: "TestTopologySuite_\(UUID().uuidString)")!
+        let userDefaults = UserDefaults(suiteName: "TestTopologySuite_\(UUID().uuidString)") ?? .standard
         let manager = TopologyProfileManager(
             displayManager: mockDisplay,
             accessibilityService: mockAX,

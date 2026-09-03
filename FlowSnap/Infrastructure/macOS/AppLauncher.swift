@@ -45,6 +45,10 @@ public protocol ApplicationLaunching: Sendable {
     @discardableResult
     func reveal(bundleID: String) -> Bool
 
+    /// Un-hides an app if it was hidden (Cmd+H), without forcing stage switch or full activation.
+    @discardableResult
+    func unhide(bundleID: String) -> Bool
+
     /// Process id of a running app, or `nil` when it is not running.
     func runningProcessIdentifier(bundleID: String) -> pid_t?
 }
@@ -126,6 +130,17 @@ public final class AppLauncher: ApplicationLaunching, @unchecked Sendable {
         // `.activateAllWindows` also brings forward windows on another Space, which
         // is what "restore my layout" means to a user with one app per Space.
         return app.activate(options: [.activateAllWindows])
+    }
+
+    @discardableResult
+    public func unhide(bundleID: String) -> Bool {
+        guard let app = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).first else {
+            return false
+        }
+        if app.isHidden {
+            return app.unhide()
+        }
+        return true
     }
 
     /// Whether the process currently exposes a normal (snappable) window.

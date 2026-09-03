@@ -57,9 +57,23 @@ public final class MockAccessibilityService: AccessibilityService, @unchecked Se
         mockFrames[window] = frame
     }
 
+    public var raisedElements: [AXUIElement] = []
+    public var raisedWindows: [ManagedWindow] = []
+
     public func raise(_ window: AXUIElement) throws {
         guard isTrusted else { throw AccessibilityError.notTrusted }
         raiseCallCount += 1
+        raisedElements.append(window)
+    }
+
+    @discardableResult
+    public func raise(window: ManagedWindow) -> Bool {
+        guard isTrusted else { return false }
+        raisedWindows.append(window)
+        if let el = windowElement(for: window) {
+            try? raise(el)
+        }
+        return true
     }
 
     public var windowElementCallCount = 0
