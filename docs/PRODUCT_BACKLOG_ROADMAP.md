@@ -656,6 +656,33 @@ _Mục tiêu: Xóa bỏ rào cản thao tác khi kết nối màn hình rời �
     - `docs/user-guides/display-topology-profiles-hotplug.md`
     - `adr/0011-display-topology-profiles-hotplug.md`
 
+- [ ] **US-DISP-017: Di chuyển Toàn bộ Không gian làm việc Xuyên Màn hình (Atomic Workspace Cross-Display Migration)**
+  - **Slug:** `workspace-cross-display-migration`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** High (P1)
+  - **Depends-on:** `US-DISP-015` ✅, `US-WORK-011` ✅, `US-WORK-017` ✅
+  - **Blocks:** _(none)_
+  - **Mô tả:** Cho phép người dùng chuyển tức thì toàn bộ các cửa sổ thuộc Không gian làm việc (Workspace) đang mở từ màn hình hiện tại sang màn hình kế tiếp hoặc màn hình chỉ định bằng tổ hợp phím toàn cục (mặc định `⌃⌥⇧⌘→` và `⌃⌥⇧⌘←`) hoặc tùy chọn trong thanh menu Status Bar. Mọi tỷ lệ tương đối giữa các cửa sổ (Split Seam & Normalized Ratios) được bảo toàn nguyên vẹn trên màn hình đích mà không làm rã nhóm Stage Manager.
+  - **Acceptance Criteria (AC):**
+    - [ ] Lắng nghe phím tắt toàn cục `Move Workspace to Next Display` (`⌃⌥⇧⌘→`) và `Move Workspace to Previous Display` (`⌃⌥⇧⌘←`), cho phép tùy chỉnh trong Preferences.
+    - [ ] Khi kích hoạt: Xác định chính xác danh sách các cửa sổ thuộc Workspace đang kích hoạt trên màn hình nguồn (`sourceDisplay`).
+    - [ ] Sử dụng `RelativeFrameScaler` để chuyển đổi đồng loạt tọa độ của tất cả cửa sổ trong Workspace từ `sourceDisplay.visibleFrame` sang `targetDisplay.visibleFrame`, bảo toàn hoàn hảo tỉ lệ chia tách (ví dụ 50/50, 70/30).
+    - [ ] Áp dụng thứ tự di chuyển 2 pha (2-phase move ordering: thu nhỏ trước - mở rộng sau) kết hợp độ trễ tối ưu giữa các cửa sổ (Staggered Window IPC) để giữ vững liên kết nhóm trong Stage Manager, ngăn ngừa hiện tượng văng cửa sổ ra dải phụ.
+    - [ ] Tự động chuyển tiêu điểm chuột và tiêu điểm dải phân cách (`AdaptiveDividerCoordinator`) sang màn hình đích, vô hiệu hóa hoàn toàn dải phân cách trên màn hình nguồn.
+    - [ ] Xử lý an toàn khi chỉ có 1 màn hình duy nhất hoặc không có Workspace nào đang active (No-op êm dịu, không giật màn hình).
+  - **Tasks:**
+    - [ ] `Core`: Cài đặt `WorkspaceMigrator.swift` / bổ sung phương thức `migrateActiveWorkspace(to:in:)` trong `WorkspaceManager`.
+    - [ ] `Core`: Ánh xạ đa cửa sổ qua `RelativeFrameScaler` sang `targetDisplay.visibleFrame`.
+    - [ ] `Hotkeys`: Đăng ký hotkey mặc định `⌃⌥⇧⌘→` và `⌃⌥⇧⌘←` trong `GlobalHotkeyManager`.
+    - [ ] `UI`: Bổ sung menu item "Move Workspace to Next Display" vào thanh Quick Controls / StatusBar menu.
+    - [ ] `Tests`: Kiểm tra kịch bản chuyển Workspace 2 cửa sổ và 3 cửa sổ giữa màn hình Retina và màn hình ngoài với độ phân giải khác nhau.
+  - **Deliverables khi [x]:**
+    - `.specify/features/workspace-cross-display-migration/baseline.md` (SIGNED-OFF v1.0)
+    - `docs/features/workspace-cross-display-migration/README.md`
+    - `docs/user-guides/workspace-cross-display-migration.md`
+    - `adr/0014-workspace-cross-display-migration.md`
+
 ---
 
 ### EPIC 14: Stage Manager Co-existence & Universal Fullscreen Escape (Tương thích Stage Manager & Thoát Full Screen)
@@ -793,10 +820,11 @@ _Mục tiêu: Đem lại trải nghiệm thao tác tức thì kiểu Raycast/Alf
   ├── [x] US-WORK-013: Application Launch Observer & Current Space Policy (EPIC 11 ✅ complete)
   └── [x] US-WORK-014: Per-App Window Rules & Smart Floating Stacking (EPIC 12 ✅ complete)
 
-[ GIAI ĐOẠN 2: ECOSYSTEM EXPANSION, MULTI-MONITOR & STAGE MANAGER (PHASE 2) ]  ──► [ UPCOMING 🌟 ]
-  ├── [Sprint 4: Multi-Monitor Excellence]  ──► [ COMPLETED ✅ ]
+[ GIAI ĐOẠN 2: ECOSYSTEM EXPANSION, MULTI-MONITOR & STAGE MANAGER (PHASE 2) ]  ──► [ IN PROGRESS 🚀 ]
+  ├── [Sprint 4: Multi-Monitor Excellence]  ──► [ IN PROGRESS / ENHANCED 🚀 ]
   │     ├── [x] US-DISP-015: Cross-Display Window Throw (⌃⌥⇧→ / ⌃⌥⇧←)
-  │     └── [x] US-DISP-016: Display Topology Profiles & Hot-Plug Rebalancer (EPIC 13 ✅ complete)
+  │     ├── [x] US-DISP-016: Display Topology Profiles & Hot-Plug Rebalancer (EPIC 13 ✅)
+  │     └── [ ] US-DISP-017: Atomic Workspace Cross-Display Migration (⌃⌥⇧⌘→ / ⌃⌥⇧⌘←)
   ├── [Sprint 5: Stage Manager & Fullscreen Harmony]  ──► [ COMPLETED ✅ ]
   │     ├── [x] US-WORK-017: Stage Manager Multi-Window Auto-Grouping on Restore (EPIC 14 ✅ complete)
   │     └── [x] US-WORK-018: Universal Fullscreen Escape (Electron/Native Button & ⌃⌘F) ✅ complete
