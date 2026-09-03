@@ -145,8 +145,20 @@ public final class AppDependencies {
         preferencesStore: preferencesStore
     )
 
+    // MARK: - Multi-Display Topology & Hot-Plug (US-DISP-016)
+
+    public lazy var displayHotPlugObserver: any DisplayHotPlugObserving = DisplayHotPlugObserver()
+    public lazy var topologyProfileManager: any TopologyProfileManaging = TopologyProfileManager(
+        displayManager: displayManager,
+        accessibilityService: accessibilityService,
+        layoutEngine: layoutEngine,
+        hotPlugObserver: displayHotPlugObserver
+    )
+
     public init() {
         _ = self.workspaceManager
         _ = self.windowPolicyManager
+        self.displayHotPlugObserver.startObserving()
+        _ = self.topologyProfileManager
     }
 }

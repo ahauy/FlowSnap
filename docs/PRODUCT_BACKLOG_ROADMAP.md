@@ -632,7 +632,7 @@ _Mục tiêu: Xóa bỏ rào cản thao tác khi kết nối màn hình rời �
     - `docs/user-guides/cross-display-window-throw.md`
     - `adr/0010-cross-display-window-throw.md`
 
-- [ ] **US-DISP-016: Hồ sơ Không gian làm việc Đa màn hình & Tự động Cân đối khi Cắm/Rút cáp (Display Topology Profiles & Hot-Plug Rebalancer)**
+- [x] **US-DISP-016: Hồ sơ Không gian làm việc Đa màn hình & Tự động Cân đối khi Cắm/Rút cáp (Display Topology Profiles & Hot-Plug Rebalancer)**
   - **Slug:** `display-topology-profiles-hotplug`
   - **Effort:** L
   - **Context-budget:** multi-session
@@ -641,15 +641,20 @@ _Mục tiêu: Xóa bỏ rào cản thao tác khi kết nối màn hình rời �
   - **Blocks:** _(none)_
   - **Mô tả:** Nhận diện và ghi nhớ cấu hình Workspace riêng biệt theo từng thiết lập màn hình (Topology Fingerprint: Profile khi dùng màn hình Laptop vs Profile khi cắm màn hình rời KG270 M5 / 4K). Khi cắm hoặc rút dây màn hình, hệ thống tự động tái cấu trúc cửa sổ mà không làm mất hoặc kẹt cửa sổ ngoài tọa độ ảo.
   - **Acceptance Criteria (AC):**
-    - [ ] Lắng nghe sự kiện hệ thống `NSApplication.didChangeScreenParametersNotification` khi người dùng cắm hoặc rút màn hình rời.
-    - [ ] Tạo dấu vân tay cấu hình màn hình (`TopologyFingerprint` hash từ Model, Serial, Resolution của các màn hình đang kết nối).
-    - [ ] Khi rút màn hình rời: Toàn bộ các cửa sổ đang nằm ở màn hình ngoài được tự động kéo về màn hình chính (`Laptop Display`), co giãn vào trong `visibleFrame` an toàn qua `FrameClampingHelper`, không bị lọt ra ngoài mép màn hình.
-    - [ ] Khi cắm lại màn hình rời: Tự động khôi phục các cửa sổ về đúng màn hình ngoài theo Profile đã lưu trước đó.
+    - [x] Lắng nghe sự kiện hệ thống `NSApplication.didChangeScreenParametersNotification` khi người dùng cắm hoặc rút màn hình rời.
+    - [x] Tạo dấu vân tay cấu hình màn hình (`TopologyFingerprint` hash từ Model, Serial, Resolution của các màn hình đang kết nối).
+    - [x] Khi rút màn hình rời: Toàn bộ các cửa sổ đang nằm ở màn hình ngoài được tự động kéo về màn hình chính (`Laptop Display`), co giãn vào trong `visibleFrame` an toàn qua `FrameClampingHelper`, không bị lọt ra ngoài mép màn hình.
+    - [x] Khi cắm lại màn hình rời: Tự động khôi phục các cửa sổ về đúng màn hình ngoài theo Profile đã lưu trước đó.
   - **Tasks:**
-    - [ ] `Infrastructure`: Cài đặt `DisplayHotPlugObserver.swift` bắt thông báo thay đổi màn hình với debounce 500ms.
-    - [ ] `Core`: Bổ sung `TopologyProfileManager.swift` lưu trữ danh sách Workspaces theo từng `TopologyFingerprint`.
-    - [ ] `Persistence`: Lưu các profile topology vào `UserDefaults` / JSON local storage.
-    - [ ] `Tests`: Kiểm tra kịch bản giả lập ngắt kết nối màn hình phụ và khôi phục tọa độ an toàn.
+    - [x] `Infrastructure`: Cài đặt `DisplayHotPlugObserver.swift` bắt thông báo thay đổi màn hình với debounce 600ms.
+    - [x] `Core`: Bổ sung `TopologyProfileManager.swift` lưu trữ danh sách Workspaces theo từng `TopologyFingerprint`.
+    - [x] `Persistence`: Lưu các profile topology vào `UserDefaults` / JSON local storage.
+    - [x] `Tests`: Kiểm tra kịch bản giả lập ngắt kết nối màn hình phụ và khôi phục tọa độ an toàn.
+  - **Deliverables:**
+    - `.specify/features/display-topology-profiles-hotplug/baseline.md` (SIGNED-OFF v1.0)
+    - `docs/features/display-topology-profiles-hotplug/README.md`
+    - `docs/user-guides/display-topology-profiles-hotplug.md`
+    - `adr/0011-display-topology-profiles-hotplug.md`
 
 ---
 
@@ -776,9 +781,9 @@ _Mục tiêu: Đem lại trải nghiệm thao tác tức thì kiểu Raycast/Alf
   └── [x] US-WORK-014: Per-App Window Rules & Smart Floating Stacking (EPIC 12 ✅ complete)
 
 [ GIAI ĐOẠN 2: ECOSYSTEM EXPANSION, MULTI-MONITOR & STAGE MANAGER (PHASE 2) ]  ──► [ UPCOMING 🌟 ]
-  ├── [Sprint 4: Multi-Monitor Excellence]
+  ├── [Sprint 4: Multi-Monitor Excellence]  ──► [ COMPLETED ✅ ]
   │     ├── [x] US-DISP-015: Cross-Display Window Throw (⌃⌥⇧→ / ⌃⌥⇧←)
-  │     └── [ ] US-DISP-016: Display Topology Profiles & Hot-Plug Rebalancer
+  │     └── [x] US-DISP-016: Display Topology Profiles & Hot-Plug Rebalancer (EPIC 13 ✅ complete)
   ├── [Sprint 5: Stage Manager & Fullscreen Harmony]
   │     ├── [ ] US-WORK-017: Stage Manager Multi-Window Auto-Grouping on Restore
   │     └── [ ] US-WORK-018: Universal Fullscreen Escape (Electron/Native Button & ⌃⌘F)
