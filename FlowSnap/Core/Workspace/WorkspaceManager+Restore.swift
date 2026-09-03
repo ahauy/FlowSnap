@@ -29,7 +29,7 @@ extension WorkspaceManager: WorkspaceRestoring {
             throw RestoreError.accessibilityDenied
         }
 
-        guard restoringID == nil else {
+        guard restoringID == nil || restoringID == workspace.id else {
             return RestoreSummary(placedCount: 0, totalPlacements: 0, skipped: [])
         }
         restoringID = workspace.id
