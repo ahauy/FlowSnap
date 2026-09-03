@@ -50,6 +50,10 @@ schema-version: "1.1"
     - [EPIC 10: Workspace Snapshots \& Intent-Based Multi-Window Restoration](#epic-10-workspace-snapshots--intent-based-multi-window-restoration)
     - [EPIC 11: Application Launch Observer \& Current Space Preservation](#epic-11-application-launch-observer--current-space-preservation)
     - [EPIC 12: Per-App Window Policies \& Smart Floating Stacking](#epic-12-per-app-window-policies--smart-floating-stacking)
+  - [4.2. Giai đoạn 2: Advanced Ecosystem, Multi-Monitor Mastery \& Flow Continuity (Phase 2 Backlog)](#42-giai-đoạn-2-advanced-ecosystem-multi-monitor-mastery--flow-continuity-phase-2-backlog)
+    - [EPIC 13: Advanced Multi-Monitor Topology \& Cross-Display Navigation (Hỗ trợ Màn hình rời Toàn diện)](#epic-13-advanced-multi-monitor-topology--cross-display-navigation-hỗ-trợ-màn-hình-rời-toàn-diện)
+    - [EPIC 14: Stage Manager Co-existence \& Universal Fullscreen Escape (Tương thích Stage Manager \& Thoát Full Screen)](#epic-14-stage-manager-co-existence--universal-fullscreen-escape-tương-thích-stage-manager--thoát-full-screen)
+    - [EPIC 15: Quick Floating Overlay Panel \& Always-On-Top Pinning (Tiện ích Nổi Thao tác Nhanh)](#epic-15-quick-floating-overlay-panel--always-on-top-pinning-tiện-ích-nổi-thao-tác-nhanh)
   - [5. Lộ trình phát hành theo Giai đoạn \& Sprint](#5-lộ-trình-phát-hành-theo-giai-đoạn--sprint)
   - [6. Quy chuẩn định nghĩa hoàn thành (Definition of Done - DoD)](#6-quy-chuẩn-định-nghĩa-hoàn-thành-definition-of-done---dod)
   - [7. Phân tích Kỹ thuật Chuyên sâu, Rủi ro Hệ thống \& Kế hoạch Phát hành](#7-phân-tích-kỹ-thuật-chuyên-sâu-rủi-ro-hệ-thống--kế-hoạch-phát-hành)
@@ -596,6 +600,143 @@ _Mục tiêu: Trao toàn quyền tùy biến hành vi cho người dùng — quy
 
 ---
 
+## 4.2. Giai đoạn 2: Advanced Ecosystem, Multi-Monitor Mastery & Flow Continuity (Phase 2 Backlog)
+
+_Mục tiêu: Đưa FlowSnap từ một tiện ích quản lý cửa sổ cơ bản trở thành hệ điều hành không gian làm việc chuyên nghiệp (Professional Workspace OS) — tối ưu hóa 100% cho thiết lập đa màn hình rời, tương thích hoàn hảo với Apple Stage Manager, và cung cấp các tiện ích nổi thao tác nhanh xuyên không gian._
+
+### EPIC 13: Advanced Multi-Monitor Topology & Cross-Display Navigation (Hỗ trợ Màn hình rời Toàn diện)
+
+_Mục tiêu: Xóa bỏ rào cản thao tác khi kết nối màn hình rời — hỗ trợ ném cửa sổ xuyên màn hình tức thì bằng phím tắt và tự động cân đối lại bố cục khi cắm/rút dây cáp display._
+
+- [ ] **US-DISP-015: Điều hướng & Ném Cửa sổ Xuyên Màn hình (Cross-Display Throw & Target-Aware Snap)**
+  - **Slug:** `cross-display-window-throw`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Must-Have (P0)
+  - **Depends-on:** `US-SNAP-003` ✅, `US-SNAP-004` ✅
+  - **Blocks:** `US-DISP-016`
+  - **Mô tả:** Cho phép người dùng sử dụng phím tắt (mặc định `⌃⌥⇧→` và `⌃⌥⇧←`) để "ném" ngay lập tức cửa sổ đang kích hoạt sang màn hình kế tiếp hoặc màn hình trước đó, đồng thời tự động co giãn và snap tương ứng theo độ phân giải của màn hình đích.
+  - **Acceptance Criteria (AC):**
+    - [ ] Lắng nghe tổ hợp phím toàn cục `Move to Next Display` (`⌃⌥⇧→`) và `Move to Previous Display` (`⌃⌥⇧←`).
+    - [ ] Khi ném cửa sổ: Giữ nguyên tỉ lệ hình học tương đối (Relative Ratio Preserved) — ví dụ cửa sổ đang chiếm nửa trái (50% left) ở màn hình laptop sẽ tự động trở thành 50% nửa trái tại màn hình ngoài 4K/FHD đích.
+    - [ ] Tự động chuyển tiêu điểm chuột (mouse cursor focus) sang trung tâm của cửa sổ tại màn hình đích để người dùng tiếp tục thao tác phím/chuột không bị gián đoạn.
+    - [ ] Xử lý an toàn khi chỉ có 1 màn hình duy nhất (No-op không lỗi, không giật màn hình).
+  - **Tasks:**
+    - [ ] `Core`: Cài đặt `DisplayNavigator.swift` tính toán màn hình kế tiếp/trước theo thứ tự tọa độ X (`NSScreen.screens` topology).
+    - [ ] `Core`: Cài đặt `RelativeFrameScaler.swift` chuyển đổi tỉ lệ phần trăm từ `sourceDisplay.visibleFrame` sang `targetDisplay.visibleFrame`.
+    - [ ] `Hotkeys`: Đăng ký hotkey mặc định trong `GlobalHotkeyManager` và cho phép tùy biến trong Settings.
+    - [ ] `Tests`: Kiểm tra chuyển đổi hình học đa màn hình (Retina 2x sang Non-Retina 1x, màn hình phụ tọa độ âm bên trái).
+
+- [ ] **US-DISP-016: Hồ sơ Không gian làm việc Đa màn hình & Tự động Cân đối khi Cắm/Rút cáp (Display Topology Profiles & Hot-Plug Rebalancer)**
+  - **Slug:** `display-topology-profiles-hotplug`
+  - **Effort:** L
+  - **Context-budget:** multi-session
+  - **Priority:** Must-Have (P0)
+  - **Depends-on:** `US-DISP-015`, `US-WORK-011` ✅
+  - **Blocks:** _(none)_
+  - **Mô tả:** Nhận diện và ghi nhớ cấu hình Workspace riêng biệt theo từng thiết lập màn hình (Topology Fingerprint: Profile khi dùng màn hình Laptop vs Profile khi cắm màn hình rời KG270 M5 / 4K). Khi cắm hoặc rút dây màn hình, hệ thống tự động tái cấu trúc cửa sổ mà không làm mất hoặc kẹt cửa sổ ngoài tọa độ ảo.
+  - **Acceptance Criteria (AC):**
+    - [ ] Lắng nghe sự kiện hệ thống `NSApplication.didChangeScreenParametersNotification` khi người dùng cắm hoặc rút màn hình rời.
+    - [ ] Tạo dấu vân tay cấu hình màn hình (`TopologyFingerprint` hash từ Model, Serial, Resolution của các màn hình đang kết nối).
+    - [ ] Khi rút màn hình rời: Toàn bộ các cửa sổ đang nằm ở màn hình ngoài được tự động kéo về màn hình chính (`Laptop Display`), co giãn vào trong `visibleFrame` an toàn qua `FrameClampingHelper`, không bị lọt ra ngoài mép màn hình.
+    - [ ] Khi cắm lại màn hình rời: Tự động khôi phục các cửa sổ về đúng màn hình ngoài theo Profile đã lưu trước đó.
+  - **Tasks:**
+    - [ ] `Infrastructure`: Cài đặt `DisplayHotPlugObserver.swift` bắt thông báo thay đổi màn hình với debounce 500ms.
+    - [ ] `Core`: Bổ sung `TopologyProfileManager.swift` lưu trữ danh sách Workspaces theo từng `TopologyFingerprint`.
+    - [ ] `Persistence`: Lưu các profile topology vào `UserDefaults` / JSON local storage.
+    - [ ] `Tests`: Kiểm tra kịch bản giả lập ngắt kết nối màn hình phụ và khôi phục tọa độ an toàn.
+
+---
+
+### EPIC 14: Stage Manager Co-existence & Universal Fullscreen Escape (Tương thích Stage Manager & Thoát Full Screen)
+
+_Mục tiêu: Giải quyết triệt để 2 vấn đề xung đột cố hữu của macOS — giữ Stage Manager bật mà vẫn phục hồi được Workspace đa cửa sổ song song, đồng thời cho phép thoát Native Full Screen mượt mà trên mọi ứng dụng (kể cả Electron/VS Code)._
+
+- [ ] **US-WORK-017: Tương thích Stage Manager & Tự động Gom nhóm Cửa sổ khi Restore (Stage Manager Multi-Window Auto-Grouping)**
+  - **Slug:** `stage-manager-auto-grouping`
+  - **Effort:** L
+  - **Context-budget:** multi-session
+  - **Priority:** Must-Have (P0)
+  - **Depends-on:** `US-WORK-011` ✅, `US-WORK-014` ✅
+  - **Blocks:** _(none)_
+  - **Mô tả:** Khi người dùng bấm "Restore" một Workspace (ví dụ 2 app 50/50) trong khi Stage Manager đang BẬT (`GloballyEnabled = 1`), FlowSnap tự động gom tất cả các app trong Workspace vào cùng một Sân khấu (Stage) duy nhất thay vì để macOS đẩy từng app vào dải thu nhỏ bên cạnh.
+  - **Acceptance Criteria (AC):**
+    - [ ] Kiểm tra trạng thái Stage Manager qua `defaults read com.apple.WindowManager GloballyEnabled`.
+    - [ ] Khi Stage Manager = ON: Thay vì gọi `app.activate()` tuần tự từng app làm kích hoạt cơ chế đảo Stage của macOS, FlowSnap sử dụng cơ chế `Smart Stage Coordination`: kích hoạt App chính đầu tiên, sau đó đưa các app kế tiếp lên mặt phẳng hiển thị qua `kAXRaiseAction` và giả lập thao tác Shift-Group.
+    - [ ] Đảm bảo sau khi Restore hoàn tất: Cả 2-3 cửa sổ trong Workspace cùng hiển thị đồng thời trên một Stage duy nhất với tỷ lệ chính xác (50/50, 60/40), không có cửa sổ nào bị đẩy vào dải Stage Manager bên cạnh.
+  - **Tasks:**
+    - [ ] `Infrastructure`: Cài đặt `StageManagerDetector.swift` đọc trạng thái cấu hình Stage Manager từ `com.apple.WindowManager`.
+    - [ ] `Core`: Cập nhật `WorkspaceManager+Restore.swift` nhánh xử lý `restoreWithStageManagerEnabled` sử dụng `kAXRaiseAction`.
+    - [ ] `Tests`: Test suite giả lập môi trường Stage Manager và xác nhận thứ tự gọi AXRaise không gây ra race condition.
+
+- [ ] **US-WORK-018: Thoát Toàn màn hình Đa nền tảng (Universal Fullscreen Escape for Electron/Native Apps)**
+  - **Slug:** `universal-fullscreen-escape`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Must-Have (P0)
+  - **Depends-on:** `US-SNAP-001` ✅
+  - **Blocks:** `US-WORK-017`
+  - **Mô tả:** Nâng cấp cơ chế thoát Native Full Screen trong `WindowManager` để có thể đưa bất kỳ ứng dụng nào (kể cả các app Electron/Chromium như Antigravity, VS Code, Brave) thoát khỏi chế độ Full Screen một cách tin cậy 100%, tự động trượt về Desktop Space để sẵn sàng hiển thị Workspace được khôi phục.
+  - **Acceptance Criteria (AC):**
+    - [ ] Thay thế lệnh gán thuộc tính `AXFullscreen = false` (vốn bị lỗi `cannotComplete` trên Electron) bằng cơ chế tương tác trực tiếp với nút Zoom/Fullscreen (`kAXFullScreenButtonAttribute` + `kAXPressAction`).
+    - [ ] Nếu bấm nút không phản hồi: Tự động gửi phím tắt thoát Full Screen chuẩn của macOS (`⌃ + ⌘ + F`) trực tiếp tới PID của ứng dụng mục tiêu qua `CGEvent`.
+    - [ ] Lắng nghe sự kiện thoát Full Screen hoàn tất (`kAXWindowDeminiaturizedNotification` hoặc chờ hết animation 700ms) trước khi tiến hành `setFrame` cho cửa sổ.
+    - [ ] Màn hình tự động chuyển mượt mà về Desktop Space và hiển thị trọn vẹn Workspace.
+  - **Tasks:**
+    - [ ] `Infrastructure`: Cải tiến `AXAccessibilityService.exitFullScreen` với fallback 2 tầng (kAXPressAction nút xanh -> CGEvent `⌃⌘F`).
+    - [ ] `Core`: Tích hợp vào `WindowManager.move` và `WorkspaceManager+Restore`.
+    - [ ] `Tests`: Kiểm tra mock thoát fullscreen với cả standard Cocoa window và Electron mock window.
+
+---
+
+### EPIC 15: Quick Floating Overlay Panel & Always-On-Top Pinning (Tiện ích Nổi Thao tác Nhanh)
+
+_Mục tiêu: Đem lại trải nghiệm thao tác tức thì kiểu Raycast/Alfred — mở nhanh máy tính hoặc bảng ghi chú nổi xuyên suốt mọi không gian mà không làm mất ứng dụng chính, hoặc ghim bất kỳ app nào luôn nổi trên cùng._
+
+- [ ] **US-SNAP-019: Mini-Panel Thao tác Nhanh Xuyên Không gian (Quick Floating Scratchpad & Calculator Overlay)**
+  - **Slug:** `quick-floating-scratchpad-panel`
+  - **Effort:** L
+  - **Context-budget:** multi-session
+  - **Priority:** Must-Have (P0)
+  - **Depends-on:** `US-SNAP-004` ✅
+  - **Blocks:** _(none)_
+  - **Mô tả:** Tạo một cửa sổ nổi đặc quyền (`NSPanel` với `canJoinAllSpaces` và `fullScreenAuxiliary`), được gọi bằng phím tắt toàn cục (mặc định `⌥Space` hoặc `⌥C`), tích hợp sẵn Máy tính mini (Quick Calculator) và Bảng ghi chú tạm (Quick Scratchpad). Bấm `Esc` lập tức ẩn đi và trả lại focus cho ứng dụng làm việc bên dưới.
+  - **Acceptance Criteria (AC):**
+    - [ ] Cửa sổ `NSPanel` nổi độc quyền trên tầng `NSWindow.Level.floating`, có thuộc tính `collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]`.
+    - [ ] **Khả năng xuyên không gian tuyệt đối:** Nổi đè lên được cả khi đang ở **Native Full Screen** và khi đang bật **Stage Manager**, không bao giờ bị macOS đẩy sang Space khác hay đẩy vào cánh gà.
+    - [ ] Phím tắt toàn cục mở nhanh (`⌥ + Space` hoặc `⌥ + C`), tự động kích hoạt con trỏ nhập liệu.
+    - [ ] Hỗ trợ 2 chế độ:
+      - **Quick Calculator:** Nhập biểu thức toán học (ví dụ: `(120 * 4) / 1.5`), tính toán ra kết quả tức thì, bấm `Enter` để copy kết quả vào clipboard.
+      - **Quick Scratchpad:** Soạn thảo nhanh văn bản/ghi chú tạm thời, tự lưu tự động.
+    - [ ] Bấm phím `Esc` hoặc click chuột ra ngoài vùng panel: Panel tự động biến mất mượt mà (fade out 150ms), tiêu điểm bàn phím tự động trả về đúng dòng code/văn bản đang soạn dở.
+  - **Tasks:**
+    - [ ] `UI`: Thiết kế `QuickOverlayPanel.swift` (Liquid Glass design, hairline border, obsidian minimal pill).
+    - [ ] `UI`: Xây dựng giao diện SwiftUI `QuickCalculatorView.swift` và `QuickScratchpadView.swift`.
+    - [ ] `Core`: Quản lý hiển thị và khôi phục focus qua `SmartFocusStack`.
+    - [ ] `Hotkeys`: Đăng ký phím tắt gọi overlay trong `GlobalHotkeyManager`.
+
+- [ ] **US-SNAP-020: Ghim Cửa sổ Luôn Trên Cùng (Always-On-Top Pinning for 3rd-Party Apps)**
+  - **Slug:** `always-on-top-window-pinning`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Should-Have (P1)
+  - **Depends-on:** `US-WORK-014` ✅
+  - **Blocks:** _(none)_
+  - **Mô tả:** Cho phép người dùng bấm phím tắt (mặc định `⌃⌥P`) để "ghim" cửa sổ ứng dụng bất kỳ (như Apple Calculator, Terminal, Notes) luôn luôn nổi trên mặt trước của mọi ứng dụng khác mà không bị chìm xuống dưới khi click vào app nền.
+  - **Acceptance Criteria (AC):**
+    - [ ] Lắng nghe phím tắt `Pin/Unpin Focused Window` (`⌃⌥P`).
+    - [ ] Đặt mức ưu tiên hiển thị của cửa sổ được ghim thành Always-on-top thông qua Accessibility attributes / Layer manipulation.
+    - [ ] Khi click chuột làm việc trên Antigravity hoặc Brave ở bên dưới, cửa sổ được ghim vẫn nằm yên trên bề mặt, không bị ẩn hay chìm xuống dưới.
+    - [ ] Bấm `⌃⌥P` lần thứ hai để bỏ ghim, đưa cửa sổ về lại mức hiển thị bình thường.
+    - [ ] Hiển thị một biểu tượng huy hiệu ghim nhỏ (Pin Badge Indicator) ở góc cửa sổ để người dùng biết cửa sổ đang ở trạng thái Always-on-top.
+  - **Tasks:**
+    - [ ] `Core`: Cài đặt `WindowPinningCoordinator.swift` theo dõi danh sách các `CGWindowID` đang được ghim.
+    - [ ] `Infrastructure`: Quản lý trạng thái nổi và phục hồi khi cửa sổ bị tắt hoặc đóng.
+    - [ ] `UI`: Bổ sung tùy chọn Pin trong Menu Bar Status Item và Settings.
+    - [ ] `Tests`: Kiểm tra toggle Pin/Unpin và tính năng không bị leak khi đóng app được ghim.
+
+---
+
 ## 5. Lộ trình phát hành theo Giai đoạn & Sprint
 
 ```
@@ -609,27 +750,38 @@ _Mục tiêu: Trao toàn quyền tùy biến hành vi cho người dùng — quy
   ├── SwiftLint architectural boundary linter (.swiftlint.yml)
   └── Code-Review-Graph Local MCP AST indexing (48 files, 150 nodes)
 
-[ Sprint 1 - Core Snap Engine & Global Hotkeys (MVP 1) ]  ──► [ P0 NEXT 🚀 ]
+[ Sprint 1 - Core Snap Engine & Global Hotkeys (MVP 1) ]  ──► [ COMPLETED ✅ ]
   ├── [x] US-SNAP-001: Accessibility Permission & Focused Window Discovery
   ├── [x] US-SNAP-002: Core Layout Calculation & Basic Snap Engine (Halves, Quarters)
   ├── [x] US-SNAP-003: Multi-Monitor & Coordinate Inversion Manipulation
-  ├── [ ] US-SNAP-004: Carbon Global Hotkeys & Command Dispatcher (< 50ms)
-  └── [ ] US-SNAP-005: Menu Bar Status Item & Quick Snap Popover
+  ├── [x] US-SNAP-004: Carbon Global Hotkeys & Command Dispatcher (< 50ms)
+  └── [x] US-SNAP-005: Menu Bar Status Item & Quick Snap Popover
 
-[ Sprint 2 - Interactive Drag Experience & Custom Layouts (MVP 2) ]
-  ├── US-SNAP-006: Edge Drag-to-Snap & HUD Snap Preview (Liquid Glass Overlay)
-  ├── US-SNAP-007: Windows 11-Style Top-Edge Snap Layout Picker
-  ├── US-SNAP-008: Custom Grid Ratios (60/40, 70/30) & Window Gaps
-  ├── US-SNAP-009: Adaptive Multi-Window Resize (Collinear Shared Divider)
-  └── US-SNAP-010: SwiftUI Settings UI & Shortcut Customization
+[ Sprint 2 - Interactive Drag Experience & Custom Layouts (MVP 2) ]  ──► [ COMPLETED ✅ ]
+  ├── [x] US-SNAP-006: Edge Drag-to-Snap & HUD Snap Preview (Liquid Glass Overlay)
+  ├── [x] US-SNAP-007: Windows 11-Style Top-Edge Snap Layout Picker
+  ├── [x] US-SNAP-008: Custom Grid Ratios (60/40, 70/30) & Window Gaps
+  ├── [x] US-SNAP-009: Adaptive Multi-Window Resize (Collinear Shared Divider)
+  └── [x] US-SNAP-010: SwiftUI Settings UI & Shortcut Customization
 
-[ Sprint 3 - Workspaces & Per-App Workflow Policies (MVP 3) ]
+[ Sprint 3 - Workspaces & Per-App Workflow Policies (MVP 3) ]  ──► [ COMPLETED ✅ ]
   ├── [x] US-WORK-011: Workspace Snapshot & Intent-Based Restoration
   ├── [x] US-WORK-012: Window Groups & Built-in Workflow Presets
   ├── [x] US-WORK-013: Application Launch Observer & Current Space Policy (EPIC 11 ✅ complete)
   └── [x] US-WORK-014: Per-App Window Rules & Smart Floating Stacking (EPIC 12 ✅ complete)
 
-[ Future Horizons (V2.0+) ]
+[ GIAI ĐOẠN 2: ECOSYSTEM EXPANSION, MULTI-MONITOR & STAGE MANAGER (PHASE 2) ]  ──► [ UPCOMING 🌟 ]
+  ├── [Sprint 4: Multi-Monitor Excellence]
+  │     ├── [ ] US-DISP-015: Cross-Display Window Throw (⌃⌥⇧→ / ⌃⌥⇧←)
+  │     └── [ ] US-DISP-016: Display Topology Profiles & Hot-Plug Rebalancer
+  ├── [Sprint 5: Stage Manager & Fullscreen Harmony]
+  │     ├── [ ] US-WORK-017: Stage Manager Multi-Window Auto-Grouping on Restore
+  │     └── [ ] US-WORK-018: Universal Fullscreen Escape (Electron/Native Button & ⌃⌘F)
+  └── [Sprint 6: Quick Floating Utility & Always-On-Top]
+        ├── [ ] US-SNAP-019: Quick Floating Scratchpad & Calculator Overlay (⌥Space)
+        └── [ ] US-SNAP-020: Always-On-Top Window Pinning for 3rd-Party Apps (⌃⌥P)
+
+[ Future Horizons (V3.0+) ]
   ├── US-FUTURE-001: Visual Canvas-based Interactive Layout Editor
   ├── US-FUTURE-002: Start-a-Workflow Automation (One-click launch & arrange)
   └── US-FUTURE-003: Cross-Machine Layout Config Export & Import (AirDrop/JSON)
