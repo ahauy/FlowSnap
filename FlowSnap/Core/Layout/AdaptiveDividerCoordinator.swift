@@ -493,6 +493,23 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
 
         let gap = resolveGap()
         let container = await resolveContainer(at: point)
+
+        // Ensure mouse is on the same display where the workspace windows actually reside
+        if isWorkspaceRestrictionEnabled && currentActiveWorkspace != nil && !managedWindows.isEmpty {
+            let belongsToWorkspaceScreen = managedWindows.contains { win in
+                let intersection = win.frame.intersection(container)
+                return !intersection.isNull && intersection.width > 20 && intersection.height > 20
+            }
+            if !belongsToWorkspaceScreen {
+                if hoveredDivider != nil {
+                    setCursor(.arrow)
+                    hoveredDivider = nil
+                }
+                overlayManager?.hide(animated: false)
+                return
+            }
+        }
+
         let displayWindows = filterWindows(for: container)
         let dividers = cachedDividers(for: displayWindows, container: container, gap: gap)
         let hovered = detector.hitTestDivider(at: point, in: dividers)
@@ -565,6 +582,13 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         dragGap = gap
         dragPrimaryHeight = await displayManager.primaryScreenHeight
         let container = await resolveContainer(at: point)
+        if isWorkspaceRestrictionEnabled && currentActiveWorkspace != nil && !managedWindows.isEmpty {
+            let belongsToWorkspaceScreen = managedWindows.contains { win in
+                let intersection = win.frame.intersection(container)
+                return !intersection.isNull && intersection.width > 20 && intersection.height > 20
+            }
+            if !belongsToWorkspaceScreen { return false }
+        }
         let displayWindows = filterWindows(for: container)
         let dividers = cachedDividers(for: displayWindows, container: container, gap: gap)
 
