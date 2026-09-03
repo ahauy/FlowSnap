@@ -1,4 +1,4 @@
-# 03 — Domain Model & Architecture Specification: stage-manager-auto-grouping (US-WORK-017)
+# 03 — Domain Model & Architecture Specification: stage-manager-auto-grouping (US-WORK-018)
 
 ## 1. Ubiquitous Language Additions (for `CONTEXT.md`)
 

@@ -1,8 +1,8 @@
-# Domain Decision Baseline: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-018)
+# Domain Decision Baseline: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-019)
 
 **Status**: SIGNED-OFF v1.0  
 **Version**: 1.0.0  
-**Story ID**: `US-WORK-018`  
+**Story ID**: `US-WORK-019`  
 **Feature Slug**: `universal-fullscreen-escape`  
 **Date**: 2026-09-03
 
@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-US-WORK-018 nâng cấp toàn diện năng lực thoát chế độ Toàn màn hình (macOS Native Full Screen / Separate Spaces) của FlowSnap:
+US-WORK-019 nâng cấp toàn diện năng lực thoát chế độ Toàn màn hình (macOS Native Full Screen / Separate Spaces) của FlowSnap:
 
 1. **Chuỗi thoát 3 tầng (Three-Tier Escape)**:
    - **Tier 0**: Ghi thuộc tính nhanh `AXFullscreen = false` (< 1ms cho Cocoa Native).

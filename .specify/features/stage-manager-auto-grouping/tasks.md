@@ -1,7 +1,7 @@
-# Tasks: Stage Manager Multi-Window Auto-Grouping (US-WORK-017)
+# Tasks: Stage Manager Multi-Window Auto-Grouping (US-WORK-018)
 
 - **Feature**: `stage-manager-auto-grouping`
-- **Story ID**: `US-WORK-017`
+- **Story ID**: `US-WORK-018`
 - **Status**: Completed (Phase 5)
 
 ---

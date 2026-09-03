@@ -144,7 +144,8 @@ public final class AppDependencies {
     lazy var windowPolicyManager: WindowPolicyManager = WindowPolicyManager(
         accessibilityService: accessibilityService,
         displayManager: displayManager,
-        preferencesStore: preferencesStore
+        preferencesStore: preferencesStore,
+        workspaceManager: workspaceManager
     )
 
     // MARK: - Multi-Display Topology & Hot-Plug (US-DISP-016)

@@ -344,7 +344,7 @@ struct AdaptiveTransitionView: View {
                         .foregroundStyle(GuidePalette.accent)
                     Text("FlowSnap • Adaptive Space Transition & State Polling")
                         .font(.system(size: 14, weight: .bold))
-                    Text("(US-WORK-018)")
+                    Text("(US-WORK-019)")
                         .font(.system(size: 12))
                         .foregroundStyle(GuidePalette.textSecondary)
                 }

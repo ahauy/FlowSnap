@@ -656,13 +656,40 @@ _Mục tiêu: Xóa bỏ rào cản thao tác khi kết nối màn hình rời �
     - `docs/user-guides/display-topology-profiles-hotplug.md`
     - `adr/0011-display-topology-profiles-hotplug.md`
 
+- [ ] **US-DISP-017: Di chuyển Toàn bộ Không gian làm việc Xuyên Màn hình (Atomic Workspace Cross-Display Migration)**
+  - **Slug:** `workspace-cross-display-migration`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** High (P1)
+  - **Depends-on:** `US-DISP-015` ✅, `US-WORK-011` ✅, `US-WORK-018` ✅
+  - **Blocks:** _(none)_
+  - **Mô tả:** Cho phép người dùng chuyển tức thì toàn bộ các cửa sổ thuộc Không gian làm việc (Workspace) đang mở từ màn hình hiện tại sang màn hình kế tiếp hoặc màn hình chỉ định bằng tổ hợp phím toàn cục (mặc định `⌃⌥⇧⌘→` và `⌃⌥⇧⌘←`) hoặc tùy chọn trong thanh menu Status Bar. Mọi tỷ lệ tương đối giữa các cửa sổ (Split Seam & Normalized Ratios) được bảo toàn nguyên vẹn trên màn hình đích mà không làm rã nhóm Stage Manager.
+  - **Acceptance Criteria (AC):**
+    - [ ] Lắng nghe phím tắt toàn cục `Move Workspace to Next Display` (`⌃⌥⇧⌘→`) và `Move Workspace to Previous Display` (`⌃⌥⇧⌘←`), cho phép tùy chỉnh trong Preferences.
+    - [ ] Khi kích hoạt: Xác định chính xác danh sách các cửa sổ thuộc Workspace đang kích hoạt trên màn hình nguồn (`sourceDisplay`).
+    - [ ] Sử dụng `RelativeFrameScaler` để chuyển đổi đồng loạt tọa độ của tất cả cửa sổ trong Workspace từ `sourceDisplay.visibleFrame` sang `targetDisplay.visibleFrame`, bảo toàn hoàn hảo tỉ lệ chia tách (ví dụ 50/50, 70/30).
+    - [ ] Áp dụng thứ tự di chuyển 2 pha (2-phase move ordering: thu nhỏ trước - mở rộng sau) kết hợp độ trễ tối ưu giữa các cửa sổ (Staggered Window IPC) để giữ vững liên kết nhóm trong Stage Manager, ngăn ngừa hiện tượng văng cửa sổ ra dải phụ.
+    - [ ] Tự động chuyển tiêu điểm chuột và tiêu điểm dải phân cách (`AdaptiveDividerCoordinator`) sang màn hình đích, vô hiệu hóa hoàn toàn dải phân cách trên màn hình nguồn.
+    - [ ] Xử lý an toàn khi chỉ có 1 màn hình duy nhất hoặc không có Workspace nào đang active (No-op êm dịu, không giật màn hình).
+  - **Tasks:**
+    - [ ] `Core`: Cài đặt `WorkspaceMigrator.swift` / bổ sung phương thức `migrateActiveWorkspace(to:in:)` trong `WorkspaceManager`.
+    - [ ] `Core`: Ánh xạ đa cửa sổ qua `RelativeFrameScaler` sang `targetDisplay.visibleFrame`.
+    - [ ] `Hotkeys`: Đăng ký hotkey mặc định `⌃⌥⇧⌘→` và `⌃⌥⇧⌘←` trong `GlobalHotkeyManager`.
+    - [ ] `UI`: Bổ sung menu item "Move Workspace to Next Display" vào thanh Quick Controls / StatusBar menu.
+    - [ ] `Tests`: Kiểm tra kịch bản chuyển Workspace 2 cửa sổ và 3 cửa sổ giữa màn hình Retina và màn hình ngoài với độ phân giải khác nhau.
+  - **Deliverables khi [x]:**
+    - `.specify/features/workspace-cross-display-migration/baseline.md` (SIGNED-OFF v1.0)
+    - `docs/features/workspace-cross-display-migration/README.md`
+    - `docs/user-guides/workspace-cross-display-migration.md`
+    - `adr/0014-workspace-cross-display-migration.md`
+
 ---
 
 ### EPIC 14: Stage Manager Co-existence & Universal Fullscreen Escape (Tương thích Stage Manager & Thoát Full Screen)
 
 _Mục tiêu: Giải quyết triệt để 2 vấn đề xung đột cố hữu của macOS — giữ Stage Manager bật mà vẫn phục hồi được Workspace đa cửa sổ song song, đồng thời cho phép thoát Native Full Screen mượt mà trên mọi ứng dụng (kể cả Electron/VS Code)._
 
-- [x] **US-WORK-017: Tương thích Stage Manager & Tự động Gom nhóm Cửa sổ khi Restore (Stage Manager Multi-Window Auto-Grouping)**
+- [x] **US-WORK-018: Tương thích Stage Manager & Tự động Gom nhóm Cửa sổ khi Restore (Stage Manager Multi-Window Auto-Grouping)**
   - **Slug:** `stage-manager-auto-grouping`
   - **Effort:** L
   - **Context-budget:** multi-session
@@ -687,13 +714,13 @@ _Mục tiêu: Giải quyết triệt để 2 vấn đề xung đột cố hữu 
     - [x] End-User Guide: `docs/user-guides/stage-manager-auto-grouping.md` (kèm visual screenshots)
     - [x] Test Plan: `.specify/features/stage-manager-auto-grouping/test-plan.md`
 
-- [x] **US-WORK-018: Thoát Toàn màn hình Đa nền tảng (Universal Fullscreen Escape for Electron/Native Apps)**
+- [x] **US-WORK-019: Thoát Toàn màn hình Đa nền tảng (Universal Fullscreen Escape for Electron/Native Apps)**
   - **Slug:** `universal-fullscreen-escape`
   - **Effort:** M
   - **Context-budget:** single-session
   - **Priority:** Must-Have (P0)
   - **Depends-on:** `US-SNAP-001` ✅
-  - **Blocks:** `US-WORK-017` (Unblocked ✅)
+  - **Blocks:** `US-WORK-018` (Unblocked ✅)
   - **Mô tả:** Nâng cấp cơ chế thoát Native Full Screen trong `WindowManager` để có thể đưa bất kỳ ứng dụng nào (kể cả các app Electron/Chromium như Antigravity, VS Code, Brave) thoát khỏi chế độ Full Screen một cách tin cậy 100%, tự động trượt về Desktop Space để sẵn sàng hiển thị Workspace được khôi phục.
   - **Acceptance Criteria (AC):**
     - [x] Thay thế lệnh gán thuộc tính `AXFullscreen = false` (vốn bị lỗi `cannotComplete` trên Electron) bằng cơ chế tương tác trực tiếp với nút Zoom/Fullscreen (`kAXFullScreenButtonAttribute` + `kAXPressAction`).
@@ -716,7 +743,7 @@ _Mục tiêu: Giải quyết triệt để 2 vấn đề xung đột cố hữu 
 
 _Mục tiêu: Đem lại trải nghiệm thao tác tức thì kiểu Raycast/Alfred — mở nhanh máy tính hoặc bảng ghi chú nổi xuyên suốt mọi không gian mà không làm mất ứng dụng chính, hoặc ghim bất kỳ app nào luôn nổi trên cùng._
 
-- [ ] **US-SNAP-019: Mini-Panel Thao tác Nhanh Xuyên Không gian (Quick Floating Scratchpad & Calculator Overlay)**
+- [ ] **US-SNAP-020: Mini-Panel Thao tác Nhanh Xuyên Không gian (Quick Floating Scratchpad & Calculator Overlay)**
   - **Slug:** `quick-floating-scratchpad-panel`
   - **Effort:** L
   - **Context-budget:** multi-session
@@ -738,7 +765,7 @@ _Mục tiêu: Đem lại trải nghiệm thao tác tức thì kiểu Raycast/Alf
     - [ ] `Core`: Quản lý hiển thị và khôi phục focus qua `SmartFocusStack`.
     - [ ] `Hotkeys`: Đăng ký phím tắt gọi overlay trong `GlobalHotkeyManager`.
 
-- [ ] **US-SNAP-020: Ghim Cửa sổ Luôn Trên Cùng (Always-On-Top Pinning for 3rd-Party Apps)**
+- [ ] **US-SNAP-021: Ghim Cửa sổ Luôn Trên Cùng (Always-On-Top Pinning for 3rd-Party Apps)**
   - **Slug:** `always-on-top-window-pinning`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -793,16 +820,17 @@ _Mục tiêu: Đem lại trải nghiệm thao tác tức thì kiểu Raycast/Alf
   ├── [x] US-WORK-013: Application Launch Observer & Current Space Policy (EPIC 11 ✅ complete)
   └── [x] US-WORK-014: Per-App Window Rules & Smart Floating Stacking (EPIC 12 ✅ complete)
 
-[ GIAI ĐOẠN 2: ECOSYSTEM EXPANSION, MULTI-MONITOR & STAGE MANAGER (PHASE 2) ]  ──► [ UPCOMING 🌟 ]
-  ├── [Sprint 4: Multi-Monitor Excellence]  ──► [ COMPLETED ✅ ]
+[ GIAI ĐOẠN 2: ECOSYSTEM EXPANSION, MULTI-MONITOR & STAGE MANAGER (PHASE 2) ]  ──► [ IN PROGRESS 🚀 ]
+  ├── [Sprint 4: Multi-Monitor Excellence]  ──► [ IN PROGRESS / ENHANCED 🚀 ]
   │     ├── [x] US-DISP-015: Cross-Display Window Throw (⌃⌥⇧→ / ⌃⌥⇧←)
-  │     └── [x] US-DISP-016: Display Topology Profiles & Hot-Plug Rebalancer (EPIC 13 ✅ complete)
+  │     ├── [x] US-DISP-016: Display Topology Profiles & Hot-Plug Rebalancer (EPIC 13 ✅)
+  │     └── [ ] US-DISP-017: Atomic Workspace Cross-Display Migration (⌃⌥⇧⌘→ / ⌃⌥⇧⌘←)
   ├── [Sprint 5: Stage Manager & Fullscreen Harmony]  ──► [ COMPLETED ✅ ]
-  │     ├── [x] US-WORK-017: Stage Manager Multi-Window Auto-Grouping on Restore (EPIC 14 ✅ complete)
-  │     └── [x] US-WORK-018: Universal Fullscreen Escape (Electron/Native Button & ⌃⌘F) ✅ complete
+  │     ├── [x] US-WORK-018: Stage Manager Multi-Window Auto-Grouping on Restore (EPIC 14 ✅ complete)
+  │     └── [x] US-WORK-019: Universal Fullscreen Escape (Electron/Native Button & ⌃⌘F) ✅ complete
   └── [Sprint 6: Quick Floating Utility & Always-On-Top]
-        ├── [ ] US-SNAP-019: Quick Floating Scratchpad & Calculator Overlay (⌥Space)
-        └── [ ] US-SNAP-020: Always-On-Top Window Pinning for 3rd-Party Apps (⌃⌥P)
+        ├── [ ] US-SNAP-020: Quick Floating Scratchpad & Calculator Overlay (⌥Space)
+        └── [ ] US-SNAP-021: Always-On-Top Window Pinning for 3rd-Party Apps (⌃⌥P)
 
 [ Future Horizons (V3.0+) ]
   ├── US-FUTURE-001: Visual Canvas-based Interactive Layout Editor

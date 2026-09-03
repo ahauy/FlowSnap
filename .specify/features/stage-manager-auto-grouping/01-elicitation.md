@@ -1,6 +1,6 @@
 # 01 — Elicitation Record (Stage 2) — stage-manager-auto-grouping
 
-> Interview conducted on 2026-09-03 via interactive interview gate for US-WORK-017.
+> Interview conducted on 2026-09-03 via interactive interview gate for US-WORK-018.
 > Confirmed decisions: `ASM-SMA-001`, `ASM-SMA-002`, `ASM-SMA-003`.
 
 ## Confirmed Decisions

@@ -32,7 +32,7 @@ public final class WorkspaceManager: ObservableObject {
 
     /// The workspace whose restore is currently running, so the UI can disable
     /// the row and show progress instead of letting a second click pile up.
-    @Published public private(set) var restoringID: UUID?
+    @Published public internal(set) var restoringID: UUID?
 
     /// The currently active workspace that was restored or opened on screen.
     @Published public private(set) var activeWorkspace: Workspace?

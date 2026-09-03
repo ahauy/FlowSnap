@@ -1,4 +1,4 @@
-# 📖 User Guide: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-018)
+# 📖 User Guide: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-019)
 
 > **Target Audience:** FlowSnap Mac Users working with Fullscreen Apps, Multi-Monitor Workspaces, and Electron Tools (VS Code, Slack, Obsidian, Chrome)  
 > **Applies to:** FlowSnap 1.0+ (macOS 14 Sonoma & macOS 15 Sequoia)  

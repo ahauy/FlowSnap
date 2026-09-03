@@ -19,6 +19,7 @@ public final class PreferencesStore: ObservableObject {
     public static let defaultDragToSnapEnabled: Bool = true
     public static let defaultDragPreviewDwellDelay: Double = 0.05
     public static let defaultLaunchAtLogin: Bool = false
+    public static let defaultStageManagerAutoGroupingEnabled: Bool = true
 
     private let defaults: UserDefaults
 
@@ -31,6 +32,7 @@ public final class PreferencesStore: ObservableObject {
     @Published public private(set) var isDragToSnapEnabled: Bool
     @Published public private(set) var dragPreviewDwellDelay: Double
     @Published public private(set) var launchAtLogin: Bool
+    @Published public private(set) var isStageManagerAutoGroupingEnabled: Bool
     @Published public private(set) var appRules: [AppPolicyRule]
     @Published public private(set) var rememberedFrames: [String: RememberedFrame]
 
@@ -38,6 +40,13 @@ public final class PreferencesStore: ObservableObject {
 
     public init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+
+        // Stage Manager Auto-Grouping Enabled
+        if defaults.object(forKey: "isStageManagerAutoGroupingEnabled") != nil {
+            self.isStageManagerAutoGroupingEnabled = defaults.bool(forKey: "isStageManagerAutoGroupingEnabled")
+        } else {
+            self.isStageManagerAutoGroupingEnabled = Self.defaultStageManagerAutoGroupingEnabled
+        }
 
         // Window Gap
         let storedGap = defaults.object(forKey: "windowGap") != nil
@@ -267,6 +276,13 @@ public final class PreferencesStore: ObservableObject {
         if let data = try? JSONEncoder().encode(appRules) {
             defaults.set(data, forKey: "appPolicyRules")
         }
+    }
+
+    // MARK: - Stage Manager Auto-Grouping (US-WORK-018)
+
+    public func setStageManagerAutoGroupingEnabled(_ enabled: Bool) {
+        isStageManagerAutoGroupingEnabled = enabled
+        defaults.set(enabled, forKey: "isStageManagerAutoGroupingEnabled")
     }
 
     // MARK: - Remembered Frames (US-WORK-014, spec §3, BR-POLICY-003)

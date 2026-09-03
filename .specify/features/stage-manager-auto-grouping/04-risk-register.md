@@ -1,4 +1,4 @@
-# 04 — Risk Register & Scope Lock: stage-manager-auto-grouping (US-WORK-017)
+# 04 — Risk Register & Scope Lock: stage-manager-auto-grouping (US-WORK-018)
 
 ## 1. Risk Register
 

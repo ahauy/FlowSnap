@@ -1,4 +1,4 @@
-# Test Plan: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-018)
+# Test Plan: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-019)
 
 **Feature slug**: `universal-fullscreen-escape`
 **Baseline version**: 1.0 (SIGNED-OFF)
@@ -23,7 +23,7 @@ And   execution completes in under 5ms
 
 **File**: `FlowSnapTests/Infrastructure/FullScreenEscapeCoordinatorTests.swift`
 **Priority**: Must-Have
-**Traces to**: `US-WORK-018-01`
+**Traces to**: `US-WORK-019-01`
 
 ---
 
@@ -40,7 +40,7 @@ And   CGEvent keystroke is NOT dispatched
 
 **File**: `FlowSnapTests/Infrastructure/FullScreenEscapeCoordinatorTests.swift`
 **Priority**: Must-Have
-**Traces to**: `US-WORK-018-02`
+**Traces to**: `US-WORK-019-02`
 
 ---
 
@@ -56,7 +56,7 @@ And   a Control + Command + F keystroke is posted via CGEventPosting
 
 **File**: `FlowSnapTests/Infrastructure/FullScreenEscapeCoordinatorTests.swift`
 **Priority**: Must-Have
-**Traces to**: `US-WORK-018-03`
+**Traces to**: `US-WORK-019-03`
 
 ---
 
@@ -71,7 +71,7 @@ And   returns FullScreenEscapeResult.succeeded == true
 
 **File**: `FlowSnapTests/Infrastructure/FullScreenEscapeCoordinatorTests.swift`
 **Priority**: Must-Have
-**Traces to**: `US-WORK-018-04`
+**Traces to**: `US-WORK-019-04`
 
 ---
 
@@ -86,7 +86,7 @@ And   returns without throwing an unhandled fatal exception
 
 **File**: `FlowSnapTests/Infrastructure/FullScreenEscapeCoordinatorTests.swift`
 **Priority**: Must-Have
-**Traces to**: `US-WORK-018-05`
+**Traces to**: `US-WORK-019-05`
 
 ---
 

@@ -1,8 +1,8 @@
-# 05 — User Stories & Acceptance Scenarios: stage-manager-auto-grouping (US-WORK-017)
+# 05 — User Stories & Acceptance Scenarios: stage-manager-auto-grouping (US-WORK-018)
 
 ## US-SMA-001: Stage Manager Multi-Window Auto-Grouping on Restore
 
-- **Derived from**: `docs/PRODUCT_BACKLOG_ROADMAP.md` — `US-WORK-017`
+- **Derived from**: `docs/PRODUCT_BACKLOG_ROADMAP.md` — `US-WORK-018`
 - **As a**: macOS Power User using Stage Manager to organize workflow
 - **I want**: FlowSnap to automatically group all windows belonging to a restored Workspace onto a single active Stage
 - **So that**: macOS does not push my previous apps into the sidebar strip, and I can immediately see and use my split workspace (e.g. 50/50, 60/40) side-by-side.

@@ -1,6 +1,6 @@
 # 05 — User Stories & Acceptance Criteria — universal-fullscreen-escape
 
-## Feature: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-018)
+## Feature: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-019)
 
 As a macOS Power User restoring a workspace or moving windows,  
 I want FlowSnap to reliably exit Full Screen mode for any application—including Electron and Chromium apps like VS Code, Brave, Slack, or Antigravity,  

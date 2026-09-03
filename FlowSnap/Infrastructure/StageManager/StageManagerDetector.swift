@@ -4,7 +4,7 @@ import Foundation
 /// Infrastructure implementation of `StageManagerDetecting` reading the preference
 /// domain `com.apple.WindowManager` key `GloballyEnabled`.
 ///
-/// Traces to: US-WORK-017, BR-SMA-001, ASM-SMA-003.
+/// Traces to: US-WORK-018, BR-SMA-001, ASM-SMA-003.
 public final class StageManagerDetector: StageManagerDetecting, @unchecked Sendable {
     private let suiteName: String
     private let key: String

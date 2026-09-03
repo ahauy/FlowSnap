@@ -1,4 +1,4 @@
-# Changelog: stage-manager-auto-grouping (US-WORK-017)
+# Changelog: stage-manager-auto-grouping (US-WORK-018)
 
 ## [1.0.0] - 2026-09-03
 

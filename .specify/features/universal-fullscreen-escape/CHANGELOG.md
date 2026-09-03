@@ -1,4 +1,4 @@
-# Changelog: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-018)
+# Changelog: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-019)
 
 ## [1.0.0] - 2026-09-03
 

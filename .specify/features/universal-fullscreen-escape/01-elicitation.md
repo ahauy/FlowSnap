@@ -1,6 +1,6 @@
 # 01 — Elicitation Record (Stage 2) — universal-fullscreen-escape
 
-> Interview conducted on 2026-09-03 via interactive interview gate for US-WORK-018.
+> Interview conducted on 2026-09-03 via interactive interview gate for US-WORK-019.
 > Confirmed decisions: `ASM-FSE-001`, `ASM-FSE-002`, `ASM-FSE-003`.
 
 ## Confirmed Decisions

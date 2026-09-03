@@ -1,8 +1,8 @@
-# ADR-0012: Universal Fullscreen Escape Architecture (US-WORK-018)
+# ADR-0012: Universal Fullscreen Escape Architecture (US-WORK-019)
 
 - **Status**: Accepted
 - **Date**: 2026-09-03
-- **Feature**: `universal-fullscreen-escape` (US-WORK-018)
+- **Feature**: `universal-fullscreen-escape` (US-WORK-019)
 - **Author**: FlowSnap Core Architecture Team
 
 ## Context & Problem Statement
@@ -13,7 +13,7 @@ As a result:
 
 1. Electron windows were left trapped in fullscreen Spaces.
 2. Space transition animations were not awaited with feedback, causing subsequent `setFrame` calls to fail silently.
-3. This blocked `US-WORK-017` (Stage Manager Multi-Window Auto-Grouping).
+3. This blocked `US-WORK-018` (Stage Manager Multi-Window Auto-Grouping).
 
 ## Decision
 
@@ -36,7 +36,7 @@ As a result:
   - 100% reliable exit from fullscreen across both native Cocoa and modern Electron/Chromium applications.
   - Sub-millisecond execution for standard native apps.
   - ~300ms faster restore times on Apple Silicon through adaptive polling.
-  - Unblocks US-WORK-017 (Stage Manager integration).
+  - Unblocks US-WORK-018 (Stage Manager integration).
 - **Negative / Trade-offs**:
   - Tier 2 fallback temporarily activates the target application to ensure the synthetic keystroke is delivered by macOS WindowServer.
 

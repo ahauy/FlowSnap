@@ -1,4 +1,4 @@
-# Intake: Stage Manager Multi-Window Auto-Grouping on Restore (US-WORK-017)
+# Intake: Stage Manager Multi-Window Auto-Grouping on Restore (US-WORK-018)
 
 - **Date**: 2026-09-03
 - **Requested by**: Product Backlog Roadmap (`docs/PRODUCT_BACKLOG_ROADMAP.md` — Sprint 5)

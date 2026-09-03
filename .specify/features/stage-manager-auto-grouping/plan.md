@@ -1,8 +1,8 @@
-# Technical Architecture & Implementation Plan: US-WORK-017
+# Technical Architecture & Implementation Plan: US-WORK-018
 
 ## 1. Architectural Strategy & Deep Module Boundaries
 
-US-WORK-017 implements **Stage Manager Multi-Window Auto-Grouping on Restore** following John Ousterhout's Deep Modules principle and DDD:
+US-WORK-018 implements **Stage Manager Multi-Window Auto-Grouping on Restore** following John Ousterhout's Deep Modules principle and DDD:
 
 - **Deep Module 1: `StageManagerDetector`**:
   - Implements `StageManagerDetecting`.

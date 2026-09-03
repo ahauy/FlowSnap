@@ -1,8 +1,8 @@
-# ADR-0013: Stage Manager Multi-Window Auto-Grouping Architecture (US-WORK-017)
+# ADR-0013: Stage Manager Multi-Window Auto-Grouping Architecture (US-WORK-018)
 
 - **Status**: Accepted
 - **Date**: 2026-09-03
-- **Feature**: `stage-manager-auto-grouping` (US-WORK-017)
+- **Feature**: `stage-manager-auto-grouping` (US-WORK-018)
 - **Author**: FlowSnap Core Architecture Team
 
 ## Context & Problem Statement

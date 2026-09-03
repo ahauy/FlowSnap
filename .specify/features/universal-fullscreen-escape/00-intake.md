@@ -1,4 +1,4 @@
-# Intake: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-018)
+# Intake: Universal Fullscreen Escape for Electron/Native Apps (US-WORK-019)
 
 - **Date**: 2026-09-03
 - **Requested by**: Product Backlog Roadmap (`docs/PRODUCT_BACKLOG_ROADMAP.md` — Sprint 5)
