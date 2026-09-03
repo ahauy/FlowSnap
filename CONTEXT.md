@@ -103,6 +103,9 @@
 | **TopologyProfileManager** | Coordinator executing hot-unplug clamping and reconnect auto-restoration | "Display topology profile manager" | `TopologyProfileManager` | US-DISP-016, ADR-0011, Core |
 | **FullScreenEscapeCoordinator** | Resilient multi-tier coordinator for native and Electron fullscreen exit | "Universal fullscreen exit helper" | `FullScreenEscapeCoordinator` | US-WORK-018, ADR-0012, Core / Infrastructure |
 | **FullScreenEscapeTier** | Enum of escape strategies: fast attribute write, AX button press, CGEvent | "Escape tier strategy" | `FullScreenEscapeTier` | US-WORK-018, Domain |
+| **StageManagerDetecting** | Protocol for querying macOS Stage Manager enabled state via `com.apple.WindowManager` | "Stage Manager detection protocol" | `StageManagerDetecting` | US-WORK-017, Domain / Infrastructure |
+| **StageManagerDetector** | CFPreferences/UserDefaults implementation reading `GloballyEnabled` | "Stage Manager detector service" | `StageManagerDetector` | US-WORK-017, Infrastructure |
+| **SmartStageCoordination** | Strategy coordinating primary app activation and secondary `kAXRaiseAction` on a single Stage | "Stage Manager auto-grouping strategy" | `SmartStageCoordination` | US-WORK-017, Core / Restore |
 
 ## Where to Look
 
