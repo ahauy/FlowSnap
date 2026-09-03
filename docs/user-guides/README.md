@@ -22,6 +22,7 @@ Welcome to the **FlowSnap User Guides**! This directory contains step-by-step vi
 | **US-WORK-012** | **Window Groups & Workspace Presets**                   | • 4 curated workflow presets (Coding, Research, Writing, Design)<br>• Smart app category fallbacks & auto-launch<br>• Linked window groups (minimize, focus, move together)<br>• Hotkey customization & collision prevention |      [View Guide](window-groups-presets.md)      |
 | **US-WORK-013** | **App Launch Observer & Current Space Policy**          | • Automatic active desktop space interception<br>• Zero-polling launch detection via NSWorkspace<br>• First window AXObserver safety net<br>• No Spaces switching disruption                                                 | [View Guide](app-launch-current-space-policy.md) |
 | **US-WORK-014** | **Per-App Window Rules & Smart Floating Stack**         | • Floating app immunity from tiling<br>• Smart focus restoration to underlying windows<br>• Clamped multi-monitor remembered positions<br>• Assigned canonical layout zones (70/30, halves)                                  |  [View Guide](per-app-rules-floating-stack.md)   |
+| **US-DISP-015** | **Cross-Display Window Throw & Target-Aware Snap**      | • Instant cross-monitor navigation<br>• Global shortcuts `⌃⌥⇧→` and `⌃⌥⇧←`<br>• Auto cursor warping to target window<br>• Semantic snap preservation & relative scaling                                                      |   [View Guide](cross-display-window-throw.md)    |
 
 ---
 

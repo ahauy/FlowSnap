@@ -115,8 +115,10 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
             return KeyboardShortcut(keyCode: 21, carbonModifiers: ctrlOptShift)  // ⌃⌥⇧4
         case .rightThird:
             return KeyboardShortcut(keyCode: 23, carbonModifiers: ctrlOptShift)  // ⌃⌥⇧5
-        case .nextDisplay, .previousDisplay:
-            return nil
+        case .nextDisplay:
+            return KeyboardShortcut(keyCode: 124, carbonModifiers: ctrlOptShift) // ⌃⌥⇧→
+        case .previousDisplay:
+            return KeyboardShortcut(keyCode: 123, carbonModifiers: ctrlOptShift) // ⌃⌥⇧←
         }
     }
 
@@ -138,8 +140,8 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
         case .leftThird: return .snap(.zone(.leftThird))
         case .centerThird: return .snap(.zone(.centerThird))
         case .rightThird: return .snap(.zone(.rightThird))
-        case .nextDisplay: return .snap(.zone(.rightHalf))
-        case .previousDisplay: return .snap(.zone(.leftHalf))
+        case .nextDisplay: return .moveToNextDisplay
+        case .previousDisplay: return .moveToPreviousDisplay
         }
     }
 }

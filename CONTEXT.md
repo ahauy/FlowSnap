@@ -93,6 +93,9 @@
 | **AppPolicyRule** | Configurable per-bundleID policy mapping entity | "App rule definition" | `AppPolicyRule` | US-WORK-014, ADR-0009, Codable, Identifiable |
 | **RememberedFrameStore** | Component persisting last-closed window frames per app with bounds clamping | "Saved frame storage" | `RememberedFrameStore` | US-WORK-014, ADR-0009, @MainActor |
 | **SmartFocusStack** | MRU focus tracking restoring focus to underlying tiled windows upon floating app dismissal | "Focus restoration stack" | `SmartFocusStack` | US-WORK-014, ADR-0009, @MainActor |
+| **DisplayNavigator** | Spatial engine ordering displays left-to-right with cyclic wrap-around | "Display navigation helper" | `DisplayNavigator` | US-DISP-015, ADR-0010, Core |
+| **RelativeFrameScaler** | Proportional geometric transformer mapping frames between displays | "Cross-display frame scaler" | `RelativeFrameScaler` | US-DISP-015, ADR-0010, Pure Geometric |
+| **CursorWarping** | CoreGraphics cursor relocation to target window center maintaining focus | "Mouse warp on throw" | `CursorWarping` | US-DISP-015, ADR-0010, Infrastructure |
 
 ## Where to Look
 

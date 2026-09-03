@@ -181,8 +181,7 @@ struct WindowGroupSyncTests {
         // (350, 600) — a vertically mirrored placement.
         #expect(moved?.frame == CGRect(x: 350, y: 200, width: 300, height: 300))
 
-        // And the write must be addressed to the element that was measured.
-        let element = try #require(context.mockWM.movedElements.first ?? nil)
+        let element = try #require(context.mockWM.movedElements.first)
         #expect(CFEqual(element, element2))
     }
 

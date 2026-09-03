@@ -93,18 +93,14 @@ public final class DisplayManager: DisplayManaging {
         return primaryDisplay
     }
 
+    private let navigator: any DisplayNavigating = DisplayNavigator()
+
     public func nextDisplay(after currentDisplay: Display) -> Display? {
-        guard cachedDisplays.count > 1 else {
-            // BR-DISP-006: Single display guard returns nil
-            return nil
-        }
+        navigator.nextDisplay(after: currentDisplay, in: cachedDisplays)
+    }
 
-        if let currentIndex = cachedDisplays.firstIndex(where: { $0.id == currentDisplay.id }) {
-            let nextIndex = (currentIndex + 1) % cachedDisplays.count
-            return cachedDisplays[nextIndex]
-        }
-
-        return primaryDisplay
+    public func previousDisplay(before currentDisplay: Display) -> Display? {
+        navigator.previousDisplay(before: currentDisplay, in: cachedDisplays)
     }
 
     // MARK: - Display Refresh & Notification Handling

@@ -35,12 +35,13 @@ public final class MockDisplayManager: DisplayManaging, @unchecked Sendable {
         return mockDisplays.first { $0.frame.intersects(windowFrame) } ?? mockDisplays.first
     }
 
+    private let navigator: any DisplayNavigating = DisplayNavigator()
+
     public func nextDisplay(after currentDisplay: Display) async -> Display? {
-        guard mockDisplays.count > 1 else { return nil }
-        guard let index = mockDisplays.firstIndex(where: { $0.id == currentDisplay.id }) else {
-            return mockDisplays.first
-        }
-        let nextIndex = (index + 1) % mockDisplays.count
-        return mockDisplays[nextIndex]
+        navigator.nextDisplay(after: currentDisplay, in: mockDisplays)
+    }
+
+    public func previousDisplay(before currentDisplay: Display) async -> Display? {
+        navigator.previousDisplay(before: currentDisplay, in: mockDisplays)
     }
 }

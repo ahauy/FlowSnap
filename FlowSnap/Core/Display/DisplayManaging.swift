@@ -28,6 +28,11 @@ public protocol DisplayManaging: Sendable {
     ///
     /// If only 1 display is connected, returns `nil` (`BR-DISP-006`).
     func nextDisplay(after currentDisplay: Display) async -> Display?
+
+    /// Returns the previous display in sequence, cycling around.
+    ///
+    /// If only 1 display is connected, returns `nil` (`BR-DISP-008`).
+    func previousDisplay(before currentDisplay: Display) async -> Display?
 }
 
 public extension DisplayManaging {

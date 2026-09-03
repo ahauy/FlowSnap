@@ -8,7 +8,7 @@ import SwiftUI
 @main
 struct FlowSnapLabApp: App {
     var body: some Scene {
-        WindowGroup {
+        SwiftUI.WindowGroup {
             FlowSnapLabView()
         }
     }
@@ -486,8 +486,11 @@ struct FlowSnapLabView: View {
         case .restore: return "restore"
         case .minimize: return "minimize"
         case .moveToDisplay(let id): return "display \(id)"
+        case .moveToNextDisplay: return "next display"
+        case .moveToPreviousDisplay: return "previous display"
         case .restoreWorkspace: return "workspace"
         case .saveWorkspace: return "save"
+        case .restorePreset(let id): return "preset \(id)"
         }
     }
 
