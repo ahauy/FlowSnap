@@ -32,6 +32,8 @@ public final class CommandDispatcher: CommandDispatching {
     private let snapEngine: SnapEngine
     private let displayManager: DisplayManaging
     private let presetResolver: (any PresetResolving)?
+    private let cursorManager: any CursorWarping
+    private let displayNavigator: any DisplayNavigating
 
     /// Active pending task for latest-wins debouncing (BR-HOTKEY-005).
     private var pendingTask: Task<Void, Error>?
@@ -46,12 +48,16 @@ public final class CommandDispatcher: CommandDispatching {
         windowManager: WindowManaging,
         snapEngine: SnapEngine,
         displayManager: DisplayManaging,
-        presetResolver: (any PresetResolving)? = nil
+        presetResolver: (any PresetResolving)? = nil,
+        cursorManager: any CursorWarping = CursorManager(),
+        displayNavigator: any DisplayNavigating = DisplayNavigator()
     ) {
         self.windowManager = windowManager
         self.snapEngine = snapEngine
         self.displayManager = displayManager
         self.presetResolver = presetResolver
+        self.cursorManager = cursorManager
+        self.displayNavigator = displayNavigator
     }
 
     /// Dispatch a command for asynchronous execution with latest-wins debouncing.
@@ -95,6 +101,12 @@ public final class CommandDispatcher: CommandDispatching {
 
         case .moveToDisplay(let displayID):
             return try await executeMoveToDisplay(displayID)
+
+        case .moveToNextDisplay:
+            return try await executeCrossDisplayThrow(isNext: true)
+
+        case .moveToPreviousDisplay:
+            return try await executeCrossDisplayThrow(isNext: false)
 
         case .minimize:
             if let window = await windowManager.focusedWindow() {
@@ -195,5 +207,79 @@ public final class CommandDispatcher: CommandDispatching {
             return matched
         }
         return await displayManager.display(for: window.frame, cursorPoint: nil)
+    }
+
+    private func executeCrossDisplayThrow(isNext: Bool) async throws -> Bool {
+        guard let window = await windowManager.focusedWindow() else { return false }
+        let displays = await displayManager.displays
+        guard displays.count > 1 else {
+            dispatcherLogger.debug("Single display connected. Cross-display throw is no-op.")
+            return false
+        }
+
+        guard let sourceDisplay = await displayManager.display(for: window.frame, cursorPoint: nil) else {
+            return false
+        }
+
+        let targetDisplay: Display?
+        if isNext {
+            targetDisplay = displayNavigator.nextDisplay(after: sourceDisplay, in: displays)
+        } else {
+            targetDisplay = displayNavigator.previousDisplay(before: sourceDisplay, in: displays)
+        }
+
+        guard let targetDisplay else { return false }
+
+        let primaryHeight = await displayManager.primaryScreenHeight
+        let axFrame: CGRect
+
+        // Evaluate whether the window is snapped to preserve semantic layout (BR-DISP-010)
+        let normalized = ZoneInference.normalizedRect(of: window.frame, within: sourceDisplay.visibleFrame)
+        let inferredZone = ZoneInference.inferZone(forNormalized: normalized)
+        let score = ZoneInference.intersectionOverUnion(normalized, inferredZone.normalizedRect)
+
+        if score >= 0.75 {
+            guard let snapAX = await snapEngine.calculateAXFrame(
+                for: .zone(inferredZone),
+                window: window,
+                on: targetDisplay,
+                primaryScreenHeight: primaryHeight
+            ) else { return false }
+            axFrame = snapAX
+        } else {
+            let scaledAppKit = RelativeFrameScaler.scale(
+                frame: window.frame,
+                from: sourceDisplay.visibleFrame,
+                to: targetDisplay.visibleFrame
+            )
+            axFrame = CoordinateTransformer.toAX(rect: scaledAppKit, primaryScreenHeight: primaryHeight)
+        }
+
+        try Task.checkCancellation()
+
+        let startAppKitFrame = window.frame
+        let targetAppKitFrame = CoordinateTransformer.toAppKit(rect: axFrame, primaryScreenHeight: primaryHeight)
+
+        async let morphTask: Void = GhostMorphPanel.shared.morph(
+            from: startAppKitFrame,
+            to: targetAppKitFrame,
+            glideDuration: 0.16,
+            fadeDuration: 0.10
+        )
+
+        try await windowManager.move(window, to: axFrame)
+        var updatedWindow = window
+        updatedWindow.frame = targetAppKitFrame
+        await snapEngine.windowRegistry.update(updatedWindow)
+
+        // Warp mouse cursor to center of target window (BR-DISP-012)
+        let targetCenter = CGPoint(x: axFrame.midX, y: axFrame.midY)
+        cursorManager.warpCursor(to: targetCenter)
+
+        // Maintain keyboard focus on target window
+        try? await windowManager.focus(window)
+
+        _ = await morphTask
+        return true
     }
 }
