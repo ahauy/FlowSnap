@@ -101,6 +101,8 @@
 | **DisplayHotPlugObserver** | Debounced observer listening to `didChangeScreenParametersNotification` | "Display plug/unplug listener" | `DisplayHotPlugObserver` | US-DISP-016, ADR-0011, Infrastructure |
 | **FrameClampingHelper** | Geometric helper fitting window frames inside display bounds with safe titlebar | "Window frame bounds clamper" | `FrameClampingHelper` | US-DISP-016, ADR-0011, Core |
 | **TopologyProfileManager** | Coordinator executing hot-unplug clamping and reconnect auto-restoration | "Display topology profile manager" | `TopologyProfileManager` | US-DISP-016, ADR-0011, Core |
+| **FullScreenEscapeCoordinator** | Resilient multi-tier coordinator for native and Electron fullscreen exit | "Universal fullscreen exit helper" | `FullScreenEscapeCoordinator` | US-WORK-018, ADR-0012, Core / Infrastructure |
+| **FullScreenEscapeTier** | Enum of escape strategies: fast attribute write, AX button press, CGEvent | "Escape tier strategy" | `FullScreenEscapeTier` | US-WORK-018, Domain |
 
 ## Where to Look
 

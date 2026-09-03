@@ -679,23 +679,28 @@ _Mục tiêu: Giải quyết triệt để 2 vấn đề xung đột cố hữu 
     - [ ] `Core`: Cập nhật `WorkspaceManager+Restore.swift` nhánh xử lý `restoreWithStageManagerEnabled` sử dụng `kAXRaiseAction`.
     - [ ] `Tests`: Test suite giả lập môi trường Stage Manager và xác nhận thứ tự gọi AXRaise không gây ra race condition.
 
-- [ ] **US-WORK-018: Thoát Toàn màn hình Đa nền tảng (Universal Fullscreen Escape for Electron/Native Apps)**
+- [x] **US-WORK-018: Thoát Toàn màn hình Đa nền tảng (Universal Fullscreen Escape for Electron/Native Apps)**
   - **Slug:** `universal-fullscreen-escape`
   - **Effort:** M
   - **Context-budget:** single-session
   - **Priority:** Must-Have (P0)
   - **Depends-on:** `US-SNAP-001` ✅
-  - **Blocks:** `US-WORK-017`
+  - **Blocks:** `US-WORK-017` (Unblocked ✅)
   - **Mô tả:** Nâng cấp cơ chế thoát Native Full Screen trong `WindowManager` để có thể đưa bất kỳ ứng dụng nào (kể cả các app Electron/Chromium như Antigravity, VS Code, Brave) thoát khỏi chế độ Full Screen một cách tin cậy 100%, tự động trượt về Desktop Space để sẵn sàng hiển thị Workspace được khôi phục.
   - **Acceptance Criteria (AC):**
-    - [ ] Thay thế lệnh gán thuộc tính `AXFullscreen = false` (vốn bị lỗi `cannotComplete` trên Electron) bằng cơ chế tương tác trực tiếp với nút Zoom/Fullscreen (`kAXFullScreenButtonAttribute` + `kAXPressAction`).
-    - [ ] Nếu bấm nút không phản hồi: Tự động gửi phím tắt thoát Full Screen chuẩn của macOS (`⌃ + ⌘ + F`) trực tiếp tới PID của ứng dụng mục tiêu qua `CGEvent`.
-    - [ ] Lắng nghe sự kiện thoát Full Screen hoàn tất (`kAXWindowDeminiaturizedNotification` hoặc chờ hết animation 700ms) trước khi tiến hành `setFrame` cho cửa sổ.
-    - [ ] Màn hình tự động chuyển mượt mà về Desktop Space và hiển thị trọn vẹn Workspace.
+    - [x] Thay thế lệnh gán thuộc tính `AXFullscreen = false` (vốn bị lỗi `cannotComplete` trên Electron) bằng cơ chế tương tác trực tiếp với nút Zoom/Fullscreen (`kAXFullScreenButtonAttribute` + `kAXPressAction`).
+    - [x] Nếu bấm nút không phản hồi: Tự động gửi phím tắt thoát Full Screen chuẩn của macOS (`⌃ + ⌘ + F`) trực tiếp tới PID của ứng dụng mục tiêu qua `CGEvent`.
+    - [x] Lắng nghe sự kiện thoát Full Screen hoàn tất qua adaptive polling loop (100ms interval, tối đa 800ms) trước khi tiến hành `setFrame` cho cửa sổ.
+    - [x] Màn hình tự động chuyển mượt mà về Desktop Space và hiển thị trọn vẹn Workspace.
   - **Tasks:**
-    - [ ] `Infrastructure`: Cải tiến `AXAccessibilityService.exitFullScreen` với fallback 2 tầng (kAXPressAction nút xanh -> CGEvent `⌃⌘F`).
-    - [ ] `Core`: Tích hợp vào `WindowManager.move` và `WorkspaceManager+Restore`.
-    - [ ] `Tests`: Kiểm tra mock thoát fullscreen với cả standard Cocoa window và Electron mock window.
+    - [x] `Domain`: Khởi tạo `FullScreenEscapeTier.swift` và `FullScreenEscapeResult.swift`.
+    - [x] `Infrastructure`: Triển khai `CGEventPosting` và `FullScreenEscapeCoordinator` 3 tầng (Tier 0 -> Tier 1 -> Tier 2) kèm adaptive polling loop.
+    - [x] `Core`: Tích hợp `FullScreenEscapeCoordinating` vào `WindowManager.move` thay thế static 700ms sleep.
+    - [x] `Tests`: Test suite hoàn chỉnh `FullScreenEscapeCoordinatorTests` & `WindowManagerTests` (392 tests passing).
+  - **Deliverables khi [x]:**
+    - `.specify/features/universal-fullscreen-escape/baseline.md` (SIGNED-OFF)
+    - `docs/features/universal-fullscreen-escape/README.md`
+    - `docs/user-guides/universal-fullscreen-escape.md`
 
 ---
 
@@ -786,7 +791,7 @@ _Mục tiêu: Đem lại trải nghiệm thao tác tức thì kiểu Raycast/Alf
   │     └── [x] US-DISP-016: Display Topology Profiles & Hot-Plug Rebalancer (EPIC 13 ✅ complete)
   ├── [Sprint 5: Stage Manager & Fullscreen Harmony]
   │     ├── [ ] US-WORK-017: Stage Manager Multi-Window Auto-Grouping on Restore
-  │     └── [ ] US-WORK-018: Universal Fullscreen Escape (Electron/Native Button & ⌃⌘F)
+  │     └── [x] US-WORK-018: Universal Fullscreen Escape (Electron/Native Button & ⌃⌘F) ✅ complete
   └── [Sprint 6: Quick Floating Utility & Always-On-Top]
         ├── [ ] US-SNAP-019: Quick Floating Scratchpad & Calculator Overlay (⌥Space)
         └── [ ] US-SNAP-020: Always-On-Top Window Pinning for 3rd-Party Apps (⌃⌥P)

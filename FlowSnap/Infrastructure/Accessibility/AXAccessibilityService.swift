@@ -313,7 +313,20 @@ public final class AXAccessibilityService: AccessibilityService, @unchecked Send
                 return
             }
         }
-        diagPrint("[AXAccessibilityService] exitFullScreen: all attribute writes failed")
+
+        // Tier 1 fallback: Interactively trigger the window's full screen button via AX (for Electron/Chromium)
+        var buttonValue: AnyObject?
+        let buttonResult = AXUIElementCopyAttributeValue(window, kAXFullScreenButtonAttribute as CFString, &buttonValue)
+        if buttonResult == .success, let button = buttonValue, CFGetTypeID(button) == AXUIElementGetTypeID() {
+            // swiftlint:disable:next force_cast
+            let pressResult = AXUIElementPerformAction((button as! AXUIElement), kAXPressAction as CFString)
+            if pressResult == .success {
+                diagPrint("[AXAccessibilityService] exitFullScreen succeeded via full screen button press")
+                return
+            }
+        }
+
+        diagPrint("[AXAccessibilityService] exitFullScreen: all attribute writes and button press failed")
         throw AccessibilityError.cannotComplete
     }
 
