@@ -73,15 +73,16 @@ public final class AppDependencies {
     /// is shared too, so restore recomputes geometry against the gap the user set
     /// in Settings (BR-WORK-007).
     ///
-    /// Lazy because its init kicks off a store load; nothing needs it until a UI
-    /// surface first reads the list.
+    public lazy var stageManagerDetector: any StageManagerDetecting = StageManagerDetector()
+
     public lazy var workspaceManager: WorkspaceManager = WorkspaceManager(
         accessibilityService: accessibilityService,
         windowManager: windowManager,
         displayManager: displayManager,
         layoutEngine: layoutEngine,
         launcher: AppLauncher(accessibilityService: accessibilityService),
-        preferences: preferencesStore
+        preferences: preferencesStore,
+        stageManagerDetector: stageManagerDetector
     )
 
     // MARK: - View Models
