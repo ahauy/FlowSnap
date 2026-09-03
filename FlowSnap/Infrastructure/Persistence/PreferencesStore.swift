@@ -1,4 +1,5 @@
 import Combine
+import CoreGraphics
 import Foundation
 
 /// Persists user preferences (general settings, hotkeys, drag-to-snap toggles, app policies).
@@ -30,6 +31,8 @@ public final class PreferencesStore: ObservableObject {
     @Published public private(set) var isDragToSnapEnabled: Bool
     @Published public private(set) var dragPreviewDwellDelay: Double
     @Published public private(set) var launchAtLogin: Bool
+    @Published public private(set) var appRules: [AppPolicyRule]
+    @Published public private(set) var rememberedFrames: [String: RememberedFrame]
 
     // MARK: - Initialization
 
@@ -82,6 +85,27 @@ public final class PreferencesStore: ObservableObject {
             loadedPresetShortcuts = dict
         }
         self.customPresetShortcuts = loadedPresetShortcuts
+
+        // Per-App Rules (US-WORK-014)
+        var loadedAppRules: [AppPolicyRule] = []
+        if let data = defaults.data(forKey: "appPolicyRules"),
+           let rules = try? JSONDecoder().decode([AppPolicyRule].self, from: data) {
+            loadedAppRules = rules
+        } else {
+            loadedAppRules = [
+                AppPolicyRule(bundleID: "com.apple.calculator", appName: "Calculator", policy: .floating, iconName: "number.circle"),
+                AppPolicyRule(bundleID: "ru.keepcoder.Telegram", appName: "Telegram", policy: .floating, iconName: "paperplane")
+            ]
+        }
+        self.appRules = loadedAppRules
+
+        // Remembered Frames (US-WORK-014)
+        var loadedRememberedFrames: [String: RememberedFrame] = [:]
+        if let data = defaults.data(forKey: "rememberedFrames"),
+           let frames = try? JSONDecoder().decode([String: RememberedFrame].self, from: data) {
+            loadedRememberedFrames = frames
+        }
+        self.rememberedFrames = loadedRememberedFrames
     }
 
     // MARK: - Window Gap (BR-CRW-002)
@@ -219,6 +243,46 @@ public final class PreferencesStore: ObservableObject {
         if let data = try? JSONEncoder().encode(customPresetShortcuts) {
             defaults.set(data, forKey: "customPresetShortcuts")
         }
+    }
+
+    // MARK: - Per-App Rules (US-WORK-014, spec §1, BR-POLICY-001)
+
+    /// Set or update the policy rule for an application.
+    public func setAppRule(_ rule: AppPolicyRule) {
+        if let index = appRules.firstIndex(where: { $0.bundleID.lowercased() == rule.bundleID.lowercased() }) {
+            appRules[index] = rule
+        } else {
+            appRules.append(rule)
+        }
+        saveAppRules()
+    }
+
+    /// Remove the policy rule for an application by its bundle ID.
+    public func removeAppRule(forBundleID bundleID: String) {
+        appRules.removeAll { $0.bundleID.lowercased() == bundleID.lowercased() }
+        saveAppRules()
+    }
+
+    private func saveAppRules() {
+        if let data = try? JSONEncoder().encode(appRules) {
+            defaults.set(data, forKey: "appPolicyRules")
+        }
+    }
+
+    // MARK: - Remembered Frames (US-WORK-014, spec §3, BR-POLICY-003)
+
+    /// Save the last known geometry for an application.
+    public func saveRememberedFrame(_ frame: CGRect, forBundleID bundleID: String, displayID: CGDirectDisplayID? = nil) {
+        let record = RememberedFrame(bundleID: bundleID, frame: frame, displayID: displayID)
+        rememberedFrames[bundleID] = record
+        if let data = try? JSONEncoder().encode(rememberedFrames) {
+            defaults.set(data, forKey: "rememberedFrames")
+        }
+    }
+
+    /// Retrieve the last known geometry for an application.
+    public func rememberedFrame(forBundleID bundleID: String) -> RememberedFrame? {
+        rememberedFrames[bundleID]
     }
 
     // MARK: - Clamping (contracts.md §4.2)

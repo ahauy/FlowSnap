@@ -57,7 +57,7 @@ public struct SettingsView: View {
                     }
             }
 
-            ApplicationRulesView()
+            ApplicationRulesView(store: store)
                 .tabItem {
                     Label("App Rules", systemImage: "app.badge.checkmark")
                 }

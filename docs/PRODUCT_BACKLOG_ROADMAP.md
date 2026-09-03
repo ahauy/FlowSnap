@@ -152,7 +152,7 @@ graph TD
 | **EPIC-08** | Tỷ lệ Tùy chỉnh (60/40, 70/30) & Window Gaps Thẩm mỹ      | **Should-Have** |   7   |  1.5   |    95%     |  1.5   |  **6.6**   |     **P1 (Visual)**     |   Sprint 2    |
 | **EPIC-09** | Kéo Đường Phân cách Chung (Adaptive Divider Resize)       | **Could-Have**  |   6   |  2.0   |    80%     |  3.0   |  **3.2**   |    **P2 (Advanced)**    |   Sprint 2    |
 | **EPIC-10** | Cài đặt SwiftUI & Tùy biến Phím tắt (Settings & Config)   | **Should-Have** |   8   |  1.5   |    95%     |  1.5   |  **7.6**   |    **P1 (Settings)**    |   Sprint 2    |
-| **EPIC-11** | Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspaces) | **Should-Have** |   8   |  3.0   |    100%    |  2.5   |  **9.1**   |  **P1 (Hero Feature)**  |   Sprint 3 ✅ |
+| **EPIC-11** | Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspaces) | **Should-Have** |   8   |  3.0   |    100%    |  2.5   |  **9.1**   |  **P1 (Hero Feature)**  |  Sprint 3 ✅  |
 | **EPIC-12** | Nhóm Cửa sổ & Workspace Presets (Coding, Research)        | **Should-Have** |   7   |  2.0   |    90%     |  1.5   |  **8.4**   |   **P1 (Value-Add)**    |   Sprint 3    |
 | **EPIC-13** | Phát hiện Mở Ứng dụng & Giữ ở Workspace Hiện tại          |  **Must-Have**  |   9   |  3.0   |    85%     |  2.5   |  **9.1**   |  **P0 (Hero Feature)**  |   Sprint 3    |
 | **EPIC-14** | Quy tắc Riêng theo Ứng dụng & Cửa sổ Nổi (Floating Stack) | **Should-Have** |   7   |  2.0   |    90%     |  2.0   |  **6.3**   |  **P1 (Flexibility)**   |   Sprint 3    |
@@ -563,7 +563,7 @@ _Mục tiêu: Giải quyết triệt để nỗi đau lớn nhất của ngườ
 
 _Mục tiêu: Trao toàn quyền tùy biến hành vi cho người dùng — quy định cửa sổ nào được nổi tạm thời, cửa sổ nào luôn bám vào một layout cố định._
 
-- [ ] **US-WORK-014: Quy tắc Riêng cho Từng Ứng dụng & Cửa sổ Nổi Thông minh (Per-App Rules & Smart Floating Stack)**
+- [x] **US-WORK-014: Quy tắc Riêng cho Từng Ứng dụng & Cửa sổ Nổi Thông minh (Per-App Rules & Smart Floating Stack)**
   - **Slug:** `per-app-rules-floating-stack`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -572,18 +572,18 @@ _Mục tiêu: Trao toàn quyền tùy biến hành vi cho người dùng — quy
   - **Blocks:** _(none)_
   - **Mô tả:** Cho phép người dùng thiết lập quy tắc chuyên biệt cho từng app (ví dụ Telegram luôn Floating, Spotify luôn nhớ vị trí, VS Code luôn snap 60% bên trái) và cơ chế Smart Window Stack khi có app tạm mở đè lên.
   - **Acceptance Criteria (AC):**
-    - [ ] Cung cấp các chính sách cửa sổ linh hoạt trong `WindowPolicy`:
+    - [x] Cung cấp các chính sách cửa sổ linh hoạt trong `WindowPolicy`:
       - `Current Space`: Luôn mở ở Space hiện tại
       - `Floating`: Cửa sổ nổi tự do, không bị ép vào layout dạng lưới
       - `Remember Position`: Luôn mở lại đúng vị trí frame đã đóng lần trước
       - `Assigned Layout`: Tự động snap vào một zone định sẵn (ví dụ: VS Code luôn mở Left 60%)
-    - [ ] Cơ chế `Smart Window Stack`: Khi mở một app dạng Floating (như Telegram/Slack), cửa sổ này hiển thị nổi phía trên mà không làm xáo trộn bố cục các cửa sổ đang chia đôi bên dưới.
-    - [ ] Khi đóng app nổi, tiêu điểm (focus) tự động trả lại cho ứng dụng làm việc gần nhất bên dưới một cách tự nhiên.
+    - [x] Cơ chế `Smart Window Stack`: Khi mở một app dạng Floating (như Telegram/Slack), cửa sổ này hiển thị nổi phía trên mà không làm xáo trộn bố cục các cửa sổ đang chia đôi bên dưới.
+    - [x] Khi đóng app nổi, tiêu điểm (focus) tự động trả lại cho ứng dụng làm việc gần nhất bên dưới một cách tự nhiên.
   - **Tasks:**
-    - [ ] `Domain`: Hoàn thiện `WindowPolicy.swift` với đầy đủ các rule types và options.
-    - [ ] `Core`: `WindowPolicyManager` áp dụng rule tương ứng mỗi khi nhận `windowCreated` event.
-    - [ ] `UI`: Thêm tab "Applications" trong Settings cho phép người dùng chọn app từ danh sách `/Applications` và gán policy.
-    - [ ] `Tests`: Kiểm tra priority rule precedence (App-specific rule ghi đè Default rule).
+    - [x] `Domain`: Hoàn thiện `WindowPolicy.swift` với đầy đủ các rule types và options.
+    - [x] `Core`: `WindowPolicyManager` áp dụng rule tương ứng mỗi khi nhận `windowCreated` event.
+    - [x] `UI`: Thêm tab "Applications" trong Settings cho phép người dùng chọn app từ danh sách `/Applications` và gán policy.
+    - [x] `Tests`: Kiểm tra priority rule precedence (App-specific rule ghi đè Default rule).
   - **Deliverables khi [x]:**
     - `.specify/features/per-app-rules-floating-stack/baseline.md` (SIGNED-OFF)
     - `docs/features/per-app-rules-floating-stack/README.md`
@@ -622,7 +622,7 @@ _Mục tiêu: Trao toàn quyền tùy biến hành vi cho người dùng — quy
   ├── [x] US-WORK-011: Workspace Snapshot & Intent-Based Restoration
   ├── [x] US-WORK-012: Window Groups & Built-in Workflow Presets
   ├── [x] US-WORK-013: Application Launch Observer & Current Space Policy (EPIC 11 ✅ complete)
-  └── [ ] US-WORK-014: Per-App Window Rules & Smart Floating Stacking
+  └── [x] US-WORK-014: Per-App Window Rules & Smart Floating Stacking (EPIC 12 ✅ complete)
 
 [ Future Horizons (V2.0+) ]
   ├── US-FUTURE-001: Visual Canvas-based Interactive Layout Editor

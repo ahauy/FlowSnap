@@ -6,59 +6,79 @@ import Foundation
 ///
 /// Determines how a newly opened or activated window should
 /// behave: stay on current space, float, remember position, etc.
-/// See spec §37, US-WORK-013.
+/// See spec §37, US-WORK-013, US-WORK-014.
 @MainActor
 final class WindowPolicyManager {
 
     private let accessibilityService: AccessibilityService
     private let displayManager: any DisplayManaging
+    private let preferencesStore: PreferencesStore?
+    private let layoutEngine: LayoutEngine
+    public let focusStack: SmartFocusStack
 
     private var policies: [String: WindowPolicy] = [:]
 
     /// The default policy for apps without a specific rule.
-    var defaultPolicy: WindowPolicy = .currentSpace
+    public var defaultPolicy: WindowPolicy = .currentSpace
 
-    init(
+    public init(
         accessibilityService: AccessibilityService,
-        displayManager: any DisplayManaging
+        displayManager: any DisplayManaging,
+        preferencesStore: PreferencesStore? = nil,
+        layoutEngine: LayoutEngine = LayoutEngine(),
+        focusStack: SmartFocusStack = SmartFocusStack()
     ) {
         self.accessibilityService = accessibilityService
         self.displayManager = displayManager
+        self.preferencesStore = preferencesStore
+        self.layoutEngine = layoutEngine
+        self.focusStack = focusStack
     }
 
-    /// Set the policy for a specific app.
-    func setPolicy(_ policy: WindowPolicy, forBundleID bundleID: String) {
+    /// Set the policy for a specific app (in-memory override).
+    public func setPolicy(_ policy: WindowPolicy, forBundleID bundleID: String) {
         policies[bundleID] = policy
     }
 
-    /// Get the policy for a specific app (falls back to default).
-    func policy(forBundleID bundleID: String) -> WindowPolicy {
-        policies[bundleID] ?? defaultPolicy
+    /// Get the policy for a specific app (checks PreferencesStore rules, then local overrides, falls back to default).
+    public func policy(forBundleID bundleID: String) -> WindowPolicy {
+        if let rule = preferencesStore?.appRules.first(where: { $0.bundleID.lowercased() == bundleID.lowercased() }) {
+            return rule.policy
+        }
+        return policies[bundleID] ?? defaultPolicy
     }
 
     /// Apply the appropriate policy when a window appears.
     ///
-    /// US-WORK-013 scope: only `.currentSpace` and `.currentDisplay` are
-    /// implemented. Both resolve to positioning the window on the current
-    /// display using `DisplayManaging.visibleFrame`. All other policies
-    /// remain no-ops (US-WORK-014 territory).
-    func applyPolicy(for window: ManagedWindow) async throws {
+    /// US-WORK-014: Full dispatching supporting `.currentSpace`, `.currentDisplay`,
+    /// `.floating`, `.rememberPosition`, and `.assignedLayout(LayoutZone)`.
+    public func applyPolicy(for window: ManagedWindow) async throws {
         let bundleID = window.bundleIdentifier
-        let policy = bundleID.map { self.policy(forBundleID: $0) } ?? defaultPolicy
+        let resolvedPolicy = bundleID.map { self.policy(forBundleID: $0) } ?? defaultPolicy
 
-        switch policy {
+        switch resolvedPolicy {
         case .currentSpace, .currentDisplay:
+            focusStack.recordFocus(windowID: window.id, isFloating: false)
             try await applyCurrentSpace(for: window)
-        case .floating, .rememberPosition, .assignedLayout, .assignedWorkspace:
+
+        case .floating:
+            focusStack.recordFocus(windowID: window.id, isFloating: true)
+
+        case .rememberPosition:
+            focusStack.recordFocus(windowID: window.id, isFloating: false)
+            try await applyRememberedPosition(for: window)
+
+        case .assignedLayout(let zone):
+            focusStack.recordFocus(windowID: window.id, isFloating: false)
+            try await applyAssignedLayout(zone: zone, for: window)
+
+        case .assignedWorkspace:
+            focusStack.recordFocus(windowID: window.id, isFloating: false)
             return
         }
     }
 
     /// Resolve the current display's visible frame and apply it to the window.
-    ///
-    /// The frame is taken from `DisplayManaging.primaryDisplay.visibleFrame`.
-    /// The window's existing element from `AccessibilityService.windowElement(for:)`
-    /// is preferred so the frame write lands on the exact element we measured.
     private func applyCurrentSpace(for window: ManagedWindow) async throws {
         let display = await displayManager.primaryDisplay
         guard let frame = display?.visibleFrame else {
@@ -70,15 +90,55 @@ final class WindowPolicyManager {
         try accessibilityService.setFrame(frame, for: element)
     }
 
-    // MARK: - EventBus integration (T-013-B2)
+    /// Retrieve the remembered position for the app, clamp it to active screen bounds, and apply.
+    private func applyRememberedPosition(for window: ManagedWindow) async throws {
+        guard let bundleID = window.bundleIdentifier,
+              let remembered = preferencesStore?.rememberedFrame(forBundleID: bundleID) else {
+            // Fall back to default placement if no frame was saved yet
+            try await applyCurrentSpace(for: window)
+            return
+        }
+        let display = await displayManager.primaryDisplay
+        guard let visibleFrame = display?.visibleFrame else {
+            throw AccessibilityError.cannotComplete
+        }
+        guard let element = accessibilityService.windowElement(for: window) else {
+            throw AccessibilityError.windowNotFound
+        }
+        let clamped = FrameClampingHelper.clamp(frame: remembered.frame, to: visibleFrame)
+        try accessibilityService.setFrame(clamped, for: element)
+    }
+
+    /// Compute canonical layout zone frame using LayoutEngine and apply to window.
+    private func applyAssignedLayout(zone: LayoutZone, for window: ManagedWindow) async throws {
+        let display = await displayManager.primaryDisplay
+        guard let visibleFrame = display?.visibleFrame else {
+            throw AccessibilityError.cannotComplete
+        }
+        guard let element = accessibilityService.windowElement(for: window) else {
+            throw AccessibilityError.windowNotFound
+        }
+        let gap = preferencesStore?.windowGap ?? 0
+        let targetFrame = layoutEngine.frame(for: zone, in: visibleFrame, gap: gap)
+        try accessibilityService.setFrame(targetFrame, for: element)
+    }
+
+    /// Handles floating window dismissal and returns focus to preceding non-floating window.
+    public func handleFloatingWindowClosed(windowID: CGWindowID) async {
+        guard let restoreTargetID = focusStack.removeFloatingWindow(windowID: windowID) else {
+            return
+        }
+        for window in accessibilityService.allVisibleManagedWindows() {
+            if window.id == restoreTargetID, let element = accessibilityService.windowElement(for: window) {
+                try? accessibilityService.raise(element)
+                break
+            }
+        }
+    }
+
+    // MARK: - EventBus integration (T-013-B2 & T-014-05)
 
     /// Handle a `WindowEvent` from the shared `EventBus`.
-    ///
-    /// Only `.applicationWindowCreated` is in scope for US-WORK-013 — the
-    /// manager resolves the window id to a `ManagedWindow` via
-    /// `AccessibilityService` and dispatches to `applyPolicy(for:)`. Other
-    /// cases are ignored here (US-WORK-014 will add activation/termination
-    /// re-application).
     func handle(event: WindowEvent) async {
         switch event {
         case .applicationWindowCreated(let pid, let windowID):
@@ -88,10 +148,7 @@ final class WindowPolicyManager {
         }
     }
 
-    /// Resolve `windowID` to a `ManagedWindow` (AX-backed) and apply the
-    /// resolved policy. Failures are logged but never thrown — a window we
-    /// cannot resolve is just left at its default position (partial-failure
-    /// policy, plan §8).
+    /// Resolve `windowID` to a `ManagedWindow` (AX-backed) and apply the resolved policy.
     private func applyForWindowID(_ windowID: CGWindowID, pid: pid_t) async {
         let resolved: [ResolvedWindow] = accessibilityService.resolvedWindows(of: pid)
         guard let match = resolved.first(where: { $0.window.id == windowID }) else {
@@ -100,7 +157,6 @@ final class WindowPolicyManager {
         do {
             try await applyPolicy(for: match.window)
         } catch {
-            // Best-effort: log and move on. The window is already on screen.
             NSLog("[WindowPolicyManager] applyPolicy failed for window \(windowID): \(error.localizedDescription)")
         }
     }

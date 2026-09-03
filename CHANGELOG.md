@@ -4,6 +4,27 @@ All notable changes to FlowSnap are documented in this file. The format is
 based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3] — 2026-09-03 — IMPLEMENTATION COMPLETE
+
+### Added — US-WORK-014: Per-App Window Policies & Smart Floating Stack
+
+- **Domain**
+  - `WindowPolicy` extended: supports `case assignedLayout(LayoutZone)`. Conforms to `Sendable`, `Codable`, `Hashable`.
+  - `AppPolicyRule` entity: maps `bundleID`, `appName`, `policy`, `iconName`.
+  - `RememberedFrame` value object: stores geometry with display metadata.
+- **Core**
+  - `FrameClampingHelper`: pure mathematical utility guaranteeing $\ge 80\%$ window visibility inside screen visibleBounds.
+  - `SmartFocusStack`: `@MainActor` MRU window activation tracker restoring focus to underlying tiled windows upon floating dismissal.
+  - `WindowPolicyManager`: upgraded policy dispatcher implementing `.floating`, `.rememberPosition`, `.assignedLayout(zone)`, and per-app rule priority precedence.
+- **Infrastructure**
+  - `PreferencesStore`: added `@Published appRules: [AppPolicyRule]` and `rememberedFrames: [String: RememberedFrame]` with reactive persistence in `UserDefaults`.
+- **UI**
+  - `ApplicationRulesView`: live SwiftUI interface for managing per-app rules, add-application sheet, quick suggestion pills, and policy/zone pickers.
+- **Verification**
+  - 358 tests passing in 55 suites.
+  - Zero private CGS/SLS symbols (`audit-no-private-apis.sh` clean).
+  - `swiftlint` clean with 0 errors.
+
 ## [1.2] — 2026-09-02 — IMPLEMENTATION COMPLETE
 
 ### Added — US-WORK-013: App Launch Observer & Current Space Policy

@@ -141,7 +141,8 @@ public final class AppDependencies {
     /// `visibleFrame` to the window's AX element.
     lazy var windowPolicyManager: WindowPolicyManager = WindowPolicyManager(
         accessibilityService: accessibilityService,
-        displayManager: displayManager
+        displayManager: displayManager,
+        preferencesStore: preferencesStore
     )
 
     public init() {
