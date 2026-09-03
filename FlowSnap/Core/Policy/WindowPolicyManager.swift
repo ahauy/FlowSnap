@@ -87,7 +87,13 @@ final class WindowPolicyManager {
         guard let element = accessibilityService.windowElement(for: window) else {
             throw AccessibilityError.windowNotFound
         }
-        try accessibilityService.setFrame(frame, for: element)
+        let targetFrame: CGRect
+        if !window.isResizable {
+            targetFrame = FrameClampingHelper.clamp(frame: window.frame, to: frame)
+        } else {
+            targetFrame = frame
+        }
+        try accessibilityService.setFrame(targetFrame, for: element)
     }
 
     /// Retrieve the remembered position for the app, clamp it to active screen bounds, and apply.
@@ -150,8 +156,14 @@ final class WindowPolicyManager {
 
     /// Resolve `windowID` to a `ManagedWindow` (AX-backed) and apply the resolved policy.
     private func applyForWindowID(_ windowID: CGWindowID, pid: pid_t) async {
-        let resolved: [ResolvedWindow] = accessibilityService.resolvedWindows(of: pid)
-        guard let match = resolved.first(where: { $0.window.id == windowID }) else {
+        var resolved: [ResolvedWindow] = accessibilityService.resolvedWindows(of: pid)
+        if resolved.isEmpty {
+            try? await Task.sleep(nanoseconds: 50_000_000)
+            resolved = accessibilityService.resolvedWindows(of: pid)
+        }
+        guard let match = resolved.first(where: { $0.window.id == windowID })
+                ?? resolved.first(where: { $0.window.kind == .normal })
+                ?? resolved.first else {
             return
         }
         do {
