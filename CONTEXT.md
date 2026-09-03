@@ -71,7 +71,15 @@
 | **WorkspaceManager** | @MainActor orchestrator for workspace capture & restore | "Workspace save/restore service" | `WorkspaceManager` | US-WORK-011, ObservableObject, owns store+AX |
 | **WorkspaceStore** | Actor persisting workspaces to JSON atomically | "workspaces.json reader/writer" | `WorkspaceStore` | US-WORK-011, corrupt-file parking |
 | **ZoneInference** | Pure max-IoU match of a window frame to a LayoutZone | "Which zone is this window in?" | `ZoneInference` | US-WORK-011, deterministic tie-break |
-| **RestoreSummary** | Outcome of one restore pass (placed count + skipped apps) | "What happened when I restored" | `RestoreSummary` | US-WORK-011, SkippedApp + SkipReason |
+| **RestoreSummary** | Outcome of one restore pass with placed/failed/unverifiable/skipped counters and typed reasons | "What happened when I restored" | `RestoreSummary` | US-WORK-011, `RestoreSummaryBanner`, `SkippedApp` + `SkipReason` |
+| **MoveOutcome** | Typed result of one placement attempt sequence | "Whether a window move worked" | `MoveOutcome` | US-WORK-011 enhancement; moved, failed, or unverifiable |
+| **PresentationOutcome** | Observation-only result of whether a moved window is on the current screen | "Did the window actually show up?" | `PresentationOutcome` | P0.5; presented / notPresented / unverifiable — never a Space claim |
+| **CurrentScreenVisibilityChecking** | CGWindowList on-screen presentation observation protocol | "Is this window on screen now?" | `CurrentScreenVisibilityChecking` | P0.5; `CGWindowListCurrentScreenVisibilityChecker`, public API only, no Space ID |
+| **movedButNotPresented** | Category for a window moved+verified but absent from the current screen | "Restored but invisible" | `.movedButNotPresented` | P0.5; reason `.notPresentedOnCurrentScreen` when proven absent, `.presentationUnverifiable` when unknown |
+| **WindowVerificationResult** | Post-condition check of frame/minimized/fullscreen state | "Did the window really land?" | `WindowVerificationResult` | Geometry/state proof; never current-Space proof |
+| **RestoreVerificationPolicy** | Named tolerance, retry count, and polling timing constants | "Restore magic numbers" | `RestoreVerificationPolicy` | US-WORK-011 enhancement; no literals in orchestration |
+| **unverifiablePlacement** | Outcome when placement cannot be proven safely | "Maybe it moved" | `.unverifiablePlacement` | Includes missing AX element or unreadable frame |
+| **fullscreenTransitionTimeout** | Failure when fullscreen exit is not confirmed within budget | "Fullscreen did not finish exiting" | `.fullscreenTransitionTimeout` | Placement must not start |
 | **ApplicationLaunching** | Protocol to launch an app and await its first window | "App launcher abstraction" | `ApplicationLaunching` | US-WORK-011, NSWorkspace impl, public API only |
 | **WorkspaceViewModel** | Thin façade holding workspace UI state over the manager | "Workspace sheet/settings state" | `WorkspaceViewModel` | US-WORK-011, keeps MenuBarViewModel thin |
 | **WorkspacePreset** | Curated multi-window workflow template with fallback chains | "Workflow preset or layout template" | `WorkspacePreset` | US-WORK-012, ADR-0007, Codable, Sendable |

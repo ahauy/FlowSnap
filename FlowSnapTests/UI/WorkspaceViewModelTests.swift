@@ -53,7 +53,7 @@ struct WorkspaceViewModelTests {
     ) -> WorkspaceManager {
         let accessibility = MockAccessibilityService(isTrusted: trusted)
         accessibility.mockVisibleWindows = windows
-        return WorkspaceManager(
+        let manager = WorkspaceManager(
             store: WorkspaceStore(directoryURL: tempDir()),
             accessibilityService: accessibility,
             windowManager: windowManager,
@@ -63,6 +63,10 @@ struct WorkspaceViewModelTests {
             ownBundleIdentifier: "com.flowsnap.app",
             loadAtInit: false
         )
+        // P0.5: scriptable presentation checker defaulting to `.presented`, so
+        // restore flows surfaced through the view model keep their expectations.
+        manager.injectPresentationChecker(MockCurrentScreenVisibilityChecker())
+        return manager
     }
 
     // MARK: - Save flow (J1)

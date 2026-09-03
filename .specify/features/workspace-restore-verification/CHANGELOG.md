@@ -1,0 +1,21 @@
+# Changelog: Verified Workspace Restoration Enhancement (US-WORK-011)
+
+- v0.1-draft — 2026-09-02 — Enhancement folder created by intake-classifier. Classified as Full Feature / scope enhancement.
+- v0.1-draft — 2026-09-02 — Stage 1 business value and P0 scope confirmed: verified placement/state, fullscreen polling, explicit partial failure; manual restore execution with reusable core seams; Cross-Space remains exploratory.
+- v0.1-draft — 2026-09-02 — Stage 2 decisions confirmed: three-attempt verification-driven retry; fullscreen exit is a pre-placement gate; sequential orderIndex restore with one final focus; typed counters/reasons; missing AX element is unverifiable; picker app name deferred.
+- v0.1-draft — 2026-09-02 — Stage 2 complete: local privacy-safe diagnostics, existing banner with auto-dismiss, bounded timing budgets, and no P0 cancellation confirmed. Decision summary is ready for gap analysis.
+- v0.1-draft — 2026-09-02 — Stage 3 gap analysis completed: current restore behavior, verified target state, compatibility/data impact, and Cross-Space spike transition boundary documented.
+- v0.1-draft — 2026-09-02 — Stage 2 elicitation fully closed after confirming existing localization/accessibility baseline; no blocking questions remain.
+- v0.1-draft — 2026-09-02 — Stage 4 domain model completed with typed restore outcomes, placement/pass state machines, BR-WRV rules, ephemeral summary ERD, UX/NFRs, and proposed ADR-0008.
+- v0.1-draft — 2026-09-02 — Stage 5 risk/contradiction scan passed: all findings resolved or bounded; assumptions consolidated; P0/P1/P2/Won't-Have scope locked.
+- v0.1-draft — 2026-09-02 — Stage 6 specification drafted: SRS with REQ/NFR traceability and user stories covering all P0 edge cases.
+- v0.1-draft — 2026-09-02 — Stage 7 validation passed: all REQ/US items meet IEEE 29148 criteria; traceability matrix has no gaps.
+- v1.0 — 2026-09-02 — Baseline signed off and handed over for technical specification. Handover brief created; signed baseline/spec are now locked.
+- v1.0 — 2026-09-02 — Speckit feature specification and requirements checklist created; no clarification markers remain and the feature is ready for planning.
+- v1.0 — 2026-09-02 — Technical plan generated with research decisions, data model, internal contracts, C4/module diagrams, and quickstart validation guide.
+- v1.0 — 2026-09-02 — Dependency-ordered tasks generated: 44 tasks across setup, foundation, five user-story phases, TDD coverage, and polish/spike work.
+- v1.0 — 2026-09-02 — P0 test plan created before implementation, mapping US-WRV scenarios to TC-WRV-001 through TC-WRV-019.
+- v1.0 — 2026-09-02 — Implementation slices completed: typed verification domain, sequential restore with fullscreen gate and bounded retry, grouped summary banner, and focused P0 regression tests.
+- v1.0 — 2026-09-02 — Validation note: source parsing and diff checks pass; full Xcode build/test execution remains blocked by the environment's malformed `ObservationMacros.ObservableMacro` plugin response.
+- v1.0 — 2026-09-02 — Independent adversarial implementation review passed after tightening fullscreen detection, exact-element focus, extra-window preparation/verification, and privacy-safe structured diagnostics.
+- v1.0 — 2026-09-02 — Technical feature README added at `docs/features/workspace-restore-verification/README.md`; user guide awaits explicit UI-final confirmation and real screenshot capture.

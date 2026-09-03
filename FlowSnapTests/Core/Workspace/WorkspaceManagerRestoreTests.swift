@@ -1,3 +1,4 @@
+import ApplicationServices
 import CoreGraphics
 import Foundation
 import Testing
@@ -30,7 +31,14 @@ struct WorkspaceManagerRestoreTests {
     ) -> WorkspaceManager {
         let accessibility = MockAccessibilityService(isTrusted: trusted)
         accessibility.mockVisibleWindows = windows
-        return WorkspaceManager(
+        let elements = Dictionary(uniqueKeysWithValues: windows.map {
+            ($0.id, AXUIElementCreateApplication($0.pid))
+        })
+        accessibility.mockElementByWindowID = elements
+        windowManager.onMove = { _, frame, element in
+            if let element { accessibility.mockFrames[element] = frame }
+        }
+        let manager = WorkspaceManager(
             store: WorkspaceStore(directoryURL: tempDir()),
             accessibilityService: accessibility,
             windowManager: windowManager,
@@ -40,6 +48,10 @@ struct WorkspaceManagerRestoreTests {
             ownBundleIdentifier: "com.flowsnap.app",
             loadAtInit: false
         )
+        // P0.5: scriptable presentation checker defaulting to `.presented`, so
+        // mock windows count as presented exactly as before the observation.
+        manager.injectPresentationChecker(MockCurrentScreenVisibilityChecker())
+        return manager
     }
 
     private func tempDir() -> URL {
@@ -122,6 +134,11 @@ struct WorkspaceManagerRestoreTests {
         // The window exists only while the app is running, and it is not running
         // until the pass launches it.
         accessibility.visibleWindowsProvider = { launcher.launchAttempts.isEmpty ? [] : [win] }
+        let element = AXUIElementCreateApplication(win.pid)
+        accessibility.mockElementByWindowID = [win.id: element]
+        mover.onMove = { _, frame, addressed in
+            if let addressed { accessibility.mockFrames[addressed] = frame }
+        }
         let manager = WorkspaceManager(
             store: WorkspaceStore(directoryURL: tempDir()),
             accessibilityService: accessibility,
@@ -254,11 +271,11 @@ struct WorkspaceManagerRestoreTests {
             options: .default
         )
 
-        // The move was attempted (count 1) but failed, so the placement is not
+        // The move was attempted three times but failed, so the placement is not
         // counted as placed — yet restore did not throw.
-        #expect(mover.moveCallCount == 1)
+        #expect(mover.moveCallCount == RestoreVerificationPolicy.maxAttempts)
         #expect(summary.placedCount == 0)
-        #expect(summary.skipped.map(\.reason) == [.noWindow])
+        #expect(summary.failed.map(\.reason) == [.moveFailed])
     }
 
     // MARK: - Preflight (E11)
@@ -335,16 +352,23 @@ struct WorkspaceManagerRestoreTests {
 
         let accessibility = MockAccessibilityService(isTrusted: true)
         accessibility.mockVisibleWindows = [win]
+        let element = AXUIElementCreateApplication(win.pid)
+        accessibility.mockElementByWindowID = [win.id: element]
+        let mover = MockWindowManaging()
+        mover.onMove = { _, frame, addressed in
+            if let addressed { accessibility.mockFrames[addressed] = frame }
+        }
         let manager = WorkspaceManager(
             store: store,
             accessibilityService: accessibility,
-            windowManager: MockWindowManaging(),
+            windowManager: mover,
             displayManager: MockDisplayManager(displays: [display]),
             launcher: MockApplicationLaunching(),
             preferences: WorkspaceTestFixtures.preferences(),
             ownBundleIdentifier: "com.flowsnap.app",
             loadAtInit: false
         )
+        manager.injectPresentationChecker(MockCurrentScreenVisibilityChecker())
         // Load the store-backed workspace so restore can find it by id.
         await manager.reload()
         let target = try #require(manager.workspaces.first)

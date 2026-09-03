@@ -1,0 +1,1071 @@
+# P0.5 Implementation Spec — Workspace Presentation Observation
+
+> **Baseline**: ADR-0008 (Verified Workspace Restoration Pipeline), `RestoreVerification.swift`, `RestoreSummary.swift`, `RestoreSummaryBanner.swift`, `WorkspaceManager+Restore.swift`, proposal tại `docs/RESTORE_CROSSSPACE_ANALYSIS.md` + `FlowSnap_Restore_Workspace_CrossSpace_GiaiPhap.md`.
+>
+> **Scope guard**: Read-only spec. Không sửa code. Không commit. Không quyết implementation choice chưa rõ trong spec — chúng được đánh dấu `[OPEN QUESTION]` hoặc `[DECIDE BEFORE IMPL]`.
+>
+> **Tệp hiện có dùng làm input** (chỉ đọc): `FlowSnap/Core/Workspace/RestoreVerification.swift`, `FlowSnap/Core/Workspace/WorkspaceManager+Restore.swift`, `FlowSnap/Domain/Workspace/RestoreSummary.swift`, `FlowSnap/UI/Components/RestoreSummaryBanner.swift`, `FlowSnap/Infrastructure/Accessibility/AXAccessibilityService.swift`, `FlowSnap/Infrastructure/macOS/SpaceManaging.swift`, `FlowSnap/Infrastructure/macOS/AppLauncher.swift`, `adr/0008-verified-workspace-restoration.md`, `CONTEXT.md`.
+>
+> **Tệp test hiện có** (chỉ tham chiếu, không sửa): `FlowSnapTests/Core/Workspace/WorkspaceRestoreVerificationTests.swift`, `FlowSnapTests/Core/Workspace/WorkspaceRestoreRevealTests.swift`, `FlowSnapTests/Core/Workspace/WorkspaceRestoreTargetTests.swift`, `FlowSnapTests/Core/Workspace/WorkspaceManagerRestoreTests.swift`, `FlowSnapTests/Mocks/MockAccessibilityService.swift`, `FlowSnapTests/Mocks/MockWindowManaging.swift`, `FlowSnapTests/Mocks/MockApplicationLaunching.swift`, `FlowSnapTests/Core/Workspace/WorkspaceTestFixtures.swift`.
+
+---
+
+## PHASE 1 — CURRENT CODEBASE INVENTORY (read-only)
+
+### 1.A Restore orchestration
+
+| # | File | Symbol | Responsibility | Input → Output | Caller | Reuse cho P0.5? | Gap cần bổ sung |
+|---|------|--------|----------------|----------------|--------|-----------------|------------------|
+| 1 | `FlowSnap/Core/Workspace/WorkspaceManager+Restore.swift:23` | `WorkspaceManager.restore(workspace:options:)` | Top-level orchestrator. Serial loop qua `orderedPlacements`, gọi `restore(placement:...)` cho từng cái, gọi final reveal/focus, persist `lastRestoredAt`, build `RestoreSummary`. | `Workspace, RestoreOptions` → `RestoreSummary` | `WorkspaceManager.restoreWorkspace(id:)` (Manager.swift:303) và `PresetResolver` (qua cùng protocol `WorkspaceRestoring`) | **Có** — orchestration giữ nguyên, chỉ chèn 1 phase mới sau verify. | Cần hook "presentation observation" giữa `verify` (line 234) và `final reveal/focus` (line 56–72). |
+| 2 | `WorkspaceManager+Restore.swift:100` | `private func restore(placement:displays:options:)` | Per-placement lifecycle: `matchingWindows` → optional `launcher.openApp` → `place(...)`. | `WindowPlacement, [Display], RestoreOptions` → `PlacementExecution` | `#1` | **Có** — phần "launch if needed" giữ nguyên, không liên quan. | Không. |
+| 3 | `WorkspaceManager+Restore.swift:145` | `private func place(windows:placement:displays:options:)` | Quyết định zone, prepare (unminimize + fullscreen exit), gọi `move(...)` cho primary, cascade cho extras. | `[ResolvedWindow], WindowPlacement, [Display], RestoreOptions` → `PlacementExecution` | `#2` | **Có** — đây là điểm chèn observation phase ngay sau khi `primaryOutcome == .moved`. | Cần chèn "on-screen observation" sau line 176, trước line 178 (cascade loop). |
+| 4 | `WorkspaceManager+Restore.swift:209` | `private func move(resolved:to:targetFrame:placement:)` | Retry loop cho `setFrame` (max 3, backoff 100/200ms), verify sau mỗi attempt. | `ResolvedWindow, CGRect, CGRect, WindowPlacement` → `MoveOutcome` | `#3` | **Có** — không sửa. | Không. |
+| 5 | `WorkspaceManager+Restore.swift:56–72` | final reveal/focus block | Sau loop: pick lowest-order verified placement, gọi `launcher.reveal(bundleID:)` rồi `windowManager.focus(...)`. | outcomes → (no return) | `#1` | **Có** — không sửa. | Không. |
+
+### 1.B Placement result / MoveOutcome
+
+| # | File | Symbol | Responsibility | Reuse? | Gap |
+|---|------|--------|----------------|--------|-----|
+| 6 | `FlowSnap/Core/Workspace/RestoreVerification.swift:96–100` | `enum MoveOutcome { .moved, .failed(Error), .unverifiable }` | Kết quả cuối cùng của retry loop cho 1 placement. | **Một phần** — giữ `.moved` nghĩa "geometry+state verified". Bổ sung mới: presentation state. | Hiện `.moved` ngầm claim "user nhìn thấy window" — phải tách. |
+| 7 | `WorkspaceManager+Restore.swift:560–593` | `private struct PlacementExecution { result, resolved }` + static factories `.skipped / .failure / .unverifiable` | Đóng gói `RestorePlacementResult` + optional `ResolvedWindow` để final-reveal dùng `element` chính xác. | **Có** — cấu trúc giữ. | Cần thêm `presentation` trong `RestorePlacementResult` (xem Phase 5). |
+| 8 | `WorkspaceManager+Restore.swift:325–351` | `private static func result(for:outcome:)` | Map `MoveOutcome` → `RestorePlacementResult`. | **Có** — phần mapping placement-side giữ. | Cần thêm mapping presentation-side (xem Phase 5). |
+| 9 | `WorkspaceManager+Restore.swift:353–383` | `private static func summary(from:totalPlacements:)` | Gom `PlacementExecution[]` thành `RestoreSummary`. | **Có** — phần "conservation rule" (`placed + failed + unverifiable + skipped == total`) giữ, chỉ thêm bucket. | Cần extension. |
+
+### 1.C Verify frame/state
+
+| # | File | Symbol | Responsibility | Reuse? | Gap |
+|---|------|--------|----------------|--------|-----|
+| 10 | `RestoreVerification.swift:43–89` | `struct WindowVerificationResult { frameMatches, isMinimized, isFullscreen }` + `framesMatch` (tolerance 30pt) | Post-condition cho geometry+AX state. | **Có, không sửa** — ADR-0008 đã chốt. | Không. Verify vẫn thuộc trục placement, không trộn presentation. |
+| 11 | `WorkspaceManager+Restore.swift:315–323` | `private func verify(element:targetFrame:)` | Gọi `AXAccessibilityService.frame / isMinimized / isFullScreen` trả về `WindowVerificationResult`. | **Có, không sửa**. | Không. |
+| 12 | `RestoreVerification.swift:9–37` | `enum RestoreVerificationPolicy` (tolerance, maxAttempts, retryBackoff, fullscreenTimeout, fullscreenPollInterval) | Named constants cho verify timing. | **Có, không sửa**. | Có thể thêm `presentationObservationTimeout` sau, nhưng đó là implementation choice — Phase 9 mới quyết. |
+
+### 1.D AX window identity / CGWindowID mapping
+
+| # | File | Symbol | Responsibility | Reuse? | Gap |
+|---|------|--------|----------------|--------|-----|
+| 13 | `FlowSnap/Domain/Window/ManagedWindow.swift:10` | `public let id: CGWindowID` | Stable window ID từ `CGWindowListCopyWindowInfo`. | **Có** — key lookup trong P0.5 dùng `CGWindowID`. | Không. |
+| 14 | `AXAccessibilityService.swift:380–404` | `private func resolveWindowID(for pid:frame:)` | Map (pid, frame) → `CGWindowID` bằng `CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)` (line 381). | **Pattern được tái sử dụng**, nhưng **không gọi trực tiếp** hàm private này. P0.5 đặt re-resolve (pid, frame) → `CGWindowID?` **ở chính file mới** `CurrentScreenVisibilityChecker.swift` (Step 1) thông qua 1 method mới trên protocol `CurrentScreenVisibilityChecking` (xem §4.5, §13). File `AXAccessibilityService.swift` **không bị đụng**. | Trả `hash(...)` fallback khi không match — pitfall đã biết: lookup theo hash luôn fail. P0.5 KHÔNG dùng hash, mà lookup trực tiếp bằng `kCGWindowNumber`. |
+| 15 | `AXAccessibilityService.swift:416–489` | `allVisibleManagedWindows()` | Duyệt `CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)`, skip layer != 0, skip own PID, skip w/h < 100. | **Có, pattern dùng lại**. | `AXAccessibilityService` đã có CGWindowList caller; P0.5 nên gom thành 1 helper mới (xem Phase 3). |
+| 16 | `AccessibilityService.swift:21` | `ResolvedWindow { window: ManagedWindow, element: AXUIElement? }` | Snapshot + element. | **Có** — `ResolvedWindow.window.id` chính là `CGWindowID` để lookup. | Không. |
+
+### 1.E Restore summary model
+
+| # | File | Symbol | Responsibility | Reuse? | Gap |
+|---|------|--------|----------------|--------|-----|
+| 17 | `FlowSnap/Domain/Workspace/RestoreSummary.swift:13–34` | `enum SkipReason` (moveFailed, unverifiablePlacement, fullscreenTransitionTimeout, notInstalled, launchTimeout, noWindow) | Catalog lý do. | **Có, không xóa** — backward compat. | Cần thêm `notPresentedOnCurrentScreen` (Phase 5). |
+| 18 | `RestoreSummary.swift:85–149` | `struct RestoreSummary` (placedCount, failedCount, unverifiableCount, skippedCount, totalPlacements, failed[], unverifiable[], skipped[]) | Aggregate result. | **Mở rộng additive** — thêm 1 counter + 1 list. | Phase 5. |
+| 19 | `RestoreSummary.swift:128–149` | `isFullSuccess`, `headline`, `details` | Helpers cho UI. | **Mở rộng** — `isFullSuccess` cần tính cả `notPresented`; `headline` cần 1 dòng phụ khi có. | Phase 5 + 6. |
+| 20 | `RestoreSummary.swift:154–181` | `struct RestorePlacementResult { bundleIdentifier, orderIndex, category, reason }` (`Category`: placed/failed/unverifiable/skipped) | Per-placement kết quả. | **Mở rộng additive** — thêm 1 `category`: `.movedButNotPresented` (Phase 5). | Phase 5. |
+| 21 | `RestoreSummary.swift:180` | `isVerified: Bool` (`category == .placed && reason == nil`) | Tag cho final-reveal filter (`outcomes.filter({ $0.result.isVerified })`). | **Quan trọng** — final-reveal hiện chỉ target `.placed`. P0.5 không sửa reveal logic; presentation status không ảnh hưởng reveal. | Không — final reveal giữ nguyên để tránh Space flicker. |
+
+### 1.F RestoreSummaryBanner
+
+| # | File | Symbol | Responsibility | Reuse? | Gap |
+|---|------|--------|----------------|--------|-----|
+| 22 | `FlowSnap/UI/Components/RestoreSummaryBanner.swift:10` | `struct RestoreSummaryBanner` (summary, isCompact, onDismiss) | Hiển thị `RestoreSummary`. Có 4 group: Placed / Failed / Unverifiable / Skipped + counter. | **Có, mở rộng additive** — thêm 1 group "Not presented" + 1 `countLabel`. | Cần đảm bảo 5 group đọc được ở compact (số + 1 dòng) và expanded (group + per-issue text). |
+| 23 | `RestoreSummary.swift:128` | `RestoreSummary.isFullSuccess` được dùng ở `RestoreSummaryBanner.swift:63,69` để quyết định màu xanh vs cam. | **Quan trọng** — nếu bất kỳ `.notPresented` nào, banner phải chuyển sang cam (không green). | `isFullSuccess` cần update để count cả notPresented (Phase 5/6). |
+| 24 | `RestoreSummaryBanner.swift:75–95` | `summaryCounts` + `countLabel` | Counter chip Placed/Failed/Unverifiable/Skipped. | **Mở rộng** — thêm chip "Not presented" với tint orange. | Phase 6. |
+
+### 1.G SpaceManaging / SpaceContext
+
+| # | File | Symbol | Responsibility | Reuse? | Gap |
+|---|------|--------|----------------|--------|-----|
+| 25 | `FlowSnap/Infrastructure/macOS/SpaceManaging.swift:8` | `protocol SpaceManaging` (currentContext, observeSpaceChanges) | Stub. | **Không** — không có implementation, không được wire. | **P0.5 KHÔNG promote stub này thành implementation.** Phase 3 sẽ tạo abstraction mới riêng (`CurrentScreenVisibilityChecking`), đặt tên phản ánh capability thật (theo đúng chỉ dẫn trong proposal `FlowSnap_Restore_Workspace_CrossSpace_GiaiPhap.md` §3). |
+| 26 | `SpaceManaging.swift:17–22` | `struct SpaceContext { didChange: Bool }` | Stub. | **Không**. | Không. |
+
+### 1.H Test surface hiện có
+
+| # | File | Trạng thái dùng cho P0.5 |
+|---|------|--------------------------|
+| 27 | `FlowSnapTests/Core/Workspace/WorkspaceRestoreVerificationTests.swift` (260 dòng) | Pin 5 contract hiện tại: silent setFrame → unverifiable; minimized stuck; missing element; recoverable error retry; fullscreen exit throw + timeout. **Giữ nguyên, không sửa**. |
+| 28 | `FlowSnapTests/Core/Workspace/WorkspaceRestoreRevealTests.swift` (144 dòng) | Pin reveal-on-placed, no-reveal-on-fail, no-reveal-on-not-installed, refused-reveal keeps placed. **Giữ nguyên**. P0.5 có thể thêm test mới "notPresented placement vẫn được reveal" (vì reveal vẫn fire cho placed count theo cùng logic). |
+| 29 | `FlowSnapTests/Core/Workspace/WorkspaceRestoreTargetTests.swift` (175 dòng) | Pin element identity và largest-first ordering. **Giữ nguyên**. |
+| 30 | `FlowSnapTests/Core/Workspace/WorkspaceManagerRestoreTests.swift` (408 dòng) | Pin launch, AX coord, cascade, BR-WORK-004 best-effort. **Giữ nguyên**. |
+| 31 | `FlowSnapTests/Mocks/MockAccessibilityService.swift` (198 dòng) | Có `mockFrames`, `setFrameUpdatesMockFrame`, `mockMinimizedStates`, `mockFullScreenStates`. **Cần mở rộng additive**: thêm `mockOnScreenWindows: [CGWindowID]` để test P0.5. P0.5 không sửa method signatures cũ. |
+| 32 | `FlowSnapTests/Mocks/MockWindowManaging.swift` (chưa đọc, sẽ cần đọc) | Pin move/focus contract. | Có thể thêm `onFocus` test nếu cần. |
+| 33 | `FlowSnapTests/Mocks/MockApplicationLaunching.swift` (chưa đọc) | Pin launch + reveal. | Không cần thay đổi. |
+| 34 | `FlowSnapTests/Core/Workspace/WorkspaceTestFixtures.swift` (91 dòng) | Helpers. | Có thể thêm `windowOnScreen(_:onScreen:)` factory. |
+
+### 1.I Tổng kết Phase 1
+
+- **Code reuse chắc chắn**: `WindowVerificationResult` (#10), `RestoreVerificationPolicy` (#12), `ResolvedWindow` (#16), `placement.bundleIdentifier` + `orderIndex`, `CGWindowList` pattern (#14, #15), `RestoreSummary` aggregations (#18), `RestoreSummaryBanner` template (#22), mocks #31–#34.
+- **Không sửa**: orchestration loop (single pass, serial), `prepare` (unminimize+fullscreen), `move` (retry), reveal/focus timing (1 lần, lowest order), `MatchingWindows` strategy, fullscreen policy.
+- **Cần mới**: 1 abstraction on-screen visibility, 1 observation phase, 1 model extension (`notPresented`), 1 banner group.
+- **Đã có sẵn pattern dùng lại**: `CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)` filtering — gom thành helper trong P0.5.
+
+---
+
+## PHASE 2 — DEFINE P0.5 SEMANTICS
+
+### 2.1 Tách ba trục độc lập
+
+ADR-0008 + Proposal `GiaiPhap.md` §9–§13 phân biệt ba trục:
+
+| Trục | Câu hỏi | Implementation hiện có | Có trong P0.5? |
+|------|--------|-------------------------|---------------|
+| **Placement verification** | "Window có geometry/state đúng không?" | `WindowVerificationResult` (`RestoreVerification.swift:43–89`) | **Có, không sửa** |
+| **Presentation / current-screen observation** | "Window có xuất hiện trên màn hình hiện tại không?" | **Không có** | **Mới — scope chính của P0.5** |
+| **Cross-Space migration** | "Có thể đưa window từ Space khác về current Space không?" | **Không có, không nằm trong P0.5** | **Ngoài scope** (T6 spike) |
+
+### 2.2 Bốn outcome mapping theo Proposal `GiaiPhap.md` §11–§12
+
+Terminology chuẩn của codebase hiện tại (`CONTEXT.md`, ADR-0008):
+
+```
+RestorePlacementResult.Category
+  .placed         ← verified (frame + AX state OK)
+  .failed         ← setFrame error hoặc exception-based failure
+  .unverifiable   ← missing element / unreadable frame
+  .skipped        ← pre-placement skip (notInstalled, launchTimeout, noWindow)
+```
+
+P0.5 thêm 1 outcome mới, **không trộn vào 4 outcome hiện tại**:
+
+```
+.movedButNotPresented          ← frame/state OK, on-screen observation = false
+```
+
+**Chốt tên (nhất quán toàn file):**
+- **Category** trong `RestorePlacementResult.Category` = `.movedButNotPresented` — mô tả trạng thái "đã move + verify OK nhưng chưa present", tránh đọc nhầm là "chưa bao giờ present".
+- **SkipReason** case tương ứng = `.notPresentedOnCurrentScreen` — mô tả lý do, không phải tên trạng thái, dùng làm reason string cho cả `.movedButNotPresented` (observation chắc chắn trả `.notPresented`) và `.unverifiable` với reason `.presentationUnverifiable` (observation trả `nil`).
+- Hai tên phân biệt: category mang ý "trạng thái placement", reason mang ý "lý do quan sát được" — đây là quyết định cuối, **xoá mọi `[DECIDE BEFORE IMPL]` / `[OPEN QUESTION]` mâu thuẫn tên ở các phase khác trong file này** (xem §2.6, §14 câu hỏi #1 đã được thay bằng "đã chốt").
+
+### 2.3 Mapping cũ → mới (per placement)
+
+```
+MoveOutcome     +  PresentationObservation   →  Category                       →  Reason
+─────────────────────────────────────────────────────────────────────────────────────────────────
+.failed(err)    +  n/a                        →  .failed                        →  .moveFailed
+.unverifiable   +  n/a                        →  .unverifiable                  →  .unverifiablePlacement
+.moved          +  .presented                 →  .placed                        →  nil
+.moved          +  .notPresented              →  .movedButNotPresented          →  .notPresentedOnCurrentScreen
+.moved          +  .unverifiable              →  .unverifiable                  →  .presentationUnverifiable
+(none)          +  n/a (skipped)              →  .skipped                       →  .notInstalled / .launchTimeout / .noWindow
+```
+
+`n/a` = observation không chạy (đã skip trước khi move).
+
+`presentationUnverifiable` được map sang `.unverifiable` thay vì `.movedButNotPresented` vì **ta không biết** window có present hay không — đây là ambiguous. Đây là lý do cần tách trục observation khỏi placement (tránh false green).
+
+### 2.4 Conservation rule mở rộng
+
+Hiện tại (`RestoreSummary.swift:221–222`):
+```
+placed + failed + unverifiable + skipped == totalPlacements
+```
+
+Sau P0.5:
+```
+placed + failed + unverifiable + skipped + movedButNotPresented == totalPlacements
+```
+
+Trong đó `.unverifiable` bao gồm cả `presentationUnverifiable` (xem 2.3). `[DECIDE BEFORE IMPL]` Có 2 cách:
+- (a) `unverifiable` gộp cả "missing element" + "presentation unverifiable" → 1 bucket.
+- (b) Tách thành `unverifiable` (missing element) và `movedButNotPresented` (presentation nil).
+
+Proposal `GiaiPhap.md` §12 ngầm đi theo (b) — `.unverifiable` chỉ cho "không đủ AX element" và presentation-unknown tách riêng. **Recommend (b)** nhưng cần user confirm.
+
+### 2.5 Không tự ý đổi terminology hiện có
+
+- `MoveOutcome.moved` **không** đổi nghĩa. Vẫn là "geometry+state verified". P0.5 chỉ thêm 1 trục mới chạy sau khi `.moved` đã được xác nhận.
+- `isVerified` trong `RestorePlacementResult` (`RestoreSummary.swift:180`): giữ nguyên nghĩa. Final reveal/focus hiện dùng `isVerified` để chọn target; **không** sửa tiêu chí này (vì mục tiêu là 1 lần reveal/focus với lowest order, không gây Space flicker).
+- `RestoreSummary.isFullSuccess` (`RestoreSummary.swift:128`) cần mở rộng: `failed == 0 && unverifiable == 0 && skipped == 0 && movedButNotPresented == 0 && placed == total`. Đây là chỉnh sửa semantic của helper cũ nhưng additive (thêm 1 điều kiện), không phá caller — caller chỉ thấy "mọi thứ OK" trở thành stricter hơn.
+
+### 2.6 Câu hỏi mở Phase 2
+
+- **Đã chốt**: tên category = `.movedButNotPresented`, tên SkipReason = `.notPresentedOnCurrentScreen` (xem §2.2). Không còn open question liên quan tên này.
+- `[OPEN QUESTION]` Observation trả `nil` map sang `.unverifiable` hay sang `.movedButNotPresented`? Recommend: `.unverifiable` với reason `.presentationUnverifiable` (thành thật về uncertainty).
+- `[OPEN QUESTION]` `RestoreSummary.isFullSuccess` có nên strict hơn (zero `movedButNotPresented`)? Recommend: yes — `isFullSuccess` phải đồng nghĩa "user nhìn thấy mọi thứ".
+
+---
+
+## PHASE 3 — ON-SCREEN OBSERVATION DESIGN
+
+### 3.1 Tên abstraction (theo đúng chỉ dẫn trong proposal `GiaiPhap.md` §3)
+
+**Tên đề xuất**: `CurrentScreenVisibilityChecking`
+
+**Tên bị cấm**:
+- `SpaceVerification` (vì implementation không biết Space ID)
+- Bất kỳ tên nào dùng `Space` mà không phải là vỏ bọc của API thực sự trả Space ID.
+
+Lý do đặt tên: phản ánh capability thật — implementation chỉ biết "window có đang xuất hiện trong on-screen list của WindowServer ở thời điểm quan sát hay không", **không** biết Space ID.
+
+### 3.2 Protocol sketch (chưa implement)
+
+```swift
+/// Best-effort observation of whether a window is currently on the user's screen.
+///
+/// - Returns:
+///
+///   * `true`  — WindowServer reports the window in the on-screen window list.
+///   * `false` — WindowServer's on-screen list is reachable but the window is not in it.
+///   * `nil`   — Observation cannot be performed right now (WindowServer denied, AX
+///                identity not resolved, transient state).
+///
+/// This is a presentation observation, **not** a Space-ID resolver. The implementation
+/// MUST NOT claim to identify which Space a window belongs to.
+public protocol CurrentScreenVisibilityChecking: Sendable {
+    func isOnCurrentScreen(windowID: CGWindowID, pid: pid_t) -> OnScreenObservationResult
+}
+
+public enum OnScreenObservationResult: Equatable, Sendable {
+    case presented
+    case notPresented
+    case unverifiable(reason: ObservationFailure)
+}
+
+public enum ObservationFailure: Equatable, Hashable, Sendable {
+    case cgWindowListUnavailable
+    case identityNotResolved
+    case transient
+}
+```
+
+### 3.3 Trả lời 7 câu hỏi Phase 3
+
+**1. Có thể lấy `CGWindowID` của target window từ đâu?**
+
+Từ `ManagedWindow.id` (`ManagedWindow.swift:10`), vì `AXAccessibilityService.makeManagedWindow` đã gán `id = CGWindowID` (`AXAccessibilityService.swift:454, 480`). Khi `matchingWindows` trả về `[ResolvedWindow]`, mỗi `ResolvedWindow.window.id` đã là `CGWindowID` đúng (xem `MockAccessibilityService.managedWindowsByPID` test pattern, line 132). Tuy nhiên: nếu `ResolvedWindow` đến từ CG fallback (`AccessibilityService.swift:74` doc), `id` có thể là `0` (placeholder). **Cần guard**: nếu `windowID == 0` thì `ObservationFailure.identityNotResolved`.
+
+**2. Có mapping đáng tin cậy AXUIElement / PID / CGWindowID không?**
+
+- AXUIElement → PID: có (`AXUIElementGetPid`).
+- PID → CGWindowID: qua `CGWindowListCopyWindowInfo` filter theo `kCGWindowOwnerPID`.
+- CGWindowID (lookup) → kCGWindowOwnerPID: có (cùng API).
+- Tại thời điểm observation, ta cần lookup CGWindowID đã biết → trả về `(presented/notPresented)`. Lookup theo `CGWindowID` (số) trong window list là 1-1 và đáng tin cậy.
+
+**3. `CGWindowListCopyWindowInfo` trả thông tin gì đủ dùng?**
+
+```
+kCGWindowNumber         (CGWindowID)   ← lookup key
+kCGWindowOwnerPID       (pid_t)         ← guard
+kCGWindowLayer          (Int)           ← guard (== 0 cho app windows)
+kCGWindowBounds         (CGRect)        ← có thể dùng để chéo với AX frame
+kCGWindowOwnerName      (String)
+kCGWindowName           (String?)
+```
+
+Đủ. Không cần `kCGWindowWorkspace` (deprecated, proposal `GiaiPhap.md` §3 cấm).
+
+**4. Cách tránh nhầm:**
+
+| Loại window | Filter |
+|---|---|
+| Desktop / wallpaper | `kCGWindowLayer == 0` (đã có ở `AXAccessibilityService.swift:444`) |
+| Overlay / panel / popup | Cùng `kCGWindowLayer == 0` đã loại trừ tốt; ngoài ra `kCGWindowOwnerPID == ownPID` |
+| Hidden window (Cmd+H) | `CGWindowListCopyWindowInfo(.optionOnScreenOnly, ...)` **drop** hidden windows → nếu window là của app nhưng hidden, lookup trả "không có trong list" → `notPresented`. Đây là behavior mong muốn. |
+| FlowSnap own window | Lọc `kCGWindowOwnerPID == ProcessInfo.processInfo.processIdentifier` (đã có ở `AXAccessibilityService.swift:421`). P0.5 cần duplicate guard trong helper mới. |
+| Window không phải AXWindow | `CGWindowID == 0` guard. |
+| Minimized window | `optionOnScreenOnly` đã drop → `notPresented`. Đúng. |
+
+**5. Trường hợp API không xác minh được thì result là gì?**
+
+- `CGWindowListCopyWindowInfo` trả `nil` (denied/error) → `OnScreenObservationResult.unverifiable(reason: .cgWindowListUnavailable)`.
+- Lookup CGWindowID không tìm thấy AND không thấy entry nào của PID đó trong list → `.unverifiable(reason: .identityNotResolved)`. Lý do: nếu app còn sống (PID xuất hiện trong list) mà CGWindowID không có → có thể window đã đổi ID (sau khi close+reopen, ID thay đổi — Apple docs nói CGWindowID không stable across lifetime). Đây là race thực sự.
+- Lookup thấy PID nhưng không thấy CGWindowID, và cả app chỉ có 1 window (heuristic) → có thể trả `notPresented`. **Recommend**: vẫn trả `.unverifiable` (transient) vì ta không chắc.
+
+**6. Observation nên nằm ở Infrastructure layer nào?**
+
+- Mới file: `FlowSnap/Infrastructure/macOS/CurrentScreenVisibilityChecker.swift`
+- Lý do: cùng layer với `AppLauncher` (NSWorkspace wrapper) và `SystemSettingsRouter`. Tên folder `macOS/` cho thấy đây là platform wrapper.
+- Production impl: `CGWindowListCurrentScreenVisibilityChecker: CurrentScreenVisibilityChecking`
+
+**7. Có nên tạo protocol riêng không?**
+
+Có. Lý do:
+- Mockable trong test.
+- Tách abstraction khỏi `AccessibilityService` (cũng nên giữ, không pollute protocol cũ).
+- Tuân pattern `DisplayManaging` / `ApplicationLaunching` (xem `CONTEXT.md`).
+
+### 3.4 Câu hỏi mở Phase 3
+
+- `[DECIDE BEFORE IMPL]` Protocol này có nên trả `OnScreenObservationResult` enum (3 trạng thái) hay chỉ `Bool?`? Recommend: enum vì truyền tải 3 trạng thái semantic khác nhau.
+- `[DECIDE BEFORE IMPL]` `pid` parameter có cần thiết không? Có thể chỉ cần `windowID` vì lookup trong window list là 1-1 theo số. Nhưng nếu ID stale, PID giúp debug. Recommend: bỏ `pid`, dùng `windowID` đơn giản. Nếu `nil` thì trả `.identityNotResolved`.
+- `[OPEN QUESTION]` Heuristic "app chỉ có 1 window → notPresented" — implement hay không? Recommend: KHÔNG (vì race). Chỉ trả `.unverifiable`.
+
+---
+
+## PHASE 4 — PRESENTATION ATTEMPT
+
+### 4.1 Câu hỏi cốt lõi
+
+Proposal `GiaiPhap.md` §17, §18, proposal `CrossSpace_Analysis.md` §H.1 Option B (đã bị kéo xuống warning) đều cảnh báo: **không ép** `activate / reveal / raise` trong loop vì Space flicker + chưa có bằng chứng thực nghiệm là chúng di chuyển Space.
+
+### 4.2 P0.5 presentation attempt — khi nào, bao nhiêu lần, timeout
+
+**Đề xuất P0.5 conservative (recommend, chờ user xác nhận):**
+
+| Quyết định | Lý do |
+|---|---|
+| **KHÔNG** thêm activation/raise attempt mới trong P0.5 | Chưa có live experiment chứng minh ích lợi, có khả năng gây Space flicker. |
+| **GIỮ NGUYÊN** final reveal/focus hiện tại (1 lần, sau loop, lowest order) | ADR-0008 đã chốt; P0.5 không sửa. |
+| **THÊM** 1 observation phase: sau khi `move` verify thành công (geometry+state OK), gọi `CurrentScreenVisibilityChecking.isOnCurrentScreen(windowID:)` để ghi nhận `.presented` / `.notPresented` / `.unverifiable`. | Đây là observation thuần túy, không gọi activation. |
+| **KHÔNG retry** presentation observation quá 1 lần per placement | Observation là side-effect-free, retry không thay đổi kết quả. |
+| **Timeout quan sát** | Tận dụng chính latency của `CGWindowListCopyWindowInfo` (synchronous C API, < 5ms thường). Không cần explicit timeout ở P0.5. `[DECIDE BEFORE IMPL]` |
+
+### 4.3 Ảnh hưởng các window khác
+
+- Observation phase **không** gọi `activate / raise / setFrame` trên bất kỳ window nào → 0% focus churn trong loop.
+- Final reveal/focus **giữ nguyên** → 1 lần, 1 app (lowest order verified).
+- Nếu observation cho thấy `.notPresented` cho nhiều placement (tức nhiều `.movedButNotPresented`), user sẽ thấy banner orange với danh sách. Đây là tín hiệu trung thực, không gây flicker.
+
+### 4.4 Câu hỏi mở Phase 4
+
+- `[OPEN QUESTION]` Có nên thử 1 lần `launcher.reveal(bundleID:)` chỉ cho **placement bị `.movedButNotPresented`** trước khi kết thúc loop? Đây là best-effort có kiểm soát (1 lần, 1 app bị ảnh hưởng). **Recommend KHÔNG trong P0.5**: vì (a) chưa có bằng chứng thực nghiệm, (b) có thể vẫn gây Space switch bất ngờ, (c) UX tốt hơn khi banner trung thực + user tự switch. **Đây là điểm cần user xác nhận rõ** trước impl.
+- `[OPEN QUESTION]` Nếu KHÔNG attempt: tổng kết UX là "user bấm Restore, banner cam nói Terminal không present, user phải tự switch Space rồi bấm lại". Có chấp nhận được không? **Recommend yes** cho P0.5 (P0.5 = detect+report, fix thực sự = T6).
+- `[OPEN QUESTION]` Có cần 1 knob `RestoreOptions.presentationAttempt: .none / .bestEffortOnce / .bestEffortPerPlacement` không? **Recommend KHÔNG trong P0.5** — giữ simple.
+
+### 4.5 CGWindowID re-resolve sau fullscreen-exit
+
+**Vấn đề:** một số app (đặc biệt nền Chromium/Electron như VS Code, Slack, Notion) có thể huỷ và tạo lại window khi thoát fullscreen. Khi đó, `ManagedWindow.id` (CGWindowID) đọc được lúc `matchingWindows` chạy ở đầu chuỗi prepare/move đã lỗi thời trước khi tới bước `isOnCurrentScreen(windowID:)`. Tra cứu trong `CGWindowListCopyWindowInfo` theo ID cũ sẽ trả "không tìm thấy" → suy diễn thành `.notPresented` (false-orange), hoặc tệ hơn là khớp nhầm vào window khác.
+
+**Quy tắc P0.5:** trước khi gọi `isOnCurrentScreen(windowID:)`, **nếu** placement vừa đi qua `exitFullScreen` thành công ở bước `prepare`, PHẢI re-resolve `CGWindowID` bằng **method thứ 2 trên protocol `CurrentScreenVisibilityChecking`** (mở rộng protocol ở Step 1, xem §5 cuối / §13), KHÔNG gọi `AXAccessibilityService.resolveWindowID(...)` — hàm này là `private` và nằm trong file bị §13 liệt kê "không được đụng". Logic CGWindowList lookup của method mới **tái sử dụng pattern** từ `AXAccessibilityService.swift:381` (Phase 1 mục #14) nhưng implementation copy sang `CurrentScreenVisibilityChecker.swift`. Re-resolve lookup theo `(pid, frame)`, trả `CGWindowID?` (KHÔNG dùng hash fallback).
+
+**Sequence thứ tự đầy đủ** (sẽ được phản ánh trong Step 5, Phase 9):
+
+```
+1. matchingWindows(for: placement)          ← capture ResolvedWindow (windowID_A, element)
+2. prepare(element)                          ← có thể: unminimize / exitFullScreen
+3. [NẾU step 2 đã qua exitFullScreen thành công]:
+     resolvedCGWindowID = presentationChecker.reResolveWindowID(pid: pid, frame: <frame post-exit>)
+     [NẾU resolvedCGWindowID == nil]:
+         return .unverifiable(reason: .identityNotResolved)   ← KHÔNG suy diễn .notPresented
+         [KHÔNG gọi isOnCurrentScreen]
+4. move(window, to: targetAXFrame, element)
+5. verify(element, targetFrame)               ← geometry+state
+6. isOnCurrentScreen(windowID: resolvedCGWindowID ?? windows[0].window.id)
+```
+
+**Lý do tách method (không gộp vào `isOnCurrentScreen`):**
+- 2 lookup khác nhau: (a) lookup **by windowID** cho observation thường, (b) lookup **by (pid, frame)** cho re-resolve sau fullscreen-exit. Tra cứu theo (pid, frame) cần `frame` post-exit chứ không phải `windowID` capture từ trước.
+- Tách thành 2 method giúp mock test dễ hơn (T14 set script riêng cho từng method).
+- Method mới trả `CGWindowID?` (không trả `OnScreenObservationResult` vì lookup chỉ trả "có/không" identity, không cần 3 trạng thái).
+
+**Trường hợp re-resolve thành công nhưng trả ID khác (200 ≠ 100):**
+- Observation phase dùng ID mới (200), không phải ID cũ (100). Đây chính là risk đã nêu.
+
+**Trường hợp re-resolve fail (trả nil):**
+- KHÔNG gọi `isOnCurrentScreen`. Trả `.unverifiable` với reason `.presentationUnverifiable` (hoặc `.unverifiablePlacement` — `[DECIDE BEFORE IMPL]`).
+- KHÔNG được suy diễn thành `.movedButNotPresented`.
+
+**Detection "đã qua exitFullScreen":** truy vết qua `PreparationResult.ready` (`WorkspaceManager+Restore.swift:282`) — caller cần biết `prepare` đã gọi `exitFullScreen` thật hay không. Gợi ý impl (chưa quyết): thêm 1 out-parameter hoặc 1 struct trả về `PreparationResult` mang thêm `exitedFullScreen: Bool` để Step 6 của `place` biết có cần re-resolve. `[DECIDE BEFORE IMPL]` chính xác cấu trúc.
+
+**Pin contract:** test P0.5-T14 (Phase 7.14) — 2 variant: re-resolve trả ID mới + re-resolve trả nil.
+
+### 4.6 Câu hỏi mở Phase 4 (sau khi thêm 4.5)
+
+- `[DECIDE BEFORE IMPL]` Detection "đã qua exitFullScreen" nên là: (a) thêm field trong `PreparationResult`, (b) truy vết qua `Prepare` riêng cho fullscreen, (c) đơn giản: luôn re-resolve trước observation nếu pid còn sống. Recommend (a) — rõ ràng, ít overhead.
+
+---
+
+## PHASE 5 — RESULT MODEL
+
+### 5.1 So sánh 2 option
+
+#### Option A: Tách 2 enum (theo Proposal `GiaiPhap.md` §11)
+
+```swift
+enum MoveOutcome {
+    case moved
+    case failed(Error)
+    case unverifiable
+}
+
+enum PresentationOutcome {
+    case presented
+    case notPresented
+    case unverifiable
+}
+```
+
+`RestorePlacementResult` mang cả hai.
+
+#### Option B: 1 enum tổng hợp (status quo + 1 case mới)
+
+```swift
+enum RestorePlacementResult {
+    case placed
+    case movedButNotPresented           // mới
+    case failed(Error)
+    case unverifiable(SkipReason)
+    case skipped(SkipReason)
+}
+```
+
+### 5.2 Đánh giá
+
+| Tiêu chí | Option A (2 enum) | Option B (1 enum) |
+|----------|-------------------|-------------------|
+| **Compatibility với code hiện tại** | MoveOutcome giữ nguyên → `WorkspaceManager+Restore.swift:325–351` mapping function không sửa. Chỉ thêm bước observation sau `.moved`. | Cần sửa `RestorePlacementResult` thành enum có associated value, **breaking change** với callers (UI, ViewModel, `RestoreIssue`). |
+| **Mở rộng T6** | Tách rõ → T6 chỉ thêm 1 enum `MigrationOutcome` độc lập. | T6 sẽ phải thêm 1 case mới vào enum tổng → kết hợp nhiều concern. |
+| **UI summary** | Phase 6 phải map `MoveOutcome × PresentationOutcome → category`. Mapping ở 1 chỗ (`WorkspaceManager+Restore.swift:325`). | Phase 6 đọc trực tiếp `case .movedButNotPresented` — dễ hơn. |
+| **Testability** | Mỗi enum test riêng. Composition test riêng. | Test trên 1 enum. |
+| **Complexity** | Thêm 1 enum + 1 mapping cell. 2 trục trực quan. | Đơn giản hơn nhưng trộn concern. |
+| **CONTEXT.md / ADR-0008** | ADR-0008 đã định nghĩa `MoveOutcome` là "Typed result of one placement attempt sequence". Phù hợp với tách. | Khớp với `RestorePlacementResult.Category` hiện tại nhưng force move presentation vào cùng bucket. |
+
+### 5.3 Recommendation
+
+**Recommend: Option A** (tách 2 enum) vì:
+1. ADR-0008 chốt `MoveOutcome` = placement attempt sequence. P0.5 là trục mới, không trộn.
+2. Proposal `GiaiPhap.md` §11 cũng đi theo hướng này.
+3. T6 sẽ tự nhiên thêm `MigrationOutcome` mà không phá model hiện tại.
+4. Test dễ hơn: mỗi trục test độc lập.
+
+### 5.4 Mapping cell mới (chèn vào `WorkspaceManager+Restore.swift:325–351`)
+
+```swift
+private static func result(
+    for placement: WindowPlacement,
+    moveOutcome: MoveOutcome,
+    presentation: PresentationObservation
+) -> RestorePlacementResult {
+    switch (moveOutcome, presentation) {
+    case (.failed, _):
+        return RestorePlacementResult(... .failed, reason: .moveFailed)
+    case (.unverifiable, _):
+        return RestorePlacementResult(... .unverifiable, reason: .unverifiablePlacement)
+    case (.moved, .presented):
+        return RestorePlacementResult(... .placed, reason: nil)
+    case (.moved, .notPresented):
+        return RestorePlacementResult(... .movedButNotPresented, reason: .notPresentedOnCurrentScreen)
+    case (.moved, .unverifiable):
+        return RestorePlacementResult(... .unverifiable, reason: .presentationUnverifiable)
+    }
+}
+```
+
+`PresentationObservation` là enum wrapper cho `OnScreenObservationResult` + skip-state (khi placement đã skip trước move). Lý do cần wrapper: presentation chỉ chạy khi `moveOutcome == .moved`; còn `n/a` cho các trường hợp skipped/failed.
+
+### 5.5 SkipReason extension
+
+Thêm 2 case mới (hoặc 1, tuỳ DECIDE ở 2.4):
+- `.notPresentedOnCurrentScreen` (Proposal §12) — cho `.notPresented` chắc chắn.
+- `.presentationUnverifiable` — cho observation trả `nil` / `.unverifiable`.
+
+`[DECIDE BEFORE IMPL]` 1 hay 2 case.
+
+### 5.6 RestoreSummary extension (additive, không breaking)
+
+Thêm field mới (đặt tên theo **category** `.movedButNotPresented` để nhất quán với §2.2):
+```swift
+public let movedButNotPresentedCount: Int
+public let movedButNotPresented: [RestoreIssue]
+```
+
+Update `isFullSuccess`:
+```swift
+public var isFullSuccess: Bool {
+    failedCount == 0
+    && unverifiableCount == 0
+    && skippedCount == 0
+    && movedButNotPresentedCount == 0
+    && placedCount == totalPlacements
+}
+```
+
+Conservation rule update (`RestoreSummary.swift:221`):
+```swift
+placed + failed + unverifiable + skipped + movedButNotPresented == total
+```
+
+### 5.7 Câu hỏi mở Phase 5
+
+- `[DECIDE BEFORE IMPL]` Option A vs Option B. Recommend A.
+- `[DECIDE BEFORE IMPL]` SkipReason: 1 case (`.notPresentedOnCurrentScreen`) hay 2 case (+ `.presentationUnverifiable`).
+- `[DECIDE BEFORE IMPL]` `.movedButNotPresented` (category) hay `.notPresentedOnCurrentScreen` (SkipReason) có cần thêm field `pid` cho banner không? Recommend: không — banner chỉ hiển thị bundleID + reason text.
+
+---
+
+## PHASE 6 — SUMMARY/BANNER SPEC
+
+### 6.1 Trace `RestoreSummaryBanner` hiện tại
+
+`FlowSnap/UI/Components/RestoreSummaryBanner.swift:10`:
+- Input: `RestoreSummary` (5 counter ở 2.6 sau khi extend), `isCompact: Bool`, `onDismiss: (() -> Void)?`
+- Output: SwiftUI view, có 2 mode:
+  - `isCompact == true` (Menu Bar): 1 dòng `headline` + status icon + dismiss button.
+  - `isCompact == false` (Settings): `headline` + `summaryCounts` (chip Placed/Failed/Unverifiable/Skipped) + 3 `issueGroup` (Failed/Unverifiable/Skipped).
+- Màu: xanh nếu `isFullSuccess`, cam nếu không (`RestoreSummaryBanner.swift:63,69`).
+- Localized: dùng `LocalizedStringKey` cho title (Placed, Failed, Unverifiable, Skipped). Text dài (reason) dùng `RestoreIssue.displayReason` (`RestoreSummary.swift:57`).
+
+### 6.2 UI contract mới (5 trạng thái)
+
+| Trạng thái | Icon | Tint chip | Title group | Example headline |
+|---|---|---|---|---|
+| Fully successful | ✓ | green | Placed (green) | "Restored 2/2" |
+| **Not presented** (new) | ⚠ | orange | Not Presented (orange) | "Restored 1/2 — Terminal was positioned correctly, but could not be presented on the current screen" |
+| Failed | ⚠ | red | Failed (red) | "Restored 1/2 — Terminal could not be moved" |
+| Unverifiable | ⚠ | orange | Unverifiable (orange) | "Restored 1/2 — Terminal placement could not be verified" |
+| Skipped | — | gray | Skipped (gray) | "Restored 1/2 — Terminal not running" |
+
+### 6.3 Headline logic (`RestoreSummary.headline` ở `RestoreSummary.swift:136–144`)
+
+Update:
+```swift
+public var headline: String {
+    guard !isEmpty else { return "Nothing to restore" }
+    let allIssues = failed + unverifiable + skipped + movedButNotPresented
+    if allIssues.isEmpty {
+        return "Restored \(placedCount)/\(totalPlacements)"
+    }
+    let reasons = allIssues.map(\.displayReason)
+    return "Restored \(placedCount)/\(totalPlacements) — \(reasons.joined(separator: ", "))"
+}
+```
+
+`RestoreIssue.displayReason` (`RestoreSummary.swift:57–67`) cần thêm case:
+```swift
+case .notPresentedOnCurrentScreen: return "\(name) was positioned but is not on the current screen"
+case .presentationUnverifiable: return "\(name) presentation could not be verified"
+```
+
+### 6.4 Banner UI changes (additive only)
+
+- `summaryCounts` (`RestoreSummaryBanner.swift:78–95`): thêm 1 chip "Not presented" với tint orange, conditional `if summary.movedButNotPresentedCount > 0`.
+- `issueGroup` (`:105–126`): thêm 1 group "Not presented" tương tự 3 group kia, gọi `issueGroup(title: "Not presented", issues: summary.movedButNotPresented)`.
+- Background color (`:63`): giữ `Color.green` nếu `isFullSuccess` (đã strict hơn ở 5.6), `Color.orange` nếu không.
+
+### 6.5 Localization key mới
+
+| Key | English | Vietnamese (sample) |
+|---|---|---|
+| `placed` (đã có) | "Placed" | (giữ nguyên, dùng `LocalizedStringKey`) |
+| `failed` (đã có) | "Failed" | |
+| `unverifiable` (đã có) | "Unverifiable" | |
+| `skipped` (đã có) | "Skipped" | |
+| `notPresented` (mới) | "Not presented" | |
+| `restore.banner.notPresented.detail` (mới) | "Window was positioned correctly, but could not be presented on the current screen." | "Cửa sổ đã được đặt đúng vị trí, nhưng không xuất hiện trên màn hình hiện tại." |
+
+`[OPEN QUESTION]` Localization: file `Localizable.strings` hiện tại có cấu trúc nào? Cần đọc trước khi impl. Nếu chưa có, dùng `LocalizedStringKey` literal (giống hiện tại) là đủ.
+
+### 6.6 Accessibility / VoiceOver
+
+- Status icon: `accessibilityHidden(true)` (giữ nguyên, `:72`).
+- Count chip: `accessibilityElement(children: .combine)` + `accessibilityLabel("Restore summary counts")` (giữ nguyên, `:93–94`).
+- Issue group: `accessibilityAddTraits(.isHeader)` cho title (giữ nguyên, `:115`).
+- P0.5: thêm 1 `accessibilityLabel` cho chip "Not presented" + 1 header "Not presented". Không thêm gesture, không modal.
+- `RestoreSummary.headline` (`RestoreSummary.swift:136`) đã có; banner dùng `Text(summary.headline).fixedSize(...)` (`:33–34`) — VoiceOver đọc nguyên văn. Recommend giữ nguyên pattern.
+
+### 6.7 File change cần thiết
+
+- `FlowSnap/Domain/Workspace/RestoreSummary.swift`: thêm 2 case `SkipReason`, 1 case `Category`, 2 field, update `isFullSuccess` + `headline` + `displayReason`.
+- `FlowSnap/UI/Components/RestoreSummaryBanner.swift`: thêm 1 chip + 1 group. ~10 dòng.
+- KHÔNG sửa: `MenuBarView.swift`, `WorkspaceSettingsView.swift`, `PresetGalleryView.swift`, `WorkspaceViewModel.swift` — chỉ consume `RestoreSummary` (signature tương thích vì extension additive).
+
+### 6.8 Câu hỏi mở Phase 6
+
+- `[OPEN QUESTION]` Có cần thêm action button "Reveal on this desktop" trong banner cho placement bị `.movedButNotPresented` không? **Recommend KHÔNG trong P0.5** (giữ simple; T6 mới xử lý action). Banner chỉ thông báo.
+
+---
+
+## PHASE 7 — TEST SPEC
+
+Test matrix cho P0.5 (chỉ spec, không viết code). Tất cả test mới đặt trong file mới `FlowSnapTests/Core/Workspace/WorkspacePresentationObservationTests.swift` (suite riêng để dễ theo dõi scope).
+
+### 7.1 P0.5-T1 — Same-Space: placed
+
+- **Setup**: 1 window (id=1, pid=1000, frame OK). Mock AX trả frame match. Mock `CurrentScreenVisibilityChecking` trả `.presented` cho windowID=1.
+- **Expected**:
+  - `summary.placedCount == 1`
+  - `summary.movedButNotPresentedCount == 0`
+  - `summary.isFullSuccess == true`
+  - Banner tint: green
+  - Số lần gọi `setFrame`: ≤ 1 (vì verify thành công attempt 1)
+  - Số lần gọi `isOnCurrentScreen`: 1 (cho placement này)
+- **Loại test**: unit test (mock `CurrentScreenVisibilityChecking`).
+
+### 7.2 P0.5-T2 — Cross-Space: movedButNotPresented (CORE TEST)
+
+- **Setup**: 1 window. Mock `CurrentScreenVisibilityChecking` trả `.notPresented`.
+- **Expected**:
+  - `summary.placedCount == 0`
+  - `summary.movedButNotPresentedCount == 1`
+  - `summary.isFullSuccess == false`
+  - Banner tint: orange
+  - Headline chứa "Terminal was positioned but is not on the current screen" (hoặc tương đương)
+  - `summary.failed.isEmpty && summary.unverifiable.isEmpty` (rõ ràng phân biệt với `failed`)
+- **Loại test**: unit test.
+
+### 7.3 P0.5-T3 — setFrame fails
+
+- **Setup**: Mock `MockWindowManaging.moveError = AccessibilityError.cannotComplete`.
+- **Expected**:
+  - `summary.failedCount == 1`
+  - `summary.failed.first?.reason == .moveFailed`
+  - `summary.movedButNotPresentedCount == 0` (observation KHÔNG chạy vì move fail)
+  - Số lần gọi `isOnCurrentScreen`: 0
+  - Số lần gọi `setFrame`: `RestoreVerificationPolicy.maxAttempts` (3)
+- **Loại test**: unit test (regression — đã có ở `WorkspaceRestoreVerificationTests.moveErrorRetries`; P0.5 cần thêm 1 assertion về số lần gọi observation).
+
+### 7.4 P0.5-T4 — AX element nil
+
+- **Setup**: Window chỉ có CG fallback (no element). `mockElementByWindowID.removeAll()`.
+- **Expected**:
+  - `summary.unverifiableCount == 1`
+  - `summary.unverifiable.first?.reason == .unverifiablePlacement`
+  - Số lần gọi `setFrame`: 0
+  - Số lần gọi `isOnCurrentScreen`: 0 (skip vì `.unverifiable` ở prepare)
+- **Loại test**: unit test (regression — đã có ở `WorkspaceRestoreVerificationTests.missingElementIsGuarded`).
+
+### 7.5 P0.5-T5 — Observation unverifiable
+
+- **Setup**: Move verify OK (geometry+state pass). Mock `CurrentScreenVisibilityChecking` trả `.unverifiable(reason: .cgWindowListUnavailable)`.
+- **Expected**:
+  - **`[DECIDE BEFORE IMPL]`**:
+    - (Option A — recommend): `summary.unverifiableCount == 1`, `summary.unverifiable.first?.reason == .presentationUnverifiable`. **KHÔNG** coi là `movedButNotPresented`.
+    - (Option B): `summary.movedButNotPresentedCount == 1`. Có thể gây false-orange.
+- **Loại test**: unit test.
+- **Tại sao recommend A**: ta không biết window có present hay không. Báo orange "not presented" khi không biết chắc là sai.
+
+### 7.6 P0.5-T6 — FlowSnap own window trong CGWindowList
+
+- **Setup**: Mock AX trả 1 window PID=FlowSnap. Hoặc setup `CGWindowListCurrentScreenVisibilityChecker` thật (production impl) trong integration test, tạo dummy window do FlowSnap process tạo ra.
+- **Expected**:
+  - Lookup `isOnCurrentScreen(windowID: <ownWindow>)` → `.unverifiable(reason: .identityNotResolved)` HOẶC filter trước ở production impl, trả `.notPresented` không bao giờ.
+  - **Recommend**: production impl filter `kCGWindowOwnerPID == ProcessInfo.processInfo.processIdentifier` → skip → `.unverifiable(reason: .identityNotResolved)` (vì an toàn).
+- **Loại test**: integration test (cần production impl, không mock được).
+- `[OPEN QUESTION]` integration test hay unit test với mock? Recommend: 1 unit test mock impl trả `.unverifiable` cho input giả lập own PID; 1 integration test trong CI chạy 1 lần.
+
+### 7.7 P0.5-T7 — Multiple windows cùng app
+
+- **Setup**: 2 windows cùng bundle, 1 primary (id=1), 1 extra (id=2). Cả 2 `setFrame` succeed + verify OK. Mock observation: windowID=1 → `.presented`, windowID=2 → `.notPresented`.
+- **Expected**:
+  - Placement primary: `.movedButNotPresented` (vì `moved` + `notPresented`).
+  - Placement extra: chỉ logged, không tạo `RestorePlacementResult` mới (xem `WorkspaceManager+Restore.swift:178–194` — extra loop không tạo `PlacementExecution` mới, chỉ log).
+  - `summary.movedButNotPresentedCount == 1` (chỉ primary).
+  - `summary.placedCount == 0` (vì primary không placed).
+- **Loại test**: unit test.
+
+### 7.8 P0.5-T8 — Minimized window
+
+- **Setup**: 1 window minimized. Mock AX `mockMinimizedStates[element] = true`. Sau unminimize, frame verify OK. Observation: `.presented`.
+- **Expected**:
+  - `summary.placedCount == 1`
+  - Số lần gọi `unminimize`: 1
+  - Observation gọi **sau** unminimize.
+- **Loại test**: unit test (regression của `WorkspaceRestoreVerificationTests.minimizedVerificationFails` — happy path ngược).
+
+### 7.9 P0.5-T9 — Fullscreen window
+
+- **Setup**: 1 window fullscreen, `exitFullScreen` thành công. Frame verify OK. Observation: `.presented`.
+- **Expected**:
+  - `summary.placedCount == 1`
+  - Tuân P0 fullscreen policy (timeout 2s, không retry vô tận).
+  - Observation gọi **sau** fullscreen exit.
+- **Loại test**: unit test (regression của `WorkspaceRestoreVerificationTests.fullscreenExitThrowBlocksMove` + `fullscreenTimeoutBlocksMove` — happy path).
+
+### 7.10 P0.5-T10 — Presentation attempt không thay đổi on-screen
+
+- **Setup**: Move verify OK. Mock observation trả `.notPresented`. **KHÔNG** có cơ chế retry presentation.
+- **Expected**:
+  - Số lần gọi `isOnCurrentScreen`: **1** (không retry).
+  - `summary.movedButNotPresentedCount == 1`.
+  - `summary.isFullSuccess == false`.
+  - `summary.placedCount == 0`.
+- **Loại test**: unit test (CORE TEST — pin contract "no infinite retry").
+
+### 7.11 P0.5-T11 — Final reveal vẫn fire cho placed count (regression)
+
+- **Setup**: Workspace có 2 placement, A `placed`, B `movedButNotPresented`.
+- **Expected**:
+  - `launcher.revealAttempts == [<bundleOfA>]` (P0 hiện tại dùng `isVerified` filter, chỉ fire cho `.placed`).
+  - **Quan trọng**: B không được reveal (vì `isVerified == false`).
+  - `summary.placedCount == 1`, `summary.movedButNotPresentedCount == 1`.
+- **Loại test**: unit test (regression của `WorkspaceRestoreRevealTests`).
+
+### 7.12 P0.5-T12 — Banner renders 5 counters
+
+- **Setup**: `RestoreSummary` với tất cả 5 bucket non-empty.
+- **Expected**: SwiftUI snapshot test (`WorkspaceRestoreVerificationTests` style — dùng `MenuBarSnapshotRenderer` hoặc tương tự) verify banner render đúng:
+  - 4 chip (Placed, Failed, Unverifiable, Not Presented, Skipped) — có thể 5 chip nếu Skipped render riêng.
+  - Group "Not presented" trong expanded mode.
+- **Loại test**: SwiftUI snapshot test (xem `SnapLayoutPickerSnapshotRenderer` pattern). Cần render hạ tầng có sẵn.
+
+### 7.13 P0.5-T13 — RestoreSummary.isFullSuccess strict
+
+- **Setup**: 1 placement `.movedButNotPresented`.
+- **Expected**:
+  - `summary.isFullSuccess == false` (không phải true như P0 cũ).
+  - Banner tint: orange.
+- **Loại test**: unit test (CORE TEST — pin "không còn false green").
+
+### 7.14 P0.5-T14 — Fullscreen exit làm đổi CGWindowID
+
+- **Setup**: 1 window đang fullscreen (fullscreen stub). Trước `exitFullScreen`, `ManagedWindow.id == 100`. Sau `exitFullScreen` thành công, **`MockCurrentScreenVisibilityChecker.reResolveWindowID(pid:frame:)`** trả `CGWindowID == 200` (ID mới). Setup tiếp `MockCurrentScreenVisibilityChecker.isOnCurrentScreen(windowID:)`:
+  - Nếu được gọi với `windowID == 100` (cũ) → fail test (assert).
+  - Nếu được gọi với `windowID == 200` (mới) → trả `.notPresented`.
+- **Mock file**: `MockCurrentScreenVisibilityChecker` (Step 7), KHÔNG phải `MockAccessibilityService` — vì re-resolve nằm trên protocol `CurrentScreenVisibilityChecking`, không phải `AccessibilityService`.
+- **Expected**:
+  - `presentationChecker.reResolveWindowIDCallCount == 1` (chỉ re-resolve sau fullscreen-exit, không phải mỗi placement).
+  - Quan sát gọi với `windowID == 200` (ID mới từ re-resolve), **không phải 100** (ID cũ).
+  - `summary.movedButNotPresentedCount == 1` (vì re-resolve OK + observation `.notPresented`).
+  - `summary.placedCount == 0`.
+- **Variant T14-fail** (sub-test trong cùng file): `MockCurrentScreenVisibilityChecker.reResolveWindowID(...)` trả `nil` (không tìm được ID mới khớp pid+frame).
+  - **Expected**: observation KHÔNG chạy (không suy diễn thành `.notPresented`); kết quả cuối là `.unverifiable` với reason `.presentationUnverifiable` (hoặc `.unverifiablePlacement` — `[DECIDE BEFORE IMPL]`). KHÔNG được `.movedButNotPresented`.
+  - `summary.unverifiableCount == 1`, `summary.movedButNotPresentedCount == 0`.
+  - `presentationChecker.isOnCurrentScreenCallCount == 0` (xác nhận observation bị skip).
+- **Loại test**: unit test (CORE TEST — pin contract "re-resolve sau fullscreen-exit, KHÔNG dùng ID cũ", và "không suy diễn thành notPresented khi re-resolve thất bại").
+
+### 7.15 Tóm tắt test
+
+| Test ID | Loại | Mới / regression | Pin contract |
+|---|---|---|---|
+| T1 | unit | mới | placed + presented → green |
+| T2 | unit | mới | moved + notPresented → orange + trung thực |
+| T3 | unit | regression + 1 assertion | failed → không observation |
+| T4 | unit | regression | missing element → unverifiable, no setFrame, no observation |
+| T5 | unit | mới | observation nil → unverifiable, không phải notPresented |
+| T6 | unit + integration | mới | own PID filtered |
+| T7 | unit | mới | multi-window, primary only counts |
+| T8 | unit | regression (happy ngược) | minimized → unminimize → place |
+| T9 | unit | regression (happy ngược) | fullscreen → exit → place |
+| T10 | unit | mới | no infinite retry observation |
+| T11 | unit | regression | reveal chỉ cho placed count |
+| T12 | snapshot | mới | 5 group banner render đúng |
+| T13 | unit | mới | isFullSuccess strict |
+| T14 | unit | mới | fullscreen-exit làm đổi CGWindowID → re-resolve dùng ID mới; re-resolve fail → unverifiable, không suy diễn notPresented |
+
+Cần live test nào? **Recommend KHÔNG** trong P0.5 — chỉ unit + snapshot + 1 integration. Live test thuộc T6 (cross-Space migration).
+
+---
+
+## PHASE 8 — SCOPE GUARD
+
+### 8.1 Explicit P0.5 KHÔNG bao gồm
+
+| Bị loại | Lý do |
+|---|---|
+| Move window Space A → Space B | T6 scope. P0.5 chỉ observe + report. |
+| Xác định Space ID bằng deprecated API (`kCGWindowWorkspace`) | Proposal `GiaiPhap.md` §3 cấm. |
+| Private SkyLight/CGS | T6 scope. |
+| UI automation điều khiển Mission Control | T6 scope. |
+| Thay đổi restore ordering | ADR-0008 chốt serial theo `orderIndex`. |
+| Thay đổi fullscreen policy P0 | ADR-0008 chốt (sync throwing, poll 2s, no setFrame on timeout). |
+| Thêm cancel button | Proposal `GiaiPhap.md` §24 follow-up. |
+| Redesign RestoreSummaryBanner | Chỉ mở rộng additive (5 group thay vì 4). |
+| `appLocalizedName` | Proposal `GiaiPhap.md` §21 follow-up. |
+| `RestoreOptions.presentationAttempt` knob | Không trong P0.5 (chờ user confirm nếu cần). |
+| Promote `SpaceManaging` stub thành implementation | T6 scope; P0.5 tạo abstraction mới (`CurrentScreenVisibilityChecking`). |
+| Force `launcher.reveal` trong loop | Proposal `GiaiPhap.md` §18 cảnh báo Space flicker. |
+| Retry `setFrame` không giới hạn | ADR-0008 chốt 3 attempts. |
+| Thay đổi `MatchingWindows` strategy | ADR-0008 chốt. |
+| Thay đổi `MoveOutcome` enum signature | Chỉ thêm 1 enum mới `PresentationOutcome`, không sửa `MoveOutcome`. |
+
+### 8.2 Nếu phát hiện dependency bắt buộc ngoài scope, **STOP và báo trước**
+
+Các trigger dừng:
+- Cần sửa `WorkspaceManager+Capture.swift` → báo, vì capture nằm ngoài P0.5.
+- Cần sửa `WindowManager.swift` (`@MainActor public final class WindowManager`) → báo, vì P0.5 chỉ consume interface.
+- Cần thay đổi `RestoreOptions` public API → báo.
+- Cần thêm field vào `WindowPlacement` (persistence) → báo, vì đụng schema store.
+- Cần thay đổi `WorkspaceCapturing` → báo.
+- Cần private API cho observation → báo + STOP.
+
+---
+
+## PHASE 9 — IMPLEMENTATION PLAN (sau khi user approve spec)
+
+Mỗi step:
+- **File**: đường dẫn cụ thể.
+- **Symbol**: type/function.
+- **Thay đổi**: cụ thể.
+- **Lý do**: tại sao.
+- **Test tương ứng**: link tới Phase 7.
+- **Risk**: rủi ro có thể gặp.
+- **Rollback**: revert an toàn về state trước step.
+
+### Step 1 — Tạo abstraction `CurrentScreenVisibilityChecking`
+
+- **File mới**: `FlowSnap/Infrastructure/macOS/CurrentScreenVisibilityChecker.swift`
+- **Symbol**:
+  - `public protocol CurrentScreenVisibilityChecking: Sendable` với **2 method**:
+    - `func isOnCurrentScreen(windowID: CGWindowID) -> OnScreenObservationResult`
+    - `func reResolveWindowID(pid: pid_t, frame: CGRect) -> CGWindowID?` (mới — xem §4.5)
+  - `public enum OnScreenObservationResult { case presented, notPresented, unverifiable(reason: ObservationFailure) }`
+  - `public enum ObservationFailure { case cgWindowListUnavailable, identityNotResolved, transient }`
+  - `public final class CGWindowListCurrentScreenVisibilityChecker: CurrentScreenVisibilityChecking, @unchecked Sendable`
+- **Thay đổi**:
+  - `isOnCurrentScreen(windowID:)` gọi `CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)`, filter `kCGWindowLayer == 0` + `kCGWindowOwnerPID != ownPID`, lookup theo `kCGWindowNumber`. Trả `.unverifiable` cho 3 trường hợp ở 3.3(5).
+  - `reResolveWindowID(pid:frame:)` cũng gọi cùng `CGWindowListCopyWindowInfo` (tái sử dụng pattern từ `AXAccessibilityService.swift:381`), filter theo `kCGWindowOwnerPID == pid`, tìm entry có `kCGWindowBounds` khớp `frame` (tolerance 5pt — giống `AXAccessibilityService.swift:393`), trả `kCGWindowNumber` cast về `CGWindowID`. Trả `nil` nếu: API fail, PID không có entry nào, hoặc không có entry nào khớp frame.
+  - **KHÔNG** gọi `AXAccessibilityService.resolveWindowID(...)` — hàm đó là `private` và file `AXAccessibilityService.swift` bị §13 cấm đụng. Logic lookup được copy sang (pattern reuse, không phải call reuse).
+- **Lý do**: Phase 3 + §4.5.
+- **Test**: chưa (cần test thật, làm ở Step 7).
+- **Risk**: `kCGWindowNumber` có stable trong process lifetime? Có, theo docs Apple, nhưng nếu window close+reopen, ID đổi. Mitigation: lookup nhanh (< 5ms), race cực thấp. Đây chính là lý do cần re-resolve sau fullscreen-exit (xem §4.5).
+- **Rollback**: xoá file.
+
+### Step 2 — Tạo `PresentationOutcome` enum
+
+- **File sửa**: `FlowSnap/Core/Workspace/RestoreVerification.swift`
+- **Symbol mới**: `public enum PresentationOutcome { case presented, notPresented, unverifiable }`
+- **Thay đổi**: thêm enum, không sửa enum cũ.
+- **Lý do**: Phase 5 Option A.
+- **Test**: chưa.
+- **Risk**: 0 — additive.
+- **Rollback**: xoá enum.
+
+### Step 3 — Mở rộng `SkipReason` + `Category`
+
+- **File sửa**: `FlowSnap/Domain/Workspace/RestoreSummary.swift`
+- **Thay đổi**:
+  - `SkipReason`: thêm `.notPresentedOnCurrentScreen` (+ optionally `.presentationUnverifiable`).
+  - `Category`: thêm `.movedButNotPresented`.
+  - `RestoreIssue.displayReason`: thêm 2 case mapping.
+- **Lý do**: Phase 5.
+- **Test**: chưa.
+- **Risk**: 0 — additive enum case (backward-compatible Codable nếu dùng raw string — `enum SkipReason: String, Codable`).
+- **Rollback**: xoá case, default decoding vẫn pass cho workspace cũ.
+
+### Step 4 — Mở rộng `RestoreSummary`
+
+- **File sửa**: `FlowSnap/Domain/Workspace/RestoreSummary.swift`
+- **Thay đổi**:
+  - Thêm `movedButNotPresentedCount: Int`, `movedButNotPresented: [RestoreIssue]`.
+  - Update `init` (additive parameter với default value).
+  - Update `isFullSuccess` (strict hơn).
+  - Update `headline` (gom 4 list).
+  - Update `details`.
+- **Lý do**: Phase 5.
+- **Test**: P0.5-T13.
+- **Risk**: Trung bình — `init` thêm param default không breaking. Nhưng nếu caller nào pass positional (không named), cần check. Grep: `RestoreSummary(` — 5 chỗ (`PresetResolver.swift:60, 92`, `WorkspaceManager+Restore.swift:38, 92`).
+- **Rollback**: revert file.
+
+### Step 5 — Wire observation phase vào `WorkspaceManager.place`
+
+- **File sửa**: `FlowSnap/Core/Workspace/WorkspaceManager+Restore.swift`
+- **Thay đổi**:
+  - Inject `CurrentScreenVisibilityChecking` vào `WorkspaceManager` (qua `init`).
+  - Thứ tự trong `place(...)` (cập nhật Phase 4.5):
+    1. `prepare(element, placement)` — trả về `PreparationResult` hiện có (Phase 1 #1). Mở rộng: trả thêm `exitedFullScreen: Bool` để `place` biết có cần re-resolve (xem 4.5).
+    2. **Nếu** `prepare` đã qua `exitFullScreen` thành công: re-resolve `CGWindowID` qua **`presentationChecker.reResolveWindowID(pid: pid, frame: <frame post-exit>)`** (method thứ 2 trên protocol `CurrentScreenVisibilityChecking`, xem §4.5 và §5). Nếu re-resolve trả `nil` → trả `.unverifiable(reason: .presentationUnverifiable)`, **không** gọi observation. Implementation nằm ở `CurrentScreenVisibilityChecker.swift` (Step 1), KHÔNG gọi qua `accessibilityService.resolveWindowID(...)` (vì hàm này là `private` trong `AXAccessibilityService.swift` — file bị §13 cấm đụng).
+    3. `move(...)` (Phase 1 #4) — không sửa.
+    4. Nếu `move` thành công (`.moved`): gọi observation
+       ```swift
+       let observedWindowID = reResolvedID ?? windows[0].window.id
+       let presentation: PresentationOutcome = observePresentation(for: observedWindowID, checker: presentationChecker)
+       ```
+    5. Pass `presentation` vào `result(for:moveOutcome:presentation:)` (cập nhật 5.4).
+  - Thêm 1 wrapper `private func observePresentation(for windowID: CGWindowID, checker: CurrentScreenVisibilityChecking) -> PresentationOutcome`.
+  - Map `OnScreenObservationResult` → `PresentationOutcome`.
+- **Lý do**: Phase 4 + 4.5 + 5.
+- **Test**: P0.5-T1, T2, T5, T7, T10, T14.
+- **Risk**: Trung bình — `init` của `WorkspaceManager` thêm param. Caller hiện tại: `WorkspaceManager+Restore.swift:303` (public), `PresetResolver` (không — `PresetResolver` tự quản). 5 caller tests cần cập nhật. Mitigation: default param.
+- **Rollback**: revert file.
+
+### Step 6 — Update `summary()` mapping
+
+- **File sửa**: `FlowSnap/Core/Workspace/WorkspaceManager+Restore.swift:353`
+- **Thay đổi**: thêm logic gom `movedButNotPresented[]` từ outcomes.
+- **Lý do**: Phase 5.
+- **Test**: T2, T11, T13.
+- **Risk**: 0.
+- **Rollback**: revert.
+
+### Step 7 — Mock `CurrentScreenVisibilityChecking` cho tests
+
+- **File sửa**: `FlowSnapTests/Mocks/MockCurrentScreenVisibilityChecker.swift` (file mới)
+- **Symbol**: `final class MockCurrentScreenVisibilityChecker: CurrentScreenVisibilityChecking`
+- **Behavior**:
+  - `isOnCurrentScreen(windowID:)`: per-`CGWindowID` scriptable result. Có thể set default `.presented`.
+  - `reResolveWindowID(pid:frame:)`: per-`(pid, frame)` scriptable result, trả `CGWindowID?`. Track `reResolveWindowIDCallCount: Int` và `reResolveWindowIDCallArgs: [(pid_t, CGRect)]` để test T14 verify.
+- **Lý do**: testability.
+- **Test**: tất cả P0.5-T* (T1/T2/T5/T7/T10 dùng `isOnCurrentScreen`; T14 dùng cả 2 method).
+- **Risk**: 0.
+
+### Step 8 — Cập nhật mock `AccessibilityService` (optional)
+
+- **File sửa**: `FlowSnapTests/Mocks/MockAccessibilityService.swift`
+- **Thay đổi**: thêm `mockOnScreenWindows: [CGWindowID]` (nếu impl P0.5 dùng `AccessibilityService` cho observation — recommend dùng `CurrentScreenVisibilityChecking` riêng, nên bước này có thể SKIP).
+- **Lý do**: nếu impl reuse `AccessibilityService.allVisibleManagedWindows`.
+- **Test**: liên quan đến T6.
+- **Risk**: 0.
+
+### Step 9 — Update `RestoreSummaryBanner`
+
+- **File sửa**: `FlowSnap/UI/Components/RestoreSummaryBanner.swift`
+- **Thay đổi**:
+  - Thêm 1 `countLabel("Not presented", value: summary.movedButNotPresentedCount, tint: .orange)` trong `summaryCounts` (line 78–95) với `if summary.movedButNotPresentedCount > 0`.
+  - Thêm 1 `issueGroup(title: "Not presented", issues: summary.movedButNotPresented)` (line 39–41) với `if !isCompact`.
+- **Lý do**: Phase 6.
+- **Test**: P0.5-T12.
+- **Risk**: 0.
+- **Rollback**: revert.
+
+### Step 10 — Viết test matrix P0.5-T1..T14
+
+- **File mới**: `FlowSnapTests/Core/Workspace/WorkspacePresentationObservationTests.swift`
+- **Test**: tất cả P0.5-T*.
+- **Risk**: 0.
+
+### Step 11 — Update P0 tests nếu cần
+
+- **File sửa**: existing tests sử dụng `WorkspaceManager.init` — thêm `presentationChecker` default.
+- **Test**: regression — chạy `WorkspaceRestoreVerificationTests`, `WorkspaceRestoreRevealTests`, `WorkspaceRestoreTargetTests`, `WorkspaceManagerRestoreTests`, `WorkspaceManagerSaveTests`, `WorkspaceCrossDisplayTests`.
+- **Risk**: thấp.
+
+### Step 12 — Documentation
+
+- **File sửa**:
+  - `CONTEXT.md` — thêm `CurrentScreenVisibilityChecking`, `PresentationOutcome` vào Glossary.
+  - `docs/RESTORE_CROSSSPACE_ANALYSIS.md` — Appendix K trỏ đến file mới.
+  - `docs/features/workspace-presentation-observation/README.md` (file mới) — feature docs.
+- **Lý do**: governance.
+- **Test**: N/A.
+
+### Step 13 — Verification
+
+- Chạy `swift build` (toàn project).
+- Chạy `swift test` (FlowSnapTests).
+- Lint (project có `project.yml`, check tooling — `unknown / needs experiment`).
+- Review cuối bằng `code-reviewer` agent (nếu có).
+
+### Step ordering & parallel
+
+- Step 1, 2, 3, 4 độc lập → có thể làm song song (nhưng 1 người làm tuần tự cho an toàn).
+- Step 5 phụ thuộc Step 1, 2, 3, 4.
+- Step 6, 9 phụ thuộc Step 4, 5.
+- Step 7, 10 phụ thuộc Step 1, 5.
+- Step 8 optional.
+- Step 11, 12, 13 cuối.
+
+---
+
+## PHASE 10 — FINAL SPEC FOR APPROVAL
+
+### 1. Problem
+Workspace restore có thể báo "Restored 2/2" trong khi user vẫn không thấy 1 trong 2 window vì window đó nằm ở Space khác. Implementation hiện tại (ADR-0008) verify geometry + AX state, **không** verify presentation/on-screen state.
+
+### 2. Goal
+- Quan sát best-effort: "Window có đang xuất hiện trên on-screen list của WindowServer tại thời điểm sau khi move + verify không?"
+- Tách rõ **placement verification** (geometry+state) khỏi **presentation observation** (on-screen).
+- Không bao giờ báo `placed` chỉ vì AX frame match.
+- Có 1 outcome mới `.movedButNotPresented` cho "đã move + verify OK nhưng không thấy trên màn hình hiện tại".
+- Banner / summary phản ánh trung thực.
+
+### 3. Non-goals
+- Move window giữa Spaces (T6).
+- Xác định Space ID.
+- Private SkyLight/CGS.
+- UI automation Mission Control.
+- Sửa restore ordering, fullscreen policy, retry policy.
+- Cancel button.
+- Banner redesign (chỉ extension additive).
+- `appLocalizedName`.
+- `RestoreOptions.presentationAttempt` knob.
+- Promote `SpaceManaging` stub.
+- Force `reveal` retry trong loop.
+
+### 4. Existing code to reuse
+- `WindowVerificationResult` (`RestoreVerification.swift:43–89`).
+- `RestoreVerificationPolicy` (timing constants).
+- `ResolvedWindow` / `ManagedWindow.id: CGWindowID`.
+- `CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)` pattern (`AXAccessibilityService.swift:381, 418`) — **pattern reuse, không call reuse**: lookup logic copy sang `CurrentScreenVisibilityChecker.swift`, KHÔNG gọi qua `AXAccessibilityService`.
+- `RestoreSummary` aggregation structure (chỉ extend).
+- `RestoreSummaryBanner` template (chỉ extend).
+- `CONTEXT.md` glossary entries cho "MoveOutcome", "RestoreSummary", "WindowVerificationResult".
+- Mocks: `MockAccessibilityService`, `MockWindowManaging`, `MockApplicationLaunching`, `WorkspaceTestFixtures`.
+
+### 5. New abstractions
+- `protocol CurrentScreenVisibilityChecking: Sendable` với **2 method**:
+  - `func isOnCurrentScreen(windowID: CGWindowID) -> OnScreenObservationResult` (lookup theo `kCGWindowNumber`).
+  - `func reResolveWindowID(pid: pid_t, frame: CGRect) -> CGWindowID?` (lookup theo `kCGWindowOwnerPID` + `kCGWindowBounds` ≈ `frame`, dùng cho re-resolve sau fullscreen-exit, xem §4.5).
+- `enum OnScreenObservationResult { case presented, notPresented, unverifiable(reason: ObservationFailure) }`.
+- `enum ObservationFailure { case cgWindowListUnavailable, identityNotResolved, transient }`.
+- `enum PresentationOutcome { case presented, notPresented, unverifiable }` (domain-side wrapper).
+- `class CGWindowListCurrentScreenVisibilityChecker: CurrentScreenVisibilityChecking` (production impl, file mới trong `FlowSnap/Infrastructure/macOS/`). **Bao gồm cả impl `reResolveWindowID` với pattern reuse từ `AXAccessibilityService.swift:381`** (copy logic, không gọi private hàm cũ).
+- `MockCurrentScreenVisibilityChecker` (test mock, file mới trong `FlowSnapTests/Mocks/`, **scriptable cho cả 2 method**).
+
+### 6. Result semantics
+
+| MoveOutcome | Presentation | Category | Reason |
+|---|---|---|---|
+| `.failed` | n/a | `.failed` | `.moveFailed` |
+| `.unverifiable` | n/a | `.unverifiable` | `.unverifiablePlacement` |
+| `.moved` | `.presented` | `.placed` | nil |
+| `.moved` | `.notPresented` | `.movedButNotPresented` | `.notPresentedOnCurrentScreen` |
+| `.moved` | `.unverifiable` | `.unverifiable` | `.presentationUnverifiable` |
+| (none) | (skipped) | `.skipped` | `.notInstalled` / `.launchTimeout` / `.noWindow` |
+
+`RestoreSummary.isFullSuccess` strict: `placed + failed + unverifiable + skipped + movedButNotPresented == total && movedButNotPresented == 0 && failed == 0 && unverifiable == 0 && skipped == 0`.
+
+### 7. On-screen detection
+- API: `CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID)`.
+- Lookup: theo `kCGWindowNumber` (CGWindowID).
+- Filters: `kCGWindowLayer == 0`, `kCGWindowOwnerPID != ProcessInfo.processInfo.processIdentifier`.
+- Trả `.unverifiable` cho: API fail, `CGWindowID == 0`, windowID không tìm thấy trong list và PID cũng không tìm thấy (transient).
+- **KHÔNG dùng** `kCGWindowWorkspace` (deprecated).
+
+### 8. Presentation attempt
+- **KHÔNG gọi** `launcher.reveal / activate / raise` cho `.movedButNotPresented` placements trong P0.5.
+- Final reveal/focus giữ nguyên (1 lần, sau loop, lowest order verified).
+- Lý do: chưa có bằng chứng thực nghiệm, tránh Space flicker, UX trung thực.
+
+### 9. Summary/Banner changes
+- `RestoreSummary`: thêm 2 field `movedButNotPresentedCount`, `movedButNotPresented[]`. Update `isFullSuccess`, `headline`, `details`.
+- `SkipReason`: thêm `.notPresentedOnCurrentScreen` (+ optionally `.presentationUnverifiable`).
+- `RestorePlacementResult.Category`: thêm `.movedButNotPresented`.
+- `RestoreSummaryBanner`: thêm 1 chip "Not presented" (orange) + 1 group "Not presented" trong expanded mode.
+- 0 thay đổi cho `MenuBarView`, `WorkspaceSettingsView`, `PresetGalleryView`, `WorkspaceViewModel` (consume signature ổn định).
+
+### 10. Tests
+14 tests mới (P0.5-T1..T14) trong `FlowSnapTests/Core/Workspace/WorkspacePresentationObservationTests.swift` — see Phase 7.
+
+### 11. Risks
+| Risk | Mitigation |
+|---|---|
+| `kCGWindowNumber` không stable across window lifetime (close+reopen) | Observation chạy ngay sau move (milliseconds), race cực thấp. Nếu stale, trả `.unverifiable` (an toàn). |
+| **CGWindowID có thể đổi sau `exitFullScreen`** (Chromium/Electron huỷ + tạo lại window) | Re-resolve `CGWindowID` qua **`presentationChecker.reResolveWindowID(pid:frame:)`** (method thứ 2 trên protocol `CurrentScreenVisibilityChecking`, implementation ở `CurrentScreenVisibilityChecker.swift`) trước observation khi placement vừa qua fullscreen-exit (xem Phase 4.5, Step 1 + 5, test T14). Nếu re-resolve fail → `.unverifiable`, KHÔNG suy diễn `.movedButNotPresented`. **Quan trọng: KHÔNG gọi `accessibilityService.resolveWindowID(...)`** (hàm `private` trong file bị §13 cấm đụng) — lookup logic copy sang file mới. |
+| Tăng số counter khiến banner quá dài ở compact mode | 5 chip thay vì 4 — vẫn 1 dòng. Group "Not presented" chỉ hiện expanded. |
+| `RestoreSummary.isFullSuccess` strict hơn có thể phá caller assumption | 0 caller nào assume "false = all failed" — chỉ check `isFullSuccess` để đổi màu. Banner đã đổi sang cam = chính xác hơn. |
+| `WorkspaceManager.init` thêm param | Default value, backward-compatible. |
+| Mock init signature thay đổi | Mocks dùng named param, không breaking. |
+
+### 12. Files to change
+- **Mới**:
+  - `FlowSnap/Infrastructure/macOS/CurrentScreenVisibilityChecker.swift` (Step 1)
+  - `FlowSnapTests/Mocks/MockCurrentScreenVisibilityChecker.swift` (Step 7)
+  - `FlowSnapTests/Core/Workspace/WorkspacePresentationObservationTests.swift` (Step 10)
+  - `docs/features/workspace-presentation-observation/README.md` (Step 12)
+- **Sửa** (additive):
+  - `FlowSnap/Core/Workspace/RestoreVerification.swift` (Step 2)
+  - `FlowSnap/Domain/Workspace/RestoreSummary.swift` (Step 3, 4)
+  - `FlowSnap/Core/Workspace/WorkspaceManager+Restore.swift` (Step 5, 6)
+  - `FlowSnap/UI/Components/RestoreSummaryBanner.swift` (Step 9)
+  - `CONTEXT.md` (Step 12)
+  - `docs/RESTORE_CROSSSPACE_ANALYSIS.md` (Step 12 — Appendix K)
+- **Sửa (test regression)**: `FlowSnapTests/Core/Workspace/*Tests.swift` (Step 11).
+
+### 13. Files NOT to change
+- `FlowSnap/Core/Window/WindowManager.swift`, `WindowManaging.swift` — P0.5 chỉ consume interface.
+- `FlowSnap/Core/Workspace/WorkspaceManager+Capture.swift`, `WorkspaceCapturing.swift`, `WorkspaceManager.swift` (top) — ngoài scope capture.
+- `FlowSnap/Infrastructure/Accessibility/AXAccessibilityService.swift` — **0% bị đụng, kể cả gián tiếp** (xem §4.5, Step 1, Step 5). P0.5 KHÔNG gọi `resolveWindowID(for:frame:)` (private) và KHÔNG thêm method mới vào protocol `AccessibilityService`. Logic lookup copy sang file mới `CurrentScreenVisibilityChecker.swift` (pattern reuse, không call reuse).
+- `FlowSnap/Infrastructure/macOS/SpaceManaging.swift` — KHÔNG promote stub.
+- `FlowSnap/Infrastructure/macOS/AppLauncher.swift` — KHÔNG thêm attempt logic mới.
+- `FlowSnap/Domain/Workspace/Workspace.swift`, `WindowPlacement.swift` — KHÔNG thay đổi schema.
+- `FlowSnap/UI/MenuBar/MenuBarView.swift`, `UI/Settings/WorkspaceSettingsView.swift`, `UI/Settings/PresetGalleryView.swift`, `UI/Workspace/WorkspaceViewModel.swift`, `UI/Workspace/WorkspaceListView.swift` — chỉ consume.
+- `FlowSnap/Core/Commands/CommandDispatcher.swift`.
+- Tất cả test cũ (chỉ thêm test mới, không sửa test cũ ngoài param default).
+
+### 14. Open questions (cần user chốt trước khi impl)
+
+1. **Đã chốt** ở §2.2: tên **category** = `.movedButNotPresented`; tên **SkipReason** = `.notPresentedOnCurrentScreen`. Hai tên phân biệt vì category mô tả trạng thái placement ("đã move nhưng chưa present"), còn reason mô tả lý do quan sát.
+2. `[DECIDE BEFORE IMPL]` SkipReason: 1 case (`.notPresentedOnCurrentScreen`) hay 2 case (+ `.presentationUnverifiable`)?
+   - **Recommend**: 2 case (thành thật về uncertainty).
+3. `[DECIDE BEFORE IMPL]` Observation trả `.unverifiable` map sang `.unverifiable` hay `.movedButNotPresented`?
+   - **Recommend**: `.unverifiable` (an toàn, không over-claim).
+4. `[DECIDE BEFORE IMPL]` `isOnCurrentScreen` có cần `pid` parameter không?
+   - **Recommend**: không — chỉ `windowID`, đơn giản.
+5. `[DECIDE BEFORE IMPL]` Timeout cho observation?
+   - **Recommend**: không cần — `CGWindowListCopyWindowInfo` là sync C API, < 5ms.
+6. `[OPEN QUESTION]` Có cần restore summary timeout riêng cho phase presentation (e.g. nếu WindowServer bị stuck)?
+   - **Recommend**: KHÔNG trong P0.5.
+7. `[OPEN QUESTION]` Có cần thêm action button "Reveal on this desktop" cho `.movedButNotPresented`?
+   - **Recommend**: KHÔNG trong P0.5.
+8. `[OPEN QUESTION]` Có cần thêm knob `RestoreOptions.presentationAttempt`?
+   - **Recommend**: KHÔNG trong P0.5.
+9. `[OPEN QUESTION]` Localization: project có `Localizable.strings` không? Cần đọc để biết pattern.
+   - **Recommend**: dùng `LocalizedStringKey` literal như hiện tại nếu chưa có file.
+
+---
+
+**Spec này KHÔNG sửa code, KHÔNG commit. Chờ user approve trước khi triển khai Phase 9.**

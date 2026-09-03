@@ -1,3 +1,4 @@
+import ApplicationServices
 import CoreGraphics
 import Foundation
 import Testing
@@ -32,7 +33,13 @@ struct WorkspaceRestoreRevealTests {
     ) -> WorkspaceManager {
         let accessibility = MockAccessibilityService(isTrusted: true)
         accessibility.mockVisibleWindows = windows
-        return WorkspaceManager(
+        accessibility.mockElementByWindowID = Dictionary(uniqueKeysWithValues: windows.map {
+            ($0.id, AXUIElementCreateApplication($0.pid))
+        })
+        windowManager.onMove = { _, frame, element in
+            if let element { accessibility.mockFrames[element] = frame }
+        }
+        let manager = WorkspaceManager(
             store: WorkspaceStore(directoryURL: tempDir()),
             accessibilityService: accessibility,
             windowManager: windowManager,
@@ -42,6 +49,10 @@ struct WorkspaceRestoreRevealTests {
             ownBundleIdentifier: "com.flowsnap.app",
             loadAtInit: false
         )
+        // P0.5: scriptable presentation checker defaulting to `.presented`, so
+        // the reveal contract below is unchanged.
+        manager.injectPresentationChecker(MockCurrentScreenVisibilityChecker())
+        return manager
     }
 
     private func tempDir() -> URL {

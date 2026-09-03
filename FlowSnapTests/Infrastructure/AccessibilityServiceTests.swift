@@ -1,3 +1,4 @@
+import ApplicationServices
 import Testing
 import CoreGraphics
 import Foundation
@@ -51,6 +52,32 @@ struct AccessibilityServiceTests {
         let service = MockAccessibilityService()
         service.openSystemSettings()
         #expect(service.openSettingsCallCount == 1)
+    }
+
+    @Test func fullscreenAndMinimizedReadsUseMockedAXState() {
+        let element = AXUIElementCreateSystemWide()
+        let service = MockAccessibilityService()
+        service.mockFullScreenStates[element] = true
+        service.mockMinimizedStates[element] = true
+
+        #expect(service.isFullScreen(element))
+        #expect(service.isMinimized(element))
+        #expect(service.isFullScreenCallCount == 1)
+        #expect(service.isMinimizedCallCount == 1)
+    }
+
+    @Test func scriptedFrameAndStateReadsAreConsumedInOrder() {
+        let element = AXUIElementCreateSystemWide()
+        let service = MockAccessibilityService()
+        let initial = CGRect(x: 0, y: 0, width: 100, height: 100)
+        let settled = CGRect(x: 10, y: 20, width: 300, height: 200)
+        service.mockFrameReadValues[element] = [initial, settled]
+        service.mockFullScreenReadValues[element] = [true, false]
+
+        #expect(service.frame(of: element) == initial)
+        #expect(service.frame(of: element) == settled)
+        #expect(service.isFullScreen(element))
+        #expect(!service.isFullScreen(element))
     }
 
     @Test func allVisibleManagedWindowsHonorsIsTrustedAndProvidesResizableStatus() {

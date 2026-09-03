@@ -58,6 +58,9 @@ struct WorkspaceRestoreTargetTests {
         accessibility.mockElementByWindowID = [win.id: measured]
 
         let mover = MockWindowManaging()
+        mover.onMove = { _, frame, addressed in
+            if let addressed { accessibility.mockFrames[addressed] = frame }
+        }
         let launcher = MockApplicationLaunching(processIdentifiers: ["com.editor": 2200])
         let manager = WorkspaceManager(
             store: WorkspaceStore(directoryURL: tempDir()),
@@ -69,6 +72,9 @@ struct WorkspaceRestoreTargetTests {
             ownBundleIdentifier: "com.flowsnap.app",
             loadAtInit: false
         )
+        // P0.5: the mock window never appears in the real WindowServer list, so
+        // pin presentation with a checker that reports it presented.
+        manager.injectPresentationChecker(MockCurrentScreenVisibilityChecker())
 
         let summary = try await manager.restore(
             workspace: workspace([WindowPlacement(bundleIdentifier: "com.editor", zone: .leftHalf)]),
@@ -105,6 +111,9 @@ struct WorkspaceRestoreTargetTests {
         ]
 
         let mover = MockWindowManaging()
+        mover.onMove = { _, frame, addressed in
+            if let addressed { accessibility.mockFrames[addressed] = frame }
+        }
         let launcher = MockApplicationLaunching(processIdentifiers: ["com.editor": 2300])
         let manager = WorkspaceManager(
             store: WorkspaceStore(directoryURL: tempDir()),
@@ -116,6 +125,8 @@ struct WorkspaceRestoreTargetTests {
             ownBundleIdentifier: "com.flowsnap.app",
             loadAtInit: false
         )
+        // P0.5: scriptable presentation checker defaulting to `.presented`.
+        manager.injectPresentationChecker(MockCurrentScreenVisibilityChecker())
 
         _ = try await manager.restore(
             workspace: workspace([WindowPlacement(bundleIdentifier: "com.editor", zone: .leftHalf)]),
@@ -128,11 +139,11 @@ struct WorkspaceRestoreTargetTests {
         #expect(mover.movedWindows.first?.window.id == document.id)
     }
 
-    @Test("A WindowServer-fallback window carries no element and is still placed")
+    @Test("A WindowServer-fallback window carries no element and is unverifiable")
     func fallbackWindowHasNilElement() async throws {
         // When the app exposes nothing addressable through AX, restore falls back to
-        // the on-screen list, which cannot supply an element. That must not abort the
-        // placement — `move` receives a nil element and resolves as before.
+        // the on-screen list, which cannot supply an element. P0 refuses to guess:
+        // no move is attempted and the placement is explicitly unverifiable.
         //
         // The window's pid deliberately differs from the running pid so the AX path
         // finds nothing and the fallback is the only way this placement can succeed.
@@ -161,12 +172,9 @@ struct WorkspaceRestoreTargetTests {
             options: .default
         )
 
-        #expect(summary.placedCount == 1)
-        #expect(mover.moveCallCount == 1)
-        // The fallback path has no element to hand on. `movedElements.first` is a
-        // double optional (array slot × element), so unwrap the slot then assert the
-        // element itself is nil.
-        let addressed: AXUIElement? = try #require(mover.movedElements.first)
-        #expect(addressed == nil)
+        #expect(summary.placedCount == 0)
+        #expect(summary.unverifiableCount == 1)
+        #expect(summary.unverifiable.first?.reason == .unverifiablePlacement)
+        #expect(mover.moveCallCount == 0)
     }
 }

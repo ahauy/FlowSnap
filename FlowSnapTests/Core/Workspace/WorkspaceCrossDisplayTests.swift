@@ -1,3 +1,4 @@
+import ApplicationServices
 import CoreGraphics
 import Foundation
 import Testing
@@ -46,7 +47,13 @@ struct WorkspaceCrossDisplayTests {
     ) -> WorkspaceManager {
         let accessibility = MockAccessibilityService(isTrusted: true)
         accessibility.mockVisibleWindows = windows
-        return WorkspaceManager(
+        accessibility.mockElementByWindowID = Dictionary(uniqueKeysWithValues: windows.map {
+            ($0.id, AXUIElementCreateApplication($0.pid))
+        })
+        windowManager.onMove = { _, frame, element in
+            if let element { accessibility.mockFrames[element] = frame }
+        }
+        let manager = WorkspaceManager(
             store: WorkspaceStore(directoryURL: tempDir()),
             accessibilityService: accessibility,
             windowManager: windowManager,
@@ -56,6 +63,10 @@ struct WorkspaceCrossDisplayTests {
             ownBundleIdentifier: "com.flowsnap.app",
             loadAtInit: false
         )
+        // P0.5: scriptable presentation checker defaulting to `.presented`, so
+        // the mock windows count as presented exactly as before the observation.
+        manager.injectPresentationChecker(MockCurrentScreenVisibilityChecker())
+        return manager
     }
 
     @Test("Saving on a 1440x900 panel stores a zone, not pixels")
