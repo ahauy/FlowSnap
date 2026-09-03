@@ -39,6 +39,45 @@ struct WindowPolicyManagerTests {
         #expect(ax.lastSetFrame == primary.visibleFrame)
     }
 
+    @Test func currentSpaceRespectsSecondaryDisplayBounds() async throws {
+        let primary = Display(
+            id: 1,
+            frame: CGRect(x: 0, y: 0, width: 1920, height: 1080),
+            visibleFrame: CGRect(x: 0, y: 25, width: 1920, height: 1055),
+            scaleFactor: 2.0,
+            isPrimary: true
+        )
+        let secondary = Display(
+            id: 2,
+            frame: CGRect(x: 1920, y: 0, width: 1440, height: 900),
+            visibleFrame: CGRect(x: 1920, y: 25, width: 1440, height: 875),
+            scaleFactor: 2.0,
+            isPrimary: false
+        )
+        let display = MockDisplayManager(displays: [primary, secondary])
+        let ax = MockAccessibilityService(isTrusted: true)
+        let element = makeAXUIElement()
+        // Window is located on secondary display (e.g. Brave on laptop screen)
+        let window = ManagedWindow(
+            id: 15,
+            pid: 1002,
+            bundleIdentifier: "com.brave.Browser",
+            title: "Brave",
+            frame: CGRect(x: 2000, y: 100, width: 1000, height: 700)
+        )
+        ax.mockWindowElements[window.id] = element
+
+        let manager = WindowPolicyManager(
+            accessibilityService: ax,
+            displayManager: display
+        )
+
+        try await manager.applyPolicy(for: window)
+
+        #expect(ax.setFrameCallCount == 1)
+        #expect(ax.lastSetFrame == secondary.visibleFrame)
+    }
+
     @Test func currentSpaceResolvesPolicyByBundleID() async throws {
         let primary = Display(
             id: 1,

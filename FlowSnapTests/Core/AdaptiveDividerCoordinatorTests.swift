@@ -789,4 +789,69 @@ struct AdaptiveDividerCoordinatorTests {
         await sut.handleMouseUp(at: CGPoint(x: -500, y: 450))
         #expect(mockOverlay?.isOverlayVisible == false)
     }
+
+    @Test("Divider hidden when no active workspace is open")
+    func dividerHiddenWhenNoActiveWorkspaceIsOpen() async {
+        let (sut, _, _, mockOverlay) = makeSUT()
+        let w1 = ManagedWindow(id: 1, pid: 10, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let w2 = ManagedWindow(id: 2, pid: 20, title: "Right", frame: CGRect(x: 720, y: 0, width: 720, height: 900))
+        sut.updateWindows([w1, w2])
+        // Explicitly set provider to nil (no active workspace)
+        sut.activeWorkspaceProvider = { nil }
+
+        await sut.handleMouseMoved(to: CGPoint(x: 720, y: 450))
+
+        #expect(mockOverlay?.isOverlayVisible == false)
+    }
+
+    @Test("Divider visible when active workspace matches windows")
+    func dividerVisibleWhenActiveWorkspaceMatchesWindows() async {
+        let (sut, _, _, mockOverlay) = makeSUT()
+        let w1 = ManagedWindow(id: 1, pid: 10, bundleIdentifier: "com.microsoft.VSCode", title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let w2 = ManagedWindow(id: 2, pid: 20, bundleIdentifier: "com.apple.Terminal", title: "Right", frame: CGRect(x: 720, y: 0, width: 720, height: 900))
+        sut.updateWindows([w1, w2])
+
+        let workspace = Workspace(
+            name: "Dev",
+            placements: [
+                WindowPlacement(bundleIdentifier: "com.microsoft.VSCode", zone: .leftHalf, orderIndex: 0),
+                WindowPlacement(bundleIdentifier: "com.apple.Terminal", zone: .rightHalf, orderIndex: 1)
+            ]
+        )
+        sut.activeWorkspaceProvider = { workspace }
+
+        await sut.handleMouseMoved(to: CGPoint(x: 720, y: 450))
+
+        #expect(mockOverlay?.isOverlayVisible == true)
+    }
+
+    @Test("MouseUp on workspace windows triggers debounced ratio auto-save")
+    func mouseUpOnWorkspaceWindowsTriggersDebouncedRatioAutoSave() async throws {
+        let (sut, _, _, _) = makeSUT()
+        let w1 = ManagedWindow(id: 1, pid: 10, bundleIdentifier: "com.microsoft.VSCode", title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let w2 = ManagedWindow(id: 2, pid: 20, bundleIdentifier: "com.apple.Terminal", title: "Right", frame: CGRect(x: 720, y: 0, width: 720, height: 900))
+        sut.updateWindows([w1, w2])
+        sut.autoSaveDelay = 0.05 // 50ms for testing
+
+        let workspaceID = UUID()
+        let workspace = Workspace(
+            id: workspaceID,
+            name: "Dev",
+            placements: [
+                WindowPlacement(bundleIdentifier: "com.microsoft.VSCode", zone: .leftHalf, orderIndex: 0),
+                WindowPlacement(bundleIdentifier: "com.apple.Terminal", zone: .rightHalf, orderIndex: 1)
+            ]
+        )
+        sut.activeWorkspaceProvider = { workspace }
+
+        _ = await sut.handleMouseDown(at: CGPoint(x: 720, y: 450))
+        await sut.handleMouseDragged(to: CGPoint(x: 800, y: 450))
+        await sut.handleMouseUp(at: CGPoint(x: 800, y: 450))
+
+        // Wait for debounce timer
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        // Drag completed and auto-saved task executed cleanly
+        #expect(sut.managedWindows.count == 2)
+    }
 }

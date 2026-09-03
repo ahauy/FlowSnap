@@ -34,6 +34,9 @@ public final class WorkspaceManager: ObservableObject {
     /// the row and show progress instead of letting a second click pile up.
     @Published public private(set) var restoringID: UUID?
 
+    /// The currently active workspace that was restored or opened on screen.
+    @Published public private(set) var activeWorkspace: Workspace?
+
     // MARK: - Dependencies
 
     // Internal rather than private: the capture and restore extensions live in
@@ -278,6 +281,29 @@ public final class WorkspaceManager: ObservableObject {
         }
     }
 
+    /// Sets or clears the active workspace tracking.
+    public func setActiveWorkspace(_ workspace: Workspace?) {
+        self.activeWorkspace = workspace
+    }
+
+    /// Updates custom divider ratios (normalizedRect) for matching placements in a workspace.
+    @discardableResult
+    public func updateWorkspaceRatios(workspaceID: UUID, normalizedRects: [String: CGRect]) async throws -> Workspace {
+        let updated = try await mutate(id: workspaceID) { workspace in
+            var updated = workspace
+            for (bundleID, rect) in normalizedRects {
+                if let index = updated.placements.firstIndex(where: { $0.bundleIdentifier.lowercased() == bundleID.lowercased() }) {
+                    updated.placements[index].normalizedRect = rect
+                }
+            }
+            return updated.normalized
+        }
+        if activeWorkspace?.id == workspaceID {
+            activeWorkspace = updated
+        }
+        return updated
+    }
+
     /// Read-modify-write helper: every mutation funnels through the store so the
     /// actor serialises concurrent edits (data-model.md §5).
     private func mutate(id: UUID, _ change: (Workspace) -> Workspace) async throws -> Workspace {
@@ -313,6 +339,7 @@ public final class WorkspaceManager: ObservableObject {
         do {
             let summary = try await restore(workspace: target, options: options)
             lastRestoreSummary = summary
+            activeWorkspace = target
             return summary
         } catch {
             lastRestoreSummary = nil

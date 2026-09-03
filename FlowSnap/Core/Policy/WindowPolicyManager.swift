@@ -78,9 +78,17 @@ final class WindowPolicyManager {
         }
     }
 
+    /// Resolves the hosting display for a frame, falling back to primaryDisplay.
+    private func resolveDisplay(for frame: CGRect) async -> Display? {
+        if !frame.isEmpty, let target = await displayManager.display(for: frame) {
+            return target
+        }
+        return await displayManager.primaryDisplay
+    }
+
     /// Resolve the current display's visible frame and apply it to the window.
     private func applyCurrentSpace(for window: ManagedWindow) async throws {
-        let display = await displayManager.primaryDisplay
+        let display = await resolveDisplay(for: window.frame)
         guard let frame = display?.visibleFrame else {
             throw AccessibilityError.cannotComplete
         }
@@ -104,7 +112,10 @@ final class WindowPolicyManager {
             try await applyCurrentSpace(for: window)
             return
         }
-        let display = await displayManager.primaryDisplay
+        var display = await resolveDisplay(for: remembered.frame)
+        if display == nil {
+            display = await resolveDisplay(for: window.frame)
+        }
         guard let visibleFrame = display?.visibleFrame else {
             throw AccessibilityError.cannotComplete
         }
@@ -117,7 +128,7 @@ final class WindowPolicyManager {
 
     /// Compute canonical layout zone frame using LayoutEngine and apply to window.
     private func applyAssignedLayout(zone: LayoutZone, for window: ManagedWindow) async throws {
-        let display = await displayManager.primaryDisplay
+        let display = await resolveDisplay(for: window.frame)
         guard let visibleFrame = display?.visibleFrame else {
             throw AccessibilityError.cannotComplete
         }

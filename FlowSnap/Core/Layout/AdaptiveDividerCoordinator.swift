@@ -19,6 +19,20 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     private let accessibilityService: AccessibilityService?
     private let windowRegistry: WindowRegistry?
     private let overlayManager: AdaptiveDividerOverlayManaging?
+    private weak var workspaceManager: WorkspaceManager?
+    public var activeWorkspaceProvider: (() -> Workspace?)?
+
+    /// Debounce duration for auto-saving custom ratio after mouseUp (defaults to 300 seconds / 5 minutes).
+    public var autoSaveDelay: TimeInterval = 300.0
+    private var ratioAutoSaveTask: Task<Void, Never>?
+
+    private var isWorkspaceRestrictionEnabled: Bool {
+        workspaceManager != nil || activeWorkspaceProvider != nil
+    }
+
+    private var currentActiveWorkspace: Workspace? {
+        activeWorkspaceProvider?() ?? workspaceManager?.activeWorkspace
+    }
 
     private var moveMonitor: Any?
     private var downMonitor: Any?
@@ -126,7 +140,9 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         preferencesStore: PreferencesStore? = nil,
         accessibilityService: AccessibilityService? = nil,
         windowRegistry: WindowRegistry? = nil,
-        overlayManager: AdaptiveDividerOverlayManaging? = nil
+        overlayManager: AdaptiveDividerOverlayManaging? = nil,
+        workspaceManager: WorkspaceManager? = nil,
+        autoSaveDelay: TimeInterval = 300.0
     ) {
         self.detector = detector
         self.windowManager = windowManager
@@ -136,6 +152,8 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         self.accessibilityService = accessibilityService
         self.windowRegistry = windowRegistry
         self.overlayManager = overlayManager
+        self.workspaceManager = workspaceManager
+        self.autoSaveDelay = autoSaveDelay
     }
 
     // MARK: - Lifecycle
@@ -270,6 +288,40 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
 
     private func refreshWindowsIfNeeded() async {
         if isResizing { return }
+        guard accessibilityService != nil || windowRegistry != nil else { return }
+        if isWorkspaceRestrictionEnabled {
+            guard let activeWorkspace = currentActiveWorkspace else {
+                self.managedWindows = []
+                return
+            }
+            if let service = accessibilityService, !service.isTrusted { return }
+            let workspaceBundleIDs = Set(activeWorkspace.placements.map { $0.bundleIdentifier.lowercased() })
+            if let service = accessibilityService {
+                let visible = service.allVisibleManagedWindows()
+                let filtered = visible.filter { window in
+                    guard let id = window.bundleIdentifier?.lowercased() else { return false }
+                    return workspaceBundleIDs.contains(id)
+                }
+                if filtered.count >= 2 {
+                    self.managedWindows = filtered
+                    return
+                }
+            }
+            if let registry = windowRegistry {
+                let tracked = await registry.allWindows
+                let filtered = tracked.filter { window in
+                    guard let id = window.bundleIdentifier?.lowercased() else { return false }
+                    return workspaceBundleIDs.contains(id)
+                }
+                if filtered.count >= 2 {
+                    self.managedWindows = filtered
+                    return
+                }
+            }
+            self.managedWindows = []
+            return
+        }
+
         if let service = accessibilityService, !service.isTrusted { return }
         if let service = accessibilityService {
             let visible = service.allVisibleManagedWindows()
@@ -421,6 +473,15 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     public func handleMouseMoved(to point: CGPoint) async {
         guard !isResizing else { return }
 
+        if isWorkspaceRestrictionEnabled && currentActiveWorkspace == nil {
+            if hoveredDivider != nil {
+                setCursor(.arrow)
+                hoveredDivider = nil
+            }
+            overlayManager?.hide(animated: false)
+            return
+        }
+
         if let service = accessibilityService, !service.isTrusted {
             if hoveredDivider != nil {
                 setCursor(.arrow)
@@ -492,6 +553,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     public func handleMouseDown(at point: CGPoint) async -> Bool {
         // BUG-01: guard against dual-trigger (overlay callback + global downMonitor both fire)
         guard !isResizing else { return false }
+        if isWorkspaceRestrictionEnabled && currentActiveWorkspace == nil { return false }
 
         if let service = accessibilityService, !service.isTrusted {
             return false
@@ -712,6 +774,30 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         lastPresentedWindows = finalDisplayWindows
         lastPresentedContainer = container
 
+        // Auto-save customized ratio to the active workspace after autoSaveDelay (5 minutes)
+        if let workspace = currentActiveWorkspace {
+            var updatedNormalizedRects: [String: CGRect] = [:]
+            for window in finalDisplayWindows {
+                if let bundleID = window.bundleIdentifier {
+                    let normRect = ZoneInference.normalizedRect(of: window.frame, within: container)
+                    updatedNormalizedRects[bundleID] = normRect
+                }
+            }
+            if !updatedNormalizedRects.isEmpty {
+                ratioAutoSaveTask?.cancel()
+                let delay = self.autoSaveDelay
+                let targetWorkspaceID = workspace.id
+                ratioAutoSaveTask = Task { @MainActor [weak self] in
+                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                    guard !Task.isCancelled, let self else { return }
+                    try? await self.workspaceManager?.updateWorkspaceRatios(
+                        workspaceID: targetWorkspaceID,
+                        normalizedRects: updatedNormalizedRects
+                    )
+                }
+            }
+        }
+
         overlayManager?.hide(animated: true)
     }
 
@@ -737,6 +823,10 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
                     stableFrame.size.width = initial.frame.size.width
                 }
             }
+            stableFrame.origin.x = stableFrame.origin.x.rounded()
+            stableFrame.origin.y = stableFrame.origin.y.rounded()
+            stableFrame.size.width = stableFrame.size.width.rounded()
+            stableFrame.size.height = stableFrame.size.height.rounded()
 
             // Skip redundant sub-pixel AX frame updates (< 0.5pt delta)
             if !force, let lastFrame = lastCommittedFrames[id] {
