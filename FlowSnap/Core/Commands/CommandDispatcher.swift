@@ -34,6 +34,7 @@ public final class CommandDispatcher: CommandDispatching {
     private let presetResolver: (any PresetResolving)?
     private let cursorManager: any CursorWarping
     private let displayNavigator: any DisplayNavigating
+    private let workspaceMigrator: (any WorkspaceMigrating)?
 
     /// Active pending task for latest-wins debouncing (BR-HOTKEY-005).
     private var pendingTask: Task<Void, Error>?
@@ -50,7 +51,8 @@ public final class CommandDispatcher: CommandDispatching {
         displayManager: DisplayManaging,
         presetResolver: (any PresetResolving)? = nil,
         cursorManager: any CursorWarping = CursorManager(),
-        displayNavigator: any DisplayNavigating = DisplayNavigator()
+        displayNavigator: any DisplayNavigating = DisplayNavigator(),
+        workspaceMigrator: (any WorkspaceMigrating)? = nil
     ) {
         self.windowManager = windowManager
         self.snapEngine = snapEngine
@@ -58,6 +60,7 @@ public final class CommandDispatcher: CommandDispatching {
         self.presetResolver = presetResolver
         self.cursorManager = cursorManager
         self.displayNavigator = displayNavigator
+        self.workspaceMigrator = workspaceMigrator
     }
 
     /// Dispatch a command for asynchronous execution with latest-wins debouncing.
@@ -127,6 +130,19 @@ public final class CommandDispatcher: CommandDispatching {
             let summary = try await presetResolver.restore(preset: preset, on: nil)
             self.lastRestoreSummary = summary
             return summary.placedCount > 0
+
+        case .migrateWorkspace(let direction):
+            guard let migrator = self.workspaceMigrator else {
+                dispatcherLogger.error("WorkspaceMigrator not configured in CommandDispatcher")
+                return false
+            }
+            let result = try await migrator.migrateActiveWorkspace(direction: direction)
+            switch result {
+            case .success:
+                return true
+            case .noOp:
+                return false
+            }
 
         case .restoreWorkspace, .saveWorkspace:
             dispatcherLogger.info("Workspace commands will be routed in Epic 11.")

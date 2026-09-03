@@ -39,6 +39,8 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
     // MARK: - Displays
     case nextDisplay = "nextDisplay"
     case previousDisplay = "previousDisplay"
+    case moveWorkspaceNextDisplay = "moveWorkspaceNextDisplay"
+    case moveWorkspacePreviousDisplay = "moveWorkspacePreviousDisplay"
 
     public var id: String { rawValue }
 
@@ -62,6 +64,8 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
         case .rightThird: return "Right 1/3"
         case .nextDisplay: return "Move to Next Display"
         case .previousDisplay: return "Move to Previous Display"
+        case .moveWorkspaceNextDisplay: return "Move Workspace to Next Display"
+        case .moveWorkspacePreviousDisplay: return "Move Workspace to Previous Display"
         }
     }
 
@@ -74,7 +78,7 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
             return .quarters
         case .left70_30, .rightOneThird, .leftThird, .centerThird, .rightThird:
             return .asymmetric
-        case .nextDisplay, .previousDisplay:
+        case .nextDisplay, .previousDisplay, .moveWorkspaceNextDisplay, .moveWorkspacePreviousDisplay:
             return .displays
         }
     }
@@ -119,6 +123,12 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
             return KeyboardShortcut(keyCode: 124, carbonModifiers: ctrlOptShift) // ⌃⌥⇧→
         case .previousDisplay:
             return KeyboardShortcut(keyCode: 123, carbonModifiers: ctrlOptShift) // ⌃⌥⇧←
+        case .moveWorkspaceNextDisplay:
+            let ctrlOptShiftCmd = UInt32(controlKey | optionKey | shiftKey | cmdKey)
+            return KeyboardShortcut(keyCode: 124, carbonModifiers: ctrlOptShiftCmd) // ⌃⌥⇧⌘→
+        case .moveWorkspacePreviousDisplay:
+            let ctrlOptShiftCmd = UInt32(controlKey | optionKey | shiftKey | cmdKey)
+            return KeyboardShortcut(keyCode: 123, carbonModifiers: ctrlOptShiftCmd) // ⌃⌥⇧⌘←
         }
     }
 
@@ -142,6 +152,8 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
         case .rightThird: return .snap(.zone(.rightThird))
         case .nextDisplay: return .moveToNextDisplay
         case .previousDisplay: return .moveToPreviousDisplay
+        case .moveWorkspaceNextDisplay: return .migrateWorkspace(.next)
+        case .moveWorkspacePreviousDisplay: return .migrateWorkspace(.previous)
         }
     }
 }

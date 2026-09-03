@@ -24,11 +24,10 @@ public enum WindowCommand: Hashable, Sendable {
     case moveToPreviousDisplay
 
     // MARK: - Workspace
-
     case restoreWorkspace(UUID)
     case saveWorkspace(String)
+    case migrateWorkspace(MigrationDirection)
 
     // MARK: - Presets (US-WORK-012)
-
     case restorePreset(String) // Preset ID, e.g. "builtin.coding"
 }

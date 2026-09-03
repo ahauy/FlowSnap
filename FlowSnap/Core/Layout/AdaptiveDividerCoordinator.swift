@@ -1053,5 +1053,19 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         currentCursor = cursor
         cursor.set()
     }
+
+    // MARK: - External State Reset
+
+    /// Resets all active divider state and hides resting/drag overlays.
+    /// Used when workspaces are switched or migrated across displays.
+    public func resetState() {
+        dividerCache = nil
+        lastPresentedDividers = []
+        lastPresentedWindows = []
+        lastPresentedContainer = nil
+        hoveredDivider = nil
+        activeDivider = nil
+        overlayManager?.hide(animated: false)
+    }
 }
 
