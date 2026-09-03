@@ -141,6 +141,26 @@ public struct MenuBarView: View {
 
             WorkspaceListView(viewModel: workspaceVM)
 
+            Button {
+                viewModel.triggerMigrateWorkspace(.next)
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "display.and.keyboard")
+                        .font(.system(size: 11))
+                    Text("Move Workspace to Next Display")
+                        .font(.system(size: 11))
+                    Spacer()
+                    Text("⌃⌥⇧⌘→")
+                        .font(.system(size: 9, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(RoundedRectangle(cornerRadius: 5).fill(Color(nsColor: .controlBackgroundColor).opacity(0.4)))
+            }
+            .buttonStyle(.plain)
+
             if let summary = workspaceVM.lastRestoreSummary {
                 RestoreSummaryBanner(summary: summary, isCompact: true) {
                     workspaceVM.clearRestoreSummary()

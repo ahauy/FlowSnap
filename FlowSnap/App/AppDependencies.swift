@@ -60,7 +60,8 @@ public final class AppDependencies {
         windowManager: windowManager,
         snapEngine: snapEngine,
         displayManager: displayManager,
-        presetResolver: presetResolver
+        presetResolver: presetResolver,
+        workspaceMigrator: workspaceMigrator
     )
 
     // MARK: - Workspace
@@ -158,9 +159,23 @@ public final class AppDependencies {
         hotPlugObserver: displayHotPlugObserver
     )
 
+    // MARK: - Workspace Migration (US-DISP-017)
+
+    public lazy var workspaceMigrator: any WorkspaceMigrating = WorkspaceMigrator(
+        workspaceManager: workspaceManager,
+        displayManager: displayManager,
+        displayNavigator: DisplayNavigator(),
+        windowManager: windowManager,
+        accessibilityService: accessibilityService,
+        stageManagerDetector: stageManagerDetector,
+        preferences: preferencesStore,
+        dividerCoordinator: adaptiveDividerCoordinator
+    )
+
     public init() {
         _ = self.workspaceManager
         _ = self.windowPolicyManager
+        _ = self.workspaceMigrator
         self.displayHotPlugObserver.startObserving()
         _ = self.topologyProfileManager
     }

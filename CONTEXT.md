@@ -106,6 +106,9 @@
 | **StageManagerDetecting** | Protocol for querying macOS Stage Manager enabled state via `com.apple.WindowManager` | "Stage Manager detection protocol" | `StageManagerDetecting` | US-WORK-018, Domain / Infrastructure |
 | **StageManagerDetector** | CFPreferences/UserDefaults implementation reading `GloballyEnabled` | "Stage Manager detector service" | `StageManagerDetector` | US-WORK-018, Infrastructure |
 | **SmartStageCoordination** | Strategy coordinating primary app activation and secondary `kAXRaiseAction` on a single Stage | "Stage Manager auto-grouping strategy" | `SmartStageCoordination` | US-WORK-018, Core / Restore |
+| **WorkspaceMigrating** | Protocol defining atomic multi-window workspace migration across displays | "Workspace migration interface" | `WorkspaceMigrating` | US-DISP-017, Domain |
+| **WorkspaceMigrator** | Core coordinator executing proportional scaling, 2-phase move, and divider transfer | "Workspace cross-display migrator" | `WorkspaceMigrator` | US-DISP-017, ADR-0014, Core |
+| **MigrationDirection** | Enum specifying cross-display navigation direction (.next / .previous) | "Display migration direction" | `MigrationDirection` | US-DISP-017, Domain |
 
 ## Where to Look
 

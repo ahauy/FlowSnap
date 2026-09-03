@@ -140,6 +140,20 @@ public final class MenuBarViewModel {
         }
     }
 
+    // MARK: - Workspace Migration Actions (US-DISP-017)
+
+    /// Triggers cross-display workspace migration in the specified direction.
+    public func triggerMigrateWorkspace(_ direction: MigrationDirection) {
+        guard isAccessibilityTrusted else {
+            requestAccessibilityPermission()
+            return
+        }
+        dismissMenuBarWindow()
+        Task { @MainActor in
+            try? await self.commandDispatcher.dispatch(.migrateWorkspace(direction))
+        }
+    }
+
     /// Clears the last preset restore summary message.
     public func clearPresetRestoreSummary() {
         self.lastPresetRestoreSummary = nil
