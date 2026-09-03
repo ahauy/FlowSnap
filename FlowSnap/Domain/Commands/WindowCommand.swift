@@ -20,6 +20,8 @@ public enum WindowCommand: Hashable, Sendable {
     // MARK: - Display
 
     case moveToDisplay(CGDirectDisplayID)
+    case moveToNextDisplay
+    case moveToPreviousDisplay
 
     // MARK: - Workspace
 
