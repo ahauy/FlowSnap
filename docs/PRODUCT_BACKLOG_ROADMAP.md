@@ -53,7 +53,7 @@ schema-version: "1.1"
   - [4.2. Giai đoạn 2: Advanced Ecosystem, Multi-Monitor Mastery \& Flow Continuity (Phase 2 Backlog)](#42-giai-đoạn-2-advanced-ecosystem-multi-monitor-mastery--flow-continuity-phase-2-backlog)
     - [EPIC 13: Advanced Multi-Monitor Topology \& Cross-Display Navigation (Hỗ trợ Màn hình rời Toàn diện)](#epic-13-advanced-multi-monitor-topology--cross-display-navigation-hỗ-trợ-màn-hình-rời-toàn-diện)
     - [EPIC 14: Stage Manager Co-existence \& Universal Fullscreen Escape (Tương thích Stage Manager \& Thoát Full Screen)](#epic-14-stage-manager-co-existence--universal-fullscreen-escape-tương-thích-stage-manager--thoát-full-screen)
-    - [EPIC 15: Quick Floating Overlay Panel \& Always-On-Top Pinning (Tiện ích Nổi Thao tác Nhanh)](#epic-15-quick-floating-overlay-panel--always-on-top-pinning-tiện-ích-nổi-thao-tác-nhanh)
+    - [EPIC 15: Universal Always-On-Top Pinning \& Stage Manager Launch Co-existence (Ghim Cửa sổ Luôn Trên Cùng \& Hòa hợp Stage Manager)](#epic-15-universal-always-on-top-pinning--stage-manager-launch-co-existence-ghim-cửa-sổ-luôn-trên-cùng--hòa-hợp-stage-manager)
   - [5. Lộ trình phát hành theo Giai đoạn \& Sprint](#5-lộ-trình-phát-hành-theo-giai-đoạn--sprint)
   - [6. Quy chuẩn định nghĩa hoàn thành (Definition of Done - DoD)](#6-quy-chuẩn-định-nghĩa-hoàn-thành-definition-of-done---dod)
   - [7. Phân tích Kỹ thuật Chuyên sâu, Rủi ro Hệ thống \& Kế hoạch Phát hành](#7-phân-tích-kỹ-thuật-chuyên-sâu-rủi-ro-hệ-thống--kế-hoạch-phát-hành)
@@ -739,51 +739,41 @@ _Mục tiêu: Giải quyết triệt để 2 vấn đề xung đột cố hữu 
 
 ---
 
-### EPIC 15: Quick Floating Overlay Panel & Always-On-Top Pinning (Tiện ích Nổi Thao tác Nhanh)
+### EPIC 15: Universal Always-On-Top Pinning & Stage Manager Launch Co-existence (Ghim Cửa sổ Luôn Trên Cùng & Hòa hợp Stage Manager)
 
-_Mục tiêu: Đem lại trải nghiệm thao tác tức thì kiểu Raycast/Alfred — mở nhanh máy tính hoặc bảng ghi chú nổi xuyên suốt mọi không gian mà không làm mất ứng dụng chính, hoặc ghim bất kỳ app nào luôn nổi trên cùng._
+_Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùng (Always-on-Top) với cơ chế xếp lớp động (LIFO Z-Stacking), đồng thời loại bỏ xung đột Stage Manager của macOS — khi mở bất kỳ ứng dụng nào mới cũng tự động hòa vào Stage hiện tại mà không bị đẩy các ứng dụng cũ vào dải cánh gà._
 
-- [ ] **US-SNAP-020: Mini-Panel Thao tác Nhanh Xuyên Không gian (Quick Floating Scratchpad & Calculator Overlay)**
-  - **Slug:** `quick-floating-scratchpad-panel`
+- [ ] **US-SNAP-021: Ghim Cửa sổ Luôn Trên Cùng & Hòa hợp Stage Manager khi Mở App (Universal Always-On-Top Pinning & Stage Manager Launch Co-existence)**
+  - **Slug:** `always-on-top-window-pinning`
   - **Effort:** L
   - **Context-budget:** multi-session
   - **Priority:** Must-Have (P0)
-  - **Depends-on:** `US-SNAP-004` ✅
+  - **Depends-on:** `US-WORK-014` ✅, `US-WORK-018` ✅
   - **Blocks:** _(none)_
-  - **Mô tả:** Tạo một cửa sổ nổi đặc quyền (`NSPanel` với `canJoinAllSpaces` và `fullScreenAuxiliary`), được gọi bằng phím tắt toàn cục (mặc định `⌥Space` hoặc `⌥C`), tích hợp sẵn Máy tính mini (Quick Calculator) và Bảng ghi chú tạm (Quick Scratchpad). Bấm `Esc` lập tức ẩn đi và trả lại focus cho ứng dụng làm việc bên dưới.
+  - **Mô tả:** Nâng cấp toàn diện cơ chế kiểm soát cửa sổ nổi trên macOS: Cho phép bấm phím tắt toàn cục (mặc định `⌃⌥P`) để ghim cửa sổ của bất kỳ ứng dụng nào luôn luôn nổi trên mặt trước của mọi ứng dụng khác mà không bị chìm xuống dưới. Hỗ trợ ghim đa cửa sổ không giới hạn với cơ chế Z-Order động (cửa sổ ghim nào kích hoạt sau sẽ nổi trên các cửa sổ ghim trước). Đồng thời, tự động duy trì sự hiện diện của các cửa sổ hiện tại khi mở bất kỳ ứng dụng mới nào trong môi trường Stage Manager (không bị macOS cô lập app mới và đẩy app cũ vào cánh gà).
   - **Acceptance Criteria (AC):**
-    - [ ] Cửa sổ `NSPanel` nổi độc quyền trên tầng `NSWindow.Level.floating`, có thuộc tính `collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]`.
-    - [ ] **Khả năng xuyên không gian tuyệt đối:** Nổi đè lên được cả khi đang ở **Native Full Screen** và khi đang bật **Stage Manager**, không bao giờ bị macOS đẩy sang Space khác hay đẩy vào cánh gà.
-    - [ ] Phím tắt toàn cục mở nhanh (`⌥ + Space` hoặc `⌥ + C`), tự động kích hoạt con trỏ nhập liệu.
-    - [ ] Hỗ trợ 2 chế độ:
-      - **Quick Calculator:** Nhập biểu thức toán học (ví dụ: `(120 * 4) / 1.5`), tính toán ra kết quả tức thì, bấm `Enter` để copy kết quả vào clipboard.
-      - **Quick Scratchpad:** Soạn thảo nhanh văn bản/ghi chú tạm thời, tự lưu tự động.
-    - [ ] Bấm phím `Esc` hoặc click chuột ra ngoài vùng panel: Panel tự động biến mất mượt mà (fade out 150ms), tiêu điểm bàn phím tự động trả về đúng dòng code/văn bản đang soạn dở.
+    - [ ] **Lắng nghe phím tắt `Pin/Unpin Focused Window` (`⌃⌥P`):** Chuyển đổi trạng thái ghim/bỏ ghim cho cửa sổ đang có tiêu điểm (focused window) của bất kỳ ứng dụng bên thứ 3 nào.
+    - [ ] **Tầng hiển thị Always-On-Top:** Đặt mức ưu tiên hiển thị của cửa sổ được ghim thành Floating Level (thông qua Accessibility Layer / Window Server Coordination). Cửa sổ được ghim luôn nằm trên tất cả các cửa sổ thông thường khi click làm việc ở app nền.
+    - [ ] **Xếp lớp động đa cửa sổ ghim (Dynamic LIFO Z-Stacking):** Cho phép ghim tự do không giới hạn số lượng cửa sổ. Cửa sổ ghim nào được click/focus sau sẽ nằm trên các cửa sổ ghim trước đó; toàn bộ nhóm ghim luôn nằm trên các cửa sổ chưa ghim.
+    - [ ] **Phạm vi Space cục bộ (Space Scoping):** Cửa sổ được ghim cố định tại Desktop Space hiện tại, không tự động bám dính (sticky) sang Space khác khi người dùng chuyển Desktop Space.
+    - [ ] **An toàn hộp thoại hệ thống (System Modal Safety):** Cửa sổ ghim tự động nhường quyền ưu tiên, không che khuất các hộp thoại bảo mật hệ thống (Keychain, Touch ID, File Dialogs).
+    - [ ] **Hòa hợp Stage Manager khi mở ứng dụng mới (Stage Manager Launch Co-existence):** Khi bật Stage Manager, bất kỳ ứng dụng nào mở lên từ Dock / Finder / Spotlight / Raycast đều tự động cùng xuất hiện trên Stage hiện tại, ngăn chặn triệt để hành vi mặc định của macOS đẩy các cửa sổ đang làm việc vào dải cánh gà.
+    - [ ] **Cấu hình trong Settings:** Có tùy chọn bật/tắt tính năng Stage Manager Launch Co-existence (mặc định BẬT) và tùy biến phím tắt ghim trong FlowSnap Settings.
+    - [ ] **Chỉ báo trạng thái (Pin Badge Indicator):** Hiển thị chỉ báo huy hiệu ghim nhỏ ở góc cửa sổ hoặc trong Menu Bar Status Item để người dùng nhận diện trạng thái ghim.
   - **Tasks:**
-    - [ ] `UI`: Thiết kế `QuickOverlayPanel.swift` (Liquid Glass design, hairline border, obsidian minimal pill).
-    - [ ] `UI`: Xây dựng giao diện SwiftUI `QuickCalculatorView.swift` và `QuickScratchpadView.swift`.
-    - [ ] `Core`: Quản lý hiển thị và khôi phục focus qua `SmartFocusStack`.
-    - [ ] `Hotkeys`: Đăng ký phím tắt gọi overlay trong `GlobalHotkeyManager`.
-
-- [ ] **US-SNAP-021: Ghim Cửa sổ Luôn Trên Cùng (Always-On-Top Pinning for 3rd-Party Apps)**
-  - **Slug:** `always-on-top-window-pinning`
-  - **Effort:** M
-  - **Context-budget:** single-session
-  - **Priority:** Should-Have (P1)
-  - **Depends-on:** `US-WORK-014` ✅
-  - **Blocks:** _(none)_
-  - **Mô tả:** Cho phép người dùng bấm phím tắt (mặc định `⌃⌥P`) để "ghim" cửa sổ ứng dụng bất kỳ (như Apple Calculator, Terminal, Notes) luôn luôn nổi trên mặt trước của mọi ứng dụng khác mà không bị chìm xuống dưới khi click vào app nền.
-  - **Acceptance Criteria (AC):**
-    - [ ] Lắng nghe phím tắt `Pin/Unpin Focused Window` (`⌃⌥P`).
-    - [ ] Đặt mức ưu tiên hiển thị của cửa sổ được ghim thành Always-on-top thông qua Accessibility attributes / Layer manipulation.
-    - [ ] Khi click chuột làm việc trên Antigravity hoặc Brave ở bên dưới, cửa sổ được ghim vẫn nằm yên trên bề mặt, không bị ẩn hay chìm xuống dưới.
-    - [ ] Bấm `⌃⌥P` lần thứ hai để bỏ ghim, đưa cửa sổ về lại mức hiển thị bình thường.
-    - [ ] Hiển thị một biểu tượng huy hiệu ghim nhỏ (Pin Badge Indicator) ở góc cửa sổ để người dùng biết cửa sổ đang ở trạng thái Always-on-top.
-  - **Tasks:**
-    - [ ] `Core`: Cài đặt `WindowPinningCoordinator.swift` theo dõi danh sách các `CGWindowID` đang được ghim.
-    - [ ] `Infrastructure`: Quản lý trạng thái nổi và phục hồi khi cửa sổ bị tắt hoặc đóng.
-    - [ ] `UI`: Bổ sung tùy chọn Pin trong Menu Bar Status Item và Settings.
-    - [ ] `Tests`: Kiểm tra toggle Pin/Unpin và tính năng không bị leak khi đóng app được ghim.
+    - [ ] `Core`: Xây dựng `WindowPinningCoordinator.swift` quản lý danh sách `CGWindowID` được ghim và duy trì Z-Stacking động.
+    - [ ] `Infrastructure`: Tích hợp `StageManagerLaunchCoordinator.swift` lắng nghe `NSWorkspace.didLaunchApplicationNotification` và điều phối `kAXRaiseAction` giữ Stage hiện tại.
+    - [ ] `Hotkeys`: Đăng ký phím tắt ghim cửa sổ toàn cục (`⌃⌥P`) trong `GlobalHotkeyManager`.
+    - [ ] `UI`: Cập nhật Menu Bar Status Item và Settings View với toggle Stage Manager Co-existence và Pin controls.
+    - [ ] `Tests`: Bộ test suite kiểm chứng toggle Pin/Unpin, LIFO stacking, và Launch Co-existence không gây leak hay race condition.
+  - **Deliverables khi [x]:**
+    - Feature Spec: `.specify/features/always-on-top-window-pinning/spec.md`
+    - Technical Plan: `.specify/features/always-on-top-window-pinning/plan.md`
+    - Tasks Breakdown: `.specify/features/always-on-top-window-pinning/tasks.md`
+    - Architecture Decision Record: `adr/0014-always-on-top-window-pinning.md`
+    - Technical Docs: `docs/features/always-on-top-window-pinning/README.md`
+    - End-User Guide: `docs/user-guides/always-on-top-window-pinning.md`
+    - Test Plan: `.specify/features/always-on-top-window-pinning/test-plan.md`
 
 ---
 
@@ -828,9 +818,8 @@ _Mục tiêu: Đem lại trải nghiệm thao tác tức thì kiểu Raycast/Alf
   ├── [Sprint 5: Stage Manager & Fullscreen Harmony]  ──► [ COMPLETED ✅ ]
   │     ├── [x] US-WORK-018: Stage Manager Multi-Window Auto-Grouping on Restore (EPIC 14 ✅ complete)
   │     └── [x] US-WORK-019: Universal Fullscreen Escape (Electron/Native Button & ⌃⌘F) ✅ complete
-  └── [Sprint 6: Quick Floating Utility & Always-On-Top]
-        ├── [ ] US-SNAP-020: Quick Floating Scratchpad & Calculator Overlay (⌥Space)
-        └── [ ] US-SNAP-021: Always-On-Top Window Pinning for 3rd-Party Apps (⌃⌥P)
+  └── [Sprint 6: Universal Always-On-Top & Stage Manager Harmony]
+        └── [ ] US-SNAP-021: Universal Always-On-Top Window Pinning & Stage Manager Co-existence (⌃⌥P)
 
 [ Future Horizons (V3.0+) ]
   ├── US-FUTURE-001: Visual Canvas-based Interactive Layout Editor
