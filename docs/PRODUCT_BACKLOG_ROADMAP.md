@@ -608,7 +608,7 @@ _Mục tiêu: Đưa FlowSnap từ một tiện ích quản lý cửa sổ cơ b�
 
 _Mục tiêu: Xóa bỏ rào cản thao tác khi kết nối màn hình rời — hỗ trợ ném cửa sổ xuyên màn hình tức thì bằng phím tắt và tự động cân đối lại bố cục khi cắm/rút dây cáp display._
 
-- [ ] **US-DISP-015: Điều hướng & Ném Cửa sổ Xuyên Màn hình (Cross-Display Throw & Target-Aware Snap)**
+- [x] **US-DISP-015: Điều hướng & Ném Cửa sổ Xuyên Màn hình (Cross-Display Throw & Target-Aware Snap)**
   - **Slug:** `cross-display-window-throw`
   - **Effort:** M
   - **Context-budget:** single-session
@@ -617,15 +617,20 @@ _Mục tiêu: Xóa bỏ rào cản thao tác khi kết nối màn hình rời �
   - **Blocks:** `US-DISP-016`
   - **Mô tả:** Cho phép người dùng sử dụng phím tắt (mặc định `⌃⌥⇧→` và `⌃⌥⇧←`) để "ném" ngay lập tức cửa sổ đang kích hoạt sang màn hình kế tiếp hoặc màn hình trước đó, đồng thời tự động co giãn và snap tương ứng theo độ phân giải của màn hình đích.
   - **Acceptance Criteria (AC):**
-    - [ ] Lắng nghe tổ hợp phím toàn cục `Move to Next Display` (`⌃⌥⇧→`) và `Move to Previous Display` (`⌃⌥⇧←`).
-    - [ ] Khi ném cửa sổ: Giữ nguyên tỉ lệ hình học tương đối (Relative Ratio Preserved) — ví dụ cửa sổ đang chiếm nửa trái (50% left) ở màn hình laptop sẽ tự động trở thành 50% nửa trái tại màn hình ngoài 4K/FHD đích.
-    - [ ] Tự động chuyển tiêu điểm chuột (mouse cursor focus) sang trung tâm của cửa sổ tại màn hình đích để người dùng tiếp tục thao tác phím/chuột không bị gián đoạn.
-    - [ ] Xử lý an toàn khi chỉ có 1 màn hình duy nhất (No-op không lỗi, không giật màn hình).
+    - [x] Lắng nghe tổ hợp phím toàn cục `Move to Next Display` (`⌃⌥⇧→`) và `Move to Previous Display` (`⌃⌥⇧←`).
+    - [x] Khi ném cửa sổ: Giữ nguyên tỉ lệ hình học tương đối (Relative Ratio Preserved) — ví dụ cửa sổ đang chiếm nửa trái (50% left) ở màn hình laptop sẽ tự động trở thành 50% nửa trái tại màn hình ngoài 4K/FHD đích.
+    - [x] Tự động chuyển tiêu điểm chuột (mouse cursor focus) sang trung tâm của cửa sổ tại màn hình đích để người dùng tiếp tục thao tác phím/chuột không bị gián đoạn.
+    - [x] Xử lý an toàn khi chỉ có 1 màn hình duy nhất (No-op không lỗi, không giật màn hình).
   - **Tasks:**
-    - [ ] `Core`: Cài đặt `DisplayNavigator.swift` tính toán màn hình kế tiếp/trước theo thứ tự tọa độ X (`NSScreen.screens` topology).
-    - [ ] `Core`: Cài đặt `RelativeFrameScaler.swift` chuyển đổi tỉ lệ phần trăm từ `sourceDisplay.visibleFrame` sang `targetDisplay.visibleFrame`.
-    - [ ] `Hotkeys`: Đăng ký hotkey mặc định trong `GlobalHotkeyManager` và cho phép tùy biến trong Settings.
-    - [ ] `Tests`: Kiểm tra chuyển đổi hình học đa màn hình (Retina 2x sang Non-Retina 1x, màn hình phụ tọa độ âm bên trái).
+    - [x] `Core`: Cài đặt `DisplayNavigator.swift` tính toán màn hình kế tiếp/trước theo thứ tự tọa độ X (`NSScreen.screens` topology).
+    - [x] `Core`: Cài đặt `RelativeFrameScaler.swift` chuyển đổi tỉ lệ phần trăm từ `sourceDisplay.visibleFrame` sang `targetDisplay.visibleFrame`.
+    - [x] `Hotkeys`: Đăng ký hotkey mặc định trong `GlobalHotkeyManager` và cho phép tùy biến trong Settings.
+    - [x] `Tests`: Kiểm tra chuyển đổi hình học đa màn hình (Retina 2x sang Non-Retina 1x, màn hình phụ tọa độ âm bên trái).
+  - **Deliverables khi [x]:**
+    - `.specify/features/cross-display-window-throw/baseline.md` (SIGNED-OFF v1.0)
+    - `docs/features/cross-display-window-throw/README.md`
+    - `docs/user-guides/cross-display-window-throw.md`
+    - `adr/0010-cross-display-window-throw.md`
 
 - [ ] **US-DISP-016: Hồ sơ Không gian làm việc Đa màn hình & Tự động Cân đối khi Cắm/Rút cáp (Display Topology Profiles & Hot-Plug Rebalancer)**
   - **Slug:** `display-topology-profiles-hotplug`
@@ -772,7 +777,7 @@ _Mục tiêu: Đem lại trải nghiệm thao tác tức thì kiểu Raycast/Alf
 
 [ GIAI ĐOẠN 2: ECOSYSTEM EXPANSION, MULTI-MONITOR & STAGE MANAGER (PHASE 2) ]  ──► [ UPCOMING 🌟 ]
   ├── [Sprint 4: Multi-Monitor Excellence]
-  │     ├── [ ] US-DISP-015: Cross-Display Window Throw (⌃⌥⇧→ / ⌃⌥⇧←)
+  │     ├── [x] US-DISP-015: Cross-Display Window Throw (⌃⌥⇧→ / ⌃⌥⇧←)
   │     └── [ ] US-DISP-016: Display Topology Profiles & Hot-Plug Rebalancer
   ├── [Sprint 5: Stage Manager & Fullscreen Harmony]
   │     ├── [ ] US-WORK-017: Stage Manager Multi-Window Auto-Grouping on Restore
