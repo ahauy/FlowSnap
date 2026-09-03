@@ -126,7 +126,8 @@ public final class AppDependencies {
         preferencesStore: preferencesStore,
         accessibilityService: accessibilityService,
         windowRegistry: windowRegistry,
-        overlayManager: adaptiveDividerOverlayPanel
+        overlayManager: adaptiveDividerOverlayPanel,
+        workspaceManager: workspaceManager
     )
 
     // MARK: - Launch & Window Policy (US-WORK-013)
