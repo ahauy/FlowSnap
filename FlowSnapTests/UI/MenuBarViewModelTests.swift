@@ -280,4 +280,39 @@ struct MenuBarViewModelTests {
         let badge = viewModel.shortcutBadge(for: codingPreset)
         #expect(badge == (codingPreset.defaultShortcut?.displayString ?? ""))
     }
+
+    @Test func detachScratchpadUpdatesStateAndCallsCoordinator() {
+        let accessibilityService = MockAccessibilityService(isTrusted: true)
+        let windowManager = MockWindowManaging()
+        let displayManager = DisplayManager(displayProvider: { [] })
+        let snapEngine = SnapEngine(windowRegistry: WindowRegistry(), displayManager: displayManager)
+        let commandDispatcher = CommandDispatcher(
+            windowManager: windowManager,
+            snapEngine: snapEngine,
+            displayManager: displayManager
+        )
+        let mockCoordinator = MockScratchpadCoordinator(
+            initialState: .visible(
+                record: ScratchpadRecord(windowID: 101, pid: 500, appName: "Terminal")
+            )
+        )
+
+        let viewModel = MenuBarViewModel(
+            accessibilityService: accessibilityService,
+            commandDispatcher: commandDispatcher,
+            windowManager: windowManager,
+            scratchpadCoordinator: mockCoordinator
+        )
+
+        #expect(viewModel.isScratchpadAssigned == true)
+        #expect(viewModel.isScratchpadVisible == true)
+        #expect(viewModel.scratchpadRecord?.appName == "Terminal")
+
+        viewModel.detachScratchpad()
+
+        #expect(mockCoordinator.detachScratchpadCallsCount == 1)
+        #expect(viewModel.isScratchpadAssigned == false)
+        #expect(viewModel.isScratchpadVisible == false)
+    }
 }
+
