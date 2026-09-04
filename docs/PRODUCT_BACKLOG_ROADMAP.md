@@ -453,6 +453,24 @@ _Mục tiêu: Đưa trải nghiệm xếp cửa sổ lên tầm Tiling Window Ma
     - `docs/features/adaptive-divider-resize/README.md`
     - `docs/user-guides/adaptive-divider-resize.md`
 
+- [x] **US-SNAP-023: Điều Chỉnh Kích Thước Ngã Tư/Ngã Ba 2D (Cross-Junction & T-Junction 2D Divider Resize)**
+  - **Slug:** `cross-junction-divider-resize`
+  - **Effort:** M
+  - **Context-budget:** single-session
+  - **Priority:** Should-Have (P1)
+  - **Depends-on:** `US-SNAP-009`
+  - **Mô tả:** Khi có từ 3 cửa sổ trở lên tạo thành điểm giao nhau hình chữ T hoặc dấu thập chữ +, hiển thị handle điểm giao nhau với con trỏ `NSCursor.crosshair` và cho phép kéo tự do 2 chiều (2D Drag) để resize đồng thời cả trục ngang và trục dọc của 3 hoặc 4 cửa sổ trong một thao tác duy nhất.
+  - **Acceptance Criteria (AC):**
+    - [x] Phát hiện điểm giao nhau (T-Junction & Cross Junction) giữa đường phân cách dọc và ngang (`detectJunctions`).
+    - [x] Vùng nhận diện điểm giao (Hit radius 14pt): Khi con trỏ chuột di chuyển vào bán kính 14pt của ngã tư/ngã ba, ưu tiên kích hoạt ngã tư thay vì đường thẳng đơn lẻ; đổi con trỏ thành `NSCursor.crosshair` và hiển thị handle phát sáng tinh tế.
+    - [x] Kéo đồng thời 2D (2D Dragging): Cập nhật frame của cả 3 hoặc 4 cửa sổ tham gia giao điểm trên cả 2 trục X và Y đồng thời (`compute2DResizedFrames`).
+    - [x] Clamping độc lập từng trục (Decoupled Per-Axis Clamping): Khi một cửa sổ đạt giới hạn `minSize` trên một trục (ví dụ trục X), chuyển động ngang dừng lại trong khi trục dọc (Y) vẫn tiếp tục co giãn mượt mà.
+    - [x] Hoàn tác khi huỷ (Escape / Cancel): Khôi phục toàn bộ vị trí ban đầu của tất cả các cửa sổ tham gia.
+  - **Deliverables khi [x]:**
+    - `.specify/features/cross-junction-divider-resize/baseline.md` (SIGNED-OFF v1.0)
+    - `docs/features/cross-junction-divider-resize/README.md`
+    - `docs/user-guides/cross-junction-divider-resize.md`
+
 ---
 
 ### EPIC 09: SwiftUI Settings UI & Custom Shortcut Management
