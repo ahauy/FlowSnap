@@ -56,12 +56,18 @@ public final class AppDependencies {
         displayManager: displayManager,
         preferencesStore: preferencesStore
     )
+    public lazy var windowPinningCoordinator: any WindowPinningCoordinating = WindowPinningCoordinator(
+        accessibilityService: accessibilityService
+    )
+
     public lazy var commandDispatcher: CommandDispatcher = CommandDispatcher(
         windowManager: windowManager,
         snapEngine: snapEngine,
         displayManager: displayManager,
         presetResolver: presetResolver,
-        workspaceMigrator: workspaceMigrator
+        workspaceMigrator: workspaceMigrator,
+        windowPinningCoordinator: windowPinningCoordinator,
+        accessibilityService: accessibilityService
     )
 
     // MARK: - Workspace
@@ -94,7 +100,8 @@ public final class AppDependencies {
         windowManager: windowManager,
         settingsWindowPresenter: settingsWindowController,
         workspaceManager: workspaceManager,
-        preferencesStore: preferencesStore
+        preferencesStore: preferencesStore,
+        windowPinningCoordinator: windowPinningCoordinator
     )
 
     // MARK: - Drag to Snap
@@ -172,11 +179,27 @@ public final class AppDependencies {
         dividerCoordinator: adaptiveDividerCoordinator
     )
 
+    // MARK: - Stage Manager Launch Coexistence (US-SNAP-021)
+
+    public lazy var stageManagerLaunchCoordinator: any StageManagerLaunchCoordinating = StageManagerLaunchCoordinator(
+        stageManagerDetector: stageManagerDetector,
+        accessibilityService: accessibilityService,
+        applicationObserver: applicationObserver,
+        isCoexistenceEnabled: preferencesStore.isStageManagerLaunchCoexistenceEnabled
+    )
+
     public init() {
         _ = self.workspaceManager
         _ = self.windowPolicyManager
         _ = self.workspaceMigrator
         self.displayHotPlugObserver.startObserving()
         _ = self.topologyProfileManager
+
+        if let pinCoordinator = self.windowPinningCoordinator as? WindowPinningCoordinator {
+            pinCoordinator.startObservingWorkspace()
+        }
+        if let launchCoordinator = self.stageManagerLaunchCoordinator as? StageManagerLaunchCoordinator {
+            launchCoordinator.startObservingWorkspace()
+        }
     }
 }

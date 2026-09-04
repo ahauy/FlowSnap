@@ -20,6 +20,7 @@ public final class PreferencesStore: ObservableObject {
     public static let defaultDragPreviewDwellDelay: Double = 0.05
     public static let defaultLaunchAtLogin: Bool = false
     public static let defaultStageManagerAutoGroupingEnabled: Bool = true
+    public static let defaultStageManagerLaunchCoexistenceEnabled: Bool = true
 
     private let defaults: UserDefaults
 
@@ -33,6 +34,7 @@ public final class PreferencesStore: ObservableObject {
     @Published public private(set) var dragPreviewDwellDelay: Double
     @Published public private(set) var launchAtLogin: Bool
     @Published public private(set) var isStageManagerAutoGroupingEnabled: Bool
+    @Published public private(set) var isStageManagerLaunchCoexistenceEnabled: Bool
     @Published public private(set) var appRules: [AppPolicyRule]
     @Published public private(set) var rememberedFrames: [String: RememberedFrame]
 
@@ -46,6 +48,13 @@ public final class PreferencesStore: ObservableObject {
             self.isStageManagerAutoGroupingEnabled = defaults.bool(forKey: "isStageManagerAutoGroupingEnabled")
         } else {
             self.isStageManagerAutoGroupingEnabled = Self.defaultStageManagerAutoGroupingEnabled
+        }
+
+        // Stage Manager Launch Coexistence Enabled (US-SNAP-021)
+        if defaults.object(forKey: "isStageManagerLaunchCoexistenceEnabled") != nil {
+            self.isStageManagerLaunchCoexistenceEnabled = defaults.bool(forKey: "isStageManagerLaunchCoexistenceEnabled")
+        } else {
+            self.isStageManagerLaunchCoexistenceEnabled = Self.defaultStageManagerLaunchCoexistenceEnabled
         }
 
         // Window Gap
@@ -278,11 +287,16 @@ public final class PreferencesStore: ObservableObject {
         }
     }
 
-    // MARK: - Stage Manager Auto-Grouping (US-WORK-018)
+    // MARK: - Stage Manager Auto-Grouping & Launch Coexistence (US-WORK-018, US-SNAP-021)
 
     public func setStageManagerAutoGroupingEnabled(_ enabled: Bool) {
         isStageManagerAutoGroupingEnabled = enabled
         defaults.set(enabled, forKey: "isStageManagerAutoGroupingEnabled")
+    }
+
+    public func setStageManagerLaunchCoexistenceEnabled(_ enabled: Bool) {
+        isStageManagerLaunchCoexistenceEnabled = enabled
+        defaults.set(enabled, forKey: "isStageManagerLaunchCoexistenceEnabled")
     }
 
     // MARK: - Remembered Frames (US-WORK-014, spec §3, BR-POLICY-003)
