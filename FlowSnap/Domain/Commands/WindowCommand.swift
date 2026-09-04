@@ -33,4 +33,9 @@ public enum WindowCommand: Hashable, Sendable {
 
     // MARK: - Window Pinning (US-SNAP-021)
     case togglePinFocusedWindow
+
+    // MARK: - Quick Scratchpad (US-SNAP-022)
+    case toggleScratchpad
+    case assignScratchpad
 }
+
