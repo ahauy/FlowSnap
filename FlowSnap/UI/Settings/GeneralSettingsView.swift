@@ -63,6 +63,14 @@ public struct GeneralSettingsView: View {
                 }
             }
 
+            Section("Quick Scratchpad") {
+                Toggle("Dismiss on ESC key", isOn: scratchpadDismissOnEscBinding)
+                    .help("When enabled, pressing ESC while Scratchpad is focused immediately dismisses it.")
+
+                Toggle("Dismiss when clicking outside", isOn: scratchpadDismissOnBlurBinding)
+                    .help("When enabled, clicking anywhere outside the Scratchpad window automatically dismisses it.")
+            }
+
             Section("Launch") {
                 Toggle("Launch at login", isOn: launchAtLoginBinding)
             }
@@ -118,6 +126,20 @@ public struct GeneralSettingsView: View {
         Binding(
             get: { store.isStageManagerLaunchCoexistenceEnabled },
             set: { store.setStageManagerLaunchCoexistenceEnabled($0) }
+        )
+    }
+
+    private var scratchpadDismissOnBlurBinding: Binding<Bool> {
+        Binding(
+            get: { store.isScratchpadDismissOnBlurEnabled },
+            set: { store.setScratchpadDismissOnBlurEnabled($0) }
+        )
+    }
+
+    private var scratchpadDismissOnEscBinding: Binding<Bool> {
+        Binding(
+            get: { store.isScratchpadDismissOnEscEnabled },
+            set: { store.setScratchpadDismissOnEscEnabled($0) }
         )
     }
 }

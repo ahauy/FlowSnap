@@ -8,6 +8,7 @@ public enum ShortcutCategory: String, CaseIterable, Identifiable, Sendable {
     case asymmetric = "Asymmetric & Thirds"
     case displays = "Display Navigation"
     case pinning = "Window Pinning"
+    case scratchpad = "Quick Scratchpad"
 
     public var id: String { rawValue }
 }
@@ -46,6 +47,10 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
     // MARK: - Pinning (US-SNAP-021)
     case togglePinFocusedWindow = "togglePinFocusedWindow"
 
+    // MARK: - Scratchpad (US-SNAP-022)
+    case toggleScratchpad = "toggleScratchpad"
+    case assignScratchpad = "assignScratchpad"
+
     public var id: String { rawValue }
 
     /// Human-readable display label in Settings.
@@ -71,6 +76,8 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
         case .moveWorkspaceNextDisplay: return "Move Workspace to Next Display"
         case .moveWorkspacePreviousDisplay: return "Move Workspace to Previous Display"
         case .togglePinFocusedWindow: return "Pin / Unpin Window"
+        case .toggleScratchpad: return "Toggle Quick Scratchpad"
+        case .assignScratchpad: return "Assign Scratchpad Window"
         }
     }
 
@@ -87,6 +94,8 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
             return .displays
         case .togglePinFocusedWindow:
             return .pinning
+        case .toggleScratchpad, .assignScratchpad:
+            return .scratchpad
         }
     }
 
@@ -138,6 +147,10 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
             return KeyboardShortcut(keyCode: 123, carbonModifiers: ctrlOptShiftCmd) // ⌃⌥⇧⌘←
         case .togglePinFocusedWindow:
             return KeyboardShortcut(keyCode: 35, carbonModifiers: ctrlOpt) // ⌃⌥P (kVK_ANSI_P = 35)
+        case .toggleScratchpad:
+            return KeyboardShortcut(keyCode: 49, carbonModifiers: UInt32(optionKey)) // ⌥Space (kVK_Space = 49)
+        case .assignScratchpad:
+            return KeyboardShortcut(keyCode: 49, carbonModifiers: ctrlOpt) // ⌃⌥Space
         }
     }
 
@@ -164,6 +177,9 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
         case .moveWorkspaceNextDisplay: return .migrateWorkspace(.next)
         case .moveWorkspacePreviousDisplay: return .migrateWorkspace(.previous)
         case .togglePinFocusedWindow: return .togglePinFocusedWindow
+        case .toggleScratchpad: return .toggleScratchpad
+        case .assignScratchpad: return .assignScratchpad
         }
     }
 }
+

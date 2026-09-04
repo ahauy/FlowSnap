@@ -28,30 +28,33 @@ Welcome to the **FlowSnap User Guides**! This directory contains step-by-step vi
 | **US-WORK-018** | **Stage Manager Multi-Window Auto-Grouping**                     | • Dynamic Stage Manager detection (`com.apple.WindowManager`)<br>• Smart Stage Coordination (Anchor app + `kAXRaiseAction`)<br>• Multi-window workspace co-existence on a single Stage<br>• Primary window keyboard focus lock        |    [View Guide](stage-manager-auto-grouping.md)    |
 | **US-WORK-019** | **Universal Fullscreen Escape for Electron/Native**              | • 3-tier resilient escape hierarchy<br>• Electron & Chromium zoom button press<br>• Target PID ⌃⌘F keystroke dispatch<br>• Adaptive 100ms space transition polling                                                                    |    [View Guide](universal-fullscreen-escape.md)    |
 | **US-SNAP-021** | **Universal Always-On-Top Pinning & Stage Manager Co-existence** | • Global hotkey `⌃⌥P` toggle<br>• Dynamic LIFO Z-Stacking<br>• Zero private APIs (pure `kAXRaiseAction`)<br>• Stage Manager launch co-existence without sidebar ejection                                                              |   [View Guide](always-on-top-window-pinning.md)    |
+| **US-SNAP-022** | **Quake-Style Quick Scratchpad & Instant Window Toggle**         | • Sub-50ms instant summon (`⌥Space`)<br>• Zero-shrink & background layout preservation<br>• Hybrid dismiss (single vs multi-window)<br>• ESC key & click-outside dismiss options                                                      |  [View Guide](quake-scratchpad-instant-toggle.md)  |
 
 ---
 
 ## ⚡ Quick Reference: Default Keyboard Shortcuts
 
-| Shortcut    | Action                     | Description                                                                  |
-| :---------- | :------------------------- | :--------------------------------------------------------------------------- |
-| **`⌃⌥C`**   | **Coding Preset**          | 60/25/15 layout: Code Editor (60%), Browser (25%), Terminal (15%).           |
-| **`⌃⌥R`**   | **Research Preset**        | 50/25/25 layout: Main Browser (50%), Notes (25%), Reference Browser (25%).   |
-| **`⌃⌥W`**   | **Writing Preset**         | 70/30 layout: Document Editor (70%), Reference Browser (30%).                |
-| **`⌃⌥D`**   | **Design Preset**          | 70/30 layout: Design Canvas (70%), Assets & Preview Browser (30%).           |
-| **`⌃⌥←`**   | **Snap Left**              | Snaps active window to the left 50% of the screen.                           |
-| **`⌃⌥→`**   | **Snap Right**             | Snaps active window to the right 50% of the screen.                          |
-| **`⌃⌥↑`**   | **Maximize**               | Expands window to fill 100% of visible desktop (respecting Dock & Menu Bar). |
-| **`⌃⌥↓`**   | **Restore**                | Restores window to its exact pre-snap position and size.                     |
-| **`⌃⌥1`**   | **Top-Left**               | Snaps window to the top-left 25% corner quadrant.                            |
-| **`⌃⌥2`**   | **Top-Right**              | Snaps window to the top-right 25% corner quadrant.                           |
-| **`⌃⌥3`**   | **Bottom-Left**            | Snaps window to the bottom-left 25% corner quadrant.                         |
-| **`⌃⌥4`**   | **Bottom-Right**           | Snaps window to the bottom-right 25% corner quadrant.                        |
-| **`⌃⌥P`**   | **Toggle Pin Window**      | Toggles Always-On-Top floating status for focused window.                    |
-| **`⌃⌥⇧⌘→`** | **Migrate Workspace Next** | Moves all windows in active workspace to the next screen.                    |
-| **`⌃⌥⇧⌘←`** | **Migrate Workspace Prev** | Moves all windows in active workspace to the previous screen.                |
-| **`⌘,`**    | **Settings**               | Opens the FlowSnap preferences window.                                       |
-| **`⌘Q`**    | **Quit**                   | Gracefully closes FlowSnap and releases system hotkeys.                      |
+| Shortcut      | Action                     | Description                                                                  |
+| :------------ | :------------------------- | :--------------------------------------------------------------------------- |
+| **`⌥Space`**  | **Toggle Scratchpad**      | Instant summon/dismiss of assigned Quake utility window.                     |
+| **`⌃⌥Space`** | **Assign Scratchpad**      | Assigns currently focused window as the active Scratchpad.                   |
+| **`⌃⌥C`**     | **Coding Preset**          | 60/25/15 layout: Code Editor (60%), Browser (25%), Terminal (15%).           |
+| **`⌃⌥R`**     | **Research Preset**        | 50/25/25 layout: Main Browser (50%), Notes (25%), Reference Browser (25%).   |
+| **`⌃⌥W`**     | **Writing Preset**         | 70/30 layout: Document Editor (70%), Reference Browser (30%).                |
+| **`⌃⌥D`**     | **Design Preset**          | 70/30 layout: Design Canvas (70%), Assets & Preview Browser (30%).           |
+| **`⌃⌥←`**     | **Snap Left**              | Snaps active window to the left 50% of the screen.                           |
+| **`⌃⌥→`**     | **Snap Right**             | Snaps active window to the right 50% of the screen.                          |
+| **`⌃⌥↑`**     | **Maximize**               | Expands window to fill 100% of visible desktop (respecting Dock & Menu Bar). |
+| **`⌃⌥↓`**     | **Restore**                | Restores window to its exact pre-snap position and size.                     |
+| **`⌃⌥1`**     | **Top-Left**               | Snaps window to the top-left 25% corner quadrant.                            |
+| **`⌃⌥2`**     | **Top-Right**              | Snaps window to the top-right 25% corner quadrant.                           |
+| **`⌃⌥3`**     | **Bottom-Left**            | Snaps window to the bottom-left 25% corner quadrant.                         |
+| **`⌃⌥4`**     | **Bottom-Right**           | Snaps window to the bottom-right 25% corner quadrant.                        |
+| **`⌃⌥P`**     | **Toggle Pin Window**      | Toggles Always-On-Top floating status for focused window.                    |
+| **`⌃⌥⇧⌘→`**   | **Migrate Workspace Next** | Moves all windows in active workspace to the next screen.                    |
+| **`⌃⌥⇧⌘←`**   | **Migrate Workspace Prev** | Moves all windows in active workspace to the previous screen.                |
+| **`⌘,`**      | **Settings**               | Opens the FlowSnap preferences window.                                       |
+| **`⌘Q`**      | **Quit**                   | Gracefully closes FlowSnap and releases system hotkeys.                      |
 
 ---
 

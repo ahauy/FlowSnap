@@ -775,7 +775,7 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
     - End-User Guide: `docs/user-guides/always-on-top-window-pinning.md`
     - Test Plan: `.specify/features/always-on-top-window-pinning/test-plan.md`
 
-- [ ] **US-SNAP-022: Quake-Style Quick Scratchpad & Instant Window Toggle (Triệu hồi & Ẩn/Hiện Cửa sổ Phụ Tức Thì Bằng Phím Tắt)**
+- [x] **US-SNAP-022: Quake-Style Quick Scratchpad & Instant Window Toggle (Triệu hồi & Ẩn/Hiện Cửa sổ Phụ Tức Thì Bằng Phím Tắt)**
   - **Slug:** `quake-scratchpad-instant-toggle`
   - **Effort:** M
   - **Context-budget:** multi-session
@@ -784,19 +784,19 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
   - **Blocks:** _(none)_
   - **Mô tả:** Cơ chế Quake-style Scratchpad Overlay: Cho phép người dùng chọn bất kỳ cửa sổ nào (iTerm2, Ghi chú, Calculator, Finder,...) và gán làm Quick Scratchpad (qua Menu Bar hoặc phím tắt). Khi đang lướt Brave full màn hình (hoặc làm việc trên bất kỳ ứng dụng nào khác), nhấn phím tắt (ví dụ: `⌥Space` hoặc `⌃⌥P`): Cửa sổ Scratchpad lập tức nhảy lên trên cùng trước mặt người dùng và nhận tiêu điểm để gõ lệnh hoặc ghi chú ngay. Nhấn lại phím tắt đó (hoặc click ra ngoài / nhấn `ESC`): Cửa sổ đó tự động ẩn ngay xuống dưới / giấu đi, trả lại 100% không gian cho Brave mà không cần co nhỏ Brave 1 pixel nào.
   - **Acceptance Criteria (AC):**
-    - [ ] **Đăng ký Scratchpad Window:** Người dùng có thể chọn một cửa sổ đang có tiêu điểm và gán làm Quick Scratchpad từ Menu Bar FlowSnap hoặc phím tắt.
-    - [ ] **Instant Summon (Triệu hồi tức thì):** Nhấn phím tắt toàn cục (`⌥Space` hoặc shortcut tùy biến), cửa sổ Scratchpad lập tức nổi lên lớp trên cùng trước mặt người dùng, giữ nguyên kích thước/vị trí và nhận tiêu điểm bàn phím trong `< 50ms`.
-    - [ ] **Instant Dismiss (Ẩn nhanh tức thì):** Nhấn lại phím tắt triệu hồi, hoặc nhấn `ESC`, hoặc click chuột ra ngoài cửa sổ Scratchpad, FlowSnap tự động ẩn cửa sổ Scratchpad đi và hoàn trả tiêu điểm tức thì cho ứng dụng đang mở trước đó (Brave).
-    - [ ] **Zero-Shrink Preservation (Không co ứng dụng chính):** Ứng dụng nền (Brave, VS Code) giữ nguyên 100% kích thước và vị trí, hoàn toàn không bị co nhỏ hay xáo trộn bố cục.
-    - [ ] **Tương thích Stage Manager & Spaces:** Cửa sổ Scratchpad được triệu hồi trực tiếp trên Space và Stage hiện tại mà không kích hoạt hiệu ứng chuyển Space của macOS.
-    - [ ] **Tùy chỉnh trong Settings:** Có tùy chọn bật/tắt hành vi "Tự ẩn khi mất focus / ESC" (Dismiss on blur / ESC) và cho phép tùy biến phím tắt triệu hồi trong FlowSnap Settings.
-    - [ ] **Menu Bar Status & Quake Actions:** Menu Bar hiển thị trạng thái Scratchpad đang kích hoạt (kèm tên ứng dụng) và nút Clear / Detach Scratchpad.
+    - [x] **Đăng ký Scratchpad Window:** Người dùng có thể chọn một cửa sổ đang có tiêu điểm và gán làm Quick Scratchpad từ Menu Bar FlowSnap hoặc phím tắt.
+    - [x] **Instant Summon (Triệu hồi tức thì):** Nhấn phím tắt toàn cục (`⌥Space` hoặc shortcut tùy biến), cửa sổ Scratchpad lập tức nổi lên lớp trên cùng trước mặt người dùng, giữ nguyên kích thước/vị trí và nhận tiêu điểm bàn phím trong `< 50ms`.
+    - [x] **Instant Dismiss (Ẩn nhanh tức thì):** Nhấn lại phím tắt triệu hồi, hoặc nhấn `ESC`, hoặc click chuột ra ngoài cửa sổ Scratchpad, FlowSnap tự động ẩn cửa sổ Scratchpad đi và hoàn trả tiêu điểm tức thì cho ứng dụng đang mở trước đó (Brave).
+    - [x] **Zero-Shrink Preservation (Không co ứng dụng chính):** Ứng dụng nền (Brave, VS Code) giữ nguyên 100% kích thước và vị trí, hoàn toàn không bị co nhỏ hay xáo trộn bố cục.
+    - [x] **Tương thích Stage Manager & Spaces:** Cửa sổ Scratchpad được triệu hồi trực tiếp trên Space và Stage hiện tại mà không kích hoạt hiệu ứng chuyển Space của macOS.
+    - [x] **Tùy chỉnh trong Settings:** Có tùy chọn bật/tắt hành vi "Tự ẩn khi mất focus / ESC" (Dismiss on blur / ESC) và cho phép tùy biến phím tắt triệu hồi trong FlowSnap Settings.
+    - [x] **Menu Bar Status & Quake Actions:** Menu Bar hiển thị trạng thái Scratchpad đang kích hoạt (kèm tên ứng dụng) và nút Clear / Detach Scratchpad.
   - **Tasks:**
-    - [ ] `Core`: Xây dựng `ScratchpadCoordinator.swift` quản lý trạng thái hiển thị/ẩn và lưu trữ tiến trình nền trước đó.
-    - [ ] `Infrastructure`: Tích hợp cơ chế summon / dismiss qua `AccessibilityService` và `NSWorkspace` activation.
-    - [ ] `Hotkeys`: Đăng ký phím tắt toàn cục `ShortcutAction.toggleScratchpad` trong `GlobalHotkeyManager`.
-    - [ ] `UI`: Bổ sung điều khiển Scratchpad trong `MenuBarView` và `SettingsView`.
-    - [ ] `Tests`: Bộ test suite kiểm chứng summon, dismiss, state restore, và switch focus an toàn.
+    - [x] `Core`: Xây dựng `ScratchpadCoordinator.swift` quản lý trạng thái hiển thị/ẩn và lưu trữ tiến trình nền trước đó.
+    - [x] `Infrastructure`: Tích hợp cơ chế summon / dismiss qua `AccessibilityService` và `NSWorkspace` activation.
+    - [x] `Hotkeys`: Đăng ký phím tắt toàn cục `ShortcutAction.toggleScratchpad` trong `GlobalHotkeyManager`.
+    - [x] `UI`: Bổ sung điều khiển Scratchpad trong `MenuBarView` và `SettingsView`.
+    - [x] `Tests`: Bộ test suite kiểm chứng summon, dismiss, state restore, và switch focus an toàn.
   - **Deliverables khi [x]:**
     - Feature Spec: `.specify/features/quake-scratchpad-instant-toggle/spec.md`
     - Technical Plan: `.specify/features/quake-scratchpad-instant-toggle/plan.md`
@@ -841,17 +841,17 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
   ├── [x] US-WORK-013: Application Launch Observer & Current Space Policy (EPIC 11 ✅ complete)
   └── [x] US-WORK-014: Per-App Window Rules & Smart Floating Stacking (EPIC 12 ✅ complete)
 
-[ GIAI ĐOẠN 2: ECOSYSTEM EXPANSION, MULTI-MONITOR & STAGE MANAGER (PHASE 2) ]  ──► [ IN PROGRESS 🚀 ]
-  ├── [Sprint 4: Multi-Monitor Excellence]  ──► [ IN PROGRESS / ENHANCED 🚀 ]
+[ GIAI ĐOẠN 2: ECOSYSTEM EXPANSION, MULTI-MONITOR & STAGE MANAGER (PHASE 2) ]  ──► [ COMPLETED ✅ ]
+  ├── [Sprint 4: Multi-Monitor Excellence]  ──► [ COMPLETED ✅ ]
   │     ├── [x] US-DISP-015: Cross-Display Window Throw (⌃⌥⇧→ / ⌃⌥⇧←)
   │     ├── [x] US-DISP-016: Display Topology Profiles & Hot-Plug Rebalancer (EPIC 13 ✅)
-  │     └── [ ] US-DISP-017: Atomic Workspace Cross-Display Migration (⌃⌥⇧⌘→ / ⌃⌥⇧⌘←)
+  │     └── [x] US-DISP-017: Atomic Workspace Cross-Display Migration (⌃⌥⇧⌘→ / ⌃⌥⇧⌘←)
   ├── [Sprint 5: Stage Manager & Fullscreen Harmony]  ──► [ COMPLETED ✅ ]
   │     ├── [x] US-WORK-018: Stage Manager Multi-Window Auto-Grouping on Restore (EPIC 14 ✅ complete)
   │     └── [x] US-WORK-019: Universal Fullscreen Escape (Electron/Native Button & ⌃⌘F) ✅ complete
-  └── [Sprint 6: Universal Always-On-Top & Scratchpad Harmony]
+  └── [Sprint 6: Universal Always-On-Top & Scratchpad Harmony]  ──► [ COMPLETED ✅ ]
         ├── [x] US-SNAP-021: Universal Always-On-Top Window Pinning & Stage Manager Co-existence (⌃⌥P) ✅
-        └── [ ] US-SNAP-022: Quake-Style Quick Scratchpad & Instant Window Toggle (⌥Space)
+        └── [x] US-SNAP-022: Quake-Style Quick Scratchpad & Instant Window Toggle (⌥Space) ✅
 
 [ Future Horizons (V3.0+) ]
   ├── US-FUTURE-001: Visual Canvas-based Interactive Layout Editor

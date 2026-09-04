@@ -114,6 +114,11 @@
 | **PinnedWindowRecord** | Sendable model storing pinned window identity (CGWindowID, PID, appName, windowTitle, pinnedAt) | "Pinned window state model" | `PinnedWindowRecord` | US-SNAP-021, Domain |
 | **StageManagerLaunchCoordinating** | Protocol defining Stage Manager application launch interception and multi-raise coordination | "Launch co-existence coordinator interface" | `StageManagerLaunchCoordinating` | US-SNAP-021, Domain |
 | **StageManagerLaunchCoordinator** | @MainActor service observing NSWorkspace launch and merging new windows into the active Stage | "Stage Manager launch coordinator" | `StageManagerLaunchCoordinator` | US-SNAP-021, Infrastructure |
+| **ScratchpadCoordinating** | Protocol defining quick scratchpad assignment, summon/dismiss toggle, and state observation | "Scratchpad coordinator interface" | `ScratchpadCoordinating` | US-SNAP-022, Domain |
+| **ScratchpadCoordinator** | @MainActor coordinator managing instant Quake-style summon, dismiss, and focus restoration | "Quake scratchpad coordinator" | `ScratchpadCoordinator` | US-SNAP-022, Core / Overlay |
+| **ScratchpadRecord** | Sendable model holding assigned scratchpad identity (windowID, PID, bundleID, appName, assignedAt) | "Scratchpad registration model" | `ScratchpadRecord` | US-SNAP-022, Domain |
+| **ScratchpadState** | State enum representing scratchpad visibility: `.unassigned`, `.visible`, `.hidden` | "Scratchpad lifecycle state" | `ScratchpadState` | US-SNAP-022, Domain |
+| **PreSummonFocus** | Struct capturing prior frontmost application PID and window ID for clean focus restoration | "Pre-summon focus snapshot" | `PreSummonFocus` | US-SNAP-022, Domain / Core |
 
 ## Where to Look
 

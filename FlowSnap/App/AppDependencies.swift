@@ -59,6 +59,10 @@ public final class AppDependencies {
     public lazy var windowPinningCoordinator: any WindowPinningCoordinating = WindowPinningCoordinator(
         accessibilityService: accessibilityService
     )
+    public lazy var scratchpadCoordinator: any ScratchpadCoordinating = ScratchpadCoordinator(
+        accessibilityService: accessibilityService,
+        preferencesStore: preferencesStore
+    )
 
     public lazy var commandDispatcher: CommandDispatcher = CommandDispatcher(
         windowManager: windowManager,
@@ -67,6 +71,7 @@ public final class AppDependencies {
         presetResolver: presetResolver,
         workspaceMigrator: workspaceMigrator,
         windowPinningCoordinator: windowPinningCoordinator,
+        scratchpadCoordinator: scratchpadCoordinator,
         accessibilityService: accessibilityService
     )
 
@@ -101,7 +106,8 @@ public final class AppDependencies {
         settingsWindowPresenter: settingsWindowController,
         workspaceManager: workspaceManager,
         preferencesStore: preferencesStore,
-        windowPinningCoordinator: windowPinningCoordinator
+        windowPinningCoordinator: windowPinningCoordinator,
+        scratchpadCoordinator: scratchpadCoordinator
     )
 
     // MARK: - Drag to Snap
@@ -200,6 +206,9 @@ public final class AppDependencies {
         }
         if let launchCoordinator = self.stageManagerLaunchCoordinator as? StageManagerLaunchCoordinator {
             launchCoordinator.startObservingWorkspace()
+        }
+        if let scratchCoordinator = self.scratchpadCoordinator as? ScratchpadCoordinator {
+            scratchCoordinator.startObservingWorkspace()
         }
     }
 }

@@ -37,6 +37,7 @@ public final class CommandDispatcher: CommandDispatching {
     private let displayNavigator: any DisplayNavigating
     private let workspaceMigrator: (any WorkspaceMigrating)?
     private let windowPinningCoordinator: (any WindowPinningCoordinating)?
+    private let scratchpadCoordinator: (any ScratchpadCoordinating)?
     private let accessibilityService: AccessibilityService?
 
     /// Active pending task for latest-wins debouncing (BR-HOTKEY-005).
@@ -57,6 +58,7 @@ public final class CommandDispatcher: CommandDispatching {
         displayNavigator: any DisplayNavigating = DisplayNavigator(),
         workspaceMigrator: (any WorkspaceMigrating)? = nil,
         windowPinningCoordinator: (any WindowPinningCoordinating)? = nil,
+        scratchpadCoordinator: (any ScratchpadCoordinating)? = nil,
         accessibilityService: AccessibilityService? = nil
     ) {
         self.windowManager = windowManager
@@ -67,6 +69,7 @@ public final class CommandDispatcher: CommandDispatching {
         self.displayNavigator = displayNavigator
         self.workspaceMigrator = workspaceMigrator
         self.windowPinningCoordinator = windowPinningCoordinator
+        self.scratchpadCoordinator = scratchpadCoordinator
         self.accessibilityService = accessibilityService
     }
 
@@ -176,6 +179,24 @@ public final class CommandDispatcher: CommandDispatching {
                 NSSound(named: "Tink")?.play()
             }
             return true
+
+        case .toggleScratchpad:
+            guard let coordinator = self.scratchpadCoordinator else {
+                dispatcherLogger.error("ScratchpadCoordinator not configured in CommandDispatcher")
+                return false
+            }
+            return await coordinator.toggleScratchpad()
+
+        case .assignScratchpad:
+            guard let coordinator = self.scratchpadCoordinator else {
+                dispatcherLogger.error("ScratchpadCoordinator not configured in CommandDispatcher")
+                return false
+            }
+            let success = await coordinator.assignFocusedWindow()
+            if success {
+                NSSound(named: "Pop")?.play()
+            }
+            return success
         }
     }
 
