@@ -37,6 +37,10 @@ public struct MenuBarView: View {
                 workspacesSection(workspaceVM)
             }
 
+            // Pinned Windows (US-SNAP-021)
+            Divider()
+            pinnedWindowsSection
+
             Divider()
 
             // System Management
@@ -177,6 +181,83 @@ public struct MenuBarView: View {
                 }
                 .padding(6)
                 .background(RoundedRectangle(cornerRadius: 5).fill(Color.orange.opacity(0.08)))
+            }
+        }
+    }
+
+    // MARK: - Pinned Windows (US-SNAP-021)
+
+    private var pinnedWindowsSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text("PINNED WINDOWS")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if !viewModel.pinnedWindows.isEmpty {
+                    Button("Unpin All") {
+                        viewModel.unpinAll()
+                    }
+                    .buttonStyle(.plain)
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundStyle(.secondary)
+                }
+            }
+
+            Button {
+                viewModel.togglePinCurrentWindow()
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "pin")
+                        .font(.system(size: 11))
+                        .frame(width: 14)
+                    Text("Pin Focused Window")
+                        .font(.system(size: 11))
+                    Spacer()
+                    Text("⌃⌥P")
+                        .font(.system(size: 9, weight: .regular, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 8)
+                .padding(.vertical, 5)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: 5)
+                        .fill(Color(nsColor: .controlBackgroundColor).opacity(0.6))
+                )
+            }
+            .buttonStyle(.plain)
+            .disabled(!viewModel.isAccessibilityTrusted)
+            .opacity(viewModel.isAccessibilityTrusted ? 1.0 : 0.5)
+
+            if !viewModel.pinnedWindows.isEmpty {
+                VStack(spacing: 4) {
+                    ForEach(viewModel.pinnedWindows) { record in
+                        HStack {
+                            Image(systemName: "pin.fill")
+                                .font(.system(size: 10))
+                                .foregroundStyle(.orange)
+                            Text(record.title.isEmpty ? (record.bundleIdentifier ?? "Window") : record.title)
+                                .font(.system(size: 11))
+                                .lineLimit(1)
+                            Spacer()
+                            Button {
+                                viewModel.unpin(windowID: record.id)
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color(nsColor: .controlBackgroundColor).opacity(0.6))
+                        )
+                    }
+                }
             }
         }
     }

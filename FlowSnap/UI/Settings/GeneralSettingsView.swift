@@ -48,6 +48,9 @@ public struct GeneralSettingsView: View {
                 Toggle("Auto-group windows on restore", isOn: stageManagerAutoGroupingBinding)
                     .help("When enabled, FlowSnap bundles all restored workspace windows onto a single stage.")
 
+                Toggle("Keep Stage when opening new apps", isOn: stageManagerLaunchCoexistenceBinding)
+                    .help("When enabled, opening a new application joins the current Stage instead of pushing active windows into the sidebar.")
+
                 HStack {
                     Text("macOS Stage Manager")
                     Spacer()
@@ -108,6 +111,13 @@ public struct GeneralSettingsView: View {
         Binding(
             get: { store.isStageManagerAutoGroupingEnabled },
             set: { store.setStageManagerAutoGroupingEnabled($0) }
+        )
+    }
+
+    private var stageManagerLaunchCoexistenceBinding: Binding<Bool> {
+        Binding(
+            get: { store.isStageManagerLaunchCoexistenceEnabled },
+            set: { store.setStageManagerLaunchCoexistenceEnabled($0) }
         )
     }
 }
