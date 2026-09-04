@@ -7,6 +7,7 @@ public enum ShortcutCategory: String, CaseIterable, Identifiable, Sendable {
     case quarters = "Quarter Screens"
     case asymmetric = "Asymmetric & Thirds"
     case displays = "Display Navigation"
+    case pinning = "Window Pinning"
 
     public var id: String { rawValue }
 }
@@ -42,6 +43,9 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
     case moveWorkspaceNextDisplay = "moveWorkspaceNextDisplay"
     case moveWorkspacePreviousDisplay = "moveWorkspacePreviousDisplay"
 
+    // MARK: - Pinning (US-SNAP-021)
+    case togglePinFocusedWindow = "togglePinFocusedWindow"
+
     public var id: String { rawValue }
 
     /// Human-readable display label in Settings.
@@ -66,6 +70,7 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
         case .previousDisplay: return "Move to Previous Display"
         case .moveWorkspaceNextDisplay: return "Move Workspace to Next Display"
         case .moveWorkspacePreviousDisplay: return "Move Workspace to Previous Display"
+        case .togglePinFocusedWindow: return "Pin / Unpin Window"
         }
     }
 
@@ -80,6 +85,8 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
             return .asymmetric
         case .nextDisplay, .previousDisplay, .moveWorkspaceNextDisplay, .moveWorkspacePreviousDisplay:
             return .displays
+        case .togglePinFocusedWindow:
+            return .pinning
         }
     }
 
@@ -129,6 +136,8 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
         case .moveWorkspacePreviousDisplay:
             let ctrlOptShiftCmd = UInt32(controlKey | optionKey | shiftKey | cmdKey)
             return KeyboardShortcut(keyCode: 123, carbonModifiers: ctrlOptShiftCmd) // ⌃⌥⇧⌘←
+        case .togglePinFocusedWindow:
+            return KeyboardShortcut(keyCode: 35, carbonModifiers: ctrlOpt) // ⌃⌥P (kVK_ANSI_P = 35)
         }
     }
 
@@ -154,6 +163,7 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
         case .previousDisplay: return .moveToPreviousDisplay
         case .moveWorkspaceNextDisplay: return .migrateWorkspace(.next)
         case .moveWorkspacePreviousDisplay: return .migrateWorkspace(.previous)
+        case .togglePinFocusedWindow: return .togglePinFocusedWindow
         }
     }
 }

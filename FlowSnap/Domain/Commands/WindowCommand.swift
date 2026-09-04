@@ -30,4 +30,7 @@ public enum WindowCommand: Hashable, Sendable {
 
     // MARK: - Presets (US-WORK-012)
     case restorePreset(String) // Preset ID, e.g. "builtin.coding"
+
+    // MARK: - Window Pinning (US-SNAP-021)
+    case togglePinFocusedWindow
 }
