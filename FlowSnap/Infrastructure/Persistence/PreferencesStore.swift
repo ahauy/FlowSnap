@@ -21,6 +21,8 @@ public final class PreferencesStore: ObservableObject {
     public static let defaultLaunchAtLogin: Bool = false
     public static let defaultStageManagerAutoGroupingEnabled: Bool = true
     public static let defaultStageManagerLaunchCoexistenceEnabled: Bool = true
+    public static let defaultScratchpadDismissOnBlur: Bool = false
+    public static let defaultScratchpadDismissOnEsc: Bool = true
 
     private let defaults: UserDefaults
 
@@ -35,6 +37,8 @@ public final class PreferencesStore: ObservableObject {
     @Published public private(set) var launchAtLogin: Bool
     @Published public private(set) var isStageManagerAutoGroupingEnabled: Bool
     @Published public private(set) var isStageManagerLaunchCoexistenceEnabled: Bool
+    @Published public private(set) var isScratchpadDismissOnBlurEnabled: Bool
+    @Published public private(set) var isScratchpadDismissOnEscEnabled: Bool
     @Published public private(set) var appRules: [AppPolicyRule]
     @Published public private(set) var rememberedFrames: [String: RememberedFrame]
 
@@ -55,6 +59,20 @@ public final class PreferencesStore: ObservableObject {
             self.isStageManagerLaunchCoexistenceEnabled = defaults.bool(forKey: "isStageManagerLaunchCoexistenceEnabled")
         } else {
             self.isStageManagerLaunchCoexistenceEnabled = Self.defaultStageManagerLaunchCoexistenceEnabled
+        }
+
+        // Scratchpad Dismiss on Blur (US-SNAP-022)
+        if defaults.object(forKey: "isScratchpadDismissOnBlurEnabled") != nil {
+            self.isScratchpadDismissOnBlurEnabled = defaults.bool(forKey: "isScratchpadDismissOnBlurEnabled")
+        } else {
+            self.isScratchpadDismissOnBlurEnabled = Self.defaultScratchpadDismissOnBlur
+        }
+
+        // Scratchpad Dismiss on ESC (US-SNAP-022)
+        if defaults.object(forKey: "isScratchpadDismissOnEscEnabled") != nil {
+            self.isScratchpadDismissOnEscEnabled = defaults.bool(forKey: "isScratchpadDismissOnEscEnabled")
+        } else {
+            self.isScratchpadDismissOnEscEnabled = Self.defaultScratchpadDismissOnEsc
         }
 
         // Window Gap
@@ -297,6 +315,18 @@ public final class PreferencesStore: ObservableObject {
     public func setStageManagerLaunchCoexistenceEnabled(_ enabled: Bool) {
         isStageManagerLaunchCoexistenceEnabled = enabled
         defaults.set(enabled, forKey: "isStageManagerLaunchCoexistenceEnabled")
+    }
+
+    // MARK: - Scratchpad Configuration (US-SNAP-022)
+
+    public func setScratchpadDismissOnBlurEnabled(_ enabled: Bool) {
+        isScratchpadDismissOnBlurEnabled = enabled
+        defaults.set(enabled, forKey: "isScratchpadDismissOnBlurEnabled")
+    }
+
+    public func setScratchpadDismissOnEscEnabled(_ enabled: Bool) {
+        isScratchpadDismissOnEscEnabled = enabled
+        defaults.set(enabled, forKey: "isScratchpadDismissOnEscEnabled")
     }
 
     // MARK: - Remembered Frames (US-WORK-014, spec §3, BR-POLICY-003)
