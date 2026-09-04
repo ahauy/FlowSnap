@@ -67,6 +67,9 @@
 | **CollinearEdgeDetector** | Algorithm finding collinear shared edges between windows | "Divider detection helper" | `CollinearEdgeDetector` | Pure geometric detection |
 | **LiveResizeThrottler** | Rate limits live window resizing events to 60fps | "Drag throttler or frame pacer" | `LiveResizeThrottler` | 16.6ms rate limiter |
 | **AdaptiveDividerCoordinator**| Coordinates divider hover, cursor swapping, and live resize | "Divider drag controller" | `AdaptiveDividerCoordinator`| @MainActor coordination |
+| **CrossJunction** | Intersection point where vertical & horizontal collinear edges meet | "T-junction or cross intersection point" | `CrossJunction` | US-SNAP-023, 2D resize anchor |
+| **JunctionHitRadius** | Circular tolerance zone ($\pm 14\,\text{pt}$) prioritizing 2D crosshair over 1D edge | "Junction capture radius" | `JunctionHitRadius` | US-SNAP-023, hit-test priority |
+| **Decoupled2DClamping** | Independent per-axis boundary clamping preventing axis lockup on minSize | "Independent axis size clamping" | `Decoupled2DClamping` | US-SNAP-023, fluid multi-window drag |
 
 | **WorkspaceManager** | @MainActor orchestrator for workspace capture & restore | "Workspace save/restore service" | `WorkspaceManager` | US-WORK-011, ObservableObject, owns store+AX |
 | **WorkspaceStore** | Actor persisting workspaces to JSON atomically | "workspaces.json reader/writer" | `WorkspaceStore` | US-WORK-011, corrupt-file parking |

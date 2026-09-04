@@ -14,24 +14,27 @@ final class MockAdaptiveDividerOverlayManager: AdaptiveDividerOverlayManaging {
     var lastWindows: [ManagedWindow] = []
     var lastDividers: [CollinearEdge] = []
     var lastActiveDivider: CollinearEdge?
+    var lastActiveJunction: CrossJunction?
     var lastIsDragging: Bool?
 
-    func show(containerFrame: CGRect, windows: [ManagedWindow], dividers: [CollinearEdge], activeDivider: CollinearEdge?, isDragging: Bool) {
+    func show(containerFrame: CGRect, windows: [ManagedWindow], dividers: [CollinearEdge], activeDivider: CollinearEdge?, activeJunction: CrossJunction?, isDragging: Bool) {
         showCallCount += 1
         isOverlayVisible = true
         lastContainerFrame = containerFrame
         lastWindows = windows
         lastDividers = dividers
         lastActiveDivider = activeDivider
+        lastActiveJunction = activeJunction
         lastIsDragging = isDragging
     }
 
-    func update(containerFrame: CGRect, windows: [ManagedWindow], dividers: [CollinearEdge], activeDivider: CollinearEdge?, isDragging: Bool) {
+    func update(containerFrame: CGRect, windows: [ManagedWindow], dividers: [CollinearEdge], activeDivider: CollinearEdge?, activeJunction: CrossJunction?, isDragging: Bool) {
         updateCallCount += 1
         lastContainerFrame = containerFrame
         lastWindows = windows
         lastDividers = dividers
         lastActiveDivider = activeDivider
+        lastActiveJunction = activeJunction
         lastIsDragging = isDragging
     }
 
@@ -103,6 +106,18 @@ final class CountingDividerDetector: CollinearEdgeDetecting, @unchecked Sendable
     func computeResizedFrames(for divider: CollinearEdge, targetCoordinate: CGFloat, windows: [ManagedWindow], containerFrame: CGRect, gap: CGFloat) -> [CGWindowID: CGRect] {
         lock.lock(); _resizeCount += 1; lock.unlock()
         return underlying.computeResizedFrames(for: divider, targetCoordinate: targetCoordinate, windows: windows, containerFrame: containerFrame, gap: gap)
+    }
+
+    func detectJunctions(in dividers: [CollinearEdge], tolerance: CGFloat) -> [CrossJunction] {
+        underlying.detectJunctions(in: dividers, tolerance: tolerance)
+    }
+
+    func hitTestJunction(at point: CGPoint, in junctions: [CrossJunction]) -> CrossJunction? {
+        underlying.hitTestJunction(at: point, in: junctions)
+    }
+
+    func compute2DResizedFrames(for junction: CrossJunction, targetPoint: CGPoint, in dividers: [CollinearEdge], windows: [ManagedWindow], containerFrame: CGRect, gap: CGFloat) -> [CGWindowID: CGRect] {
+        underlying.compute2DResizedFrames(for: junction, targetPoint: targetPoint, in: dividers, windows: windows, containerFrame: containerFrame, gap: gap)
     }
 }
 
@@ -790,8 +805,8 @@ struct AdaptiveDividerCoordinatorTests {
         #expect(mockOverlay?.isOverlayVisible == false)
     }
 
-    @Test("Divider hidden when no active workspace is open")
-    func dividerHiddenWhenNoActiveWorkspaceIsOpen() async {
+    @Test("Divider remains active for ad-hoc collinear windows when no active workspace is open")
+    func dividerActiveForAdHocCollinearWindowsWhenNoActiveWorkspaceIsOpen() async {
         let (sut, _, _, mockOverlay) = makeSUT()
         let w1 = ManagedWindow(id: 1, pid: 10, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
         let w2 = ManagedWindow(id: 2, pid: 20, title: "Right", frame: CGRect(x: 720, y: 0, width: 720, height: 900))
@@ -801,7 +816,9 @@ struct AdaptiveDividerCoordinatorTests {
 
         await sut.handleMouseMoved(to: CGPoint(x: 720, y: 450))
 
-        #expect(mockOverlay?.isOverlayVisible == false)
+        #expect(mockOverlay?.isOverlayVisible == true)
+        #expect(sut.hoveredDivider?.orientation == .vertical)
+        #expect(sut.currentCursor == .resizeLeftRight)
     }
 
     @Test("Divider visible when active workspace matches windows")
@@ -854,4 +871,124 @@ struct AdaptiveDividerCoordinatorTests {
         // Drag completed and auto-saved task executed cleanly
         #expect(sut.managedWindows.count == 2)
     }
+
+    @Test("Hovering at T-junction activates crosshair cursor and displays junction handle")
+    func hoveringAtTJunctionActivatesCrosshairCursor() async {
+        let (sut, _, _, mockOverlay) = makeSUT()
+        let left = ManagedWindow(id: 1, pid: 10, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let topRight = ManagedWindow(id: 2, pid: 20, title: "TopRight", frame: CGRect(x: 720, y: 450, width: 720, height: 450))
+        let bottomRight = ManagedWindow(id: 3, pid: 30, title: "BottomRight", frame: CGRect(x: 720, y: 0, width: 720, height: 450))
+        sut.updateWindows([left, topRight, bottomRight])
+
+        // Hover directly at the intersection point (720, 450)
+        await sut.handleMouseMoved(to: CGPoint(x: 720, y: 450))
+
+        #expect(sut.hoveredJunction != nil)
+        #expect(sut.hoveredJunction?.point == CGPoint(x: 720, y: 450))
+        #expect(sut.currentCursor == .crosshair)
+        #expect(mockOverlay?.lastActiveJunction != nil)
+        #expect(mockOverlay?.isOverlayVisible == true)
+
+        // Moving outside 14pt hit-radius falls back to vertical divider (e.g. at 720, 200)
+        await sut.handleMouseMoved(to: CGPoint(x: 720, y: 200))
+        #expect(sut.hoveredJunction == nil)
+        #expect(sut.hoveredDivider?.orientation == .vertical)
+        #expect(sut.currentCursor == .resizeLeftRight)
+    }
+
+    @Test("Dragging at T-junction updates 3 participating windows in 2D simultaneously")
+    func draggingAtTJunctionUpdates3WindowsIn2D() async {
+        let (sut, _, _, mockOverlay) = makeSUT()
+        let left = ManagedWindow(id: 1, pid: 10, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let topRight = ManagedWindow(id: 2, pid: 20, title: "TopRight", frame: CGRect(x: 720, y: 450, width: 720, height: 450))
+        let bottomRight = ManagedWindow(id: 3, pid: 30, title: "BottomRight", frame: CGRect(x: 720, y: 0, width: 720, height: 450))
+        sut.updateWindows([left, topRight, bottomRight])
+
+        // MouseDown at intersection (720, 450)
+        let didStart = await sut.handleMouseDown(at: CGPoint(x: 720, y: 450))
+        #expect(didStart == true)
+        #expect(sut.isResizing == true)
+        #expect(sut.activeJunction != nil)
+        #expect(mockOverlay?.lastActiveJunction != nil)
+        #expect(mockOverlay?.lastIsDragging == true)
+
+        // Drag to (750, 500) — moving junction right (+30pt) and up (+50pt)
+        await sut.handleMouseDragged(to: CGPoint(x: 750, y: 500))
+
+        let updatedLeft = sut.managedWindows.first { $0.id == 1 }!
+        let updatedTopRight = sut.managedWindows.first { $0.id == 2 }!
+        let updatedBottomRight = sut.managedWindows.first { $0.id == 3 }!
+
+        #expect(updatedLeft.frame == CGRect(x: 0, y: 0, width: 750, height: 900))
+        #expect(updatedTopRight.frame == CGRect(x: 750, y: 500, width: 690, height: 400))
+        #expect(updatedBottomRight.frame == CGRect(x: 750, y: 0, width: 690, height: 500))
+
+        // MouseUp to commit
+        await sut.handleMouseUp(at: CGPoint(x: 750, y: 500))
+        #expect(sut.isResizing == false)
+        #expect(sut.activeJunction == nil)
+        #expect(mockOverlay?.isOverlayVisible == false)
+    }
+
+    @Test("Cancelling 2D junction resize restores all 3 windows to original frames")
+    func cancellingJunctionResizeRestoresAll3Windows() async {
+        let (sut, _, _, _) = makeSUT()
+        let left = ManagedWindow(id: 1, pid: 10, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let topRight = ManagedWindow(id: 2, pid: 20, title: "TopRight", frame: CGRect(x: 720, y: 450, width: 720, height: 450))
+        let bottomRight = ManagedWindow(id: 3, pid: 30, title: "BottomRight", frame: CGRect(x: 720, y: 0, width: 720, height: 450))
+        sut.updateWindows([left, topRight, bottomRight])
+
+        _ = await sut.handleMouseDown(at: CGPoint(x: 720, y: 450))
+        await sut.handleMouseDragged(to: CGPoint(x: 780, y: 520))
+
+        // Cancel resize
+        await sut.cancelResize()
+
+        #expect(sut.isResizing == false)
+        #expect(sut.activeJunction == nil)
+
+        let restoredLeft = sut.managedWindows.first { $0.id == 1 }!
+        let restoredTopRight = sut.managedWindows.first { $0.id == 2 }!
+        let restoredBottomRight = sut.managedWindows.first { $0.id == 3 }!
+
+        #expect(restoredLeft.frame == CGRect(x: 0, y: 0, width: 720, height: 900))
+        #expect(restoredTopRight.frame == CGRect(x: 720, y: 450, width: 720, height: 450))
+        #expect(restoredBottomRight.frame == CGRect(x: 720, y: 0, width: 720, height: 450))
+    }
+
+    @Test("Hover when display has fewer than 2 windows hides overlay and resets cursor to arrow")
+    func hoverWithFewerThanTwoWindowsHidesOverlay() async {
+        let (sut, _, _, mockOverlay) = makeSUT()
+        let singleWindow = ManagedWindow(id: 1, pid: 10, title: "OnlyOne", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        sut.updateWindows([singleWindow])
+
+        await sut.handleMouseMoved(to: CGPoint(x: 720, y: 450))
+
+        #expect(sut.hoveredDivider == nil)
+        #expect(sut.hoveredJunction == nil)
+        #expect(sut.currentCursor == .arrow)
+        #expect(mockOverlay?.isOverlayVisible == false)
+    }
+
+    @Test("Switching to non-workspace frontmost app like Finder resets state and hides overlay")
+    func nonWorkspaceFrontmostAppHidesOverlay() async {
+        let (sut, _, _, mockOverlay) = makeSUT()
+        let left = ManagedWindow(id: 1, pid: 10, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let right = ManagedWindow(id: 2, pid: 20, title: "Right", frame: CGRect(x: 720, y: 0, width: 720, height: 900))
+        sut.updateWindows([left, right])
+
+        // Initially hovering on divider shows overlay
+        await sut.handleMouseMoved(to: CGPoint(x: 720, y: 450))
+        #expect(mockOverlay?.isOverlayVisible == true)
+
+        // Switch to Finder (com.apple.finder)
+        sut.frontmostApplicationProvider = { "com.apple.finder" }
+        sut.resetState()
+
+        #expect(mockOverlay?.isOverlayVisible == false)
+        #expect(sut.hoveredDivider == nil)
+        #expect(sut.hoveredJunction == nil)
+        #expect(sut.currentCursor == .arrow)
+    }
 }
+

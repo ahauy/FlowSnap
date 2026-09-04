@@ -14,6 +14,7 @@ public protocol AdaptiveDividerOverlayManaging: AnyObject, Sendable {
         windows: [ManagedWindow],
         dividers: [CollinearEdge],
         activeDivider: CollinearEdge?,
+        activeJunction: CrossJunction?,
         isDragging: Bool
     )
 
@@ -23,9 +24,46 @@ public protocol AdaptiveDividerOverlayManaging: AnyObject, Sendable {
         windows: [ManagedWindow],
         dividers: [CollinearEdge],
         activeDivider: CollinearEdge?,
+        activeJunction: CrossJunction?,
         isDragging: Bool
     )
 
     /// Dismisses the overlay panel, optionally with animation.
     func hide(animated: Bool)
+}
+
+extension AdaptiveDividerOverlayManaging {
+    public func show(
+        containerFrame: CGRect,
+        windows: [ManagedWindow],
+        dividers: [CollinearEdge],
+        activeDivider: CollinearEdge?,
+        isDragging: Bool
+    ) {
+        show(
+            containerFrame: containerFrame,
+            windows: windows,
+            dividers: dividers,
+            activeDivider: activeDivider,
+            activeJunction: nil,
+            isDragging: isDragging
+        )
+    }
+
+    public func update(
+        containerFrame: CGRect,
+        windows: [ManagedWindow],
+        dividers: [CollinearEdge],
+        activeDivider: CollinearEdge?,
+        isDragging: Bool
+    ) {
+        update(
+            containerFrame: containerFrame,
+            windows: windows,
+            dividers: dividers,
+            activeDivider: activeDivider,
+            activeJunction: nil,
+            isDragging: isDragging
+        )
+    }
 }

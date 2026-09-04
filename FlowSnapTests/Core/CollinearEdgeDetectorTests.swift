@@ -474,4 +474,61 @@ struct CollinearEdgeDetectorTests {
         #expect(dividersNormal.count == 1)
         #expect(dividersNormal.first?.coordinate == 720)
     }
+
+    @Test("Detects T-junction intersection and hits test within 14pt radius")
+    func detectTJunctionCrossJunctionAndHitTest() {
+        let w1 = ManagedWindow(id: 1, pid: 10, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let w2 = ManagedWindow(id: 2, pid: 20, title: "Right Top", frame: CGRect(x: 720, y: 450, width: 720, height: 450))
+        let w3 = ManagedWindow(id: 3, pid: 30, title: "Right Bottom", frame: CGRect(x: 720, y: 0, width: 720, height: 450))
+
+        let dividers = detector.detectDividers(in: [w1, w2, w3], containerFrame: displayBounds)
+        #expect(dividers.count == 2)
+
+        let junctions = detector.detectJunctions(in: dividers)
+        #expect(junctions.count == 1)
+
+        let junction = junctions[0]
+        #expect(junction.point == CGPoint(x: 720, y: 450))
+        #expect(Set(junction.participatingWindowIDs) == Set([1, 2, 3]))
+
+        // Hit testing
+        #expect(detector.hitTestJunction(at: CGPoint(x: 720, y: 450), in: junctions) != nil)
+        #expect(detector.hitTestJunction(at: CGPoint(x: 728, y: 456), in: junctions) != nil) // Distance ~10pt <= 14pt
+        #expect(detector.hitTestJunction(at: CGPoint(x: 720, y: 480), in: junctions) == nil) // Distance 30pt > 14pt
+    }
+
+    @Test("Computes 2D simultaneous resized frames for T-junction with decoupled axis clamping")
+    func compute2DResizedFramesForTJunction() {
+        let w1 = ManagedWindow(id: 1, pid: 10, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let w2 = ManagedWindow(id: 2, pid: 20, title: "Right Top", frame: CGRect(x: 720, y: 450, width: 720, height: 450))
+        let w3 = ManagedWindow(id: 3, pid: 30, title: "Right Bottom", frame: CGRect(x: 720, y: 0, width: 720, height: 450))
+
+        let dividers = detector.detectDividers(in: [w1, w2, w3], containerFrame: displayBounds)
+        let junctions = detector.detectJunctions(in: dividers)
+        let junction = try! #require(junctions.first)
+
+        // Drag diagonally to (800, 500)
+        let resized = detector.compute2DResizedFrames(
+            for: junction,
+            targetPoint: CGPoint(x: 800, y: 500),
+            in: dividers,
+            windows: [w1, w2, w3],
+            containerFrame: displayBounds
+        )
+
+        // Left window (w1): width expands to 800, height remains 900
+        #expect(resized[1]?.origin == CGPoint(x: 0, y: 0))
+        #expect(resized[1]?.size.width == 800)
+        #expect(resized[1]?.size.height == 900)
+
+        // Right bottom (w3): origin at (800, 0), width 640, height expands to 500
+        #expect(resized[3]?.origin == CGPoint(x: 800, y: 0))
+        #expect(resized[3]?.size.width == 640)
+        #expect(resized[3]?.size.height == 500)
+
+        // Right top (w2): origin at (800, 500), width 640, height shrinks to 400
+        #expect(resized[2]?.origin == CGPoint(x: 800, y: 500))
+        #expect(resized[2]?.size.width == 640)
+        #expect(resized[2]?.size.height == 400)
+    }
 }

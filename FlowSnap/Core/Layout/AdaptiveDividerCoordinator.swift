@@ -1,5 +1,6 @@
 import AppKit
 import ApplicationServices
+import Combine
 import CoreGraphics
 import Foundation
 import OSLog
@@ -40,6 +41,8 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     private var upMonitor: Any?
     private var keyMonitor: Any?
     private var appActivationObserver: NSObjectProtocol?
+    private var appTerminationObserver: NSObjectProtocol?
+    private var workspaceCancellable: AnyCancellable?
 
     public var frontmostApplicationProvider: (() -> String?)?
 
@@ -51,11 +54,20 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         if NSClassFromString("XCTestCase") != nil && frontmostApplicationProvider == nil {
             return false
         }
-        guard let activeWorkspace = currentActiveWorkspace else { return false }
-        let workspaceBundleIDs = Set(activeWorkspace.placements.map { $0.bundleIdentifier.lowercased() })
         guard let frontmostID = currentFrontmostBundleID?.lowercased() else { return false }
         if frontmostID == Bundle.main.bundleIdentifier?.lowercased() { return false }
-        return !workspaceBundleIDs.contains(frontmostID)
+
+        if let activeWorkspace = currentActiveWorkspace {
+            let workspaceBundleIDs = Set(activeWorkspace.placements.map { $0.bundleIdentifier.lowercased() })
+            return !workspaceBundleIDs.contains(frontmostID)
+        }
+
+        if !managedWindows.isEmpty {
+            let managedIDs = Set(managedWindows.compactMap { $0.bundleIdentifier?.lowercased() })
+            return !managedIDs.contains(frontmostID)
+        }
+
+        return false
     }
 
     /// Cached AXUIElement references captured at mouseDown to eliminate redundant IPC lookups during drag.
@@ -133,6 +145,8 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     public private(set) var managedWindows: [ManagedWindow] = []
     public private(set) var activeDivider: CollinearEdge?
     public private(set) var hoveredDivider: CollinearEdge?
+    public private(set) var activeJunction: CrossJunction?
+    public private(set) var hoveredJunction: CrossJunction?
     public private(set) var isResizing: Bool = false
     public private(set) var currentCursor: NSCursor = .arrow
 
@@ -211,14 +225,33 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            guard let self, self.isWorkspaceRestrictionEnabled else { return }
+            guard let self, self.isTracking else { return }
             if self.isNonWorkspaceAppFrontmost {
-                if self.hoveredDivider != nil {
-                    self.setCursor(.arrow)
-                    self.hoveredDivider = nil
-                }
-                self.overlayManager?.hide(animated: false)
+                self.resetState()
             }
+        }
+        appTerminationObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didTerminateApplicationNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self, self.isTracking else { return }
+                await self.refreshWindowsIfNeeded()
+                if self.managedWindows.count < 2 {
+                    self.resetState()
+                }
+            }
+        }
+        if let workspaceManager {
+            workspaceCancellable = workspaceManager.$activeWorkspace
+                .dropFirst()
+                .sink { [weak self] _ in
+                    Task { @MainActor [weak self] in
+                        guard let self, self.isTracking else { return }
+                        self.resetState()
+                    }
+                }
         }
     }
 
@@ -260,11 +293,19 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             NSWorkspace.shared.notificationCenter.removeObserver(appActivationObserver)
             self.appActivationObserver = nil
         }
+        if let appTerminationObserver {
+            NSWorkspace.shared.notificationCenter.removeObserver(appTerminationObserver)
+            self.appTerminationObserver = nil
+        }
+        workspaceCancellable?.cancel()
+        workspaceCancellable = nil
         flushPendingDrag()
         isTracking = false
         isResizing = false
         activeDivider = nil
         hoveredDivider = nil
+        activeJunction = nil
+        hoveredJunction = nil
         dragDividers = []
         initialWindows.removeAll()
         dragContainer = nil
@@ -282,7 +323,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         if let panel = overlayManager as? AdaptiveDividerOverlayPanel {
             panel.overlayView.updateState(
                 containerFrame: .zero, windows: [], dividers: [],
-                activeDivider: nil, isDragging: false
+                activeDivider: nil, activeJunction: nil, isDragging: false
             )
         }
         overlayManager?.hide(animated: false)
@@ -325,11 +366,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     private func refreshWindowsIfNeeded() async {
         if isResizing { return }
         guard accessibilityService != nil || windowRegistry != nil else { return }
-        if isWorkspaceRestrictionEnabled {
-            guard let activeWorkspace = currentActiveWorkspace else {
-                self.managedWindows = []
-                return
-            }
+        if isWorkspaceRestrictionEnabled, let activeWorkspace = currentActiveWorkspace {
             if let service = accessibilityService, !service.isTrusted { return }
             let workspaceBundleIDs = Set(activeWorkspace.placements.map { $0.bundleIdentifier.lowercased() })
             if let service = accessibilityService {
@@ -355,6 +392,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
                 }
             }
             self.managedWindows = []
+            self.dividerCache = nil
             return
         }
 
@@ -370,8 +408,11 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             let tracked = await registry.allWindows
             if tracked.count >= 2 {
                 self.managedWindows = tracked
+                return
             }
         }
+        self.managedWindows = []
+        self.dividerCache = nil
     }
 
     private func resolveContainer(at point: CGPoint) async -> CGRect {
@@ -509,14 +550,6 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     public func handleMouseMoved(to point: CGPoint) async {
         guard !isResizing else { return }
 
-        if isWorkspaceRestrictionEnabled && currentActiveWorkspace == nil {
-            if hoveredDivider != nil {
-                setCursor(.arrow)
-                hoveredDivider = nil
-            }
-            overlayManager?.hide(animated: false)
-            return
-        }
 
         if let service = accessibilityService, !service.isTrusted {
             if hoveredDivider != nil {
@@ -549,30 +582,56 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         // Ensure the active frontmost application belongs to the workspace or FlowSnap itself.
         // If the user switched to another app (e.g. Antigravity IDE, Browser, Slack),
         // the workspace is in the background — never draw the divider overlay on top of foreground apps.
-        if isWorkspaceRestrictionEnabled && isNonWorkspaceAppFrontmost {
-            if hoveredDivider != nil {
+        if isNonWorkspaceAppFrontmost {
+            if hoveredDivider != nil || hoveredJunction != nil {
                 setCursor(.arrow)
                 hoveredDivider = nil
+                hoveredJunction = nil
             }
             overlayManager?.hide(animated: false)
             return
         }
 
         let displayWindows = filterWindows(for: container)
+        guard displayWindows.count >= 2 else {
+            if hoveredDivider != nil || hoveredJunction != nil {
+                setCursor(.arrow)
+                hoveredDivider = nil
+                hoveredJunction = nil
+            }
+            if !lastPresentedDividers.isEmpty || !lastPresentedWindows.isEmpty {
+                lastPresentedDividers = []
+                lastPresentedWindows = []
+                lastPresentedContainer = nil
+                if let panel = overlayManager as? AdaptiveDividerOverlayPanel {
+                    panel.overlayView.updateState(
+                        containerFrame: .zero,
+                        windows: [],
+                        dividers: [],
+                        activeDivider: nil,
+                        activeJunction: nil,
+                        isDragging: false
+                    )
+                }
+            }
+            overlayManager?.hide(animated: false)
+            return
+        }
         let dividers = cachedDividers(for: displayWindows, container: container, gap: gap)
-        let hovered = detector.hitTestDivider(at: point, in: dividers)
+        let junctions = detector.detectJunctions(in: dividers, tolerance: max(gap + 12.0, 16.0))
+        let hoveredJunc = detector.hitTestJunction(at: point, in: junctions)
+        let hovered = hoveredJunc != nil ? nil : detector.hitTestDivider(at: point, in: dividers)
 
-        // Nothing on screen changes unless the seam set or the hovered seam
+        // Nothing on screen changes unless the seam set or the hovered seam/junction
         // changed, so skip the overlay refresh when they did not. Without this,
         // a 120Hz pointer re-presents the panel on every single event.
-        // `CollinearEdge` is Equatable, so comparing the sets catches a seam
-        // moving or a window being resized by any other means.
+        let junctionChanged = (hoveredJunction?.id != hoveredJunc?.id)
         let activeChanged: Bool
         switch (hoveredDivider, hovered) {
         case (nil, nil):
-            activeChanged = false
+            activeChanged = junctionChanged
         case let (previous?, current?):
-            activeChanged = previous.coordinate != current.coordinate || !isSameSeam(previous, as: current)
+            activeChanged = previous.coordinate != current.coordinate || !isSameSeam(previous, as: current) || junctionChanged
         default:
             activeChanged = true
         }
@@ -582,7 +641,12 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             || displayWindows != lastPresentedWindows
             || container != lastPresentedContainer
 
-        if let divider = hovered {
+        if let junc = hoveredJunc {
+            hoveredJunction = junc
+            hoveredDivider = nil
+            setCursor(.crosshair)
+        } else if let divider = hovered {
+            hoveredJunction = nil
             hoveredDivider = divider
             switch divider.orientation {
             case .vertical:
@@ -591,8 +655,9 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
                 setCursor(.resizeUpDown)
             }
         } else {
-            if hoveredDivider != nil { setCursor(.arrow) }
+            if hoveredDivider != nil || hoveredJunction != nil { setCursor(.arrow) }
             hoveredDivider = nil
+            hoveredJunction = nil
         }
 
         guard activeChanged || setChanged else { return }
@@ -600,12 +665,22 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         lastPresentedWindows = displayWindows
         lastPresentedContainer = container
 
-        if let activeDivider = hovered {
+        if let junc = hoveredJunc {
+            overlayManager?.show(
+                containerFrame: container,
+                windows: displayWindows,
+                dividers: dividers,
+                activeDivider: nil,
+                activeJunction: junc,
+                isDragging: false
+            )
+        } else if let activeDivider = hovered {
             overlayManager?.show(
                 containerFrame: container,
                 windows: displayWindows,
                 dividers: dividers,
                 activeDivider: activeDivider,
+                activeJunction: nil,
                 isDragging: false
             )
         } else {
@@ -618,7 +693,6 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     public func handleMouseDown(at point: CGPoint) async -> Bool {
         // BUG-01: guard against dual-trigger (overlay callback + global downMonitor both fire)
         guard !isResizing else { return false }
-        if isWorkspaceRestrictionEnabled && currentActiveWorkspace == nil { return false }
 
         if let service = accessibilityService, !service.isTrusted {
             return false
@@ -642,12 +716,49 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         }
         let displayWindows = filterWindows(for: container)
         let dividers = cachedDividers(for: displayWindows, container: container, gap: gap)
+        let junctions = detector.detectJunctions(in: dividers, tolerance: max(gap + 12.0, 16.0))
+
+        if let junction = detector.hitTestJunction(at: point, in: junctions) {
+            activeJunction = junction
+            activeDivider = nil
+            dragDividers = dividers
+            dragContainer = container
+            isResizing = true
+            var initMap: [CGWindowID: ManagedWindow] = [:]
+            for w in displayWindows {
+                initMap[w.id] = w
+            }
+            self.initialWindows = initMap
+            self.lastCommittedFrames = initMap.mapValues { $0.frame }
+            self.activeMinSizes.removeAll()
+
+            cachedAXElements.removeAll()
+            if let service = accessibilityService {
+                for w in displayWindows {
+                    if let element = service.windowElement(for: w) {
+                        cachedAXElements[w.id] = element
+                    }
+                }
+            }
+
+            overlayManager?.show(
+                containerFrame: container,
+                windows: displayWindows,
+                dividers: dividers,
+                activeDivider: nil,
+                activeJunction: junction,
+                isDragging: true
+            )
+            dividerLogger.debug("Started junction resize session at \(junction.point.x, privacy: .public),\(junction.point.y, privacy: .public)")
+            return true
+        }
 
         guard let divider = detector.hitTestDivider(at: point, in: dividers) else {
             return false
         }
 
         activeDivider = divider
+        activeJunction = nil
         dragDividers = dividers
         // BUG-03: lock container to the display where drag started
         dragContainer = container
@@ -675,6 +786,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             windows: displayWindows,
             dividers: dividers,
             activeDivider: divider,
+            activeJunction: nil,
             isDragging: true
         )
         dividerLogger.debug("Started divider resize session on \(divider.orientation.rawValue, privacy: .public) divider at \(divider.coordinate, privacy: .public)")
@@ -717,7 +829,12 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     }
 
     public func handleMouseDragged(to point: CGPoint) async {
-        guard isResizing, let divider = activeDivider else { return }
+        guard isResizing else { return }
+        if let junction = activeJunction {
+            await handleJunctionMouseDragged(to: point, junction: junction)
+            return
+        }
+        guard let divider = activeDivider else { return }
 
         // PERF-02: use gap cached at mouseDown — no async lookup needed
         let gap = dragGap
@@ -796,8 +913,93 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         await applyResizedFrames(resizedFrames, primaryHeight: dragPrimaryHeight)
     }
 
+    private func handleJunctionMouseDragged(to point: CGPoint, junction: CrossJunction) async {
+        let gap = dragGap
+        let container: CGRect
+        if let locked = dragContainer {
+            container = locked
+        } else {
+            container = await resolveContainer(at: point)
+        }
+        let displayWindows = filterWindows(for: container)
+        let baseWindows = initialWindows.isEmpty ? displayWindows : Array(initialWindows.values)
+        let windowsToResize = preparedWindowsForResize(baseWindows.isEmpty ? managedWindows : baseWindows)
+
+        let resizedFrames = detector.compute2DResizedFrames(
+            for: junction,
+            targetPoint: point,
+            in: dragDividers,
+            windows: windowsToResize,
+            containerFrame: container,
+            gap: gap
+        )
+
+        let vDivider = dragDividers.first(where: { isSameSeam($0, as: junction.verticalDivider) }) ?? junction.verticalDivider
+        let hDivider = dragDividers.first(where: { isSameSeam($0, as: junction.horizontalDivider) }) ?? junction.horizontalDivider
+
+        let clampedX = seamCoordinate(from: resizedFrames, for: vDivider, gap: gap)
+            ?? max(vDivider.minCoordinate, min(vDivider.maxCoordinate, point.x)).rounded()
+        let clampedY = seamCoordinate(from: resizedFrames, for: hDivider, gap: gap)
+            ?? max(hDivider.minCoordinate, min(hDivider.maxCoordinate, point.y)).rounded()
+
+        let draggedPoint = CGPoint(x: clampedX, y: clampedY)
+        let draggedVDivider = seam(byMoving: vDivider, to: clampedX, gap: gap)
+        let draggedHDivider = seam(byMoving: hDivider, to: clampedY, gap: gap)
+
+        let draggedJunction = CrossJunction(
+            id: junction.id,
+            point: draggedPoint,
+            verticalDivider: draggedVDivider,
+            horizontalDivider: draggedHDivider,
+            hitRadius: junction.hitRadius,
+            participatingWindowIDs: junction.participatingWindowIDs
+        )
+        activeJunction = draggedJunction
+
+        var previewWindows: [ManagedWindow] = []
+        for var window in displayWindows {
+            if let newFrame = resizedFrames[window.id] {
+                window.frame = newFrame
+            }
+            previewWindows.append(window)
+        }
+
+        var overlayDividers = overlaySet(from: dragDividers, dragging: vDivider, to: draggedVDivider)
+        overlayDividers = overlaySet(from: overlayDividers, dragging: hDivider, to: draggedHDivider)
+
+        let now = ProcessInfo.processInfo.systemUptime
+        if throttler.shouldProcess(timestamp: now) {
+            let refreshed = detector.detectDividers(
+                in: previewWindows, containerFrame: container, gap: gap, tolerance: max(gap + 16.0, 24.0)
+            )
+            if !refreshed.isEmpty {
+                dragDividers = refreshed
+                overlayDividers = overlaySet(from: refreshed, dragging: vDivider, to: draggedVDivider)
+                overlayDividers = overlaySet(from: overlayDividers, dragging: hDivider, to: draggedHDivider)
+            }
+        }
+
+        overlayManager?.update(
+            containerFrame: container,
+            windows: previewWindows,
+            dividers: overlayDividers,
+            activeDivider: nil,
+            activeJunction: draggedJunction,
+            isDragging: true
+        )
+
+        updateActiveMinSizes(with: resizedFrames, orientation: .vertical)
+        updateActiveMinSizes(with: resizedFrames, orientation: .horizontal)
+        await applyResizedFrames(resizedFrames, primaryHeight: dragPrimaryHeight)
+    }
+
     public func handleMouseUp(at point: CGPoint) async {
-        guard isResizing, let divider = activeDivider else { return }
+        guard isResizing else { return }
+        if let junction = activeJunction {
+            await handleJunctionMouseUp(at: point, junction: junction)
+            return
+        }
+        guard let divider = activeDivider else { return }
         dividerLogger.debug("Ended divider resize session with final snap")
         // PERF-02+03: use values cached at mouseDown
         let gap = dragGap
@@ -850,6 +1052,81 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         lastPresentedContainer = container
 
         // Auto-save customized ratio to the active workspace after autoSaveDelay (5 minutes)
+        if let workspace = currentActiveWorkspace {
+            var updatedNormalizedRects: [String: CGRect] = [:]
+            for window in finalDisplayWindows {
+                if let bundleID = window.bundleIdentifier {
+                    let normRect = ZoneInference.normalizedRect(of: window.frame, within: container)
+                    updatedNormalizedRects[bundleID] = normRect
+                }
+            }
+            if !updatedNormalizedRects.isEmpty {
+                ratioAutoSaveTask?.cancel()
+                let delay = self.autoSaveDelay
+                let targetWorkspaceID = workspace.id
+                ratioAutoSaveTask = Task { @MainActor [weak self] in
+                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                    guard !Task.isCancelled, let self else { return }
+                    try? await self.workspaceManager?.updateWorkspaceRatios(
+                        workspaceID: targetWorkspaceID,
+                        normalizedRects: updatedNormalizedRects
+                    )
+                }
+            }
+        }
+
+        overlayManager?.hide(animated: true)
+    }
+
+    private func handleJunctionMouseUp(at point: CGPoint, junction: CrossJunction) async {
+        dividerLogger.debug("Ended junction resize session with final snap")
+        let gap = dragGap
+        let container: CGRect
+        if let locked = dragContainer {
+            container = locked
+        } else {
+            container = await resolveContainer(at: point)
+        }
+        let displayWindows = filterWindows(for: container)
+        let baseWindows = initialWindows.isEmpty ? displayWindows : Array(initialWindows.values)
+        let windowsToResize = preparedWindowsForResize(baseWindows.isEmpty ? managedWindows : baseWindows)
+
+        let targetPoint = junction.point
+        let resizedFrames = detector.compute2DResizedFrames(
+            for: junction,
+            targetPoint: targetPoint,
+            in: dragDividers,
+            windows: windowsToResize,
+            containerFrame: container,
+            gap: gap
+        )
+
+        let primaryHeight = dragPrimaryHeight
+        await applyResizedFrames(resizedFrames, primaryHeight: primaryHeight, force: true)
+
+        isResizing = false
+        activeJunction = nil
+        activeDivider = nil
+        hoveredJunction = nil
+        hoveredDivider = nil
+        dragDividers = []
+        initialWindows.removeAll()
+        dragContainer = nil
+        cachedAXElements.removeAll()
+        lastCommittedFrames.removeAll()
+        activeMinSizes.removeAll()
+        throttler.reset()
+        setCursor(.arrow)
+
+        dividerCache = nil
+        await refreshWindowsIfNeeded()
+
+        let finalDisplayWindows = filterWindows(for: container)
+        let finalDividers = cachedDividers(for: finalDisplayWindows, container: container, gap: gap)
+        lastPresentedDividers = finalDividers
+        lastPresentedWindows = finalDisplayWindows
+        lastPresentedContainer = container
+
         if let workspace = currentActiveWorkspace {
             var updatedNormalizedRects: [String: CGRect] = [:]
             for window in finalDisplayWindows {
@@ -1023,6 +1300,8 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         isResizing = false
         activeDivider = nil
         hoveredDivider = nil
+        activeJunction = nil
+        hoveredJunction = nil
         dragDividers = []
         initialWindows.removeAll()
         dragContainer = nil
@@ -1041,7 +1320,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         if let panel = overlayManager as? AdaptiveDividerOverlayPanel {
             panel.overlayView.updateState(
                 containerFrame: .zero, windows: [], dividers: [],
-                activeDivider: nil, isDragging: false
+                activeDivider: nil, activeJunction: nil, isDragging: false
             )
         }
         overlayManager?.hide(animated: true)
@@ -1065,6 +1344,19 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         lastPresentedContainer = nil
         hoveredDivider = nil
         activeDivider = nil
+        hoveredJunction = nil
+        activeJunction = nil
+        setCursor(.arrow)
+        if let panel = overlayManager as? AdaptiveDividerOverlayPanel {
+            panel.overlayView.updateState(
+                containerFrame: .zero,
+                windows: [],
+                dividers: [],
+                activeDivider: nil,
+                activeJunction: nil,
+                isDragging: false
+            )
+        }
         overlayManager?.hide(animated: false)
     }
 }
