@@ -51,9 +51,10 @@ public final class AdaptiveDividerOverlayPanel: NSPanel, AdaptiveDividerOverlayM
         windows: [ManagedWindow],
         dividers: [CollinearEdge],
         activeDivider: CollinearEdge?,
+        activeJunction: CrossJunction? = nil,
         isDragging: Bool
     ) {
-        guard activeDivider != nil || isDragging else {
+        guard activeDivider != nil || activeJunction != nil || isDragging else {
             hide(animated: true)
             return
         }
@@ -67,6 +68,7 @@ public final class AdaptiveDividerOverlayPanel: NSPanel, AdaptiveDividerOverlayM
             windows: windows,
             dividers: dividers,
             activeDivider: activeDivider,
+            activeJunction: activeJunction,
             isDragging: isDragging
         )
 
@@ -92,6 +94,7 @@ public final class AdaptiveDividerOverlayPanel: NSPanel, AdaptiveDividerOverlayM
         windows: [ManagedWindow],
         dividers: [CollinearEdge],
         activeDivider: CollinearEdge?,
+        activeJunction: CrossJunction? = nil,
         isDragging: Bool
     ) {
         if frame != containerFrame {
@@ -103,10 +106,11 @@ public final class AdaptiveDividerOverlayPanel: NSPanel, AdaptiveDividerOverlayM
             windows: windows,
             dividers: dividers,
             activeDivider: activeDivider,
+            activeJunction: activeJunction,
             isDragging: isDragging
         )
 
-        let targetAlpha: CGFloat = (activeDivider != nil || isDragging) ? Self.activeAlpha : Self.restingAlpha
+        let targetAlpha: CGFloat = (activeDivider != nil || activeJunction != nil || isDragging) ? Self.activeAlpha : Self.restingAlpha
 
         if !isVisible {
             alphaValue = targetAlpha
@@ -154,11 +158,12 @@ public final class AdaptiveDividerOverlayView: NSView {
     public private(set) var windows: [ManagedWindow] = []
     public private(set) var dividers: [CollinearEdge] = []
     public private(set) var activeDivider: CollinearEdge?
+    public private(set) var activeJunction: CrossJunction?
     public private(set) var isDragging: Bool = false
 
     // MARK: - Direct Drag Callbacks
 
-    public var onDirectMouseDown: ((CGPoint, CollinearEdge) -> Void)?
+    public var onDirectMouseDown: ((CGPoint, CollinearEdge?) -> Void)?
     public var onDirectMouseDragged: ((CGPoint) -> Void)?
     public var onDirectMouseUp: ((CGPoint) -> Void)?
     public var onDirectMouseMoved: ((CGPoint) -> Void)?
@@ -167,6 +172,7 @@ public final class AdaptiveDividerOverlayView: NSView {
 
     private let windowBordersContainerLayer = CALayer()
     private let dividersContainerLayer = CALayer()
+    private let junctionsContainerLayer = CALayer()
 
     // MARK: - Constants
 
@@ -194,6 +200,7 @@ public final class AdaptiveDividerOverlayView: NSView {
         layer?.masksToBounds = true
         layer?.addSublayer(windowBordersContainerLayer)
         layer?.addSublayer(dividersContainerLayer)
+        layer?.addSublayer(junctionsContainerLayer)
     }
 
     // MARK: - State Updates & Rendering
@@ -203,12 +210,14 @@ public final class AdaptiveDividerOverlayView: NSView {
         windows: [ManagedWindow],
         dividers: [CollinearEdge],
         activeDivider: CollinearEdge?,
+        activeJunction: CrossJunction? = nil,
         isDragging: Bool
     ) {
         self.containerFrame = containerFrame
         self.windows = windows
         self.dividers = dividers
         self.activeDivider = activeDivider
+        self.activeJunction = activeJunction
         self.isDragging = isDragging
 
         // Disable implicit layer animations for 120Hz ProMotion responsiveness
@@ -217,6 +226,7 @@ public final class AdaptiveDividerOverlayView: NSView {
 
         renderWindowOutlines()
         renderDividerSeams()
+        renderJunctionHandle()
 
         CATransaction.commit()
 
@@ -262,6 +272,45 @@ public final class AdaptiveDividerOverlayView: NSView {
             dividersContainerLayer.addSublayer(barLayer)
             dividersContainerLayer.addSublayer(handleLayer)
         }
+    }
+
+    private func renderJunctionHandle() {
+        junctionsContainerLayer.sublayers?.forEach { $0.removeFromSuperlayer() }
+        guard let junction = activeJunction else { return }
+
+        let localX = junction.point.x - containerFrame.minX
+        let localY = junction.point.y - containerFrame.minY
+
+        let handleRadius: CGFloat = 10.0
+        let handleRect = CGRect(
+            x: localX - handleRadius,
+            y: localY - handleRadius,
+            width: handleRadius * 2.0,
+            height: handleRadius * 2.0
+        )
+
+        let ringLayer = CAShapeLayer()
+        ringLayer.frame = handleRect
+        ringLayer.path = CGPath(ellipseIn: CGRect(origin: .zero, size: handleRect.size), transform: nil)
+        ringLayer.fillColor = NSColor.controlAccentColor.cgColor
+        ringLayer.shadowColor = NSColor.controlAccentColor.cgColor
+        ringLayer.shadowOpacity = isDragging ? 1.0 : 0.85
+        ringLayer.shadowRadius = isDragging ? 7.0 : 5.0
+        ringLayer.shadowOffset = .zero
+
+        let innerRadius: CGFloat = 4.0
+        let innerDot = CAShapeLayer()
+        innerDot.frame = CGRect(
+            x: handleRadius - innerRadius,
+            y: handleRadius - innerRadius,
+            width: innerRadius * 2.0,
+            height: innerRadius * 2.0
+        )
+        innerDot.path = CGPath(ellipseIn: CGRect(origin: .zero, size: CGSize(width: innerRadius * 2, height: innerRadius * 2)), transform: nil)
+        innerDot.fillColor = NSColor.white.cgColor
+        ringLayer.addSublayer(innerDot)
+
+        junctionsContainerLayer.addSublayer(ringLayer)
     }
 
     private func makeDividerLayers(
@@ -397,9 +446,19 @@ public final class AdaptiveDividerOverlayView: NSView {
         return nil
     }
 
-    /// Transparent pass-through hit testing: returns `self` only when over an interactive seam or dragging.
+    /// Hit-tests a point against the active junction hit area.
+    public func hitTestJunction(at localPoint: NSPoint) -> CrossJunction? {
+        guard let junction = activeJunction else { return nil }
+        let screenPoint = convertToScreen(localPoint)
+        return junction.contains(screenPoint) ? junction : nil
+    }
+
+    /// Transparent pass-through hit testing: returns `self` only when over an interactive seam, junction, or dragging.
     public override func hitTest(_ point: NSPoint) -> NSView? {
         if isDragging {
+            return self
+        }
+        if hitTestJunction(at: point) != nil {
             return self
         }
         for divider in dividers {
@@ -415,6 +474,14 @@ public final class AdaptiveDividerOverlayView: NSView {
 
     public override func resetCursorRects() {
         super.resetCursorRects()
+        if let junction = activeJunction {
+            let localX = junction.point.x - containerFrame.minX
+            let localY = junction.point.y - containerFrame.minY
+            let r = junction.hitRadius
+            let junctionRect = CGRect(x: localX - r, y: localY - r, width: r * 2.0, height: r * 2.0)
+            addCursorRect(junctionRect, cursor: .crosshair)
+        }
+
         guard !dividers.isEmpty else { return }
 
         for divider in dividers {
@@ -441,7 +508,9 @@ public final class AdaptiveDividerOverlayView: NSView {
 
     public override func cursorUpdate(with event: NSEvent) {
         let localPoint = convert(event.locationInWindow, from: nil)
-        if let divider = hitTestDivider(at: localPoint) {
+        if hitTestJunction(at: localPoint) != nil {
+            NSCursor.crosshair.set()
+        } else if let divider = hitTestDivider(at: localPoint) {
             let cursor: NSCursor = (divider.orientation == .vertical) ? .resizeLeftRight : .resizeUpDown
             cursor.set()
         } else {
@@ -453,6 +522,26 @@ public final class AdaptiveDividerOverlayView: NSView {
 
     public override func mouseDown(with event: NSEvent) {
         let localPoint = convert(event.locationInWindow, from: nil)
+        let screenPoint = convertToScreen(localPoint)
+
+        if let junction = hitTestJunction(at: localPoint) {
+            isDragging = true
+            activeJunction = junction
+            activeDivider = nil
+
+            updateState(
+                containerFrame: containerFrame,
+                windows: windows,
+                dividers: dividers,
+                activeDivider: nil,
+                activeJunction: junction,
+                isDragging: true
+            )
+
+            onDirectMouseDown?(screenPoint, nil)
+            return
+        }
+
         guard let divider = hitTestDivider(at: localPoint) else {
             super.mouseDown(with: event)
             return
@@ -460,13 +549,14 @@ public final class AdaptiveDividerOverlayView: NSView {
 
         isDragging = true
         activeDivider = divider
-        let screenPoint = convertToScreen(localPoint)
+        activeJunction = nil
 
         updateState(
             containerFrame: containerFrame,
             windows: windows,
             dividers: dividers,
             activeDivider: divider,
+            activeJunction: nil,
             isDragging: true
         )
 
@@ -493,14 +583,17 @@ public final class AdaptiveDividerOverlayView: NSView {
         isDragging = false
         let localPoint = convert(event.locationInWindow, from: nil)
         let screenPoint = convertToScreen(localPoint)
-        let remainingHover = hitTestDivider(at: localPoint)
-        activeDivider = remainingHover
+        let remainingJunction = hitTestJunction(at: localPoint)
+        let remainingDivider = remainingJunction == nil ? hitTestDivider(at: localPoint) : nil
+        activeJunction = remainingJunction
+        activeDivider = remainingDivider
 
         updateState(
             containerFrame: containerFrame,
             windows: windows,
             dividers: dividers,
-            activeDivider: remainingHover,
+            activeDivider: remainingDivider,
+            activeJunction: remainingJunction,
             isDragging: false
         )
 
