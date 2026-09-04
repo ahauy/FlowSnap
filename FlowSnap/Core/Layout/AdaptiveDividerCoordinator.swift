@@ -325,11 +325,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     private func refreshWindowsIfNeeded() async {
         if isResizing { return }
         guard accessibilityService != nil || windowRegistry != nil else { return }
-        if isWorkspaceRestrictionEnabled {
-            guard let activeWorkspace = currentActiveWorkspace else {
-                self.managedWindows = []
-                return
-            }
+        if isWorkspaceRestrictionEnabled, let activeWorkspace = currentActiveWorkspace {
             if let service = accessibilityService, !service.isTrusted { return }
             let workspaceBundleIDs = Set(activeWorkspace.placements.map { $0.bundleIdentifier.lowercased() })
             if let service = accessibilityService {
@@ -509,14 +505,6 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     public func handleMouseMoved(to point: CGPoint) async {
         guard !isResizing else { return }
 
-        if isWorkspaceRestrictionEnabled && currentActiveWorkspace == nil {
-            if hoveredDivider != nil {
-                setCursor(.arrow)
-                hoveredDivider = nil
-            }
-            overlayManager?.hide(animated: false)
-            return
-        }
 
         if let service = accessibilityService, !service.isTrusted {
             if hoveredDivider != nil {
@@ -618,7 +606,6 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     public func handleMouseDown(at point: CGPoint) async -> Bool {
         // BUG-01: guard against dual-trigger (overlay callback + global downMonitor both fire)
         guard !isResizing else { return false }
-        if isWorkspaceRestrictionEnabled && currentActiveWorkspace == nil { return false }
 
         if let service = accessibilityService, !service.isTrusted {
             return false

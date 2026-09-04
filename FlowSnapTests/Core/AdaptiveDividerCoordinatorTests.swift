@@ -790,8 +790,8 @@ struct AdaptiveDividerCoordinatorTests {
         #expect(mockOverlay?.isOverlayVisible == false)
     }
 
-    @Test("Divider hidden when no active workspace is open")
-    func dividerHiddenWhenNoActiveWorkspaceIsOpen() async {
+    @Test("Divider remains active for ad-hoc collinear windows when no active workspace is open")
+    func dividerActiveForAdHocCollinearWindowsWhenNoActiveWorkspaceIsOpen() async {
         let (sut, _, _, mockOverlay) = makeSUT()
         let w1 = ManagedWindow(id: 1, pid: 10, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
         let w2 = ManagedWindow(id: 2, pid: 20, title: "Right", frame: CGRect(x: 720, y: 0, width: 720, height: 900))
@@ -801,7 +801,9 @@ struct AdaptiveDividerCoordinatorTests {
 
         await sut.handleMouseMoved(to: CGPoint(x: 720, y: 450))
 
-        #expect(mockOverlay?.isOverlayVisible == false)
+        #expect(mockOverlay?.isOverlayVisible == true)
+        #expect(sut.hoveredDivider?.orientation == .vertical)
+        #expect(sut.currentCursor == .resizeLeftRight)
     }
 
     @Test("Divider visible when active workspace matches windows")
