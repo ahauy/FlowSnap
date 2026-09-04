@@ -1,3 +1,4 @@
+import AppKit
 import CoreGraphics
 import Foundation
 import OSLog
@@ -35,6 +36,8 @@ public final class CommandDispatcher: CommandDispatching {
     private let cursorManager: any CursorWarping
     private let displayNavigator: any DisplayNavigating
     private let workspaceMigrator: (any WorkspaceMigrating)?
+    private let windowPinningCoordinator: (any WindowPinningCoordinating)?
+    private let accessibilityService: AccessibilityService?
 
     /// Active pending task for latest-wins debouncing (BR-HOTKEY-005).
     private var pendingTask: Task<Void, Error>?
@@ -52,7 +55,9 @@ public final class CommandDispatcher: CommandDispatching {
         presetResolver: (any PresetResolving)? = nil,
         cursorManager: any CursorWarping = CursorManager(),
         displayNavigator: any DisplayNavigating = DisplayNavigator(),
-        workspaceMigrator: (any WorkspaceMigrating)? = nil
+        workspaceMigrator: (any WorkspaceMigrating)? = nil,
+        windowPinningCoordinator: (any WindowPinningCoordinating)? = nil,
+        accessibilityService: AccessibilityService? = nil
     ) {
         self.windowManager = windowManager
         self.snapEngine = snapEngine
@@ -61,6 +66,8 @@ public final class CommandDispatcher: CommandDispatching {
         self.cursorManager = cursorManager
         self.displayNavigator = displayNavigator
         self.workspaceMigrator = workspaceMigrator
+        self.windowPinningCoordinator = windowPinningCoordinator
+        self.accessibilityService = accessibilityService
     }
 
     /// Dispatch a command for asynchronous execution with latest-wins debouncing.
@@ -147,6 +154,28 @@ public final class CommandDispatcher: CommandDispatching {
         case .restoreWorkspace, .saveWorkspace:
             dispatcherLogger.info("Workspace commands will be routed in Epic 11.")
             return false
+
+        case .togglePinFocusedWindow:
+            guard let coordinator = self.windowPinningCoordinator else {
+                dispatcherLogger.error("WindowPinningCoordinator not configured in CommandDispatcher")
+                return false
+            }
+            var targetWindow = await windowManager.focusedWindow()
+            if targetWindow == nil {
+                let visible = accessibilityService?.allVisibleManagedWindows() ?? []
+                targetWindow = visible.first { $0.pid != ProcessInfo.processInfo.processIdentifier }
+            }
+            guard let window = targetWindow else {
+                dispatcherLogger.debug("No active focused window found to pin/unpin.")
+                return false
+            }
+            let isNowPinned = await coordinator.togglePin(window: window)
+            if isNowPinned {
+                NSSound(named: "Pop")?.play()
+            } else {
+                NSSound(named: "Tink")?.play()
+            }
+            return true
         }
     }
 

@@ -109,6 +109,11 @@
 | **WorkspaceMigrating** | Protocol defining atomic multi-window workspace migration across displays | "Workspace migration interface" | `WorkspaceMigrating` | US-DISP-017, Domain |
 | **WorkspaceMigrator** | Core coordinator executing proportional scaling, 2-phase move, and divider transfer | "Workspace cross-display migrator" | `WorkspaceMigrator` | US-DISP-017, ADR-0014, Core |
 | **MigrationDirection** | Enum specifying cross-display navigation direction (.next / .previous) | "Display migration direction" | `MigrationDirection` | US-DISP-017, Domain |
+| **WindowPinningCoordinating** | Protocol defining window always-on-top pinning operations and state query | "Window pinning coordinator interface" | `WindowPinningCoordinating` | US-SNAP-021, Domain |
+| **WindowPinningCoordinator** | @MainActor coordinator managing pinned window records, LIFO Z-stacking, and active re-assertion | "Always-on-top pinning manager" | `WindowPinningCoordinator` | US-SNAP-021, Core / Policy |
+| **PinnedWindowRecord** | Sendable model storing pinned window identity (CGWindowID, PID, appName, windowTitle, pinnedAt) | "Pinned window state model" | `PinnedWindowRecord` | US-SNAP-021, Domain |
+| **StageManagerLaunchCoordinating** | Protocol defining Stage Manager application launch interception and multi-raise coordination | "Launch co-existence coordinator interface" | `StageManagerLaunchCoordinating` | US-SNAP-021, Domain |
+| **StageManagerLaunchCoordinator** | @MainActor service observing NSWorkspace launch and merging new windows into the active Stage | "Stage Manager launch coordinator" | `StageManagerLaunchCoordinator` | US-SNAP-021, Infrastructure |
 
 ## Where to Look
 

@@ -11,24 +11,41 @@ public final class MockApplicationLaunching: ApplicationLaunching, @unchecked Se
 
     /// Bundle ids that `openApp` reports as launchable. Anything absent fails,
     /// modelling E4.
-    public var installedBundleIDs: Set<String>
+    private let lock = NSLock()
 
-    /// Bundle ids whose launch is accepted but which never draw a window,
-    /// modelling E5.
-    public var hangingBundleIDs: Set<String>
+    private var _installedBundleIDs: Set<String>
+    public var installedBundleIDs: Set<String> {
+        get { lock.withLock { _installedBundleIDs } }
+        set { lock.withLock { _installedBundleIDs = newValue } }
+    }
 
-    /// Process ids reported for a bundle id. `nil` models "not running".
-    public var processIdentifiers: [String: pid_t]
+    private var _hangingBundleIDs: Set<String>
+    public var hangingBundleIDs: Set<String> {
+        get { lock.withLock { _hangingBundleIDs } }
+        set { lock.withLock { _hangingBundleIDs = newValue } }
+    }
 
-    /// Process ids assigned when a launch succeeds. Seeded into
-    /// `processIdentifiers` by `openApp`, so an app is genuinely "not running"
-    /// until it is launched — which is what makes the launch path testable.
-    public var pidsAssignedOnLaunch: [String: pid_t]
+    private var _processIdentifiers: [String: pid_t]
+    public var processIdentifiers: [String: pid_t] {
+        get { lock.withLock { _processIdentifiers } }
+        set { lock.withLock { _processIdentifiers = newValue } }
+    }
 
-    /// How many launches have been requested, in order — lets a test assert the
-    /// pass did not launch something it should have found already running.
-    public private(set) var launchAttempts: [String] = []
-    public private(set) var waitAttempts: [pid_t] = []
+    private var _pidsAssignedOnLaunch: [String: pid_t]
+    public var pidsAssignedOnLaunch: [String: pid_t] {
+        get { lock.withLock { _pidsAssignedOnLaunch } }
+        set { lock.withLock { _pidsAssignedOnLaunch = newValue } }
+    }
+
+    private var _launchAttempts: [String] = []
+    public var launchAttempts: [String] {
+        lock.withLock { _launchAttempts }
+    }
+
+    private var _waitAttempts: [pid_t] = []
+    public var waitAttempts: [pid_t] {
+        lock.withLock { _waitAttempts }
+    }
 
     public init(
         installedBundleIDs: Set<String> = [],
@@ -36,53 +53,68 @@ public final class MockApplicationLaunching: ApplicationLaunching, @unchecked Se
         processIdentifiers: [String: pid_t] = [:],
         pidsAssignedOnLaunch: [String: pid_t] = [:]
     ) {
-        self.installedBundleIDs = installedBundleIDs
-        self.hangingBundleIDs = hangingBundleIDs
-        self.processIdentifiers = processIdentifiers
-        self.pidsAssignedOnLaunch = pidsAssignedOnLaunch
+        self._installedBundleIDs = installedBundleIDs
+        self._hangingBundleIDs = hangingBundleIDs
+        self._processIdentifiers = processIdentifiers
+        self._pidsAssignedOnLaunch = pidsAssignedOnLaunch
     }
 
     public func openApp(withBundleIdentifier bundleID: String) async -> Bool {
-        launchAttempts.append(bundleID)
-        guard installedBundleIDs.contains(bundleID) else { return false }
-        if let pid = pidsAssignedOnLaunch[bundleID] {
-            processIdentifiers[bundleID] = pid
+        lock.withLock {
+            _launchAttempts.append(bundleID)
+            guard _installedBundleIDs.contains(bundleID) else { return false }
+            if let pid = _pidsAssignedOnLaunch[bundleID] {
+                _processIdentifiers[bundleID] = pid
+            }
+            return true
         }
-        return true
     }
 
     public func waitForFirstWindow(pid: pid_t, timeout: TimeInterval) async -> Bool {
-        waitAttempts.append(pid)
-        // The "hanging" set is keyed by bundle id, so resolve back through the
-        // pid map rather than storing pids directly — a test then only has to
-        // name the app, not invent a process id.
-        let hanging = processIdentifiers
-            .filter { $0.value == pid && hangingBundleIDs.contains($0.key) }
-            .isEmpty == false
-        return !hanging
+        lock.withLock {
+            _waitAttempts.append(pid)
+            let hanging = _processIdentifiers
+                .filter { $0.value == pid && _hangingBundleIDs.contains($0.key) }
+                .isEmpty == false
+            return !hanging
+        }
     }
 
     public func runningProcessIdentifier(bundleID: String) -> pid_t? {
-        processIdentifiers[bundleID]
+        lock.withLock {
+            _processIdentifiers[bundleID]
+        }
     }
 
-    /// Bundle ids revealed (un-hidden + activated) after being placed.
-    public private(set) var revealAttempts: [String] = []
-    /// Bundle ids whose reveal should fail, to exercise the best-effort path.
-    public var unrevealableBundleIDs: Set<String> = []
+    private var _revealAttempts: [String] = []
+    public var revealAttempts: [String] {
+        lock.withLock { _revealAttempts }
+    }
+
+    private var _unrevealableBundleIDs: Set<String> = []
+    public var unrevealableBundleIDs: Set<String> {
+        get { lock.withLock { _unrevealableBundleIDs } }
+        set { lock.withLock { _unrevealableBundleIDs = newValue } }
+    }
 
     @discardableResult
     public func reveal(bundleID: String) -> Bool {
-        revealAttempts.append(bundleID)
-        return !unrevealableBundleIDs.contains(bundleID)
+        lock.withLock {
+            _revealAttempts.append(bundleID)
+            return !_unrevealableBundleIDs.contains(bundleID)
+        }
     }
 
-    /// Bundle ids unhidden after being placed.
-    public private(set) var unhideAttempts: [String] = []
+    private var _unhideAttempts: [String] = []
+    public var unhideAttempts: [String] {
+        lock.withLock { _unhideAttempts }
+    }
 
     @discardableResult
     public func unhide(bundleID: String) -> Bool {
-        unhideAttempts.append(bundleID)
-        return true
+        lock.withLock {
+            _unhideAttempts.append(bundleID)
+            return true
+        }
     }
 }

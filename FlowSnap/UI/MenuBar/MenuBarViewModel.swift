@@ -22,13 +22,12 @@ public final class MenuBarViewModel {
 
     public var dismissHandler: (() -> Void)?
 
-    // MARK: - Dependencies
-
     private let accessibilityService: AccessibilityService
     private let commandDispatcher: CommandDispatcher
     private let windowManager: WindowManaging
     private let settingsWindowPresenter: (any SettingsWindowPresenting)?
     private let preferencesStore: PreferencesStore?
+    private let windowPinningCoordinator: (any WindowPinningCoordinating)?
 
     /// Built-in or custom workflow presets available in the menu bar.
     public let presets: [WorkspacePreset]
@@ -37,6 +36,13 @@ public final class MenuBarViewModel {
     /// menu bar still constructs in contexts without it, and existing tests are
     /// unaffected); the Workspaces section hides itself when this is `nil`.
     public let workspaceViewModel: WorkspaceViewModel?
+
+    public private(set) var pinnedWindows: [PinnedWindowRecord] = []
+
+    /// Whether any window is currently pinned.
+    public var isPinningActive: Bool {
+        !pinnedWindows.isEmpty
+    }
 
     // MARK: - Initialization
 
@@ -47,7 +53,8 @@ public final class MenuBarViewModel {
         settingsWindowPresenter: (any SettingsWindowPresenting)? = nil,
         workspaceManager: WorkspaceManager? = nil,
         preferencesStore: PreferencesStore? = nil,
-        presets: [WorkspacePreset] = BuiltinPresetFactory.allBuiltinPresets
+        presets: [WorkspacePreset] = BuiltinPresetFactory.allBuiltinPresets,
+        windowPinningCoordinator: (any WindowPinningCoordinating)? = nil
     ) {
         self.accessibilityService = accessibilityService
         self.commandDispatcher = commandDispatcher
@@ -56,13 +63,16 @@ public final class MenuBarViewModel {
         self.preferencesStore = preferencesStore
         self.presets = presets
         self.workspaceViewModel = workspaceManager.map { WorkspaceViewModel(manager: $0) }
+        self.windowPinningCoordinator = windowPinningCoordinator
         self.isAccessibilityTrusted = accessibilityService.isTrusted
+        self.pinnedWindows = windowPinningCoordinator?.pinnedWindows ?? []
     }
 
     // MARK: - Lifecycle & State Refresh
 
     public func refreshState() {
         self.isAccessibilityTrusted = accessibilityService.isTrusted
+        self.pinnedWindows = windowPinningCoordinator?.pinnedWindows ?? []
         Task { @MainActor in
             if let focused = await self.windowManager.focusedWindow() {
                 self.lastFocusedWindow = focused
@@ -72,6 +82,7 @@ public final class MenuBarViewModel {
 
     public func refreshStateAsync() async {
         self.isAccessibilityTrusted = accessibilityService.isTrusted
+        self.pinnedWindows = windowPinningCoordinator?.pinnedWindows ?? []
         if let focused = await self.windowManager.focusedWindow() {
             self.lastFocusedWindow = focused
         }
@@ -152,6 +163,34 @@ public final class MenuBarViewModel {
         Task { @MainActor in
             try? await self.commandDispatcher.dispatch(.migrateWorkspace(direction))
         }
+    }
+
+    // MARK: - Window Pinning Actions (US-SNAP-021)
+
+    /// Toggles pinning state of currently focused window.
+    public func togglePinCurrentWindow() {
+        guard isAccessibilityTrusted else {
+            requestAccessibilityPermission()
+            return
+        }
+        dismissMenuBarWindow()
+        Task { @MainActor in
+            try? await self.commandDispatcher.dispatch(.togglePinFocusedWindow)
+        }
+    }
+
+    /// Unpins a specific window by CGWindowID.
+    public func unpin(windowID: CGWindowID) {
+        windowPinningCoordinator?.unpin(windowID: windowID)
+        self.pinnedWindows = windowPinningCoordinator?.pinnedWindows ?? []
+        NSSound(named: "Tink")?.play()
+    }
+
+    /// Unpins all currently pinned windows.
+    public func unpinAll() {
+        windowPinningCoordinator?.unpinAll()
+        self.pinnedWindows = []
+        NSSound(named: "Tink")?.play()
     }
 
     /// Clears the last preset restore summary message.
