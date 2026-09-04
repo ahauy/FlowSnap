@@ -332,6 +332,124 @@ public struct CollinearEdgeDetector: CollinearEdgeDetecting {
         return best
     }
 
+    // MARK: - Junction Detection & 2D Resizing
+
+    /// Detect intersection junctions (T-junctions and Cross junctions) where vertical and horizontal dividers intersect.
+    public func detectJunctions(
+        in dividers: [CollinearEdge],
+        tolerance: CGFloat = 8.0
+    ) -> [CrossJunction] {
+        let verticalDividers = dividers.filter { $0.orientation == .vertical }
+        let horizontalDividers = dividers.filter { $0.orientation == .horizontal }
+        guard !verticalDividers.isEmpty, !horizontalDividers.isEmpty else { return [] }
+
+        var junctions: [CrossJunction] = []
+
+        for v in verticalDividers {
+            for h in horizontalDividers {
+                // Check if vertical seam X falls within horizontal span X, and horizontal seam Y falls within vertical span Y
+                let xInHorizontalSpan = (v.coordinate >= h.span.lowerBound - tolerance) && (v.coordinate <= h.span.upperBound + tolerance)
+                let yInVerticalSpan = (h.coordinate >= v.span.lowerBound - tolerance) && (h.coordinate <= v.span.upperBound + tolerance)
+
+                guard xInHorizontalSpan && yInVerticalSpan else { continue }
+
+                let intersectionPoint = CGPoint(x: v.coordinate, y: h.coordinate)
+                let participating = Set(v.leadingWindowIDs + v.trailingWindowIDs + h.leadingWindowIDs + h.trailingWindowIDs)
+
+                junctions.append(
+                    CrossJunction(
+                        point: intersectionPoint,
+                        verticalDivider: v,
+                        horizontalDivider: h,
+                        hitRadius: 18.0,
+                        participatingWindowIDs: Array(participating)
+                    )
+                )
+            }
+        }
+
+        return junctions
+    }
+
+    /// Hit-test a point against available junctions, selecting the closest within its hit radius.
+    public func hitTestJunction(
+        at point: CGPoint,
+        in junctions: [CrossJunction]
+    ) -> CrossJunction? {
+        var best: CrossJunction?
+        var minDistanceSq = CGFloat.greatestFiniteMagnitude
+
+        for junction in junctions {
+            let dx = point.x - junction.point.x
+            let dy = point.y - junction.point.y
+            let distSq = dx * dx + dy * dy
+            if distSq <= (junction.hitRadius * junction.hitRadius) && distSq < minDistanceSq {
+                minDistanceSq = distSq
+                best = junction
+            }
+        }
+
+        return best
+    }
+
+    /// Checks whether candidate represents the same seam as reference (orientation and adjacent windows).
+    private func isSameSeam(_ candidate: CollinearEdge, as reference: CollinearEdge) -> Bool {
+        candidate.orientation == reference.orientation
+            && Set(candidate.leadingWindowIDs) == Set(reference.leadingWindowIDs)
+            && Set(candidate.trailingWindowIDs) == Set(reference.trailingWindowIDs)
+    }
+
+    /// Computes synchronized 2D resized frames across all participating windows for a moving junction.
+    public func compute2DResizedFrames(
+        for junction: CrossJunction,
+        targetPoint: CGPoint,
+        in dividers: [CollinearEdge],
+        windows: [ManagedWindow],
+        containerFrame: CGRect,
+        gap: CGFloat = 0
+    ) -> [CGWindowID: CGRect] {
+        let vDivider = dividers.first(where: { isSameSeam($0, as: junction.verticalDivider) }) ?? junction.verticalDivider
+        let hDivider = dividers.first(where: { isSameSeam($0, as: junction.horizontalDivider) }) ?? junction.horizontalDivider
+
+        let verticalUpdated = computeResizedFrames(
+            for: vDivider,
+            targetCoordinate: targetPoint.x,
+            windows: windows,
+            containerFrame: containerFrame,
+            gap: gap
+        )
+
+        let horizontalUpdated = computeResizedFrames(
+            for: hDivider,
+            targetCoordinate: targetPoint.y,
+            windows: windows,
+            containerFrame: containerFrame,
+            gap: gap
+        )
+
+        var merged: [CGWindowID: CGRect] = [:]
+        let allIDs = Set(verticalUpdated.keys).union(horizontalUpdated.keys)
+        let windowMap = Dictionary(uniqueKeysWithValues: windows.map { ($0.id, $0) })
+
+        for id in allIDs {
+            guard let baseWindow = windowMap[id] else { continue }
+            let baseFrame = baseWindow.frame
+
+            let vFrame = verticalUpdated[id]
+            let hFrame = horizontalUpdated[id]
+
+            let finalX = vFrame?.origin.x ?? baseFrame.origin.x
+            let finalWidth = vFrame?.size.width ?? baseFrame.size.width
+
+            let finalY = hFrame?.origin.y ?? baseFrame.origin.y
+            let finalHeight = hFrame?.size.height ?? baseFrame.size.height
+
+            merged[id] = CGRect(x: finalX, y: finalY, width: finalWidth, height: finalHeight)
+        }
+
+        return merged
+    }
+
     // MARK: - Resize Computation
 
     public func computeResizedFrames(
