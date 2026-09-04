@@ -743,7 +743,7 @@ _Mục tiêu: Giải quyết triệt để 2 vấn đề xung đột cố hữu 
 
 _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùng (Always-on-Top) với cơ chế xếp lớp động (LIFO Z-Stacking), đồng thời loại bỏ xung đột Stage Manager của macOS — khi mở bất kỳ ứng dụng nào mới cũng tự động hòa vào Stage hiện tại mà không bị đẩy các ứng dụng cũ vào dải cánh gà._
 
-- [ ] **US-SNAP-021: Ghim Cửa sổ Luôn Trên Cùng & Hòa hợp Stage Manager khi Mở App (Universal Always-On-Top Pinning & Stage Manager Launch Co-existence)**
+- [x] **US-SNAP-021: Ghim Cửa sổ Luôn Trên Cùng & Hòa hợp Stage Manager khi Mở App (Universal Always-On-Top Pinning & Stage Manager Launch Co-existence)**
   - **Slug:** `always-on-top-window-pinning`
   - **Effort:** L
   - **Context-budget:** multi-session
@@ -752,28 +752,59 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
   - **Blocks:** _(none)_
   - **Mô tả:** Nâng cấp toàn diện cơ chế kiểm soát cửa sổ nổi trên macOS: Cho phép bấm phím tắt toàn cục (mặc định `⌃⌥P`) để ghim cửa sổ của bất kỳ ứng dụng nào luôn luôn nổi trên mặt trước của mọi ứng dụng khác mà không bị chìm xuống dưới. Hỗ trợ ghim đa cửa sổ không giới hạn với cơ chế Z-Order động (cửa sổ ghim nào kích hoạt sau sẽ nổi trên các cửa sổ ghim trước). Đồng thời, tự động duy trì sự hiện diện của các cửa sổ hiện tại khi mở bất kỳ ứng dụng mới nào trong môi trường Stage Manager (không bị macOS cô lập app mới và đẩy app cũ vào cánh gà).
   - **Acceptance Criteria (AC):**
-    - [ ] **Lắng nghe phím tắt `Pin/Unpin Focused Window` (`⌃⌥P`):** Chuyển đổi trạng thái ghim/bỏ ghim cho cửa sổ đang có tiêu điểm (focused window) của bất kỳ ứng dụng bên thứ 3 nào.
-    - [ ] **Tầng hiển thị Always-On-Top:** Đặt mức ưu tiên hiển thị của cửa sổ được ghim thành Floating Level (thông qua Accessibility Layer / Window Server Coordination). Cửa sổ được ghim luôn nằm trên tất cả các cửa sổ thông thường khi click làm việc ở app nền.
-    - [ ] **Xếp lớp động đa cửa sổ ghim (Dynamic LIFO Z-Stacking):** Cho phép ghim tự do không giới hạn số lượng cửa sổ. Cửa sổ ghim nào được click/focus sau sẽ nằm trên các cửa sổ ghim trước đó; toàn bộ nhóm ghim luôn nằm trên các cửa sổ chưa ghim.
-    - [ ] **Phạm vi Space cục bộ (Space Scoping):** Cửa sổ được ghim cố định tại Desktop Space hiện tại, không tự động bám dính (sticky) sang Space khác khi người dùng chuyển Desktop Space.
-    - [ ] **An toàn hộp thoại hệ thống (System Modal Safety):** Cửa sổ ghim tự động nhường quyền ưu tiên, không che khuất các hộp thoại bảo mật hệ thống (Keychain, Touch ID, File Dialogs).
-    - [ ] **Hòa hợp Stage Manager khi mở ứng dụng mới (Stage Manager Launch Co-existence):** Khi bật Stage Manager, bất kỳ ứng dụng nào mở lên từ Dock / Finder / Spotlight / Raycast đều tự động cùng xuất hiện trên Stage hiện tại, ngăn chặn triệt để hành vi mặc định của macOS đẩy các cửa sổ đang làm việc vào dải cánh gà.
-    - [ ] **Cấu hình trong Settings:** Có tùy chọn bật/tắt tính năng Stage Manager Launch Co-existence (mặc định BẬT) và tùy biến phím tắt ghim trong FlowSnap Settings.
-    - [ ] **Chỉ báo trạng thái (Pin Badge Indicator):** Hiển thị chỉ báo huy hiệu ghim nhỏ ở góc cửa sổ hoặc trong Menu Bar Status Item để người dùng nhận diện trạng thái ghim.
+    - [x] **Lắng nghe phím tắt `Pin/Unpin Focused Window` (`⌃⌥P`):** Chuyển đổi trạng thái ghim/bỏ ghim cho cửa sổ đang có tiêu điểm (focused window) của bất kỳ ứng dụng bên thứ 3 nào.
+    - [x] **Tầng hiển thị Always-On-Top:** Đặt mức ưu tiên hiển thị của cửa sổ được ghim thành Floating Level (thông qua Accessibility Layer / Window Server Coordination). Cửa sổ được ghim luôn nằm trên tất cả các cửa sổ thông thường khi click làm việc ở app nền.
+    - [x] **Xếp lớp động đa cửa sổ ghim (Dynamic LIFO Z-Stacking):** Cho phép ghim tự do không giới hạn số lượng cửa sổ. Cửa sổ ghim nào được click/focus sau sẽ nằm trên các cửa sổ ghim trước đó; toàn bộ nhóm ghim luôn nằm trên các cửa sổ chưa ghim.
+    - [x] **Phạm vi Space cục bộ (Space Scoping):** Cửa sổ được ghim cố định tại Desktop Space hiện tại, không tự động bám dính (sticky) sang Space khác khi người dùng chuyển Desktop Space.
+    - [x] **An toàn hộp thoại hệ thống (System Modal Safety):** Cửa sổ ghim tự động nhường quyền ưu tiên, không che khuất các hộp thoại bảo mật hệ thống (Keychain, Touch ID, File Dialogs).
+    - [x] **Hòa hợp Stage Manager khi mở ứng dụng mới (Stage Manager Launch Co-existence):** Khi bật Stage Manager, bất kỳ ứng dụng nào mở lên từ Dock / Finder / Spotlight / Raycast đều tự động cùng xuất hiện trên Stage hiện tại, ngăn chặn triệt để hành vi mặc định của macOS đẩy các cửa sổ đang làm việc vào dải cánh gà.
+    - [x] **Cấu hình trong Settings:** Có tùy chọn bật/tắt tính năng Stage Manager Launch Co-existence (mặc định BẬT) và tùy biến phím tắt ghim trong FlowSnap Settings.
+    - [x] **Chỉ báo trạng thái (Pin Badge Indicator):** Hiển thị chỉ báo danh sách cửa sổ ghim và nút bỏ ghim riêng lẻ hoặc bỏ ghim tất cả trong Menu Bar Status Item.
   - **Tasks:**
-    - [ ] `Core`: Xây dựng `WindowPinningCoordinator.swift` quản lý danh sách `CGWindowID` được ghim và duy trì Z-Stacking động.
-    - [ ] `Infrastructure`: Tích hợp `StageManagerLaunchCoordinator.swift` lắng nghe `NSWorkspace.didLaunchApplicationNotification` và điều phối `kAXRaiseAction` giữ Stage hiện tại.
-    - [ ] `Hotkeys`: Đăng ký phím tắt ghim cửa sổ toàn cục (`⌃⌥P`) trong `GlobalHotkeyManager`.
-    - [ ] `UI`: Cập nhật Menu Bar Status Item và Settings View với toggle Stage Manager Co-existence và Pin controls.
-    - [ ] `Tests`: Bộ test suite kiểm chứng toggle Pin/Unpin, LIFO stacking, và Launch Co-existence không gây leak hay race condition.
+    - [x] `Core`: Xây dựng `WindowPinningCoordinator.swift` quản lý danh sách `CGWindowID` được ghim và duy trì Z-Stacking động.
+    - [x] `Infrastructure`: Tích hợp `StageManagerLaunchCoordinator.swift` lắng nghe `NSWorkspace.didLaunchApplicationNotification` và điều phối `kAXRaiseAction` giữ Stage hiện tại.
+    - [x] `Hotkeys`: Đăng ký phím tắt ghim cửa sổ toàn cục (`⌃⌥P`) trong `GlobalHotkeyManager`.
+    - [x] `UI`: Cập nhật Menu Bar Status Item và Settings View với toggle Stage Manager Co-existence và Pin controls.
+    - [x] `Tests`: Bộ test suite kiểm chứng toggle Pin/Unpin, LIFO stacking, và Launch Co-existence không gây leak hay race condition.
   - **Deliverables khi [x]:**
     - Feature Spec: `.specify/features/always-on-top-window-pinning/spec.md`
     - Technical Plan: `.specify/features/always-on-top-window-pinning/plan.md`
     - Tasks Breakdown: `.specify/features/always-on-top-window-pinning/tasks.md`
-    - Architecture Decision Record: `adr/0014-always-on-top-window-pinning.md`
+    - Architecture Decision Record: `adr/0015-always-on-top-window-pinning.md`
     - Technical Docs: `docs/features/always-on-top-window-pinning/README.md`
     - End-User Guide: `docs/user-guides/always-on-top-window-pinning.md`
     - Test Plan: `.specify/features/always-on-top-window-pinning/test-plan.md`
+
+- [ ] **US-SNAP-022: Quake-Style Quick Scratchpad & Instant Window Toggle (Triệu hồi & Ẩn/Hiện Cửa sổ Phụ Tức Thì Bằng Phím Tắt)**
+  - **Slug:** `quake-scratchpad-instant-toggle`
+  - **Effort:** M
+  - **Context-budget:** multi-session
+  - **Priority:** High (P1)
+  - **Depends-on:** `US-SNAP-021` ✅
+  - **Blocks:** _(none)_
+  - **Mô tả:** Cơ chế Quake-style Scratchpad Overlay: Cho phép người dùng chọn bất kỳ cửa sổ nào (iTerm2, Ghi chú, Calculator, Finder,...) và gán làm Quick Scratchpad (qua Menu Bar hoặc phím tắt). Khi đang lướt Brave full màn hình (hoặc làm việc trên bất kỳ ứng dụng nào khác), nhấn phím tắt (ví dụ: `⌥Space` hoặc `⌃⌥P`): Cửa sổ Scratchpad lập tức nhảy lên trên cùng trước mặt người dùng và nhận tiêu điểm để gõ lệnh hoặc ghi chú ngay. Nhấn lại phím tắt đó (hoặc click ra ngoài / nhấn `ESC`): Cửa sổ đó tự động ẩn ngay xuống dưới / giấu đi, trả lại 100% không gian cho Brave mà không cần co nhỏ Brave 1 pixel nào.
+  - **Acceptance Criteria (AC):**
+    - [ ] **Đăng ký Scratchpad Window:** Người dùng có thể chọn một cửa sổ đang có tiêu điểm và gán làm Quick Scratchpad từ Menu Bar FlowSnap hoặc phím tắt.
+    - [ ] **Instant Summon (Triệu hồi tức thì):** Nhấn phím tắt toàn cục (`⌥Space` hoặc shortcut tùy biến), cửa sổ Scratchpad lập tức nổi lên lớp trên cùng trước mặt người dùng, giữ nguyên kích thước/vị trí và nhận tiêu điểm bàn phím trong `< 50ms`.
+    - [ ] **Instant Dismiss (Ẩn nhanh tức thì):** Nhấn lại phím tắt triệu hồi, hoặc nhấn `ESC`, hoặc click chuột ra ngoài cửa sổ Scratchpad, FlowSnap tự động ẩn cửa sổ Scratchpad đi và hoàn trả tiêu điểm tức thì cho ứng dụng đang mở trước đó (Brave).
+    - [ ] **Zero-Shrink Preservation (Không co ứng dụng chính):** Ứng dụng nền (Brave, VS Code) giữ nguyên 100% kích thước và vị trí, hoàn toàn không bị co nhỏ hay xáo trộn bố cục.
+    - [ ] **Tương thích Stage Manager & Spaces:** Cửa sổ Scratchpad được triệu hồi trực tiếp trên Space và Stage hiện tại mà không kích hoạt hiệu ứng chuyển Space của macOS.
+    - [ ] **Tùy chỉnh trong Settings:** Có tùy chọn bật/tắt hành vi "Tự ẩn khi mất focus / ESC" (Dismiss on blur / ESC) và cho phép tùy biến phím tắt triệu hồi trong FlowSnap Settings.
+    - [ ] **Menu Bar Status & Quake Actions:** Menu Bar hiển thị trạng thái Scratchpad đang kích hoạt (kèm tên ứng dụng) và nút Clear / Detach Scratchpad.
+  - **Tasks:**
+    - [ ] `Core`: Xây dựng `ScratchpadCoordinator.swift` quản lý trạng thái hiển thị/ẩn và lưu trữ tiến trình nền trước đó.
+    - [ ] `Infrastructure`: Tích hợp cơ chế summon / dismiss qua `AccessibilityService` và `NSWorkspace` activation.
+    - [ ] `Hotkeys`: Đăng ký phím tắt toàn cục `ShortcutAction.toggleScratchpad` trong `GlobalHotkeyManager`.
+    - [ ] `UI`: Bổ sung điều khiển Scratchpad trong `MenuBarView` và `SettingsView`.
+    - [ ] `Tests`: Bộ test suite kiểm chứng summon, dismiss, state restore, và switch focus an toàn.
+  - **Deliverables khi [x]:**
+    - Feature Spec: `.specify/features/quake-scratchpad-instant-toggle/spec.md`
+    - Technical Plan: `.specify/features/quake-scratchpad-instant-toggle/plan.md`
+    - Tasks Breakdown: `.specify/features/quake-scratchpad-instant-toggle/tasks.md`
+    - Architecture Decision Record: `adr/0016-quake-scratchpad-instant-toggle.md`
+    - Technical Docs: `docs/features/quake-scratchpad-instant-toggle/README.md`
+    - End-User Guide: `docs/user-guides/quake-scratchpad-instant-toggle.md`
+    - Test Plan: `.specify/features/quake-scratchpad-instant-toggle/test-plan.md`
 
 ---
 
@@ -818,8 +849,9 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
   ├── [Sprint 5: Stage Manager & Fullscreen Harmony]  ──► [ COMPLETED ✅ ]
   │     ├── [x] US-WORK-018: Stage Manager Multi-Window Auto-Grouping on Restore (EPIC 14 ✅ complete)
   │     └── [x] US-WORK-019: Universal Fullscreen Escape (Electron/Native Button & ⌃⌘F) ✅ complete
-  └── [Sprint 6: Universal Always-On-Top & Stage Manager Harmony]
-        └── [ ] US-SNAP-021: Universal Always-On-Top Window Pinning & Stage Manager Co-existence (⌃⌥P)
+  └── [Sprint 6: Universal Always-On-Top & Scratchpad Harmony]
+        ├── [x] US-SNAP-021: Universal Always-On-Top Window Pinning & Stage Manager Co-existence (⌃⌥P) ✅
+        └── [ ] US-SNAP-022: Quake-Style Quick Scratchpad & Instant Window Toggle (⌥Space)
 
 [ Future Horizons (V3.0+) ]
   ├── US-FUTURE-001: Visual Canvas-based Interactive Layout Editor
