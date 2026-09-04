@@ -41,6 +41,10 @@ public struct MenuBarView: View {
             Divider()
             pinnedWindowsSection
 
+            // Quick Scratchpad (US-SNAP-022)
+            Divider()
+            scratchpadSection
+
             Divider()
 
             // System Management
@@ -254,10 +258,94 @@ public struct MenuBarView: View {
                         .padding(.vertical, 4)
                         .background(
                             RoundedRectangle(cornerRadius: 4)
-                                .fill(Color(nsColor: .controlBackgroundColor).opacity(0.6))
+                                .fill(Color(nsColor: .controlBackgroundColor).opacity(0.4))
                         )
                     }
                 }
+            }
+        }
+    }
+
+    // MARK: - Quick Scratchpad (US-SNAP-022)
+
+    private var scratchpadSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text("QUICK SCRATCHPAD")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                if viewModel.isScratchpadAssigned {
+                    Button("Detach") {
+                        viewModel.detachScratchpad()
+                    }
+                    .buttonStyle(.plain)
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundStyle(.secondary)
+                }
+            }
+
+            if let record = viewModel.scratchpadRecord {
+                Button {
+                    viewModel.toggleScratchpad()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: viewModel.isScratchpadVisible ? "macwindow.badge.plus" : "macwindow")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.cyan)
+                            .frame(width: 14)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(record.appName)
+                                .font(.system(size: 11, weight: .medium))
+                            if let title = record.windowTitle, !title.isEmpty && title != record.appName {
+                                Text(title)
+                                    .font(.system(size: 9))
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                            }
+                        }
+                        Spacer()
+                        Text("⌥Space")
+                            .font(.system(size: 9, weight: .regular, design: .monospaced))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color(nsColor: .controlBackgroundColor).opacity(0.6))
+                    )
+                }
+                .buttonStyle(.plain)
+                .disabled(!viewModel.isAccessibilityTrusted)
+                .opacity(viewModel.isAccessibilityTrusted ? 1.0 : 0.5)
+            } else {
+                Button {
+                    viewModel.assignCurrentWindowAsScratchpad()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "plus.rectangle.on.rectangle")
+                            .font(.system(size: 11))
+                            .frame(width: 14)
+                        Text("Assign Focused Window")
+                            .font(.system(size: 11))
+                        Spacer()
+                        Text("⌃⌥Space")
+                            .font(.system(size: 9, weight: .regular, design: .monospaced))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color(nsColor: .controlBackgroundColor).opacity(0.6))
+                    )
+                }
+                .buttonStyle(.plain)
+                .disabled(!viewModel.isAccessibilityTrusted)
+                .opacity(viewModel.isAccessibilityTrusted ? 1.0 : 0.5)
             }
         }
     }

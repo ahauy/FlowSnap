@@ -28,6 +28,7 @@ public final class MenuBarViewModel {
     private let settingsWindowPresenter: (any SettingsWindowPresenting)?
     private let preferencesStore: PreferencesStore?
     private let windowPinningCoordinator: (any WindowPinningCoordinating)?
+    private let scratchpadCoordinator: (any ScratchpadCoordinating)?
 
     /// Built-in or custom workflow presets available in the menu bar.
     public let presets: [WorkspacePreset]
@@ -44,6 +45,22 @@ public final class MenuBarViewModel {
         !pinnedWindows.isEmpty
     }
 
+    // MARK: - Scratchpad State (US-SNAP-022)
+
+    public private(set) var scratchpadState: ScratchpadState = .unassigned
+
+    public var isScratchpadAssigned: Bool {
+        scratchpadState.isAssigned
+    }
+
+    public var isScratchpadVisible: Bool {
+        scratchpadState.isVisible
+    }
+
+    public var scratchpadRecord: ScratchpadRecord? {
+        scratchpadState.record
+    }
+
     // MARK: - Initialization
 
     public init(
@@ -54,7 +71,8 @@ public final class MenuBarViewModel {
         workspaceManager: WorkspaceManager? = nil,
         preferencesStore: PreferencesStore? = nil,
         presets: [WorkspacePreset] = BuiltinPresetFactory.allBuiltinPresets,
-        windowPinningCoordinator: (any WindowPinningCoordinating)? = nil
+        windowPinningCoordinator: (any WindowPinningCoordinating)? = nil,
+        scratchpadCoordinator: (any ScratchpadCoordinating)? = nil
     ) {
         self.accessibilityService = accessibilityService
         self.commandDispatcher = commandDispatcher
@@ -64,8 +82,10 @@ public final class MenuBarViewModel {
         self.presets = presets
         self.workspaceViewModel = workspaceManager.map { WorkspaceViewModel(manager: $0) }
         self.windowPinningCoordinator = windowPinningCoordinator
+        self.scratchpadCoordinator = scratchpadCoordinator
         self.isAccessibilityTrusted = accessibilityService.isTrusted
         self.pinnedWindows = windowPinningCoordinator?.pinnedWindows ?? []
+        self.scratchpadState = scratchpadCoordinator?.state ?? .unassigned
     }
 
     // MARK: - Lifecycle & State Refresh
@@ -73,6 +93,7 @@ public final class MenuBarViewModel {
     public func refreshState() {
         self.isAccessibilityTrusted = accessibilityService.isTrusted
         self.pinnedWindows = windowPinningCoordinator?.pinnedWindows ?? []
+        self.scratchpadState = scratchpadCoordinator?.state ?? .unassigned
         Task { @MainActor in
             if let focused = await self.windowManager.focusedWindow() {
                 self.lastFocusedWindow = focused
@@ -83,6 +104,7 @@ public final class MenuBarViewModel {
     public func refreshStateAsync() async {
         self.isAccessibilityTrusted = accessibilityService.isTrusted
         self.pinnedWindows = windowPinningCoordinator?.pinnedWindows ?? []
+        self.scratchpadState = scratchpadCoordinator?.state ?? .unassigned
         if let focused = await self.windowManager.focusedWindow() {
             self.lastFocusedWindow = focused
         }
@@ -190,6 +212,41 @@ public final class MenuBarViewModel {
     public func unpinAll() {
         windowPinningCoordinator?.unpinAll()
         self.pinnedWindows = []
+        NSSound(named: "Tink")?.play()
+    }
+
+    // MARK: - Scratchpad Actions (US-SNAP-022)
+
+    /// Toggles the Scratchpad visibility (summon or dismiss).
+    public func toggleScratchpad() {
+        guard isAccessibilityTrusted else {
+            requestAccessibilityPermission()
+            return
+        }
+        dismissMenuBarWindow()
+        Task { @MainActor in
+            try? await self.commandDispatcher.dispatch(.toggleScratchpad)
+            self.scratchpadState = self.scratchpadCoordinator?.state ?? .unassigned
+        }
+    }
+
+    /// Assigns the currently focused window as the active Scratchpad.
+    public func assignCurrentWindowAsScratchpad() {
+        guard isAccessibilityTrusted else {
+            requestAccessibilityPermission()
+            return
+        }
+        dismissMenuBarWindow()
+        Task { @MainActor in
+            try? await self.commandDispatcher.dispatch(.assignScratchpad)
+            self.scratchpadState = self.scratchpadCoordinator?.state ?? .unassigned
+        }
+    }
+
+    /// Detaches the active Scratchpad.
+    public func detachScratchpad() {
+        scratchpadCoordinator?.detachScratchpad()
+        self.scratchpadState = .unassigned
         NSSound(named: "Tink")?.play()
     }
 
