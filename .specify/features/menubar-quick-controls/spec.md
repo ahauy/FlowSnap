@@ -22,6 +22,17 @@ This specification details the architecture and implementation for `US-SNAP-005`
 - **REQ-MENU-006 (System Actions)**:
   - "Settings...": Opens the standard Settings scene.
   - "Quit FlowSnap": Gracefully unregisters hotkeys and shuts down the process.
+- **REQ-MENU-007 (Visual Snap Canvas Grid)**:
+  - Replaces text-heavy snap buttons with interactive miniature screen cards aligned with the design language of `SnapLayoutPickerView`.
+  - Displays partitions for Left/Right halves, Top/Bottom halves, Maximize, and 4 Quarters with continuous corner radii and 1px hairline borders.
+  - Clicking any partitioned slot triggers the corresponding `MenuBarAction` and automatically dismisses the popover.
+- **REQ-MENU-008 (Compact Workspaces & Presets)**:
+  - Caps workspace/preset menu list to at most 3-4 active items to keep menu height under 420px.
+  - Provides direct "+" (Save Layout) and "Manage..." links leading to the dedicated Settings tabs.
+- **REQ-MENU-009 (Modern Settings Window NavigationSplitView)**:
+  - Upgrades `SettingsView` from unstyled `TabView` to macOS `NavigationSplitView`.
+  - Left sidebar displays categorized sections (General, Shortcuts, Presets, Window Groups, App Rules, Workspaces, About) with vibrant SF Symbols.
+  - Right detail pane embeds content inside a `ScrollView` with grouped card geometry, eliminating clipping and label redundancy.
 
 ---
 
