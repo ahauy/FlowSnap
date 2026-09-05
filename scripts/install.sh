@@ -124,9 +124,10 @@ else
     sudo cp -R "${SOURCE_APP}" "${TARGET_DIR}/"
 fi
 
-# Step 5: Remove Quarantine Attribute (Gatekeeper)
+# Step 5: Remove Quarantine Attribute & Reset Stale Accessibility State
 echo -e "🛡️  Clearing Gatekeeper quarantine attribute..."
 xattr -cr "${APP_PATH}" 2>/dev/null || true
+tccutil reset Accessibility com.flowsnap.app 2>/dev/null || true
 
 # Step 6: Unmount DMG
 hdiutil detach "${MOUNT_DIR}" -quiet
