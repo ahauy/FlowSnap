@@ -2,40 +2,51 @@
 
 <p align="center">
   <strong>Your Mac. Your Layout. Your Flow.</strong><br>
-  <em>Native macOS window manager and intent-based workspace orchestrator built with Swift 6.</em>
+  <em>High-performance native macOS window manager and intent-based workspace orchestrator built with Swift 6.</em>
 </p>
 
 <p align="center">
   <a href="README.vi.md">🇻🇳 Tiếng Việt</a> •
-  <a href="#key-features">Features</a> •
-  <a href="#installation--getting-started">Installation</a> •
-  <a href="#keyboard-shortcuts">Shortcuts</a> •
-  <a href="#architecture--engineering">Architecture</a> •
-  <a href="#documentation">Docs</a>
+  <a href="#-key-features">Key Features</a> •
+  <a href="#-installation--getting-started">Installation</a> •
+  <a href="#%EF%B8%8F-keyboard-shortcuts">Shortcuts</a> •
+  <a href="#-architecture--engineering">Architecture</a> •
+  <a href="#-documentation-index">Docs</a>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/macOS-14.0%2B%20(Sonoma%20%2F%20Sequoia)-black?style=flat-square&logo=apple" alt="macOS 14.0+">
-  <img src="https://img.shields.io/badge/Swift-6.0%20Strict%20Concurrency-orange?style=flat-square&logo=swift" alt="Swift 6.0">
-  <img src="https://img.shields.io/badge/Tests-358%20Passing%20(55%20Suites)-brightgreen?style=flat-square" alt="Tests 358 Passing">
-  <img src="https://img.shields.io/badge/Apple%20API-100%25%20Zero%20Private%20APIs-blue?style=flat-square" alt="Zero Private APIs">
-  <img src="https://img.shields.io/badge/Architecture-DDD%20%26%20Deep%20Modules-purple?style=flat-square" alt="DDD Architecture">
-  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License">
+  <img src="https://img.shields.io/badge/macOS-14.0%2B%20(Sonoma%20%2F%20Sequoia)-000000?style=flat-square&logo=apple&logoColor=white" alt="macOS 14.0+">
+  <img src="https://img.shields.io/badge/Swift-6.0%20Strict%20Concurrency-FA7343?style=flat-square&logo=swift&logoColor=white" alt="Swift 6.0">
+  <img src="https://img.shields.io/badge/Tests-358%20Passing%20(55%20Suites)-2ea44f?style=flat-square" alt="Tests 358 Passing">
+  <img src="https://img.shields.io/badge/Apple%20API-100%25%20Zero%20Private%20APIs-0071e3?style=flat-square" alt="Zero Private APIs">
+  <img src="https://img.shields.io/badge/Architecture-DDD%20%26%20Deep%20Modules-7928ca?style=flat-square" alt="DDD Architecture">
+  <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="MIT License">
+</p>
+
+<p align="center">
+  <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg">
+    <img src="https://img.shields.io/badge/Download%20for%20macOS-FlowSnap.dmg-0071e3?style=for-the-badge&logo=apple&logoColor=white" alt="Download FlowSnap for macOS">
+  </a><br>
+  <em>~ Compatible with macOS 14.0 Sonoma and later (Apple Silicon & Intel) ~</em>
+</p>
+
+<p align="center">
+  <img src="docs/user-guides/images/top-edge-layout-picker/01_layout_picker_flyout.png" width="780" alt="FlowSnap Top-Edge Layout Picker Preview">
 </p>
 
 ---
 
 ## 🌟 Why FlowSnap?
 
-The default macOS window management experience forces users to repeatedly perform manual resizing, wrestle with restrictive Split Views, or suffer jarring desktop transitions when opening new applications.
+The default macOS window management experience forces you into constant manual resizing, clunky full-screen Split Views, or jarring transitions that break your flow.
 
-One of the biggest productivity killers on macOS is **unwanted Space hopping**: opening an app suddenly pulls you across to another Desktop/Space, breaking your mental focus.
+Even worse is **unwanted Space hopping**: opening an app suddenly pulls you across monitors or virtual desktops, destroying your mental context.
 
-**FlowSnap** solves this with a singular core principle:
+**FlowSnap** solves this with a singular principle:
 
 > **You decide where windows belong. FlowSnap takes care of the rest.**
 
-FlowSnap combines the visual elegance of **Windows 11-style Snap Layouts** with a powerful **Intent-Based Workspace Engine** designed from the ground up for macOS.
+FlowSnap pairs the visual intuition of **Windows 11-style Snap Layouts** with an **Intent-Based Workspace Engine** engineered specifically for macOS. It delivers instant, fluid window tiling without sacrificing the flexibility of floating windows.
 
 ---
 
@@ -46,52 +57,52 @@ FlowSnap combines the visual elegance of **Windows 11-style Snap Layouts** with 
 Drag any window towards the top center edge of your screen to summon an instant layout picker. Hover over partition zones (50/50, 70/30, 3-column, 4-quarters) and release to snap windows into place with zero effort.
 
 <p align="center">
-  <img src="docs/user-guides/images/top-edge-layout-picker/01_layout_picker_flyout.png" width="750" alt="FlowSnap Top-Edge Layout Picker">
+  <img src="docs/user-guides/images/top-edge-layout-picker/01_layout_picker_flyout.png" width="720" alt="FlowSnap Top-Edge Layout Picker">
 </p>
 
 ---
 
-### 2. ⚡ Interactive Drag-to-Snap & Real-Time HUD Preview
+### 2. ⚡ Interactive Drag-to-Snap & Real-Time HUD Overlay
 
-Drag windows to screen boundaries or corners to trigger real-time translucent HUD snap overlays with smooth spring-physics animations. Drop to snap; drag away to cancel.
+Drag windows to screen borders or display corners to trigger real-time translucent HUD snap overlays with smooth spring physics. Drop to snap; drag away to cancel.
 
 <p align="center">
-  <img src="docs/user-guides/images/drag-to-snap-preview/01_drag_to_snap_left_half.png" width="750" alt="FlowSnap Drag to Snap Preview">
+  <img src="docs/user-guides/images/drag-to-snap-preview/01_drag_to_snap_left_half.png" width="720" alt="FlowSnap Drag to Snap Preview">
 </p>
 
 ---
 
-### 3. ↔️ Adaptive Multi-Window Resize & Inner/Outer Gaps
+### 3. ↔️ Adaptive Collinear Resize & Custom Window Gaps
 
-Resizing one window shouldn't require manually adjusting its neighbor. FlowSnap detects **collinear shared dividers** between tiled windows—dragging the boundary line resizes both windows simultaneously in real time (locked at 60 FPS).
+Resizing one window shouldn't require manually readjusting its neighbor. FlowSnap automatically detects **collinear shared dividers** between tiled windows—dragging the boundary line resizes both windows simultaneously in real time locked at 60 FPS.
 
-Configure aesthetic inner and outer window gaps for clean, modern tiled desk setups.
+Configure customizable inner and outer window gaps for aesthetic, modern tiling desk setups.
 
 <p align="center">
-  <img src="docs/user-guides/images/custom-ratios-window-gaps/03_general_settings_16px_tiling.png" width="750" alt="FlowSnap Gaps and Tiling">
+  <img src="docs/user-guides/images/custom-ratios-window-gaps/03_general_settings_16px_tiling.png" width="720" alt="FlowSnap Gaps and Tiling Settings">
 </p>
 
 ---
 
 ### 4. 🪐 Current Space Anchoring (Zero Unwanted Space Jumping)
 
-Never get pulled away from your active Desktop again. FlowSnap continuously observes application launches and guarantees that new windows appear **strictly within your current Space and Display**, preserving your flow state without using any private Apple APIs.
+Never get pulled away from your active Desktop again. FlowSnap continuously observes application launches and guarantees that new windows appear **strictly within your active Space and Display**, preserving your flow state without using any private Apple APIs.
 
 <p align="center">
-  <img src="docs/user-guides/images/app-launch-current-space-policy/01_current_space_anchoring.png" width="750" alt="FlowSnap Current Space Anchoring">
+  <img src="docs/user-guides/images/app-launch-current-space-policy/01_current_space_anchoring.png" width="720" alt="FlowSnap Current Space Anchoring">
 </p>
 
 ---
 
 ### 5. 🗂️ Intent-Based Workspaces & Workflow Presets
 
-Save your entire multi-window layout as a named **Workspace** (e.g. _Coding_, _Research_, _Writing_). Workspaces store geometric intent rather than rigid pixel values, allowing seamless restoration across different display sizes and external monitors.
+Save your multi-window layout as a named **Workspace** (e.g., _Coding_, _Research_, _Writing_). Workspaces store geometric intent rather than rigid pixel values, allowing seamless restoration across different display resolutions and external monitors.
 
-- **Curated Builtin Presets**: Quick-start templates for common workflows.
-- **Linked Window Groups**: Group related windows so minimizing or moving one acts cohesively across the set.
+- **Curated Builtin Presets**: Instant templates for common two-window and three-window setups.
+- **Linked Window Groups**: Group related windows so minimizing or repositioning one keeps the set together.
 
 <p align="center">
-  <img src="docs/user-guides/images/workspace-snapshot-restoration/01_save_workspace_sheet.png" width="750" alt="FlowSnap Save Workspace Sheet">
+  <img src="docs/user-guides/images/workspace-snapshot-restoration/01_save_workspace_sheet.png" width="720" alt="FlowSnap Save Workspace Sheet">
 </p>
 
 ---
@@ -100,31 +111,146 @@ Save your entire multi-window layout as a named **Workspace** (e.g. _Coding_, _R
 
 Define dedicated rules per application bundle ID:
 
-- **Floating**: Keep lightweight utilities (Calculator, Dictionary, Notes) floating above your tiled workspace.
+- **Floating Utilities**: Keep lightweight tools (Calculator, Dictionary, Notes) floating above your tiled workspace.
 - **Remember Position**: Automatically clamp and remember last-closed positions.
-- **Assigned Layout**: Force specific apps (like Slack or Spotify) into predetermined screen zones.
-- **Smart Focus Stack**: Closing a floating window immediately hands keyboard focus back to your primary tiled application underneath.
+- **Smart Focus Return**: Closing a floating window immediately restores keyboard focus to the underlying tiled application.
 
 <p align="center">
-  <img src="docs/user-guides/images/settings-shortcut-customization/03_application_rules_tab.png" width="750" alt="FlowSnap Per-App Rules Settings">
+  <img src="docs/user-guides/images/settings-shortcut-customization/03_application_rules_tab.png" width="720" alt="FlowSnap Per-App Rules Settings">
 </p>
 
 ---
 
-### 7. ⌨️ Global Hotkeys & Native Menu Bar Quick Controls
+### 7. ⌨️ Menu Bar Quick Controls & Global Hotkeys
 
-Trigger any snap zone instantly with system-wide keyboard shortcuts powered by low-latency Carbon Event Hotkeys. Features a reactive shortcut recorder with conflict detection and an unobtrusive menu bar companion.
+Trigger any snap zone instantly with system-wide keyboard shortcuts powered by low-latency Carbon Event Hotkeys, or click and drag across the **Interactive Visual Snap Grid** directly from the menu bar companion.
 
 <p align="center">
-  <img src="docs/user-guides/images/settings-shortcut-customization/02_shortcuts_tab.png" width="370" alt="FlowSnap Shortcut Customization">
-  <img src="docs/user-guides/images/menubar-quick-controls/01_menubar_quick_snap_menu.png" width="370" alt="FlowSnap Menu Bar Quick Snap">
+  <img src="docs/user-guides/images/settings-shortcut-customization/02_shortcuts_tab.png" width="350" alt="FlowSnap Shortcut Customization">
+  <img src="docs/user-guides/images/menubar-quick-controls/01_menubar_quick_snap_menu.png" width="350" alt="FlowSnap Menu Bar Quick Snap Grid">
 </p>
+
+---
+
+## 💻 System Requirements & Permissions
+
+| Requirement           | Specification                                               |
+| --------------------- | ----------------------------------------------------------- |
+| **Operating System**  | macOS 14.0 (Sonoma) or macOS 15.0+ (Sequoia)                |
+| **Hardware**          | Apple Silicon (M1 / M2 / M3 / M4) or Intel (x86_64)         |
+| **System Permission** | **macOS Accessibility** (`AXUIElement` window manipulation) |
+
+> [!IMPORTANT]
+> **Granting Accessibility Permission:**
+> FlowSnap requires Accessibility access to position windows. On first launch, macOS will prompt you to open **System Settings → Privacy & Security → Accessibility** and toggle **FlowSnap** ON.
+> FlowSnap uses **100% public Apple APIs** and runs in a hardened runtime with zero private framework calls.
+
+---
+
+## 🚀 Installation & Getting Started
+
+### For Users: Download & Install
+
+#### Option 1: One-Line Terminal Install (Recommended ⚡)
+
+Open your Terminal and run this single command to automatically download, install to `/Applications`, remove Gatekeeper quarantine, and launch FlowSnap:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"
+```
+
+---
+
+#### Option 2: Direct Download for macOS (.dmg) 📥
+
+Click the link below to immediately trigger the native browser download dialog:
+
+<p align="center">
+  <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg">
+    <strong>Download for macOS (FlowSnap.dmg)</strong>
+  </a><br>
+  <em>~ Compatible with macOS 14.0 Sonoma and later (Apple Silicon & Intel) ~</em>
+</p>
+
+1. Your browser will prompt to save **`FlowSnap.dmg`** (or save it directly into your `Downloads` folder).
+2. Double-click the downloaded `.dmg` and drag **FlowSnap** into your **Applications** folder.
+
+---
+
+#### Option 3: Package DMG from Source Locally
+
+If you prefer to build the release `.dmg` yourself:
+
+```bash
+git clone https://github.com/ahauy/FlowSnap.git
+cd FlowSnap
+./scripts/build-dmg.sh
+open build/FlowSnap-*.dmg
+```
+
+---
+
+### For Developers: Building from Source
+
+#### Prerequisites
+
+- **macOS 14.0+**
+- **Xcode 16.0+**
+- **XcodeGen** (`brew install xcodegen`)
+
+#### Build & Run Commands
+
+1. **Generate the Xcode project and compile:**
+
+   ```bash
+   xcodegen generate
+   xcodebuild -project FlowSnap.xcodeproj -scheme FlowSnap -destination 'platform=macOS' build
+   ```
+
+2. **Launch the built app:**
+
+   ```bash
+   open $(find ~/Library/Developer/Xcode/DerivedData/FlowSnap-*/Build/Products/Debug -name "FlowSnap.app" | head -n 1)
+   ```
+
+3. **Run the automated test suite (358 Tests across 55 Suites):**
+
+   ```bash
+   xcodebuild -project FlowSnap.xcodeproj -scheme FlowSnapTests test
+   ```
+
+4. **Run FlowSnapLab (Interactive QA Testbed):**
+   ```bash
+   xcodebuild -project FlowSnap.xcodeproj -scheme FlowSnapLab -destination 'platform=macOS' build
+   open $(find ~/Library/Developer/Xcode/DerivedData/FlowSnap-*/Build/Products/Debug -name "FlowSnapLab.app" | head -n 1)
+   ```
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+| Action                    | Default Shortcut | Description                             |
+| :------------------------ | :--------------: | :-------------------------------------- |
+| **Snap Left Half**        |     `⌥ ⌃ ←`      | Snap window to left half of screen      |
+| **Snap Right Half**       |     `⌥ ⌃ →`      | Snap window to right half of screen     |
+| **Snap Top Half**         |     `⌥ ⌃ ↑`      | Snap window to top half of screen       |
+| **Snap Bottom Half**      |     `⌥ ⌃ ↓`      | Snap window to bottom half of screen    |
+| **Maximize Window**       |     `⌥ ⌃ ↩`      | Maximize within visible screen bounds   |
+| **Restore Previous Size** |     `⌥ ⌃ ⌫`      | Restore window to frame before snapping |
+| **Center Window**         |     `⌥ ⌃ C`      | Center window on current display        |
+| **Next Display**          |     `⌥ ⌃ ⇥`      | Move focused window to next monitor     |
+| **Previous Display**      |    `⌥ ⌃ ⇧ ⇥`     | Move focused window to previous monitor |
+| **Save Workspace**        |     `⌥ ⌃ S`      | Open quick save workspace dialog        |
+| **Restore Workspace**     |     `⌥ ⌃ R`      | Cycle through or restore last workspace |
+
+> [!NOTE]
+> All hotkeys can be fully customized or disabled in **FlowSnap Preferences → Shortcuts**.
 
 ---
 
 ## 🏗️ Architecture & Engineering
 
-FlowSnap is engineered with uncompromising software quality, adhering to Domain-Driven Design (DDD) and John Ousterhout's _Deep Modules_ philosophy.
+FlowSnap is built on **Domain-Driven Design (DDD)** and John Ousterhout’s **Deep Modules** philosophy, isolating pure geometric business logic from macOS system adapters:
 
 ```
 FlowSnap/
@@ -132,161 +258,88 @@ FlowSnap/
 │   ├── Model/        # ManagedWindow, LayoutZone, Workspace, AppPolicyRule
 │   ├── Services/     # SnapEngine, LayoutEngine, CollinearEdgeDetector
 │   └── Ports/        # AccessibilityServing, DisplayManaging, GlobalHotkeyManaging
-├── Core/             # State coordination & high-leverage services
+├── Core/             # High-leverage coordination services
 │   ├── Workspace/    # WorkspaceManager, PresetResolver, WindowGroupManager
 │   ├── Policy/       # WindowPolicyManager, SmartFocusStack, FrameClampingHelper
 │   └── Dispatcher/   # CommandDispatcher, LiveResizeThrottler
-├── Infrastructure/   # Adapters to macOS system services
+├── Infrastructure/   # macOS System Adapters (Ports implementation)
 │   ├── Accessibility/# AXUIElement adapter, AXObserver lifecycle
 │   ├── Hotkey/       # Carbon RegisterEventHotKey daemon
 │   ├── Display/      # AppKit NSScreen observer & monitor topology
 │   └── Persistence/  # Atomic JSON storage & UserDefaults PreferencesStore
-└── UI/               # Declarative SwiftUI views & non-activating NSPanels
+└── UI/               # Declarative SwiftUI & non-activating NSPanels
     ├── SnapPreview/  # Translucent ghost overlay panel
     ├── LayoutPicker/ # Top-edge Windows 11-style interactive flyout
-    ├── MenuBar/      # NSStatusItem & popover quick controls
+    ├── MenuBar/      # NSStatusItem & popover visual snap grid
     └── Settings/     # Full-featured tabbed settings & shortcut recorder
 ```
 
 ### Engineering Guarantees
 
-- **100% Swift 6.0 Concurrency**: Full actor isolation, `@MainActor` UI synchronization, and `Sendable` domain contracts. Zero data races.
-- **100% Zero Private APIs**: Fully verified with automated symbol audits (`audit-no-private-apis.sh`). No unsafe `CGS*` or `SLS*` private calls. Hardened Runtime and notarization ready.
-- **Rigorous Test Coverage**: **358 automated tests** across 55 test suites using Swift Testing (`@Test`) and XCTest, backed by protocol-based mock doubles.
-- **Sub-Millisecond Performance**: Snap calculations execute in under **1ms**; live divider drags maintain continuous **60 FPS**; idle CPU consumption is **~0.0%**.
+- **100% Swift 6.0 Concurrency**: Full actor isolation, `@MainActor` UI dispatch, and thread-safe domain entities. Zero data races.
+- **100% Zero Private APIs**: Audited via `scripts/audit-no-private-apis.sh`. No undocumented `CGS*` or `SLS*` calls. Notarization and App Store ready.
+- **Sub-Millisecond Execution**: Snap calculations compute in `< 1ms`. Boundary resizing maintains continuous **60 FPS**. Idle CPU consumption is **~0.0%**.
+- **Rigorous Verification**: Backed by **358 automated tests** across 55 test suites with mock doubles.
 
 ---
 
-## 🚀 Installation & Getting Started
+## 🔧 Troubleshooting & Gotchas
 
-### System Requirements
+<details>
+<summary><strong>macOS keeps asking for Accessibility permission after re-compiling</strong></summary>
 
-- **macOS 14.0 (Sonoma)** or **macOS 15.0+ (Sequoia)**
-- Apple Silicon (M1/M2/M3/M4) or Intel (x86_64)
-
----
-
-### Option 1: Package & Run DMG (Recommended)
-
-You can build and package a standalone, drag-and-drop `.dmg` installer with a single command:
+During local development, rebuilding the binary changes its code signature. macOS TCC may invalidate permissions for that debug path. Reset the permission cache using:
 
 ```bash
-git clone https://github.com/ahauy/FlowSnap.git
-cd FlowSnap
-./scripts/build-dmg.sh
+tccutil reset Accessibility com.flowsnap.app
 ```
 
-This generates `build/FlowSnap-1.3.0.dmg`. Double-click or open it:
+Then relaunch the app and re-enable it in **System Settings → Privacy & Security → Accessibility**.
+</details>
+
+<details>
+<summary><strong>"FlowSnap can't be opened because Apple cannot check it for malicious software" (Gatekeeper)</strong></summary>
+
+If running an unsigned local build on a new machine, remove the quarantine attribute:
 
 ```bash
-open build/FlowSnap-*.dmg
+xattr -cr /Applications/FlowSnap.app
 ```
 
-Drag **FlowSnap** into your **Applications** folder, and you're ready to go!
-
----
-
-### Option 2: Build from Source with Xcode
-
-1. Ensure **Xcode 16+** and **XcodeGen** are installed:
-
-   ```bash
-   brew install xcodegen
-   ```
-
-2. Generate the project and compile:
-
-   ```bash
-   xcodegen generate
-   xcodebuild -project FlowSnap.xcodeproj -scheme FlowSnap -destination 'platform=macOS' build
-   ```
-
-3. Launch FlowSnap:
-   ```bash
-   open $(find ~/Library/Developer/Xcode/DerivedData/FlowSnap-*/Build/Products/Debug -name "FlowSnap.app" | head -n 1)
-   ```
-
----
-
-### 🛡️ Granting Accessibility Permissions
-
-FlowSnap requires macOS **Accessibility** permission to reposition and resize windows via the native macOS Accessibility API.
-
-1. On first launch, click **Open System Settings** in the prompt.
-2. Navigate to **Privacy & Security → Accessibility**.
-3. Toggle the switch **ON** for **FlowSnap**.
-
-> [!TIP]
-> **Troubleshooting permission cache issues:** If macOS keeps showing untrusted after re-building the app, reset the TCC cache with:
->
-> ```bash
-> tccutil reset Accessibility com.flowsnap.app
-> ```
-
----
-
-## ⌨️ Default Keyboard Shortcuts
-
-| Action                    | Shortcut  | Description                                       |
-| :------------------------ | :-------: | :------------------------------------------------ |
-| **Snap Left Half**        |  `⌥ ⌃ ←`  | Snap focused window to left half                  |
-| **Snap Right Half**       |  `⌥ ⌃ →`  | Snap focused window to right half                 |
-| **Snap Top Half**         |  `⌥ ⌃ ↑`  | Snap focused window to top half                   |
-| **Snap Bottom Half**      |  `⌥ ⌃ ↓`  | Snap focused window to bottom half                |
-| **Maximize Window**       |  `⌥ ⌃ ↩`  | Maximize window within visible display bounds     |
-| **Restore Previous Size** |  `⌥ ⌃ ⌫`  | Restore window to bounds before snapping          |
-| **Center Window**         |  `⌥ ⌃ C`  | Center window on current screen                   |
-| **Next Display**          |  `⌥ ⌃ ⇥`  | Move focused window to next connected monitor     |
-| **Previous Display**      | `⌥ ⌃ ⇧ ⇥` | Move focused window to previous connected monitor |
-| **Save Workspace**        |  `⌥ ⌃ S`  | Open quick save workspace dialog                  |
-| **Restore Workspace**     |  `⌥ ⌃ R`  | Cycle through or restore last workspace           |
-
-_All shortcuts can be customized or disabled in **Preferences → Shortcuts**._
-
----
-
-## 🧪 FlowSnapLab (Developer Interactive Testbed)
-
-FlowSnap includes a standalone companion target called **FlowSnapLab** designed for interactive manual QA, permission diagnosis, and layout boundary inspection.
-
-To run FlowSnapLab:
-
-```bash
-xcodebuild -project FlowSnap.xcodeproj -scheme FlowSnapLab -destination 'platform=macOS' build
-open $(find ~/Library/Developer/Xcode/DerivedData/FlowSnap-*/Build/Products/Debug -name "FlowSnapLab.app" | head -n 1)
-```
+</details>
 
 ---
 
 ## 📚 Documentation Index
 
-- 📖 [**Product Roadmap & Requirements**](docs/PRODUCT_BACKLOG_ROADMAP.md) — Complete 12-Epic specifications and design principles.
-- 🧩 [**Feature Documentation Index**](docs/features/README.md) — Detailed engineering specs for each implemented feature.
-- 🖼️ [**User Guides with Screenshots**](docs/user-guides/README.md) — Visual walkthroughs for all capabilities.
-- 📐 [**Architecture Decision Records (ADR)**](adr/) — Load-bearing architectural decisions (ADR-0001 through ADR-0010).
-- 🧪 [**Run & Test Guide**](docs/RUN_AND_TEST.md) — Fast-track terminal commands for developers and testers.
-- 💬 [**Shared Language (Ubiquitous Language)**](CONTEXT.md) — Domain glossary and terminology dictionary.
+- 📖 [**Product Backlog & Roadmap**](docs/PRODUCT_BACKLOG_ROADMAP.md) — 12-Epic functional specifications and architecture roadmap.
+- 🧩 [**Feature Documentation Index**](docs/features/README.md) — Architectural design and specs for each implemented feature.
+- 🖼️ [**User Guides with Screenshots**](docs/user-guides/README.md) — Step-by-step visual guides for all user-facing features.
+- 📐 [**Architecture Decision Records (ADR)**](adr/) — Immutable architectural decisions (ADR-0001 through ADR-0010).
+- 🧪 [**Run & Test Guide**](docs/RUN_AND_TEST.md) — Terminal commands for testing, packaging, and QA.
+- 💬 [**Ubiquitous Language (Context)**](CONTEXT.md) — Canonical project terminology and domain glossary.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions, bug reports, and feature suggestions are welcome!
+Contributions are welcome! Please check [CONTRIBUTING.md](CONTRIBUTING.md) before submitting pull requests.
 
 1. Fork the repository.
-2. Create your feature branch (`git checkout -b feature/amazing-idea`).
-3. Ensure all tests pass: `xcodebuild -project FlowSnap.xcodeproj -scheme FlowSnapTests test`.
-4. Commit your changes with conventional commit messages.
-5. Push to your branch and submit a Pull Request.
+2. Create a feature branch: `git checkout -b feature/amazing-feature`.
+3. Verify test suites pass: `xcodebuild -project FlowSnap.xcodeproj -scheme FlowSnapTests test`.
+4. Submit a Pull Request.
 
 ---
 
-## 👤 Author
+## 🛡️ Security
 
-**Vũ Tuấn Hậu** ([@ahauy](https://github.com/ahauy))
+If you discover a security vulnerability, please do **not** open a public issue. Report it confidentially via GitHub Security Advisories or contact the maintainer directly.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+FlowSnap is released under the **[MIT License](LICENSE)**.
+
+Copyright © 2026 **Vũ Tuấn Hậu** ([@ahauy](https://github.com/ahauy)).

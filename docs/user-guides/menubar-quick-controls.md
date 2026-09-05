@@ -13,7 +13,9 @@ Clicking the Menu Bar icon presents a clean, native control panel:
 ![FlowSnap Menu Bar Quick Controls](images/menubar-quick-controls/01_menubar_quick_snap_menu.png)
 
 - **Header Status Badge**: Displays a green **"Ready"** capsule badge when all macOS permissions are properly configured.
-- **Quick Snap Matrix**: 10 mouse-clickable action buttons for Halves, Full/Restore, and Quarters with intuitive SF Symbol geometric icons and keyboard shortcut reference hints.
+- **Visual Snap Grid**: Interactive geometric screen preview tiles for Halves, Full/Restore, and Quarters with hover highlight, instant 1-click execution, and automatic menu dismissal.
+- **Workflow Presets & Workspaces Submenu**: Direct 1-tap activation for curated setups (Coding, Research) and instant multi-monitor Workspace Throw (`⌃⌥⇧⌘→`).
+- **Productivity Tools**: Instant access to Pin Focused Window (`⌃⌥P`) and Quick Scratchpad (`⌥Space`).
 - **System Management Footer**: Dedicated buttons to access **Settings...** (`⌘,`) and cleanly **Quit FlowSnap** (`⌘Q`).
 
 ---

@@ -283,32 +283,38 @@ When FlowSnap activates a preset (or when windows are grouped together), member 
    - When you click on any background window belonging to an active group, FlowSnap raises all fellow group members to the foreground, while keeping the clicked window on top.
 3. **Synchronized Spatial Move**:
    - Moving or snapping the anchor window shifts associated member windows smoothly across the display.
+4. **Cross-Display Group Migration (Dual-Mode Scaling)**:
+   - Throwing any grouped window to another display (e.g. Laptop screen $\leftrightarrow$ 4K External Monitor) automatically carries all member windows along when **Cross-display move** is enabled.
+   - FlowSnap automatically performs **Dual-Mode Scaling**: Snapped windows in canonical zones (e.g. 50/50 Left/Right, IoU $\ge 0.75$) cleanly re-dock into the target screen's visible bounds, while arbitrary floating layouts scale proportionally via `RelativeFrameScaler`.
+   - Dedicated global hotkeys: **`⌃⌥⌘→`** (Move Group to Next Display) and **`⌃⌥⌘←`** (Move Group to Previous Display).
+
+![FlowSnap Cross-Display Group Dual-Mode Scaling](images/window-groups-presets/03_cross_display_migration_dual_mode.png)
+
+---
+
+### Selecting Specific Windows Across Multiple App Instances
+
+When creating or editing a group with multiple windows belonging to the same app (e.g. two Brave browser windows or multiple VS Code windows):
+
+![FlowSnap Create Window Group Sheet with Multi-Window Selection](images/window-groups-presets/02_create_window_group_multi_instance.png)
+
+- **① Specific Window Titles**: FlowSnap displays each window's **Application Icon** + specific **Window Title** (e.g. `React Documentation — Quick Start Guide` vs `YouTube — WWDC 2026 Keynote Video`).
+- **② Miniature Window ID**: Displays a unique ID badge (`ID: 1042`) next to each entry to guarantee precision.
+- **③ Built-in Sync Options**: Easily enable or disable `Minimize together`, `Focus together`, `Move together`, and `Cross-display move` before creating the group.
 
 ---
 
 ### Configuring Groups in Settings > Window Groups
 
 1. Open **Settings (`⌘,`)** and click the **Window Groups** tab.
-2. View all currently active groups, member window counts, and individual sync options:
+2. View all currently active groups, member window counts, quick actions, and individual sync options:
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  General   Snap HUD   Shortcuts   Presets   Window Groups   Workspaces      │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  Active Window Groups                                                       │
-│  Linked window groups coordinate minimize, focus, and move behaviors.      │
-│                                                                             │
-│  ┌───────────────────────────────────────────────────────────────────────┐  │
-│  │ ◫  Coding  [ 3 windows ]                                 [ Ungroup ]  │  │
-│  │ ───────────────────────────────────────────────────────────────────── │  │
-│  │  Synchronization Behavior:                                            │  │
-│  │  [✓] Minimize together     [✓] Focus together     [✓] Move together   │  │
-│  └───────────────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+![FlowSnap Window Groups Settings & Quick Next Display](images/window-groups-presets/01_window_groups_settings_and_throw.png)
 
-- **Toggle Sync Options**: Check or uncheck `Minimize together`, `Focus together`, or `Move together` to customize group behavior.
-- **Ungroup Action**: Click **"Ungroup"** to dissolve the link and return all windows to independent standalone behavior.
+- **① Group Summary Card**: Displays group title, active window badge (`3 windows`), and individual member apps with window titles.
+- **② Quick Throw (`[→ Next Display]`)**: When multiple monitors are connected, click the button on the card header to migrate the entire group immediately.
+- **③ Cross-Display Synchronization (`[✓] Cross-display move`)**: Synchronizes whole-group throw across displays during single-window snap/throw commands.
+- **Ungroup Action (`[✕]`)**: Click to dissolve the link and return all windows to independent standalone behavior.
 
 > [!NOTE]
 > **Automatic Group Lifecycle (Self-Pruning):** When you close a grouped window (`⌘W` or `⌘Q`), FlowSnap automatically detects its removal. If a group falls below 2 windows, it **automatically dissolves** without requiring manual cleanup.
@@ -353,18 +359,20 @@ flowchart TD
 
 ## ⚡ 6. Default Keyboard Shortcuts & Quick Reference
 
-| Shortcut  | Preset / Action     | Description & Target Zones                                                            |
-| :-------- | :------------------ | :------------------------------------------------------------------------------------ |
-| **`⌃⌥C`** | **Coding Preset**   | Editor (`60%` Left), Browser (`25%` Top-Right), Terminal (`15%` Bottom-Right)         |
-| **`⌃⌥R`** | **Research Preset** | Primary Browser (`50%` Left), Notes (`25%` Top-Right), Reference (`25%` Bottom-Right) |
-| **`⌃⌥W`** | **Writing Preset**  | Document Editor (`70%` Left), Reference Browser (`30%` Right)                         |
-| **`⌃⌥D`** | **Design Preset**   | Design Canvas (`70%` Left), Preview Browser (`30%` Right)                             |
-| **`⌃⌥←`** | **Snap Left Half**  | Standard 50% left snap (Standard Snap action)                                         |
-| **`⌃⌥→`** | **Snap Right Half** | Standard 50% right snap (Standard Snap action)                                        |
-| **`⌃⌥↑`** | **Maximize**        | Maximize active window across full screen                                             |
-| **`⌃⌥↓`** | **Restore**         | Return active window to pre-snap frame                                                |
-| **`⌘,`**  | **Settings**        | Open FlowSnap Preferences                                                             |
-| **`⌘Q`**  | **Quit FlowSnap**   | Quit application and release system hotkeys                                           |
+| Shortcut   | Preset / Action                    | Description & Target Zones                                                            |
+| :--------- | :--------------------------------- | :------------------------------------------------------------------------------------ |
+| **`⌃⌥C`**  | **Coding Preset**                  | Editor (`60%` Left), Browser (`25%` Top-Right), Terminal (`15%` Bottom-Right)         |
+| **`⌃⌥R`**  | **Research Preset**                | Primary Browser (`50%` Left), Notes (`25%` Top-Right), Reference (`25%` Bottom-Right) |
+| **`⌃⌥W`**  | **Writing Preset**                 | Document Editor (`70%` Left), Reference Browser (`30%` Right)                         |
+| **`⌃⌥D`**  | **Design Preset**                  | Design Canvas (`70%` Left), Preview Browser (`30%` Right)                             |
+| **`⌃⌥←`**  | **Snap Left Half**                 | Standard 50% left snap (Standard Snap action)                                         |
+| **`⌃⌥→`**  | **Snap Right Half**                | Standard 50% right snap (Standard Snap action)                                        |
+| **`⌃⌥↑`**  | **Maximize**                       | Maximize active window across full screen                                             |
+| **`⌃⌥↓`**  | **Restore**                        | Return active window to pre-snap frame                                                |
+| **`⌃⌥⌘→`** | **Move Group to Next Display**     | **Throws entire active window group to next display (Dual-Mode scaling)**             |
+| **`⌃⌥⌘←`** | **Move Group to Previous Display** | **Throws entire active window group to previous display (Dual-Mode scaling)**         |
+| **`⌘,`**   | **Settings**                       | Open FlowSnap Preferences                                                             |
+| **`⌘Q`**   | **Quit FlowSnap**                  | Quit application and release system hotkeys                                           |
 
 ---
 
@@ -379,9 +387,12 @@ flowchart TD
 
 ## ❓ 8. Frequently Asked Questions (FAQ) & Troubleshooting
 
-### Q1: What happens if I have multiple windows of the same app open (e.g. 3 Safari windows)?
+### Q1: What happens if I have multiple windows of the same app open (e.g. 3 Safari or Brave windows)?
 
-**A:** FlowSnap intelligently selects the primary active window and assigns secondary windows to subsequent matching slots (e.g., in the Research preset, the first Safari window is placed in the Left Half, and a second Safari window is placed in the Bottom-Right Reference slot).
+**A:**
+
+- When applying presets, FlowSnap automatically maps open instances into subsequent matching slots.
+- When creating or editing a custom Window Group in **Settings > Window Groups**, FlowSnap displays each window's specific **Window Title** (e.g. tab name or document title) and **Window ID**, allowing you to explicitly pick exactly which window instance joins the group.
 
 ### Q2: Why does FlowSnap show "Accessibility Required"?
 
@@ -393,8 +404,12 @@ flowchart TD
 
 ### Q4: If I move a grouped window to an external monitor, does the rest of the group follow?
 
-**A:** When `Move together` is enabled, moving the anchor window coordinates relative delta translation for fellow group members, shifting them cohesively onto the new monitor.
+**A:**
+
+- **Yes!** When **Cross-display move** (`.crossDisplayTogether`) is enabled in the group's settings, throwing any member window (`⌃⌥→` / `⌃⌥←`) automatically migrates all fellow group members to the destination display.
+- You can also press **`⌃⌥⌘→`** / **`⌃⌥⌘←`** or click the **`[→ Next Display]`** button in Settings.
+- FlowSnap uses **Dual-Mode Scaling**: 50/50 or 70/30 snapped windows re-dock cleanly on the new screen's visible bounds, preserving the exact multi-window layout without overlap.
 
 ### Q5: How do I disable auto-grouping if I want preset windows to behave independently?
 
-**A:** You can simply click **"Ungroup"** in **Settings > Window Groups** at any time, or uncheck the synchronization toggles (`Minimize together`, `Focus together`, `Move together`).
+**A:** You can simply click **"Ungroup"** in **Settings > Window Groups** at any time, or uncheck the synchronization toggles (`Minimize together`, `Focus together`, `Move together`, `Cross-display move`).

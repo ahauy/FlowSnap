@@ -23,12 +23,13 @@ While single-window snapping organizes individual applications and custom worksp
    - Graceful slot skipping with typed [`SkipReason`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/Domain/Workspace/RestoreSummary.swift) (`.notInstalled` or `.launchTimeout`) without aborting remaining slots.
 3. **Display-Aware Geometry Computation**: Dynamically calculates target window frames against the active display's `visibleFrame` at runtime with user-configured window gap support ([`PreferencesStore.windowGap`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/Infrastructure/Persistence/PreferencesStore.swift)), eliminating pixel-coordinate drift across displays of varying resolutions.
 4. **Global Hotkey Dispatch & Collision Prevention**: Global shortcuts for presets (`⌃⌥C`, `⌃⌥R`, `⌃⌥W`, `⌃⌥D`) routed via [`GlobalHotkeyManager`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/Infrastructure/Hotkeys/GlobalHotkeyManager.swift) $\to$ [`CommandDispatcher.dispatch(.restorePreset(id))`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/Core/Commands/CommandDispatcher.swift) with latest-wins debouncing. [`ShortcutRecorderField`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/UI/Settings/ShortcutRecorderField.swift) validates against standard snap actions and active presets to reject collisions with clear inline warnings.
-5. **Synchronized Window Groups Coordinator ([`WindowGroupManager`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/Core/Window/WindowGroupManager.swift))**: Dynamic `@MainActor` coordinator managing linked window groups (minimum 2 `CGWindowID` members), synchronizing minimize/un-minimize, focus with relative z-order preservation, and spatial translation.
-6. **Re-Entrancy & Echo Loop Guard**: Generation token (`syncGeneration`) and `isSynchronizing` locking mechanism preventing cyclic AX notification echoes during programmatic group dispatch.
-7. **Dynamic Lifecycle Auto-Pruning**: Automatic removal of closed windows upon window destruction notifications and automatic dissolution of groups when member count falls below 2.
-8. **Multi-Surface UI Integration**:
+5. **Synchronized Window Groups Coordinator ([`WindowGroupManager`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/Core/Window/WindowGroupManager.swift))**: Dynamic `@MainActor` coordinator managing linked window groups (minimum 2 `CGWindowID` members), synchronizing minimize/un-minimize, focus with relative z-order preservation, spatial translation, and cross-display migration.
+6. **Cross-Display Group Migration**: Allows throwing or migrating an entire window group across connected displays as a unified spatial unit. Snapped windows matching canonical zones ($\text{IoU} \ge 0.75$) are re-anchored cleanly on the destination display, while arbitrary layouts scale proportionally via `RelativeFrameScaler`.
+7. **Re-Entrancy & Echo Loop Guard**: Generation token (`syncGeneration`) and `isSynchronizing` locking mechanism preventing cyclic AX notification echoes during programmatic group dispatch.
+8. **Dynamic Lifecycle Auto-Pruning**: Automatic removal of closed windows upon window destruction notifications and automatic dissolution of groups when member count falls below 2.
+9. **Multi-Surface UI Integration**:
    - **Settings > Presets Gallery ([`PresetGalleryView`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/UI/Settings/PresetGalleryView.swift))**: Visual schematic cards, slot candidate badges, interactive shortcut recorders, collision banners, and 1-click "Apply" buttons.
-   - **Settings > Window Groups ([`WindowGroupSettingsView`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/UI/Settings/WindowGroupSettingsView.swift))**: Active groups list with member count, sync option checkboxes, and 1-click "Ungroup" action.
+   - **Settings > Window Groups ([`WindowGroupSettingsView`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/UI/Settings/WindowGroupSettingsView.swift))**: Active groups list with member count, sync option checkboxes (`.crossDisplayTogether`), "Next Display" quick action button, and 1-click "Ungroup" action.
    - **Menu Bar Popover ([`MenuBarView`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/UI/MenuBar/MenuBarView.swift))**: "Presets" submenu with direct execution and keyboard shortcut badges.
    - **Non-Blocking Toast / Banner ([`RestoreSummaryBanner`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/UI/Workspace/RestoreSummaryBanner.swift))**: Displays instant feedback (e.g., "Restored Coding Preset (3/3 windows)" or "Restored 2/3 — Figma not installed").
 
@@ -88,6 +89,15 @@ When windows are placed by a preset (or manually grouped):
 3. Find the **Research** preset card, click the **Shortcut Recorder**, and press `⌃⌥⇧R`.
 4. The new shortcut is immediately registered system-wide.
 5. If you attempt to assign an already-used shortcut (e.g. `⌃⌥←` for Left Half snap), FlowSnap rejects the keystroke and displays an inline collision warning: `"Cannot assign ⌃⌥←: Shortcut already in use by Left Half"`.
+
+### Step 5: Moving a Window Group Across Displays
+
+When working across multiple monitors (e.g. MacBook built-in screen and an external 4K monitor):
+
+1. **Move via Dedicated Hotkey**: With any window of the group focused, press `⌃⌥⌘→` (Move Group to Next Display) or `⌃⌥⌘←` (Move Group to Previous Display).
+2. **Move via Standard Window Throw**: If **Cross-display move** (`.crossDisplayTogether`) is enabled in group settings, using the standard window throw hotkey (`⌃⌥→` / `⌃⌥←`) on any group window automatically migrates all fellow group members together.
+3. **Move via Settings UI**: In **Settings > Window Groups**, if more than 1 display is connected, click the **Next Display** button on the group card header to immediately throw all member windows to the next screen.
+4. **Resolution-Independent Topology Adaptation**: If a group consists of two 50/50 side-by-side windows on a 16:10 laptop screen, migrating it to a 16:9 external monitor automatically preserves their Left 50% / Right 50% relative layout on the target screen's visible bounds without overlapping or clipping.
 
 ---
 
@@ -182,6 +192,20 @@ if let conflictMessage = preferencesStore.hasPresetConflict(proposedShortcut, ex
 }
 ```
 
+### How-To 6: Migrate a Window Group Across Displays Programmatically
+
+Use [`WindowGroupManager`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnap/Core/Window/WindowGroupManager.swift) on the `@MainActor` to migrate groups across monitors:
+
+```swift
+import FlowSnap
+
+// 1. Throw entire group based on the currently focused trigger window
+try await windowGroupManager.handleGroupCrossDisplayThrow(triggerWindowID: 101, isNext: true)
+
+// 2. Explicitly move a group to a specific target display
+try await windowGroupManager.handleGroupMoveToDisplay(groupID: group.id, targetDisplayID: externalDisplayID)
+```
+
 ---
 
 ## 4. Technical Reference
@@ -236,10 +260,11 @@ public enum PresetAppCategory: String, Codable, Hashable, Sendable, CaseIterable
 ```swift
 public struct GroupSyncOptions: OptionSet, Codable, Hashable, Sendable {
     public let rawValue: Int
-    public static let minimizeTogether = GroupSyncOptions(rawValue: 1 << 0)
-    public static let focusTogether    = GroupSyncOptions(rawValue: 1 << 1)
-    public static let moveTogether     = GroupSyncOptions(rawValue: 1 << 2)
-    public static let all: GroupSyncOptions = [.minimizeTogether, .focusTogether, .moveTogether]
+    public static let minimizeTogether     = GroupSyncOptions(rawValue: 1 << 0)
+    public static let focusTogether        = GroupSyncOptions(rawValue: 1 << 1)
+    public static let moveTogether         = GroupSyncOptions(rawValue: 1 << 2)
+    public static let crossDisplayTogether = GroupSyncOptions(rawValue: 1 << 3)
+    public static let all: GroupSyncOptions = [.minimizeTogether, .focusTogether, .moveTogether, .crossDisplayTogether]
 }
 
 public struct WindowGroup: Identifiable, Codable, Hashable, Sendable {
@@ -266,20 +291,22 @@ public struct WindowGroup: Identifiable, Codable, Hashable, Sendable {
 
 ### 4.3 Business Rules Reference
 
-| Rule ID           | Rule Name                      | Specification                                                                                                                                           |
-| :---------------- | :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **BR-PRESET-001** | Curated Workflow Presets       | System provides 4 standard immutable presets (`Coding`, `Research`, `Writing`, `Design`) with relative slot definitions, ratios, and default shortcuts. |
-| **BR-PRESET-002** | App Category Fallbacks         | Evaluates slot candidates in strict priority: (1) Running app, (2) First installed app via `NSWorkspace`, (3) Graceful slot skip.                       |
-| **BR-PRESET-003** | Graceful Launch & Toast        | Auto-launches missing apps with bounded $\le 10.0\,\text{s}$ timeout for first AX window; surfaces non-blocking `RestoreSummaryBanner`.                 |
-| **BR-PRESET-004** | Resolution-Independent Framing | Frames recomputed dynamically against active display's `visibleFrame` and `PreferencesStore.windowGap`.                                                 |
-| **BR-PRESET-005** | Preset Hotkey Routing          | Shortcuts routed through `GlobalHotkeyManager` $\to$ `CommandDispatcher.dispatch(.restorePreset(id))` with latest-wins debouncing.                      |
-| **BR-PRESET-006** | Hotkey Collision Rejection     | Settings UI rejects collisions against `ShortcutAction.allCases` and active preset bindings with inline warning banners.                                |
-| **BR-GROUP-001**  | Group Membership Cardinality   | Requires `WindowGroup.memberCount >= 2`; automatically dissolves when member count drops below 2.                                                       |
-| **BR-GROUP-002**  | Simultaneous Minimize/Restore  | Synchronizes minimize and un-minimize actions across all active group members.                                                                          |
-| **BR-GROUP-003**  | Simultaneous Focus & Z-Order   | Brings all group members to foreground, raising the trigger window last to preserve relative z-order.                                                   |
-| **BR-GROUP-004**  | Simultaneous Group Move        | Translates all member windows by relative $(\Delta x, \Delta y)$ when move synchronization is enabled.                                                  |
-| **BR-GROUP-005**  | Re-Entrancy Guard              | `WindowGroupManager` ignores inbound AX event echoes during active synchronization via `syncGeneration` counter and `isSynchronizing` flag.             |
-| **BR-GROUP-006**  | Dynamic Auto-Pruning           | Observes window destruction notifications and prunes dead `CGWindowID` references immediately.                                                          |
+| Rule ID           | Rule Name                      | Specification                                                                                                                                                                                                                               |
+| :---------------- | :----------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **BR-PRESET-001** | Curated Workflow Presets       | System provides 4 standard immutable presets (`Coding`, `Research`, `Writing`, `Design`) with relative slot definitions, ratios, and default shortcuts.                                                                                     |
+| **BR-PRESET-002** | App Category Fallbacks         | Evaluates slot candidates in strict priority: (1) Running app, (2) First installed app via `NSWorkspace`, (3) Graceful slot skip.                                                                                                           |
+| **BR-PRESET-003** | Graceful Launch & Toast        | Auto-launches missing apps with bounded $\le 10.0\,\text{s}$ timeout for first AX window; surfaces non-blocking `RestoreSummaryBanner`.                                                                                                     |
+| **BR-PRESET-004** | Resolution-Independent Framing | Frames recomputed dynamically against active display's `visibleFrame` and `PreferencesStore.windowGap`.                                                                                                                                     |
+| **BR-PRESET-005** | Preset Hotkey Routing          | Shortcuts routed through `GlobalHotkeyManager` $\to$ `CommandDispatcher.dispatch(.restorePreset(id))` with latest-wins debouncing.                                                                                                          |
+| **BR-PRESET-006** | Hotkey Collision Rejection     | Settings UI rejects collisions against `ShortcutAction.allCases` and active preset bindings with inline warning banners.                                                                                                                    |
+| **BR-GROUP-001**  | Group Membership Cardinality   | Requires `WindowGroup.memberCount >= 2`; automatically dissolves when member count drops below 2.                                                                                                                                           |
+| **BR-GROUP-002**  | Simultaneous Minimize/Restore  | Synchronizes minimize and un-minimize actions across all active group members.                                                                                                                                                              |
+| **BR-GROUP-003**  | Simultaneous Focus & Z-Order   | Brings all group members to foreground, raising the trigger window last to preserve relative z-order.                                                                                                                                       |
+| **BR-GROUP-004**  | Simultaneous Group Move        | Translates all member windows by relative $(\Delta x, \Delta y)$ when move synchronization is enabled.                                                                                                                                      |
+| **BR-GROUP-005**  | Re-Entrancy Guard              | `WindowGroupManager` ignores inbound AX event echoes during active synchronization via `syncGeneration` counter and `isSynchronizing` flag.                                                                                                 |
+| **BR-GROUP-006**  | Dynamic Auto-Pruning           | Observes window destruction notifications and prunes dead `CGWindowID` references immediately.                                                                                                                                              |
+| **BR-GROUP-007**  | Cross-Display Group Migration  | Throws or migrates all active group members to target display's `visibleFrame`. Snapped windows matching canonical zones ($\text{IoU} \ge 0.75$) preserve semantic tiling; floating windows scale proportionally via `RelativeFrameScaler`. |
+| **BR-GROUP-008**  | Cross-Display Sync Option      | When `.crossDisplayTogether` is enabled, throwing any window in the group migrates all members. If disabled, single-window throw moves only that individual window.                                                                         |
 
 ---
 
@@ -448,13 +475,13 @@ The feature is comprehensively verified using Swift Testing (`@Test`), protocol-
 | **`PresetFallbackResolutionTests`**    | [`PresetFallbackResolutionTests.swift`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnapTests/Core/PresetFallbackResolutionTests.swift)       |     4      | Running fallback selection, installed fallback auto-launch, uninstalled skip, hanging launch timeout.                                                                  |
 | **`PresetActivationIntegrationTests`** | [`PresetActivationIntegrationTests.swift`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnapTests/Core/PresetActivationIntegrationTests.swift) |     2      | `CommandDispatcher` routing `.restorePreset`, summary generation, auto-grouping, latest-wins debouncing.                                                               |
 | **`WindowGroupManagerTests`**          | [`WindowGroupManagerTests.swift`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnapTests/Core/WindowGroupManagerTests.swift)                   |     7      | Group creation, `< 2` member rejection, dissolution, add/remove member, auto-dissolve on remove, auto-prune on destroy, sync options update.                           |
-| **`WindowGroupSyncTests`**             | [`WindowGroupSyncTests.swift`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnapTests/Core/WindowGroupSyncTests.swift)                         |     5      | Synchronized minimize, un-minimize, focus with z-order raising, move translation, re-entrancy lock suppression.                                                        |
+| **`WindowGroupSyncTests`**             | [`WindowGroupSyncTests.swift`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnapTests/Core/WindowGroupSyncTests.swift)                         |     8      | Synchronized minimize, un-minimize, focus with z-order raising, move translation, cross-display group migration with dual-mode scaling, re-entrancy lock suppression.  |
 | **`PresetShortcutTests`**              | [`PresetShortcutTests.swift`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnapTests/Infrastructure/PresetShortcutTests.swift)                 |     7      | Custom shortcut persistence in `PreferencesStore`, conflict detection against snap actions and presets, reset to defaults, hotkey registration.                        |
 | **`PresetAndGroupViewTests`**          | [`PresetAndGroupViewTests.swift`](file:///Users/vutuanhau/Documents/PROJECT/FlowSnap/FlowSnapTests/UI/PresetAndGroupViewTests.swift)                     |     5      | `RestoreSummaryBanner` full/partial states, `WindowGroupSettingsView` sync mutation and ungroup, `PresetGalleryView` initialization, `SettingsView` tab configuration. |
 
 ### Test Suite Execution Summary
 
-- **Total Suite Execution**: `307/307` tests passing across 45 suites.
+- **Total Suite Execution**: `456/456` tests passing across 69 suites.
 - **Strict Concurrency**: Zero data races or concurrency warnings under Swift 6 strict mode.
 - **Linter Conformance**: `swiftlint lint --strict` clean (0 violations across 159 Swift files).
 - **Public API Conformance**: Zero private CGS APIs utilized.
