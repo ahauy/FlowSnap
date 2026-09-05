@@ -57,6 +57,20 @@ struct SnapDetectorTests {
         #expect(result?.previewFrame == layoutEngine.frame(for: .maximize, in: primaryDisplay.visibleFrame))
     }
 
+    @Test func dockedWindowTitleBarDoesNotTriggerTopSnap() {
+        let displayWithMenuBar = Display(
+            id: 2,
+            frame: CGRect(x: 0, y: 0, width: 1920, height: 1080),
+            visibleFrame: CGRect(x: 0, y: 0, width: 1920, height: 1055), // 25pt macOS menu bar at top
+            scaleFactor: 2.0,
+            isPrimary: true
+        )
+        // Cursor at the titlebar of a docked window at visibleFrame.maxY (y: 1055)
+        let point = CGPoint(x: 300, y: 1055)
+        let result = detector.detectZone(at: point, on: displayWithMenuBar, adjacentDisplays: [])
+        #expect(result == nil)
+    }
+
     @Test func detectBottomHalf() {
         // Cursor at bottom edge y: 2 (<= 4), x: 960
         let point = CGPoint(x: 960, y: 2)
@@ -89,6 +103,41 @@ struct SnapDetectorTests {
         #expect(result != nil)
         #expect(result?.target == .topRight)
         #expect(result?.previewFrame == layoutEngine.frame(for: .topRight, in: primaryDisplay.visibleFrame))
+    }
+
+    @Test func topEdgeBrowserTabRegionDoesNotTriggerQuarterSnap() {
+        // Point along top edge in browser tab bar area (e.g. x: 180, tab 2/3 of Brave)
+        // Historically this was <= 20% width (384px) and incorrectly triggered .topLeft
+        let point = CGPoint(x: 180, y: 1078)
+        let result = detector.detectZone(at: point, on: primaryDisplay, adjacentDisplays: [])
+
+        #expect(result != nil)
+        #expect(result?.target != .topLeft)
+        #expect(result?.target == .maximize)
+    }
+
+    @Test func topEdgeTrafficLightCornerTriggersTopLeft() {
+        // Point along top edge within tight corner vertex (<= 48px)
+        let point = CGPoint(x: 25, y: 1078)
+        let result = detector.detectZone(at: point, on: primaryDisplay, adjacentDisplays: [])
+
+        #expect(result != nil)
+        #expect(result?.target == .topLeft)
+    }
+
+    @Test func dockedWindowTitleBarClickDoesNotTriggerSnap() {
+        // Points in the title bar or tab bar of a docked window (below topBoundary 1055 - 2)
+        // Historically, points like y: 1050 in docked browser tabs triggered maximize
+        let titleBarPoint = CGPoint(x: 400, y: 1042)
+        #expect(detector.detectZone(at: titleBarPoint, on: primaryDisplay, adjacentDisplays: []) == nil)
+
+        let tabPoint = CGPoint(x: 960, y: 1050)
+        #expect(detector.detectZone(at: tabPoint, on: primaryDisplay, adjacentDisplays: []) == nil)
+        #expect(detector.isTopCenterZone(at: tabPoint, on: primaryDisplay) == false)
+
+        let topTabPoint = CGPoint(x: 720, y: 1052)
+        #expect(detector.detectZone(at: topTabPoint, on: primaryDisplay, adjacentDisplays: []) == nil)
+        #expect(detector.isTopCenterZone(at: topTabPoint, on: primaryDisplay) == false)
     }
 
     @Test func detectBottomLeftCorner() {

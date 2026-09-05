@@ -132,11 +132,13 @@ struct PresetAndGroupModelTests {
         #expect(all.contains(.minimizeTogether))
         #expect(all.contains(.focusTogether))
         #expect(all.contains(.moveTogether))
+        #expect(all.contains(.crossDisplayTogether))
 
-        let custom: GroupSyncOptions = [.minimizeTogether, .moveTogether]
+        let custom: GroupSyncOptions = [.minimizeTogether, .crossDisplayTogether]
         #expect(custom.contains(.minimizeTogether))
         #expect(!custom.contains(.focusTogether))
-        #expect(custom.contains(.moveTogether))
+        #expect(!custom.contains(.moveTogether))
+        #expect(custom.contains(.crossDisplayTogether))
 
         let encoder = JSONEncoder()
         let data = try encoder.encode(custom)

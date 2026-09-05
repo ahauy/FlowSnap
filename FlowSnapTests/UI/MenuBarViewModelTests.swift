@@ -182,6 +182,27 @@ struct MenuBarViewModelTests {
         #expect(dismissCount == 1)
     }
 
+    @Test func openSettingsWithSpecificTabDelegatesToPresenter() {
+        let mockPresenter = MockSettingsWindowPresenter()
+        let env = Self.makeSimulatedEnvironment(
+            isTrusted: true,
+            mockSettingsPresenter: mockPresenter
+        )
+
+        var dismissCount = 0
+        env.viewModel.dismissHandler = {
+            dismissCount += 1
+        }
+
+        env.viewModel.openSettings(tab: .workspaces)
+
+        #expect(mockPresenter.showSettingsWindowCallCount == 1)
+        #expect(mockPresenter.lastRequestedTab == .workspaces)
+        #expect(dismissCount == 1)
+    }
+
+
+
     @Test func workspaceViewModelInitializedWhenWorkspaceManagerProvided() {
         let accessibilityService = MockAccessibilityService(isTrusted: true)
         let windowManager = MockWindowManaging()

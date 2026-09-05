@@ -283,6 +283,79 @@ struct DragToSnapCoordinatorTests {
         coordinator.stop()
     }
 
+    @Test func releaseAtTopEdgeSnapsToMaximize() async throws {
+        let mouseTracker = MockMouseDragTracker()
+        let previewManager = MockSnapPreviewManager()
+        let layoutPickerManager = MockSnapLayoutPickerManager()
+        let commandDispatcher = MockCommandDispatcher()
+        let displayManager = MockDisplayManager(displays: [primaryDisplay])
+        let accessibilityService = MockAccessibilityService(isTrusted: true)
+
+        let coordinator = DragToSnapCoordinator(
+            mouseTracker: mouseTracker,
+            detector: SnapDetector(edgeThreshold: 20),
+            previewManager: previewManager,
+            layoutPickerManager: layoutPickerManager,
+            commandDispatcher: commandDispatcher,
+            displayManager: displayManager,
+            accessibilityService: accessibilityService
+        )
+
+        coordinator.start()
+
+        // 1. Drag into top-center to summon picker (and arm .maximize preview)
+        await coordinator.handleDrag(at: CGPoint(x: 960, y: 1078))
+        #expect(layoutPickerManager.isVisible == true)
+
+        // 2. Release mouse at top edge without moving into a slot -> snaps to maximize
+        layoutPickerManager.mockedSlotToReturn = nil
+        await coordinator.handleRelease(at: CGPoint(x: 960, y: 1078))
+
+        #expect(layoutPickerManager.hidePickerCallCount == 1)
+        #expect(previewManager.flashSnapSuccessCallCount == 1)
+        #expect(commandDispatcher.dispatchCallCount == 1)
+        #expect(commandDispatcher.dispatchedCommands.first == .snap(.maximize, targetDisplayID: primaryDisplay.id))
+
+        coordinator.stop()
+    }
+
+    @Test func releaseOutsidePickerSlotDismissesWithoutSnapping() async throws {
+        let mouseTracker = MockMouseDragTracker()
+        let previewManager = MockSnapPreviewManager()
+        let layoutPickerManager = MockSnapLayoutPickerManager(pickerFrame: CGRect(x: 745, y: 955, width: 430, height: 92))
+        let commandDispatcher = MockCommandDispatcher()
+        let displayManager = MockDisplayManager(displays: [primaryDisplay])
+        let accessibilityService = MockAccessibilityService(isTrusted: true)
+
+        let coordinator = DragToSnapCoordinator(
+            mouseTracker: mouseTracker,
+            detector: SnapDetector(edgeThreshold: 20),
+            previewManager: previewManager,
+            layoutPickerManager: layoutPickerManager,
+            commandDispatcher: commandDispatcher,
+            displayManager: displayManager,
+            accessibilityService: accessibilityService
+        )
+
+        coordinator.start()
+
+        // 1. Drag into top-center to summon picker
+        await coordinator.handleDrag(at: CGPoint(x: 960, y: 1078))
+        #expect(layoutPickerManager.isVisible == true)
+
+        // 2. Move into picker card background (not hovering any valid slot)
+        layoutPickerManager.mockedSlotToReturn = nil
+        await coordinator.handleDrag(at: CGPoint(x: 960, y: 980))
+
+        // 3. Release mouse on blank card background -> dismisses cleanly without dispatching snap
+        await coordinator.handleRelease(at: CGPoint(x: 960, y: 980))
+
+        #expect(layoutPickerManager.hidePickerCallCount == 1)
+        #expect(commandDispatcher.dispatchCallCount == 0)
+
+        coordinator.stop()
+    }
+
     @Test func moveAwayFromPickerDismissesSmoothly() async throws {
         let mouseTracker = MockMouseDragTracker()
         let previewManager = MockSnapPreviewManager()
@@ -351,5 +424,15 @@ struct DragToSnapCoordinatorTests {
         #expect(previewManager.lastShownFrame == expectedFrame)
 
         coordinator.stop()
+    }
+
+    @Test func realMouseDragTrackerDeadzoneInitialState() {
+        let tracker = MouseDragTracker()
+        #expect(tracker.dragDeadzone == 16.0)
+        #expect(tracker.isTracking == false)
+        tracker.startTracking(onDrag: { _ in }, onRelease: { _ in })
+        #expect(tracker.isTracking == true)
+        tracker.stopTracking()
+        #expect(tracker.isTracking == false)
     }
 }

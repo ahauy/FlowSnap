@@ -110,4 +110,68 @@ struct WindowGroupManagerTests {
         #expect(manager.activeGroups.isEmpty)
         #expect(manager.group(for: 101) == nil)
     }
+
+    @Test("ManagedWindow disambiguates multiple Brave windows with tab titles")
+    func testDisambiguateMultipleBraveWindows() {
+        let braveYouTube = ManagedWindow(
+            id: 501,
+            pid: 1234,
+            bundleIdentifier: "com.brave.Browser",
+            title: "BXH NHẠC REMIX HOT TIKTOK 2026 - YouTube - Brave",
+            frame: CGRect(x: 0, y: 0, width: 900, height: 1000)
+        )
+        let braveGitHub = ManagedWindow(
+            id: 502,
+            pid: 1234,
+            bundleIdentifier: "com.brave.Browser",
+            title: "ahauy/FlowSnap: Ứng dụng quản lý - Brave",
+            frame: CGRect(x: 900, y: 0, width: 900, height: 1000)
+        )
+        let antigravity = ManagedWindow(
+            id: 503,
+            pid: 5678,
+            bundleIdentifier: "com.google.antigravity",
+            title: "FlowSnap — RUN_AND_TEST.md — Antigravity IDE",
+            frame: CGRect(x: 0, y: 0, width: 900, height: 1000)
+        )
+
+        #expect(braveYouTube.displayAppName == "Brave")
+        #expect(braveYouTube.displayDetailTitle == "BXH NHẠC REMIX HOT TIKTOK 2026 - YouTube")
+        #expect(braveYouTube.formattedDisplayName == "Brave: BXH NHẠC REMIX HOT TIKTOK 2026 - YouTube")
+
+        #expect(braveGitHub.displayAppName == "Brave")
+        #expect(braveGitHub.displayDetailTitle == "ahauy/FlowSnap: Ứng dụng quản lý")
+        #expect(braveGitHub.formattedDisplayName == "Brave: ahauy/FlowSnap: Ứng dụng quản lý")
+
+        #expect(antigravity.displayAppName == "Antigravity IDE")
+        #expect(antigravity.displayDetailTitle == "FlowSnap — RUN_AND_TEST.md")
+    }
+
+    @MainActor
+    @Test("createGroup with ManagedWindow list caches window details")
+    func testCreateGroupWithManagedWindowsAndCache() {
+        let mockAX = MockAccessibilityService()
+        let mockWM = MockWindowManaging()
+        let manager = WindowGroupManager(accessibilityService: mockAX, windowManager: mockWM)
+
+        let win1 = ManagedWindow(
+            id: 201,
+            pid: 1001,
+            bundleIdentifier: "com.brave.Browser",
+            title: "YouTube - Brave",
+            frame: CGRect(x: 0, y: 0, width: 500, height: 500)
+        )
+        let win2 = ManagedWindow(
+            id: 202,
+            pid: 1002,
+            bundleIdentifier: "com.google.antigravity",
+            title: "Code - Antigravity IDE",
+            frame: CGRect(x: 500, y: 0, width: 500, height: 500)
+        )
+
+        let group = manager.createGroup(name: "Dev Pair", windows: [win1, win2])
+        #expect(group != nil)
+        #expect(manager.window(for: 201)?.displayAppName == "Brave")
+        #expect(manager.window(for: 202)?.displayAppName == "Antigravity IDE")
+    }
 }

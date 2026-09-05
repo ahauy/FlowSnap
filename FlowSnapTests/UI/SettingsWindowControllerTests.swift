@@ -49,4 +49,34 @@ struct SettingsWindowControllerTests {
 
         firstWindow?.close()
     }
+
+    @Test func showSettingsWindowWithSpecificTabPresentsSuccessfully() {
+        let store = PreferencesStore(defaults: UserDefaults(suiteName: "SettingsTest_\(UUID().uuidString)") ?? .standard)
+        let controller = SettingsWindowController(preferencesStore: store)
+
+        controller.showSettingsWindow(tab: .workspaces)
+
+        #expect(controller.window != nil)
+        #expect(controller.window?.isVisible == true)
+
+        controller.window?.close()
+    }
+
+    @Test func settingsTabMetadataMatchesExpectations() {
+        let allTabs = SettingsTab.allCases
+        #expect(allTabs.count == 7)
+        #expect(allTabs.contains(.general))
+        #expect(allTabs.contains(.shortcuts))
+        #expect(allTabs.contains(.presets))
+        #expect(allTabs.contains(.windowGroups))
+        #expect(allTabs.contains(.appRules))
+        #expect(allTabs.contains(.workspaces))
+        #expect(allTabs.contains(.about))
+
+        for tab in allTabs {
+            #expect(!tab.iconName.isEmpty)
+            #expect(!tab.id.isEmpty)
+        }
+    }
 }
+

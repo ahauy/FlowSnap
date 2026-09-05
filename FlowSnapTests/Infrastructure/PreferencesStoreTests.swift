@@ -102,6 +102,37 @@ struct PreferencesStoreTests {
         #expect(selfConflict == nil)
     }
 
+    @Test func mutuallyCompatibleGroupAndWorkspaceThrowShortcuts() {
+        let defaults = freshDefaults()
+        let store = makeStore(defaults: defaults)
+
+        guard let groupNextDefault = ShortcutAction.moveGroupNextDisplay.defaultShortcut,
+              let workspaceNextDefault = ShortcutAction.moveWorkspaceNextDisplay.defaultShortcut,
+              let groupPrevDefault = ShortcutAction.moveGroupPreviousDisplay.defaultShortcut else {
+            Issue.record("Expected default shortcuts for group and workspace display navigation")
+            return
+        }
+
+        // When checking conflict for moveWorkspaceNextDisplay with groupNextDefault, no conflict reported
+        let conflict = store.hasConflict(groupNextDefault, excluding: .moveWorkspaceNextDisplay)
+        #expect(conflict == nil)
+
+        // Vice versa: checking for moveGroupNextDisplay with workspace shortcut, no conflict
+        let reverseConflict = store.hasConflict(workspaceNextDefault, excluding: .moveGroupNextDisplay)
+        #expect(reverseConflict == nil)
+
+        // Same for previous display pair
+        let prevConflict = store.hasConflict(groupPrevDefault, excluding: .moveWorkspacePreviousDisplay)
+        #expect(prevConflict == nil)
+
+        // However, assigning groupNextDefault to an unrelated action (e.g. leftHalf or nextDisplay single window) DOES report conflict
+        let unrelatedConflict = store.hasConflict(groupNextDefault, excluding: .leftHalf)
+        #expect(unrelatedConflict == .moveGroupNextDisplay)
+
+        let singleWindowConflict = store.hasConflict(groupNextDefault, excluding: .nextDisplay)
+        #expect(singleWindowConflict == .moveGroupNextDisplay)
+    }
+
     @Test func resetShortcutsToDefault() {
         let defaults = freshDefaults()
         let store = makeStore(defaults: defaults)
