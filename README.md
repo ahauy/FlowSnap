@@ -7,6 +7,7 @@
 
 <p align="center">
   <a href="README.vi.md">🇻🇳 Tiếng Việt</a> •
+  <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg"><strong>📥 Download (.dmg)</strong></a> •
   <a href="#-key-features">Key Features</a> •
   <a href="#-installation--getting-started">Installation</a> •
   <a href="#%EF%B8%8F-keyboard-shortcuts">Shortcuts</a> •
@@ -17,7 +18,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-14.0%2B%20(Sonoma%20%2F%20Sequoia)-000000?style=flat-square&logo=apple&logoColor=white" alt="macOS 14.0+">
   <img src="https://img.shields.io/badge/Swift-6.0%20Strict%20Concurrency-FA7343?style=flat-square&logo=swift&logoColor=white" alt="Swift 6.0">
-  <img src="https://img.shields.io/badge/Tests-358%20Passing%20(55%20Suites)-2ea44f?style=flat-square" alt="Tests 358 Passing">
+  <img src="https://img.shields.io/badge/Tests-470%20Passing%20(70%20Suites)-2ea44f?style=flat-square" alt="Tests 470 Passing">
   <img src="https://img.shields.io/badge/Apple%20API-100%25%20Zero%20Private%20APIs-0071e3?style=flat-square" alt="Zero Private APIs">
   <img src="https://img.shields.io/badge/Architecture-DDD%20%26%20Deep%20Modules-7928ca?style=flat-square" alt="DDD Architecture">
   <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="MIT License">
@@ -26,7 +27,15 @@
 <p align="center">
   <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg">
     <img src="https://img.shields.io/badge/Download%20for%20macOS-FlowSnap.dmg-0071e3?style=for-the-badge&logo=apple&logoColor=white" alt="Download FlowSnap for macOS">
-  </a><br>
+  </a>
+  <a href="https://github.com/ahauy/FlowSnap/releases/latest">
+    <img src="https://img.shields.io/badge/Latest%20Release-v1.3.1-success?style=for-the-badge" alt="Latest Release v1.3.1">
+  </a>
+</p>
+
+<p align="center">
+  📥 <strong>Direct Download:</strong> <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg"><strong>FlowSnap.dmg (Latest v1.3.1)</strong></a> • <a href="https://github.com/ahauy/FlowSnap/releases/latest">Release Notes</a><br>
+  ⚡ <strong>One-Line Terminal Install:</strong> <code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"</code><br>
   <em>~ Compatible with macOS 14.0 Sonoma and later (Apple Silicon & Intel) ~</em>
 </p>
 

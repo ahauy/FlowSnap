@@ -7,6 +7,7 @@
 
 <p align="center">
   <a href="README.md">🇬🇧 English</a> •
+  <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg"><strong>📥 Tải về (.dmg)</strong></a> •
   <a href="#tính-năng-nổi-bật">Tính năng</a> •
   <a href="#hướng-dẫn-cài-đặt--khởi-chạy">Cài đặt & Chạy</a> •
   <a href="#bảng-phím-tắt-mặc-định">Phím tắt</a> •
@@ -17,7 +18,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/macOS-14.0%2B%20(Sonoma%20%2F%20Sequoia)-black?style=flat-square&logo=apple" alt="macOS 14.0+">
   <img src="https://img.shields.io/badge/Swift-6.0%20Strict%20Concurrency-orange?style=flat-square&logo=swift" alt="Swift 6.0">
-  <img src="https://img.shields.io/badge/Tests-358%20Passing%20(55%20Suites)-brightgreen?style=flat-square" alt="Tests 358 Passing">
+  <img src="https://img.shields.io/badge/Tests-470%20Passing%20(70%20Suites)-brightgreen?style=flat-square" alt="Tests 470 Passing">
   <img src="https://img.shields.io/badge/Apple%20API-100%25%20Zero%20Private%20APIs-blue?style=flat-square" alt="Zero Private APIs">
   <img src="https://img.shields.io/badge/Architecture-DDD%20%26%20Deep%20Modules-purple?style=flat-square" alt="DDD Architecture">
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License">
@@ -26,7 +27,15 @@
 <p align="center">
   <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg">
     <img src="https://img.shields.io/badge/T%E1%BA%A3i%20v%E1%BB%81%20cho%20macOS-FlowSnap.dmg-0071e3?style=for-the-badge&logo=apple&logoColor=white" alt="Tải FlowSnap cho macOS">
-  </a><br>
+  </a>
+  <a href="https://github.com/ahauy/FlowSnap/releases/latest">
+    <img src="https://img.shields.io/badge/Phi%C3%AAn%20b%E1%BA%A3n%20m%E1%BB%9Bi%20nh%E1%BA%A5t-v1.3.1-success?style=for-the-badge" alt="Phiên bản v1.3.1">
+  </a>
+</p>
+
+<p align="center">
+  📥 <strong>Tải về trực tiếp:</strong> <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg"><strong>FlowSnap.dmg (Bản mới nhất v1.3.1)</strong></a> • <a href="https://github.com/ahauy/FlowSnap/releases/latest">Ghi chú phát hành</a><br>
+  ⚡ <strong>Cài đặt nhanh 1 dòng lệnh Terminal:</strong> <code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"</code><br>
   <em>~ Tương thích macOS 14.0 Sonoma trở lên (Apple Silicon & Intel) ~</em>
 </p>
 
