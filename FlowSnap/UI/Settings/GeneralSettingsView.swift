@@ -122,11 +122,61 @@ public struct GeneralSettingsView: View {
 
                 // Launch Card
                 SettingsGroupCard(title: "Launch Policy", iconName: "bolt.fill") {
-                    Toggle("Launch FlowSnap at login", isOn: launchAtLoginBinding)
-                        .font(.system(size: 12))
+                    VStack(alignment: .leading, spacing: 10) {
+                        Toggle("Launch FlowSnap at login", isOn: launchAtLoginBinding)
+                            .font(.system(size: 12))
+                            .help("When enabled, FlowSnap automatically starts in the menu bar when you log in to macOS.")
+
+                        if store.launchAtLoginStatus.requiresUserApproval {
+                            HStack(spacing: 8) {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundStyle(.orange)
+                                    .font(.system(size: 12))
+                                Text("Approval required in macOS System Settings")
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                Button("Open Login Items…") {
+                                    store.openSystemLoginItemsSettings()
+                                }
+                                .buttonStyle(.link)
+                                .font(.system(size: 11))
+                            }
+                            .padding(8)
+                            .background(Color.orange.opacity(0.1))
+                            .cornerRadius(6)
+                        } else if case .error(let message) = store.launchAtLoginStatus {
+                            HStack(spacing: 6) {
+                                Image(systemName: "info.circle")
+                                    .foregroundStyle(.secondary)
+                                    .font(.system(size: 11))
+                                Text(message)
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(2)
+                            }
+                        }
+
+                        Divider()
+
+                        HStack {
+                            Text("Managed by macOS ServiceManagement")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Button("Login Items Settings…") {
+                                store.openSystemLoginItemsSettings()
+                            }
+                            .buttonStyle(.link)
+                            .font(.system(size: 11))
+                        }
+                    }
                 }
             }
             .padding(20)
+        }
+        .onAppear {
+            store.refreshLaunchAtLoginStatus()
         }
     }
 

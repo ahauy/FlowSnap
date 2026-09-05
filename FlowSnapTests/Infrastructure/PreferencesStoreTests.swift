@@ -10,8 +10,11 @@ import Testing
 @MainActor
 struct PreferencesStoreTests {
 
-    private func makeStore(defaults: UserDefaults) -> PreferencesStore {
-        PreferencesStore(defaults: defaults)
+    private func makeStore(
+        defaults: UserDefaults,
+        manager: (any LaunchAtLoginManaging)? = nil
+    ) -> PreferencesStore {
+        PreferencesStore(defaults: defaults, launchAtLoginManager: manager ?? MockLaunchAtLoginManager())
     }
 
     private func freshDefaults() -> UserDefaults {
@@ -148,7 +151,8 @@ struct PreferencesStoreTests {
 
     @Test func dragToSnapAndLaunchPreferences() {
         let defaults = freshDefaults()
-        let store = makeStore(defaults: defaults)
+        let manager = MockLaunchAtLoginManager()
+        let store = makeStore(defaults: defaults, manager: manager)
 
         store.setDragToSnapEnabled(false)
         store.setDragPreviewDwellDelay(0.30)
@@ -158,7 +162,7 @@ struct PreferencesStoreTests {
         #expect(store.dragPreviewDwellDelay == 0.30)
         #expect(store.launchAtLogin == true)
 
-        let reloaded = makeStore(defaults: defaults)
+        let reloaded = makeStore(defaults: defaults, manager: manager)
         #expect(reloaded.isDragToSnapEnabled == false)
         #expect(reloaded.dragPreviewDwellDelay == 0.30)
         #expect(reloaded.launchAtLogin == true)
