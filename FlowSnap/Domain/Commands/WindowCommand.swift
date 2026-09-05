@@ -37,5 +37,14 @@ public enum WindowCommand: Hashable, Sendable {
     // MARK: - Quick Scratchpad (US-SNAP-022)
     case toggleScratchpad
     case assignScratchpad
+
+    // MARK: - Window Groups (US-GROUP-010)
+    case moveGroupToNextDisplay
+    case moveGroupToPreviousDisplay
+    case moveGroupToDisplay(UUID, targetDisplayID: CGDirectDisplayID)
+
+    // MARK: - Smart Collection (Group / Workspace Fallback)
+    case moveGroupOrWorkspaceToNextDisplay
+    case moveGroupOrWorkspaceToPreviousDisplay
 }
 

@@ -12,71 +12,124 @@ public struct GeneralSettingsView: View {
     }
 
     public var body: some View {
-        Form {
-            Section("Window Gap") {
-                Picker("Window Gap", selection: gapBinding) {
-                    ForEach(PreferencesStore.allowedGaps, id: \.self) { gap in
-                        Text("\(Int(gap)) px").tag(gap)
-                    }
-                }
-                .pickerStyle(.segmented)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                // Window Gap Card
+                SettingsGroupCard(title: "Window Gap", iconName: "arrow.left.and.right") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Spacing between adjacent snapped windows and screen edges.")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
 
-                GapPreview(gap: store.windowGap, frame: CGSize(width: 180, height: 36))
-            }
+                        Picker("Window Gap", selection: gapBinding) {
+                            ForEach(PreferencesStore.allowedGaps, id: \.self) { gap in
+                                Text("\(Int(gap)) px").tag(gap)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .labelsHidden()
 
-            Section("Default Split Ratio") {
-                Picker("Default Ratio", selection: ratioBinding) {
-                    ForEach(LayoutRatio.allCases, id: \.self) { ratio in
-                        Text(ratio.displayName).tag(ratio)
-                    }
-                }
-            }
-
-            Section("Drag to Snap") {
-                Toggle("Enable Drag to Snap", isOn: dragToSnapBinding)
-
-                if store.isDragToSnapEnabled {
-                    Picker("Preview Delay", selection: dwellDelayBinding) {
-                        Text("Instant (50 ms)").tag(0.05)
-                        Text("Normal (150 ms)").tag(0.15)
-                        Text("Relaxed (300 ms)").tag(0.30)
-                    }
-                }
-            }
-
-            Section("Stage Manager") {
-                Toggle("Auto-group windows on restore", isOn: stageManagerAutoGroupingBinding)
-                    .help("When enabled, FlowSnap bundles all restored workspace windows onto a single stage.")
-
-                Toggle("Keep Stage when opening new apps", isOn: stageManagerLaunchCoexistenceBinding)
-                    .help("When enabled, opening a new application joins the current Stage instead of pushing active windows into the sidebar.")
-
-                HStack {
-                    Text("macOS Stage Manager")
-                    Spacer()
-                    Button("Desktop & Dock Settings…") {
-                        if let url = URL(string: "x-apple.systempreferences:com.apple.Desktop-Settings.extension") {
-                            NSWorkspace.shared.open(url)
+                        HStack {
+                            GapPreview(gap: store.windowGap, frame: CGSize(width: 160, height: 32))
+                            Spacer()
+                            Text("Current: \(Int(store.windowGap)) px")
+                                .font(.system(size: 11, weight: .medium, design: .monospaced))
+                                .foregroundStyle(.secondary)
                         }
                     }
-                    .buttonStyle(.link)
+                }
+
+                // Default Split Ratio Card
+                SettingsGroupCard(title: "Default Split Ratio", iconName: "rectangle.split.2x1") {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Initial column proportion when snapping two windows side-by-side.")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+
+                        Picker("Ratio", selection: ratioBinding) {
+                            ForEach(LayoutRatio.allCases, id: \.self) { ratio in
+                                Text(ratio.displayName).tag(ratio)
+                            }
+                        }
+                        .labelsHidden()
+                    }
+                }
+
+                // Drag to Snap Card
+                SettingsGroupCard(title: "Drag to Snap", iconName: "hand.draw") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Toggle("Enable Drag to Snap", isOn: dragToSnapBinding)
+                            .font(.system(size: 12))
+
+                        if store.isDragToSnapEnabled {
+                            Divider()
+                            HStack {
+                                Text("Preview Dwell Delay")
+                                    .font(.system(size: 12))
+                                Spacer()
+                                Picker("Preview Delay", selection: dwellDelayBinding) {
+                                    Text("Instant (50 ms)").tag(0.05)
+                                    Text("Normal (150 ms)").tag(0.15)
+                                    Text("Relaxed (300 ms)").tag(0.30)
+                                }
+                                .labelsHidden()
+                            }
+                        }
+                    }
+                }
+
+                // Stage Manager Card
+                SettingsGroupCard(title: "Stage Manager Integration", iconName: "rectangle.on.rectangle") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Toggle("Auto-group windows on restore", isOn: stageManagerAutoGroupingBinding)
+                            .font(.system(size: 12))
+                            .help("When enabled, FlowSnap bundles all restored workspace windows onto a single stage.")
+
+                        Toggle("Keep Stage when opening new apps", isOn: stageManagerLaunchCoexistenceBinding)
+                            .font(.system(size: 12))
+                            .help("When enabled, opening a new application joins the current Stage instead of pushing active windows into the sidebar.")
+
+                        Divider()
+
+                        HStack {
+                            Text("Configure macOS Stage Manager")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Button("Desktop & Dock Settings…") {
+                                if let url = URL(string: "x-apple.systempreferences:com.apple.Desktop-Settings.extension") {
+                                    NSWorkspace.shared.open(url)
+                                }
+                            }
+                            .buttonStyle(.link)
+                            .font(.system(size: 11))
+                        }
+                    }
+                }
+
+                // Quick Scratchpad Card
+                SettingsGroupCard(title: "Quick Scratchpad", iconName: "note.text") {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Toggle("Dismiss on ESC key", isOn: scratchpadDismissOnEscBinding)
+                            .font(.system(size: 12))
+                            .help("When enabled, pressing ESC while Scratchpad is focused immediately dismisses it.")
+
+                        Toggle("Dismiss when clicking outside", isOn: scratchpadDismissOnBlurBinding)
+                            .font(.system(size: 12))
+                            .help("When enabled, clicking anywhere outside the Scratchpad window automatically dismisses it.")
+                    }
+                }
+
+                // Launch Card
+                SettingsGroupCard(title: "Launch Policy", iconName: "bolt.fill") {
+                    Toggle("Launch FlowSnap at login", isOn: launchAtLoginBinding)
+                        .font(.system(size: 12))
                 }
             }
-
-            Section("Quick Scratchpad") {
-                Toggle("Dismiss on ESC key", isOn: scratchpadDismissOnEscBinding)
-                    .help("When enabled, pressing ESC while Scratchpad is focused immediately dismisses it.")
-
-                Toggle("Dismiss when clicking outside", isOn: scratchpadDismissOnBlurBinding)
-                    .help("When enabled, clicking anywhere outside the Scratchpad window automatically dismisses it.")
-            }
-
-            Section("Launch") {
-                Toggle("Launch at login", isOn: launchAtLoginBinding)
-            }
+            .padding(20)
         }
-        .padding(16)
     }
+
 
     // MARK: - Bindings
 
@@ -144,8 +197,46 @@ public struct GeneralSettingsView: View {
     }
 }
 
+/// Reusable card container matching macOS System Settings aesthetic.
+struct SettingsGroupCard<Content: View>: View {
+    let title: String
+    let iconName: String
+    let content: Content
+
+    init(title: String, iconName: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.iconName = iconName
+        self.content = content()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 6) {
+                Image(systemName: iconName)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Color.accentColor)
+                Text(title)
+                    .font(.system(size: 13, weight: .semibold))
+            }
+
+            content
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(Color(nsColor: .controlBackgroundColor))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+        )
+    }
+}
+
 /// Small visual preview showing how the gap insets two columns.
 private struct GapPreview: View {
+
     let gap: CGFloat
     let frame: CGSize
 

@@ -23,6 +23,13 @@
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License">
 </p>
 
+<p align="center">
+  <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg">
+    <img src="https://img.shields.io/badge/T%E1%BA%A3i%20v%E1%BB%81%20cho%20macOS-FlowSnap.dmg-0071e3?style=for-the-badge&logo=apple&logoColor=white" alt="Tải FlowSnap cho macOS">
+  </a><br>
+  <em>~ Tương thích macOS 14.0 Sonoma trở lên (Apple Silicon & Intel) ~</em>
+</p>
+
 ---
 
 ## 🌟 Vì sao cần FlowSnap?
@@ -166,23 +173,44 @@ FlowSnap/
 
 ---
 
-### Cách 1: Đóng Gói & Cài Đặt Qua File DMG (Khuyên dùng)
+### Dành Cho Người Dùng: Tải & Cài Đặt
 
-Bạn có thể tự động build và đóng gói bộ cài `.dmg` chuẩn kéo-thả chỉ với một câu lệnh:
+#### Cách 1: Cài Đặt 1 Dòng Lệnh Qua Terminal (Nhanh nhất ⚡)
+
+Mở Terminal và dán câu lệnh duy nhất này để script tự động tải bản DMG mới nhất, cài vào `/Applications`, gỡ Gatekeeper và mở FlowSnap:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"
+```
+
+---
+
+#### Cách 2: Tải Trực Tiếp Cho macOS (.dmg) 📥
+
+Bấm vào link bên dưới để trình duyệt bật ngay cửa sổ lưu file tải về:
+
+<p align="center">
+  <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg">
+    <strong>Tải về cho macOS (FlowSnap.dmg)</strong>
+  </a><br>
+  <em>~ Tương thích macOS 14.0 Sonoma trở lên (Apple Silicon & Intel) ~</em>
+</p>
+
+1. Trình duyệt của bạn sẽ tự động bật popup hỏi nơi lưu file **`FlowSnap.dmg`** (như cửa sổ Save file trong macOS).
+2. Sau khi tải xong, nhấp đúp để mở file `.dmg` và kéo biểu tượng **FlowSnap** vào thư mục **Applications**.
+
+---
+
+#### Cách 3: Tự Đóng Gói File DMG Từ Mã Nguồn
+
+Nếu bạn muốn tự tay biên dịch bản phát hành `.dmg`:
 
 ```bash
 git clone https://github.com/ahauy/FlowSnap.git
 cd FlowSnap
 ./scripts/build-dmg.sh
-```
-
-Kịch bản sẽ tạo ra file `build/FlowSnap-1.3.0.dmg`. Mở file vừa tạo:
-
-```bash
 open build/FlowSnap-*.dmg
 ```
-
-Kéo biểu tượng **FlowSnap** vào thư mục **Applications** là bạn đã hoàn tất cài đặt!
 
 ---
 

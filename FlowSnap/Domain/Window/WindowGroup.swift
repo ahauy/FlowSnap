@@ -9,11 +9,12 @@ public struct GroupSyncOptions: OptionSet, Codable, Hashable, Sendable {
         self.rawValue = rawValue
     }
 
-    public static let minimizeTogether = GroupSyncOptions(rawValue: 1 << 0)
-    public static let focusTogether    = GroupSyncOptions(rawValue: 1 << 1)
-    public static let moveTogether     = GroupSyncOptions(rawValue: 1 << 2)
+    public static let minimizeTogether     = GroupSyncOptions(rawValue: 1 << 0)
+    public static let focusTogether        = GroupSyncOptions(rawValue: 1 << 1)
+    public static let moveTogether         = GroupSyncOptions(rawValue: 1 << 2)
+    public static let crossDisplayTogether = GroupSyncOptions(rawValue: 1 << 3)
 
-    public static let all: GroupSyncOptions = [.minimizeTogether, .focusTogether, .moveTogether]
+    public static let all: GroupSyncOptions = [.minimizeTogether, .focusTogether, .moveTogether, .crossDisplayTogether]
 }
 
 /// A dynamic association of two or more managed windows cooperating as a unified visual unit (spec §1.4).

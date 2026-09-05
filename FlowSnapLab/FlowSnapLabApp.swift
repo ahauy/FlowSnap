@@ -488,9 +488,18 @@ struct FlowSnapLabView: View {
         case .moveToDisplay(let id): return "display \(id)"
         case .moveToNextDisplay: return "next display"
         case .moveToPreviousDisplay: return "previous display"
+        case .moveGroupToNextDisplay: return "next display (group)"
+        case .moveGroupToPreviousDisplay: return "previous display (group)"
+        case .moveGroupToDisplay(let gid, let did): return "group \(gid) to display \(did)"
+        case .moveGroupOrWorkspaceToNextDisplay: return "next display (smart collection)"
+        case .moveGroupOrWorkspaceToPreviousDisplay: return "previous display (smart collection)"
         case .restoreWorkspace: return "workspace"
         case .saveWorkspace: return "save"
         case .restorePreset(let id): return "preset \(id)"
+        case .migrateWorkspace: return "migrate workspace"
+        case .togglePinFocusedWindow: return "pin window"
+        case .toggleScratchpad: return "scratchpad"
+        case .assignScratchpad: return "assign scratchpad"
         }
     }
 

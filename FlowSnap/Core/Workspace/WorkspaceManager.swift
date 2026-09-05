@@ -35,7 +35,7 @@ public final class WorkspaceManager: ObservableObject {
     @Published public internal(set) var restoringID: UUID?
 
     /// The currently active workspace that was restored or opened on screen.
-    @Published public private(set) var activeWorkspace: Workspace?
+    @Published public internal(set) var activeWorkspace: Workspace?
 
     // MARK: - Dependencies
 
@@ -155,6 +155,7 @@ public final class WorkspaceManager: ObservableObject {
             throw WorkspaceError.storeFailure(Self.storeError(from: error))
         }
         await reload()
+        self.activeWorkspace = workspace
         return workspace
     }
 

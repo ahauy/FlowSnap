@@ -12,14 +12,20 @@ struct WindowGroupSyncTests {
         let manager: WindowGroupManager
         let mockAX: MockAccessibilityService
         let mockWM: MockWindowManaging
+        let mockDisplay: MockDisplayManager
     }
 
     @MainActor
-    private func makeContext() -> TestContext {
+    private func makeContext(displays: [Display] = []) -> TestContext {
         let mockAX = MockAccessibilityService(isTrusted: true)
         let mockWM = MockWindowManaging()
-        let manager = WindowGroupManager(accessibilityService: mockAX, windowManager: mockWM)
-        return TestContext(manager: manager, mockAX: mockAX, mockWM: mockWM)
+        let mockDisplay = MockDisplayManager(displays: displays)
+        let manager = WindowGroupManager(
+            accessibilityService: mockAX,
+            windowManager: mockWM,
+            displayManager: mockDisplay
+        )
+        return TestContext(manager: manager, mockAX: mockAX, mockWM: mockWM, mockDisplay: mockDisplay)
     }
 
     @MainActor
@@ -241,5 +247,134 @@ struct WindowGroupSyncTests {
 
         #expect(context.manager.isSynchronizing == false)
         #expect(context.manager.syncGeneration == 1)
+    }
+
+    // MARK: - Cross-Display Group Migration Tests (US-GROUP-010)
+
+    @MainActor
+    @Test("handleGroupCrossDisplayThrow migrates snapped group members to matching zones on next display")
+    func testGroupCrossDisplayMigration_SnappedHalves() async throws {
+        let primary = Display(
+            id: 1,
+            frame: CGRect(x: 0, y: 0, width: 1920, height: 1080),
+            visibleFrame: CGRect(x: 0, y: 25, width: 1920, height: 1055),
+            scaleFactor: 2.0,
+            isPrimary: true
+        )
+        let secondary = Display(
+            id: 2,
+            frame: CGRect(x: 1920, y: 0, width: 2560, height: 1440),
+            visibleFrame: CGRect(x: 1920, y: 0, width: 2560, height: 1440),
+            scaleFactor: 2.0,
+            isPrimary: false
+        )
+
+        let context = makeContext(displays: [primary, secondary])
+
+        let win1 = ManagedWindow(
+            id: 951,
+            pid: 9501,
+            bundleIdentifier: "com.app.left",
+            title: "Left Half",
+            frame: CGRect(x: 0, y: 25, width: 960, height: 1055)
+        )
+        let win2 = ManagedWindow(
+            id: 952,
+            pid: 9502,
+            bundleIdentifier: "com.app.right",
+            title: "Right Half",
+            frame: CGRect(x: 960, y: 25, width: 960, height: 1055)
+        )
+
+        context.mockAX.mockVisibleWindows = [win1, win2]
+
+        let group = context.manager.createGroup(
+            name: "Work Pair",
+            windowIDs: [951, 952],
+            syncOptions: [.crossDisplayTogether]
+        )
+        #expect(group != nil)
+
+        try await context.manager.handleGroupCrossDisplayThrow(triggerWindowID: 951, isNext: true)
+
+        #expect(context.mockWM.moveCallCount == 2)
+        #expect(context.mockWM.movedWindows.contains { $0.window.id == 951 })
+        #expect(context.mockWM.movedWindows.contains { $0.window.id == 952 })
+    }
+
+    @MainActor
+    @Test("handleGroupCrossDisplayThrow does nothing if crossDisplayTogether option is disabled")
+    func testGroupCrossDisplayMigration_DisabledWhenOptionNotSet() async throws {
+        let primary = Display(
+            id: 1,
+            frame: CGRect(x: 0, y: 0, width: 1920, height: 1080),
+            visibleFrame: CGRect(x: 0, y: 25, width: 1920, height: 1055),
+            scaleFactor: 2.0,
+            isPrimary: true
+        )
+        let secondary = Display(
+            id: 2,
+            frame: CGRect(x: 1920, y: 0, width: 2560, height: 1440),
+            visibleFrame: CGRect(x: 1920, y: 0, width: 2560, height: 1440),
+            scaleFactor: 2.0,
+            isPrimary: false
+        )
+
+        let context = makeContext(displays: [primary, secondary])
+
+        let win1 = ManagedWindow(
+            id: 961, pid: 9601, bundleIdentifier: "com.app.left", title: "Left",
+            frame: CGRect(x: 0, y: 25, width: 960, height: 1055)
+        )
+        let win2 = ManagedWindow(
+            id: 962, pid: 9602, bundleIdentifier: "com.app.right", title: "Right",
+            frame: CGRect(x: 960, y: 25, width: 960, height: 1055)
+        )
+
+        context.mockAX.mockVisibleWindows = [win1, win2]
+
+        context.manager.createGroup(name: "No Cross", windowIDs: [961, 962], syncOptions: [.minimizeTogether, .moveTogether])
+
+        try await context.manager.handleGroupCrossDisplayThrow(triggerWindowID: 961, isNext: true)
+
+        #expect(context.mockWM.moveCallCount == 0)
+    }
+
+    @MainActor
+    @Test("handleGroupMoveToDisplay migrates group directly by ID to explicit display")
+    func testGroupMoveToDisplay_Explicit() async throws {
+        let primary = Display(
+            id: 1,
+            frame: CGRect(x: 0, y: 0, width: 1920, height: 1080),
+            visibleFrame: CGRect(x: 0, y: 25, width: 1920, height: 1055),
+            scaleFactor: 2.0,
+            isPrimary: true
+        )
+        let secondary = Display(
+            id: 2,
+            frame: CGRect(x: 1920, y: 0, width: 2560, height: 1440),
+            visibleFrame: CGRect(x: 1920, y: 0, width: 2560, height: 1440),
+            scaleFactor: 2.0,
+            isPrimary: false
+        )
+
+        let context = makeContext(displays: [primary, secondary])
+
+        let win1 = ManagedWindow(
+            id: 971, pid: 9701, bundleIdentifier: "com.app.left", title: "Left",
+            frame: CGRect(x: 0, y: 25, width: 960, height: 1055)
+        )
+        let win2 = ManagedWindow(
+            id: 972, pid: 9702, bundleIdentifier: "com.app.right", title: "Right",
+            frame: CGRect(x: 960, y: 25, width: 960, height: 1055)
+        )
+
+        context.mockAX.mockVisibleWindows = [win1, win2]
+
+        let group = try #require(context.manager.createGroup(name: "Direct", windowIDs: [971, 972], syncOptions: .all))
+
+        try await context.manager.handleGroupMoveToDisplay(groupID: group.id, targetDisplayID: 2)
+
+        #expect(context.mockWM.moveCallCount == 2)
     }
 }

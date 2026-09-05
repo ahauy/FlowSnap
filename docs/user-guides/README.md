@@ -29,6 +29,7 @@ Welcome to the **FlowSnap User Guides**! This directory contains step-by-step vi
 | **US-WORK-019** | **Universal Fullscreen Escape for Electron/Native**              | • 3-tier resilient escape hierarchy<br>• Electron & Chromium zoom button press<br>• Target PID ⌃⌘F keystroke dispatch<br>• Adaptive 100ms space transition polling                                                                    |    [View Guide](universal-fullscreen-escape.md)    |
 | **US-SNAP-021** | **Universal Always-On-Top Pinning & Stage Manager Co-existence** | • Global hotkey `⌃⌥P` toggle<br>• Dynamic LIFO Z-Stacking<br>• Zero private APIs (pure `kAXRaiseAction`)<br>• Stage Manager launch co-existence without sidebar ejection                                                              |   [View Guide](always-on-top-window-pinning.md)    |
 | **US-SNAP-022** | **Quake-Style Quick Scratchpad & Instant Window Toggle**         | • Sub-50ms instant summon (`⌥Space`)<br>• Zero-shrink & background layout preservation<br>• Hybrid dismiss (single vs multi-window)<br>• ESC key & click-outside dismiss options                                                      |  [View Guide](quake-scratchpad-instant-toggle.md)  |
+| **UI-MODERN**   | **Menu Trực Quan & Cài Đặt Hiện Đại (Tiếng Việt)**               | • Visual Snap Grid trên Menu Bar (1-chạm & auto-dismiss)<br>• Modern 2-column Settings (NavigationSplitView)<br>• Window Groups nâng cao (chọn cửa sổ theo Title, Throw qua màn hình)<br>• Workspace snapshot & multi-display restore |  [View Guide](visual-menu-and-modern-settings.md)  |
 
 ---
 
@@ -50,6 +51,8 @@ Welcome to the **FlowSnap User Guides**! This directory contains step-by-step vi
 | **`⌃⌥2`**     | **Top-Right**              | Snaps window to the top-right 25% corner quadrant.                           |
 | **`⌃⌥3`**     | **Bottom-Left**            | Snaps window to the bottom-left 25% corner quadrant.                         |
 | **`⌃⌥4`**     | **Bottom-Right**           | Snaps window to the bottom-right 25% corner quadrant.                        |
+| **`⌃⌥⌘→`**    | **Move Group Next**        | Moves all windows in active Window Group to the next screen.                 |
+| **`⌃⌥⌘←`**    | **Move Group Prev**        | Moves all windows in active Window Group to the previous screen.             |
 | **`⌃⌥P`**     | **Toggle Pin Window**      | Toggles Always-On-Top floating status for focused window.                    |
 | **`⌃⌥⇧⌘→`**   | **Migrate Workspace Next** | Moves all windows in active workspace to the next screen.                    |
 | **`⌃⌥⇧⌘←`**   | **Migrate Workspace Prev** | Moves all windows in active workspace to the previous screen.                |

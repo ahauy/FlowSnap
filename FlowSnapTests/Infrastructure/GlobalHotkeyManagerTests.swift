@@ -79,4 +79,23 @@ struct GlobalHotkeyManagerTests {
         manager.unregisterAll()
         #expect(manager.activeBindings.isEmpty)
     }
+
+    @MainActor
+    @Test func sharedGroupAndWorkspaceShortcutRegistration() {
+        let defaults = UserDefaults(suiteName: "test.globalhotkey.shared.\(UUID().uuidString)")!
+        let store = PreferencesStore(defaults: defaults)
+
+        // Set identical shortcut for moveWorkspaceNextDisplay and moveGroupNextDisplay
+        let sharedNext = KeyboardShortcut(keyCode: 124, carbonModifiers: UInt32(controlKey | optionKey | cmdKey)) // ⌃⌥⌘→
+        store.setShortcut(sharedNext, for: .moveWorkspaceNextDisplay)
+        store.setShortcut(sharedNext, for: .moveGroupNextDisplay)
+
+        let mockManager = MockGlobalHotkeyManager()
+        let registered = mockManager.registerShortcuts(from: store) { _ in }
+
+        // Confirm only ONE binding was registered for the shared shortcut, mapped to .moveGroupOrWorkspaceToNextDisplay
+        let sharedBindings = registered.filter { $0.shortcut == sharedNext }
+        #expect(sharedBindings.count == 1)
+        #expect(sharedBindings.first?.command == .moveGroupOrWorkspaceToNextDisplay)
+    }
 }

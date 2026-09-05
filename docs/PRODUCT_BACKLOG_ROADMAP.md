@@ -149,22 +149,23 @@ graph TD
 
 ## 3. Bảng ma trận ưu tiên MoSCoW & RICE
 
-| Mã Epic     | Tên Nghiệp vụ / Tính năng                                 |     MoSCoW      | Reach | Impact | Confidence | Effort | RICE Score |       Mức ưu tiên       | Target Sprint |
-| :---------- | :-------------------------------------------------------- | :-------------: | :---: | :----: | :--------: | :----: | :--------: | :---------------------: | :-----------: |
-| **EPIC-01** | Trợ năng & Nhận diện Cửa sổ Trọng tâm (AX Discovery)      |  **Must-Have**  |  10   |  3.0   |    100%    |  1.0   |  **30.0**  |    **P0 (Blocker)**     |   Sprint 1    |
-| **EPIC-02** | Động cơ Tính toán Bố cục Snap Cơ bản (Core Layout Engine) |  **Must-Have**  |  10   |  3.0   |    100%    |  1.5   |  **20.0**  |    **P0 (Core USP)**    |   Sprint 1    |
-| **EPIC-03** | Nhận diện & Thao tác Cửa sổ Đa Màn hình (Multi-Monitor)   |  **Must-Have**  |   8   |  2.5   |    90%     |  1.5   |  **12.0**  |      **P0 (High)**      |   Sprint 1    |
-| **EPIC-04** | Phím tắt Toàn cục & Hệ thống Điều phối (Global Hotkeys)   |  **Must-Have**  |  10   |  3.0   |    95%     |  1.5   |  **19.0**  |      **P0 (Core)**      |   Sprint 1    |
-| **EPIC-05** | Menu Bar Status Item & Bảng Điều khiển Nhanh              |  **Must-Have**  |   9   |  2.0   |    100%    |  1.0   |  **18.0**  |   **P0 (Usability)**    |   Sprint 1    |
-| **EPIC-06** | Kéo Thả Cạnh Màn hình & Lớp Phủ Xem trước (HUD Preview)   | **Should-Have** |   8   |  2.0   |    90%     |  2.0   |  **7.2**   |   **P1 (Experience)**   |   Sprint 2    |
-| **EPIC-07** | Snap Layout Picker Cạnh Trên (Windows 11-style)           | **Should-Have** |   8   |  2.5   |    85%     |  2.5   |  **6.8**   | **P1 (Differentiator)** |   Sprint 2    |
-| **EPIC-08** | Tỷ lệ Tùy chỉnh (60/40, 70/30) & Window Gaps Thẩm mỹ      | **Should-Have** |   7   |  1.5   |    95%     |  1.5   |  **6.6**   |     **P1 (Visual)**     |   Sprint 2    |
-| **EPIC-09** | Kéo Đường Phân cách Chung (Adaptive Divider Resize)       | **Could-Have**  |   6   |  2.0   |    80%     |  3.0   |  **3.2**   |    **P2 (Advanced)**    |   Sprint 2    |
-| **EPIC-10** | Cài đặt SwiftUI & Tùy biến Phím tắt (Settings & Config)   | **Should-Have** |   8   |  1.5   |    95%     |  1.5   |  **7.6**   |    **P1 (Settings)**    |   Sprint 2    |
-| **EPIC-11** | Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspaces) | **Should-Have** |   8   |  3.0   |    100%    |  2.5   |  **9.1**   |  **P1 (Hero Feature)**  |  Sprint 3 ✅  |
-| **EPIC-12** | Nhóm Cửa sổ & Workspace Presets (Coding, Research)        | **Should-Have** |   7   |  2.0   |    90%     |  1.5   |  **8.4**   |   **P1 (Value-Add)**    |   Sprint 3    |
-| **EPIC-13** | Phát hiện Mở Ứng dụng & Giữ ở Workspace Hiện tại          |  **Must-Have**  |   9   |  3.0   |    85%     |  2.5   |  **9.1**   |  **P0 (Hero Feature)**  |   Sprint 3    |
-| **EPIC-14** | Quy tắc Riêng theo Ứng dụng & Cửa sổ Nổi (Floating Stack) | **Should-Have** |   7   |  2.0   |    90%     |  2.0   |  **6.3**   |  **P1 (Flexibility)**   |   Sprint 3    |
+| Mã Epic         | Tên Nghiệp vụ / Tính năng                                 |     MoSCoW      | Reach | Impact | Confidence | Effort | RICE Score |        Mức ưu tiên         | Target Sprint |
+| :-------------- | :-------------------------------------------------------- | :-------------: | :---: | :----: | :--------: | :----: | :--------: | :------------------------: | :-----------: |
+| **EPIC-01**     | Trợ năng & Nhận diện Cửa sổ Trọng tâm (AX Discovery)      |  **Must-Have**  |  10   |  3.0   |    100%    |  1.0   |  **30.0**  |      **P0 (Blocker)**      |   Sprint 1    |
+| **EPIC-02**     | Động cơ Tính toán Bố cục Snap Cơ bản (Core Layout Engine) |  **Must-Have**  |  10   |  3.0   |    100%    |  1.5   |  **20.0**  |     **P0 (Core USP)**      |   Sprint 1    |
+| **EPIC-03**     | Nhận diện & Thao tác Cửa sổ Đa Màn hình (Multi-Monitor)   |  **Must-Have**  |   8   |  2.5   |    90%     |  1.5   |  **12.0**  |       **P0 (High)**        |   Sprint 1    |
+| **EPIC-04**     | Phím tắt Toàn cục & Hệ thống Điều phối (Global Hotkeys)   |  **Must-Have**  |  10   |  3.0   |    95%     |  1.5   |  **19.0**  |       **P0 (Core)**        |   Sprint 1    |
+| **EPIC-05**     | Menu Bar Status Item & Bảng Điều khiển Nhanh              |  **Must-Have**  |   9   |  2.0   |    100%    |  1.0   |  **18.0**  |     **P0 (Usability)**     |   Sprint 1    |
+| **EPIC-06**     | Kéo Thả Cạnh Màn hình & Lớp Phủ Xem trước (HUD Preview)   | **Should-Have** |   8   |  2.0   |    90%     |  2.0   |  **7.2**   |    **P1 (Experience)**     |   Sprint 2    |
+| **EPIC-07**     | Snap Layout Picker Cạnh Trên (Windows 11-style)           | **Should-Have** |   8   |  2.5   |    85%     |  2.5   |  **6.8**   |  **P1 (Differentiator)**   |   Sprint 2    |
+| **EPIC-08**     | Tỷ lệ Tùy chỉnh (60/40, 70/30) & Window Gaps Thẩm mỹ      | **Should-Have** |   7   |  1.5   |    95%     |  1.5   |  **6.6**   |      **P1 (Visual)**       |   Sprint 2    |
+| **EPIC-09**     | Kéo Đường Phân cách Chung (Adaptive Divider Resize)       | **Could-Have**  |   6   |  2.0   |    80%     |  3.0   |  **3.2**   |     **P2 (Advanced)**      |   Sprint 2    |
+| **EPIC-10**     | Cài đặt SwiftUI & Tùy biến Phím tắt (Settings & Config)   | **Should-Have** |   8   |  1.5   |    95%     |  1.5   |  **7.6**   |     **P1 (Settings)**      |   Sprint 2    |
+| **EPIC-11**     | Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspaces) | **Should-Have** |   8   |  3.0   |    100%    |  2.5   |  **9.1**   |   **P1 (Hero Feature)**    |  Sprint 3 ✅  |
+| **EPIC-12**     | Nhóm Cửa sổ & Workspace Presets (Coding, Research)        | **Should-Have** |   7   |  2.0   |    90%     |  1.5   |  **8.4**   |     **P1 (Value-Add)**     |   Sprint 3    |
+| **EPIC-13**     | Phát hiện Mở Ứng dụng & Giữ ở Workspace Hiện tại          |  **Must-Have**  |   9   |  3.0   |    85%     |  2.5   |  **9.1**   |   **P0 (Hero Feature)**    |   Sprint 3    |
+| **EPIC-14**     | Quy tắc Riêng theo Ứng dụng & Cửa sổ Nổi (Floating Stack) | **Should-Have** |   7   |  2.0   |    90%     |  2.0   |  **6.3**   |    **P1 (Flexibility)**    |   Sprint 3    |
+| **US-SNAP-024** | Khởi động cùng macOS qua SMAppService (Launch at Login)   |  **Must-Have**  |  10   |  2.5   |    100%    |  1.0   |  **25.0**  | **P0 (Utility Essential)** |  Sprint 7 ⏳  |
 
 ---
 
@@ -499,6 +500,31 @@ _Mục tiêu: Xây dựng trung tâm điều khiển cấu hình tiện dụng, 
     - `.specify/features/settings-shortcut-customization/baseline.md` (SIGNED-OFF)
     - `docs/features/settings-shortcut-customization/README.md`
     - `docs/user-guides/settings-shortcut-customization.md`
+
+- [ ] **US-SNAP-024: Tự động Khởi động cùng macOS qua SMAppService (Launch FlowSnap at Login Integration)**
+  - **Slug:** `launch-at-login`
+  - **Effort:** S
+  - **Context-budget:** single-session
+  - **Priority:** Must-Have (P0) / High (P1)
+  - **Depends-on:** `US-SNAP-010` ✅
+  - **Blocks:** _(none)_
+  - **Mô tả:** Tích hợp trực tiếp với API hiện đại `SMAppService.mainApp` của macOS (macOS 13+ ServiceManagement) để biến FlowSnap thành Login Item thực thụ. Khi người dùng bật máy tính hoặc đăng nhập macOS, FlowSnap tự động khởi chạy ngầm trên Menu Bar, bảo đảm toàn bộ hệ thống phím tắt toàn cục và quản lý cửa sổ luôn sẵn sàng phục vụ mà không cần người dùng mở app thủ công. Thay thế cờ boolean `UserDefaults` tĩnh hiện tại bằng dịch vụ hệ thống thực tế và đồng bộ trạng thái hai chiều với System Settings của macOS.
+  - **Acceptance Criteria (AC):**
+    - [ ] **Đăng ký Khởi động (`SMAppService.mainApp.register()`):** Khi người dùng bật toggle "Launch FlowSnap at login" trong Settings > General, ứng dụng kích hoạt đăng ký qua `SMAppService.mainApp.register()`. Hệ thống macOS tự động ghi nhận FlowSnap vào danh sách _Login Items & Extensions_.
+    - [ ] **Hủy Đăng ký Khởi động (`SMAppService.mainApp.unregister()`):** Khi người dùng tắt toggle, ứng dụng hủy đăng ký qua `SMAppService.mainApp.unregister()`.
+    - [ ] **Đồng bộ Hai chiều với macOS System Settings (Two-Way Status Sync):** Kiểm tra trạng thái thực tế từ `SMAppService.mainApp.status` (`.enabled`, `.notRegistered`, `.requiresApproval`, `.notFound`) mỗi khi màn hình Settings hiển thị hoặc ứng dụng nhận focus (`NSApplication.didBecomeActiveNotification`), đảm bảo toggle luôn phản ánh đúng nếu người dùng tự ý thay đổi trong _macOS System Settings > General > Login Items_.
+    - [ ] **Xử lý Quyền & Ngoại lệ (Permission & Error Handling):** Nếu trạng thái là `.requiresApproval` hoặc xảy ra lỗi do chính sách máy (MDM/Enterprise), hiển thị cảnh báo thân thiện và cung cấp nút mở trực tiếp cấu hình hệ thống (`x-apple.systempreferences:com.apple.LoginItems-Settings.extension`).
+    - [ ] **Kiểm thử Tự động & Cô lập Môi trường (Testing & Protocol Abstraction):** Trừu tượng hóa `SMAppService` thông qua protocol `LaunchAtLoginManaging` để unit test có thể mock và kiểm thử 100% các nhánh trạng thái và lỗi mà không làm thay đổi cấu hình macOS thật của máy phát triển.
+  - **Tasks:**
+    - [ ] `Core`: Định nghĩa protocol `LaunchAtLoginManaging` và implementation `SystemLaunchAtLoginManager` bao bọc `SMAppService.mainApp`.
+    - [ ] `Infrastructure`: Cập nhật `PreferencesStore` kết nối trực tiếp với `LaunchAtLoginManaging` thay vì chỉ lưu cờ `UserDefaults` tĩnh.
+    - [ ] `UI`: Cập nhật `GeneralSettingsView` hiển thị toggle đồng bộ thời gian thực, badge trạng thái nếu bị chặn (`requiresApproval`) và liên kết mở nhanh System Settings.
+    - [ ] `Tests`: Viết `LaunchAtLoginManagerTests` kiểm tra các luồng: register thành công, unregister, xử lý lỗi, đồng bộ status và observer.
+  - **Deliverables khi [x]:**
+    - `.specify/features/launch-at-login/baseline.md` (SIGNED-OFF v1.0)
+    - `docs/features/launch-at-login/README.md`
+    - `docs/user-guides/launch-at-login.md`
+    - `.specify/features/launch-at-login/test-plan.md`
 
 ---
 
@@ -870,6 +896,9 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
   └── [Sprint 6: Universal Always-On-Top & Scratchpad Harmony]  ──► [ COMPLETED ✅ ]
         ├── [x] US-SNAP-021: Universal Always-On-Top Window Pinning & Stage Manager Co-existence (⌃⌥P) ✅
         └── [x] US-SNAP-022: Quake-Style Quick Scratchpad & Instant Window Toggle (⌥Space) ✅
+
+[ Sprint 7: Launch Automation & System Preferences (Active Backlog) ]  ──► [ READY FOR SPRINT ⏳ ]
+  └── [ ] US-SNAP-024: Tự động Khởi động cùng macOS qua SMAppService (Launch at Login Integration)
 
 [ Future Horizons (V3.0+) ]
   ├── US-FUTURE-001: Visual Canvas-based Interactive Layout Editor

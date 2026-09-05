@@ -1,5 +1,13 @@
 # Changelog: Menu Bar Status Item & Quick Snap Controls (US-SNAP-005)
 
+## [1.1.0] - 2026-09-04
+
+### Added
+
+- **Visual Snap Grid**: Interactive visual canvas preview for instant 1-touch window snapping in Menu Bar (`REQ-MENU-007`).
+- **Compact Sections**: Limited Presets & Workspaces to ≤ 3-4 items with direct Settings navigation (`REQ-MENU-008`).
+- **Modern Settings NavigationSplitView**: Revamped Settings window with sidebar navigation, grouped cards, scrollable view, and zero layout clipping (`REQ-MENU-009`).
+
 ## [1.0.0] - 2026-08-28
 
 ### Added

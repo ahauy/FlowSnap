@@ -82,6 +82,9 @@ public struct ShortcutSettingsView: View {
             ShortcutRecorderField(
                 shortcut: currentShortcut,
                 conflictAction: conflict,
+                onRecordingChange: { isRecording in
+                    store.setRecordingShortcut(isRecording)
+                },
                 onRecord: { newShortcut in
                     store.setShortcut(newShortcut, for: action)
                 },

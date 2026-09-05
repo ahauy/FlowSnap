@@ -15,6 +15,7 @@ public struct ShortcutRecorderField: View {
 
     public let shortcut: KeyboardShortcut?
     public let conflictAction: ShortcutAction?
+    public let onRecordingChange: ((Bool) -> Void)?
     public let onRecord: (KeyboardShortcut) -> Void
     public let onClear: () -> Void
 
@@ -24,11 +25,13 @@ public struct ShortcutRecorderField: View {
     public init(
         shortcut: KeyboardShortcut?,
         conflictAction: ShortcutAction? = nil,
+        onRecordingChange: ((Bool) -> Void)? = nil,
         onRecord: @escaping (KeyboardShortcut) -> Void,
         onClear: @escaping () -> Void
     ) {
         self.shortcut = shortcut
         self.conflictAction = conflictAction
+        self.onRecordingChange = onRecordingChange
         self.onRecord = onRecord
         self.onClear = onClear
     }
@@ -92,17 +95,29 @@ public struct ShortcutRecorderField: View {
             }
         }
         .onDisappear {
-            stopMonitoring()
+            finishRecording()
         }
     }
 
     private func toggleRecording() {
         if isRecording {
-            stopMonitoring()
-            isRecording = false
+            finishRecording()
         } else {
-            isRecording = true
-            startMonitoring()
+            beginRecording()
+        }
+    }
+
+    private func beginRecording() {
+        isRecording = true
+        onRecordingChange?(true)
+        startMonitoring()
+    }
+
+    private func finishRecording() {
+        stopMonitoring()
+        if isRecording {
+            isRecording = false
+            onRecordingChange?(false)
         }
     }
 
@@ -113,8 +128,7 @@ public struct ShortcutRecorderField: View {
             // Escape key (kVK_Escape = 53): cancel recording
             if event.keyCode == 53 {
                 Task { @MainActor in
-                    self.stopMonitoring()
-                    self.isRecording = false
+                    self.finishRecording()
                 }
                 return nil
             }
@@ -123,8 +137,7 @@ public struct ShortcutRecorderField: View {
             if event.keyCode == 51 || event.keyCode == 117 {
                 Task { @MainActor in
                     self.onClear()
-                    self.stopMonitoring()
-                    self.isRecording = false
+                    self.finishRecording()
                 }
                 return nil
             }
@@ -133,8 +146,7 @@ public struct ShortcutRecorderField: View {
             if let newShortcut = KeyboardShortcut(from: event) {
                 Task { @MainActor in
                     self.onRecord(newShortcut)
-                    self.stopMonitoring()
-                    self.isRecording = false
+                    self.finishRecording()
                 }
                 return nil
             }

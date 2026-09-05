@@ -39,6 +39,7 @@ public final class CommandDispatcher: CommandDispatching {
     private let windowPinningCoordinator: (any WindowPinningCoordinating)?
     private let scratchpadCoordinator: (any ScratchpadCoordinating)?
     private let accessibilityService: AccessibilityService?
+    public weak var windowGroupManager: (any WindowGroupManaging)?
 
     /// Active pending task for latest-wins debouncing (BR-HOTKEY-005).
     private var pendingTask: Task<Void, Error>?
@@ -59,7 +60,8 @@ public final class CommandDispatcher: CommandDispatching {
         workspaceMigrator: (any WorkspaceMigrating)? = nil,
         windowPinningCoordinator: (any WindowPinningCoordinating)? = nil,
         scratchpadCoordinator: (any ScratchpadCoordinating)? = nil,
-        accessibilityService: AccessibilityService? = nil
+        accessibilityService: AccessibilityService? = nil,
+        windowGroupManager: (any WindowGroupManaging)? = nil
     ) {
         self.windowManager = windowManager
         self.snapEngine = snapEngine
@@ -71,6 +73,7 @@ public final class CommandDispatcher: CommandDispatching {
         self.windowPinningCoordinator = windowPinningCoordinator
         self.scratchpadCoordinator = scratchpadCoordinator
         self.accessibilityService = accessibilityService
+        self.windowGroupManager = windowGroupManager
     }
 
     /// Dispatch a command for asynchronous execution with latest-wins debouncing.
@@ -120,6 +123,25 @@ public final class CommandDispatcher: CommandDispatching {
 
         case .moveToPreviousDisplay:
             return try await executeCrossDisplayThrow(isNext: false)
+
+        case .moveGroupToNextDisplay:
+            return try await executeGroupCrossDisplayThrow(isNext: true)
+
+        case .moveGroupToPreviousDisplay:
+            return try await executeGroupCrossDisplayThrow(isNext: false)
+
+        case .moveGroupOrWorkspaceToNextDisplay:
+            return try await executeSmartCollectionThrow(isNext: true)
+
+        case .moveGroupOrWorkspaceToPreviousDisplay:
+            return try await executeSmartCollectionThrow(isNext: false)
+
+        case .moveGroupToDisplay(let groupID, let targetDisplayID):
+            if let windowGroupManager {
+                try await windowGroupManager.handleGroupMoveToDisplay(groupID: groupID, targetDisplayID: targetDisplayID)
+                return true
+            }
+            return false
 
         case .minimize:
             if let window = await windowManager.focusedWindow() {
@@ -277,6 +299,16 @@ public final class CommandDispatcher: CommandDispatching {
 
     private func executeCrossDisplayThrow(isNext: Bool) async throws -> Bool {
         guard let window = await windowManager.focusedWindow() else { return false }
+
+        // If the focused window belongs to a linked WindowGroup with crossDisplayTogether enabled,
+        // migrate the entire group together (US-GROUP-010).
+        if let groupManager = windowGroupManager,
+           let group = groupManager.group(for: window.id),
+           group.syncOptions.contains(.crossDisplayTogether) {
+            try await groupManager.handleGroupCrossDisplayThrow(triggerWindowID: window.id, isNext: isNext)
+            return true
+        }
+
         let displays = await displayManager.displays
         guard displays.count > 1 else {
             dispatcherLogger.debug("Single display connected. Cross-display throw is no-op.")
@@ -347,5 +379,42 @@ public final class CommandDispatcher: CommandDispatching {
 
         _ = await morphTask
         return true
+    }
+
+    private func executeGroupCrossDisplayThrow(isNext: Bool) async throws -> Bool {
+        guard let window = await windowManager.focusedWindow() else { return false }
+        guard let groupManager = windowGroupManager else {
+            dispatcherLogger.warning("WindowGroupManager not configured in CommandDispatcher")
+            return false
+        }
+        guard let group = groupManager.group(for: window.id) else {
+            dispatcherLogger.debug("Focused window \(window.id) does not belong to an active group.")
+            return false
+        }
+        try await groupManager.handleGroupCrossDisplayThrow(triggerWindowID: window.id, isNext: isNext)
+        return true
+    }
+
+    private func executeSmartCollectionThrow(isNext: Bool) async throws -> Bool {
+        // 1. Prioritize Window Group migration if focused window belongs to an active group
+        if let window = await windowManager.focusedWindow(),
+           let groupManager = windowGroupManager,
+           groupManager.group(for: window.id) != nil {
+            try await groupManager.handleGroupCrossDisplayThrow(triggerWindowID: window.id, isNext: isNext)
+            return true
+        }
+
+        // 2. Fall back to active Workspace migration
+        if let migrator = self.workspaceMigrator {
+            let result = try await migrator.migrateActiveWorkspace(direction: isNext ? .next : .previous)
+            switch result {
+            case .success:
+                return true
+            case .noOp:
+                return false
+            }
+        }
+
+        return false
     }
 }
