@@ -32,7 +32,8 @@ public final class AppDependencies {
 
     public lazy var windowGroupManager: WindowGroupManager = WindowGroupManager(
         accessibilityService: accessibilityService,
-        windowManager: windowManager
+        windowManager: windowManager,
+        displayManager: displayManager
     )
 
     public lazy var presetResolver: PresetResolver = PresetResolver(
@@ -72,7 +73,8 @@ public final class AppDependencies {
         workspaceMigrator: workspaceMigrator,
         windowPinningCoordinator: windowPinningCoordinator,
         scratchpadCoordinator: scratchpadCoordinator,
-        accessibilityService: accessibilityService
+        accessibilityService: accessibilityService,
+        windowGroupManager: windowGroupManager
     )
 
     // MARK: - Workspace
@@ -200,6 +202,12 @@ public final class AppDependencies {
         _ = self.workspaceMigrator
         self.displayHotPlugObserver.startObserving()
         _ = self.topologyProfileManager
+
+        if let wm = self.windowManager as? WindowManager {
+            wm.onWindowMoved = { [weak self] windowID in
+                self?.windowPolicyManager.markHandled(windowID: windowID)
+            }
+        }
 
         if let pinCoordinator = self.windowPinningCoordinator as? WindowPinningCoordinator {
             pinCoordinator.startObservingWorkspace()

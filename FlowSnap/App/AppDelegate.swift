@@ -39,6 +39,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
             .store(in: &cancellables)
 
+        // Pause global hotkeys during shortcut recording in Settings so the recorder can capture any key combination
+        preferences.$isRecordingShortcut
+            .removeDuplicates()
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] isRecording in
+                guard let self = self else { return }
+                if isRecording {
+                    self.dependencies.hotkeyManager.unregisterAll()
+                } else {
+                    self.dependencies.hotkeyManager.registerShortcuts(from: self.dependencies.preferencesStore) { command in
+                        Task { @MainActor in
+                            try? await dispatcher.dispatch(command)
+                        }
+                    }
+                }
+            }
+            .store(in: &cancellables)
+
         // Start Drag-to-Snap observation
         dependencies.dragToSnapCoordinator.start()
 
@@ -54,6 +73,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         dependencies.eventBus.subscribe(dependencies.windowPolicyManager) { [weak self] event in
             Task { @MainActor [weak self] in
                 guard let self else { return }
+                if case .activeSpaceChanged = event {
+                    self.dependencies.windowPolicyManager.prePopulateExistingWindows()
+                }
                 await self.dependencies.windowPolicyManager.handle(event: event)
             }
         }

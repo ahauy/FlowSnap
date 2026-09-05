@@ -140,15 +140,39 @@ public final class GlobalHotkeyManager: GlobalHotkeyManaging, @unchecked Sendabl
         var idCounter: UInt32 = 1
         var registeredList: [HotkeyBinding] = []
 
+        // Check for shared shortcuts between Group and Workspace throws
+        let groupNextShortcut = preferencesStore.shortcut(for: .moveGroupNextDisplay)
+        let workspaceNextShortcut = preferencesStore.shortcut(for: .moveWorkspaceNextDisplay)
+        let isSharedNext = groupNextShortcut != nil && groupNextShortcut == workspaceNextShortcut
+
+        let groupPrevShortcut = preferencesStore.shortcut(for: .moveGroupPreviousDisplay)
+        let workspacePrevShortcut = preferencesStore.shortcut(for: .moveWorkspacePreviousDisplay)
+        let isSharedPrev = groupPrevShortcut != nil && groupPrevShortcut == workspacePrevShortcut
+
         // Standard Snap Shortcuts
         for actionType in ShortcutAction.allCases {
             guard let shortcut = preferencesStore.shortcut(for: actionType) else {
                 continue
             }
+
+            // Handle shared group/workspace throws with unified smart command
+            let command: WindowCommand
+            if isSharedNext && actionType == .moveGroupNextDisplay {
+                command = .moveGroupOrWorkspaceToNextDisplay
+            } else if isSharedNext && actionType == .moveWorkspaceNextDisplay {
+                continue // Already registered via moveGroupNextDisplay
+            } else if isSharedPrev && actionType == .moveGroupPreviousDisplay {
+                command = .moveGroupOrWorkspaceToPreviousDisplay
+            } else if isSharedPrev && actionType == .moveWorkspacePreviousDisplay {
+                continue // Already registered via moveGroupPreviousDisplay
+            } else {
+                command = actionType.defaultCommand
+            }
+
             let binding = HotkeyBinding(
                 id: idCounter,
                 shortcut: shortcut,
-                command: actionType.defaultCommand
+                command: command
             )
             register(binding, action: action)
             if let active = activeBindings.first(where: { $0.id == idCounter }) {

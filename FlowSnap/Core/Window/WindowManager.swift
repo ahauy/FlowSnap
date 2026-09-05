@@ -11,6 +11,7 @@ public final class WindowManager: WindowManaging {
 
     private let accessibilityService: AccessibilityService
     private let fullScreenEscapeCoordinator: FullScreenEscapeCoordinating
+    public var onWindowMoved: ((CGWindowID) -> Void)?
 
     public init(
         accessibilityService: AccessibilityService,
@@ -82,6 +83,7 @@ public final class WindowManager: WindowManaging {
             do {
                 try accessibilityService.setFrame(frame, for: targetElement)
                 diagPrint("[DIAG-MOVE] setFrame OK for '\(window.title)' attempt=\(attempt)")
+                onWindowMoved?(window.id)
                 break // Success
             } catch AccessibilityError.cannotComplete {
                 diagPrint("[DIAG-MOVE] setFrame THREW cannotComplete for '\(window.title)' attempt=\(attempt)")
@@ -126,11 +128,32 @@ public final class WindowManager: WindowManaging {
     }
 
     public func minimize(_ window: ManagedWindow) async throws {
-        // AX minimize can be added when needed
+        if window.pid == ProcessInfo.processInfo.processIdentifier { return }
+        let element: AXUIElement
+        if let targetElement = accessibilityService.windowElement(for: window) {
+            element = targetElement
+        } else if let focused = accessibilityService.focusedWindow() {
+            element = focused
+        } else {
+            throw AccessibilityError.cannotComplete
+        }
+        try accessibilityService.minimize(element)
     }
 
     public func unminimize(_ window: ManagedWindow) async throws {
-        // AX unminimize
+        if window.pid == ProcessInfo.processInfo.processIdentifier { return }
+        let element: AXUIElement
+        if let targetElement = accessibilityService.windowElement(for: window) {
+            element = targetElement
+        } else {
+            let appWindows = accessibilityService.windows(of: window.pid)
+            if let first = appWindows.first {
+                element = first
+            } else {
+                throw AccessibilityError.cannotComplete
+            }
+        }
+        try accessibilityService.unminimize(element)
     }
 }
 

@@ -107,26 +107,61 @@ public final class DragToSnapCoordinator {
         let windowGap = preferencesStore?.windowGap ?? 0
         let uniform = windowGap > 0
 
-        // 1. If Layout Picker is currently visible, prioritize picker interaction
+        // 1. If Layout Picker is currently visible, manage the interaction corridor
         if layoutPickerManager.isVisible {
-            if let slot = layoutPickerManager.hitTestSlot(at: point) {
-                let slotZone = slot.target.zone ?? .maximize
-                let previewFrame = layoutEngine.frame(for: slotZone, in: activeDisplay.visibleFrame, gap: windowGap, uniform: uniform)
-                currentCandidateZone = slot.target
-                activeDetectionResult = SnapDetectionResult(
-                    target: slot.target,
-                    previewFrame: previewFrame,
-                    displayID: activeDisplay.id,
-                    isAdjacentEdge: false,
-                    isTopCenterZone: true
-                )
-                previewManager.showPreview(frame: previewFrame, displayID: activeDisplay.id)
-                return
-            } else if let pickerFrame = layoutPickerManager.pickerFrame, pickerFrame.contains(point) {
-                // Inside picker card area but not on a specific slot -> keep picker visible
-                return
-            } else if let pickerFrame = layoutPickerManager.pickerFrame, point.y < pickerFrame.minY - 24 {
-                // Moved significantly below picker -> dismiss picker and revert to edge detection
+            let pickerFrame = layoutPickerManager.pickerFrame ?? CGRect(
+                x: activeDisplay.visibleFrame.midX - 215,
+                y: activeDisplay.visibleFrame.maxY - 100,
+                width: 430,
+                height: 92
+            )
+            let corridorMinX = min(pickerFrame.minX - 60, activeDisplay.frame.minX + activeDisplay.frame.width * 0.25)
+            let corridorMaxX = max(pickerFrame.maxX + 60, activeDisplay.frame.minX + activeDisplay.frame.width * 0.75)
+            let corridorMinY = pickerFrame.minY - 30
+            let corridorMaxY = activeDisplay.frame.maxY + 30
+
+            let isInCorridor = point.x >= corridorMinX && point.x <= corridorMaxX &&
+                               point.y >= corridorMinY && point.y <= corridorMaxY
+
+            if isInCorridor {
+                if let slot = layoutPickerManager.hitTestSlot(at: point) {
+                    let slotZone = slot.target.zone ?? .maximize
+                    let previewFrame = layoutEngine.frame(for: slotZone, in: activeDisplay.visibleFrame, gap: windowGap, uniform: uniform)
+                    currentCandidateZone = slot.target
+                    activeDetectionResult = SnapDetectionResult(
+                        target: slot.target,
+                        previewFrame: previewFrame,
+                        displayID: activeDisplay.id,
+                        isAdjacentEdge: false,
+                        isTopCenterZone: true
+                    )
+                    previewManager.showPreview(frame: previewFrame, displayID: activeDisplay.id)
+                    return
+                } else if pickerFrame.contains(point) {
+                    // Inside picker card area between slots -> clear armed target so background click doesn't maximize
+                    activeDetectionResult = nil
+                    previewManager.hidePreview(animated: true)
+                    return
+                } else if point.y >= pickerFrame.maxY {
+                    // In the corridor above the picker (near Menu Bar / top screen edge)
+                    // Maintain .maximize preview and armed target
+                    let maximizeFrame = layoutEngine.frame(for: .maximize, in: activeDisplay.visibleFrame, gap: windowGap, uniform: uniform)
+                    currentCandidateZone = .maximize
+                    activeDetectionResult = SnapDetectionResult(
+                        target: .maximize,
+                        previewFrame: maximizeFrame,
+                        displayID: activeDisplay.id,
+                        isAdjacentEdge: false,
+                        isTopCenterZone: true
+                    )
+                    previewManager.showPreview(frame: maximizeFrame, displayID: activeDisplay.id)
+                    return
+                } else {
+                    // In corridor margin slightly below picker
+                    return
+                }
+            } else {
+                // Moved outside corridor -> dismiss picker and revert to edge detection
                 layoutPickerManager.hidePicker(animated: true)
                 previewManager.hidePreview(animated: true)
                 activeDetectionResult = nil
@@ -150,6 +185,7 @@ public final class DragToSnapCoordinator {
                 pendingDwellTask?.cancel()
                 pendingDwellTask = nil
                 currentCandidateZone = result.target
+                // Pre-arm activeDetectionResult with .maximize so releasing at top edge snaps to full screen
                 activeDetectionResult = result
                 layoutPickerManager.showPicker(on: activeDisplay)
                 previewManager.showPreview(frame: result.previewFrame, displayID: result.displayID)
@@ -222,6 +258,19 @@ public final class DragToSnapCoordinator {
                 previewManager.flashSnapSuccess(frame: snapFrame)
 
                 try? await commandDispatcher.dispatch(.snap(slot.target, targetDisplayID: resolvedDisplayID))
+                return
+            } else if let activeResult = activeDetectionResult {
+                // User released at top edge or with armed target while picker was open (intent: maximize)
+                activeDetectionResult = nil
+                previewManager.hidePreview(animated: false)
+                previewManager.flashSnapSuccess(frame: activeResult.previewFrame)
+
+                try? await commandDispatcher.dispatch(.snap(activeResult.target, targetDisplayID: activeResult.displayID))
+                return
+            } else {
+                // Released outside without armed target -> cancel snap, dismiss picker and preview cleanly
+                activeDetectionResult = nil
+                previewManager.hidePreview(animated: false)
                 return
             }
         }

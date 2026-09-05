@@ -42,8 +42,11 @@ public struct SnapDetector: SnapDetecting, Sendable {
         let isNearLeft = point.x >= minX - edgeThreshold && point.x <= minX + edgeThreshold
         let isNearRight = point.x >= maxX - edgeThreshold && point.x <= maxX + edgeThreshold
         let isNearBottom = point.y >= minY - edgeThreshold && point.y <= minY + edgeThreshold
-        let topBoundary = min(display.visibleFrame.maxY, maxY)
-        let isNearTop = point.y >= topBoundary - edgeThreshold && point.y <= maxY + edgeThreshold
+        // Top edge snap requires dragging the cursor to the physical top edge of the display (maxY),
+        // NOT visibleFrame.maxY. Docked windows reside at visibleFrame.maxY (below the Menu Bar);
+        // clicking their tabs or title bars must never trigger top maximize snapping.
+        let topThreshold: CGFloat = min(edgeThreshold, 4)
+        let isNearTop = point.y >= maxY - topThreshold && point.y <= maxY + edgeThreshold
 
         guard isNearLeft || isNearRight || isNearBottom || isNearTop else {
             return nil
@@ -51,19 +54,23 @@ public struct SnapDetector: SnapDetecting, Sendable {
 
         let cornerWidth = frame.width * cornerRatio
         let cornerHeight = frame.height * cornerRatio
+        // Top edge corner vertex threshold: restricted to tight corner vertex (<= 48px)
+        // so browser tabs located at x >= 80px never accidentally trigger quarter-snapping.
+        let topCornerVertexWidth: CGFloat = min(cornerWidth, 48)
 
         let target: SnapTarget
         let isAdjacent: Bool
 
         // 1. Check 4 Corners
-        if (isNearLeft && point.y >= topBoundary - cornerHeight) || (isNearTop && point.x <= minX + cornerWidth) {
+        if (isNearLeft && point.y >= maxY - cornerHeight) || (isNearTop && point.x <= minX + topCornerVertexWidth) {
             target = .topLeft
             isAdjacent = isEdgeAdjacent(side: .left, minX: minX, maxX: maxX, minY: minY, maxY: maxY, adjacentDisplays: adjacentDisplays) ||
                          isEdgeAdjacent(side: .top, minX: minX, maxX: maxX, minY: minY, maxY: maxY, adjacentDisplays: adjacentDisplays)
-        } else if (isNearRight && point.y >= topBoundary - cornerHeight) || (isNearTop && point.x >= maxX - cornerWidth) {
+        } else if (isNearRight && point.y >= maxY - cornerHeight) || (isNearTop && point.x >= maxX - topCornerVertexWidth) {
             target = .topRight
             isAdjacent = isEdgeAdjacent(side: .right, minX: minX, maxX: maxX, minY: minY, maxY: maxY, adjacentDisplays: adjacentDisplays) ||
                          isEdgeAdjacent(side: .top, minX: minX, maxX: maxX, minY: minY, maxY: maxY, adjacentDisplays: adjacentDisplays)
+
         } else if (isNearLeft && point.y <= minY + cornerHeight) || (isNearBottom && point.x <= minX + cornerWidth) {
             target = .bottomLeft
             isAdjacent = isEdgeAdjacent(side: .left, minX: minX, maxX: maxX, minY: minY, maxY: maxY, adjacentDisplays: adjacentDisplays) ||
@@ -120,8 +127,8 @@ public struct SnapDetector: SnapDetecting, Sendable {
         let frame = display.frame
         let minX = frame.minX
         let maxY = frame.maxY
-        let topBoundary = min(display.visibleFrame.maxY, maxY)
-        let isNearTop = point.y >= topBoundary - edgeThreshold && point.y <= maxY + edgeThreshold
+        let topThreshold: CGFloat = min(edgeThreshold, 4)
+        let isNearTop = point.y >= maxY - topThreshold && point.y <= maxY + edgeThreshold
         let centerMinX = minX + frame.width * 0.3
         let centerMaxX = minX + frame.width * 0.7
         return isNearTop && point.x >= centerMinX && point.x <= centerMaxX

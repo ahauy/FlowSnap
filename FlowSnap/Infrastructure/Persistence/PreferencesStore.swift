@@ -41,6 +41,7 @@ public final class PreferencesStore: ObservableObject {
     @Published public private(set) var isScratchpadDismissOnEscEnabled: Bool
     @Published public private(set) var appRules: [AppPolicyRule]
     @Published public private(set) var rememberedFrames: [String: RememberedFrame]
+    @Published public var isRecordingShortcut: Bool = false
 
     // MARK: - Initialization
 
@@ -208,11 +209,28 @@ public final class PreferencesStore: ObservableObject {
             if let excluding = action, candidate == excluding {
                 continue
             }
+            if let excluding = action, areMutuallyCompatible(candidate, excluding) {
+                continue
+            }
             if let bound = self.shortcut(for: candidate), bound == shortcut {
                 return candidate
             }
         }
         return nil
+    }
+
+    /// Determines if two distinct shortcut actions are allowed to share the same key combination
+    /// (e.g. Window Group and Workspace display throws, which dispatch via context-aware fallback).
+    private func areMutuallyCompatible(_ a: ShortcutAction, _ b: ShortcutAction) -> Bool {
+        if (a == .moveGroupNextDisplay && b == .moveWorkspaceNextDisplay) ||
+           (a == .moveWorkspaceNextDisplay && b == .moveGroupNextDisplay) {
+            return true
+        }
+        if (a == .moveGroupPreviousDisplay && b == .moveWorkspacePreviousDisplay) ||
+           (a == .moveWorkspacePreviousDisplay && b == .moveGroupPreviousDisplay) {
+            return true
+        }
+        return false
     }
 
     /// Resets all shortcuts to the default preset bindings (BR-SET-004).
@@ -249,6 +267,11 @@ public final class PreferencesStore: ObservableObject {
             customPresetShortcuts.removeValue(forKey: id)
         }
         saveCustomPresetShortcuts()
+    }
+
+    /// Sets whether a shortcut is actively being recorded in Settings UI.
+    public func setRecordingShortcut(_ isRecording: Bool) {
+        self.isRecordingShortcut = isRecording
     }
 
     /// Checks if a proposed shortcut conflicts with standard snap actions or other presets.

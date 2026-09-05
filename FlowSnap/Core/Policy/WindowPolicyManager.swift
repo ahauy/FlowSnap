@@ -62,12 +62,18 @@ final class WindowPolicyManager {
         }
 
         let bundleID = window.bundleIdentifier
-        // If the window belongs to the active workspace, preserve workspace placement and do not force .currentSpace (snap full)
-        if let bundleID,
-           let activeWorkspace = workspaceManager?.activeWorkspace,
-           activeWorkspace.placements.contains(where: { $0.bundleIdentifier.lowercased() == bundleID.lowercased() }) {
-            focusStack.recordFocus(windowID: window.id, isFloating: false)
-            return
+        // If the window belongs to the active workspace or any saved workspace, preserve workspace placement and do not force .currentSpace (snap full)
+        if let bundleID {
+            if let activeWorkspace = workspaceManager?.activeWorkspace,
+               activeWorkspace.placements.contains(where: { $0.bundleIdentifier.lowercased() == bundleID.lowercased() }) {
+                focusStack.recordFocus(windowID: window.id, isFloating: false)
+                return
+            }
+            if let workspaces = workspaceManager?.workspaces,
+               workspaces.contains(where: { ws in ws.placements.contains(where: { $0.bundleIdentifier.lowercased() == bundleID.lowercased() }) }) {
+                focusStack.recordFocus(windowID: window.id, isFloating: false)
+                return
+            }
         }
 
         let resolvedPolicy = bundleID.map { self.policy(forBundleID: $0) } ?? defaultPolicy
@@ -182,6 +188,11 @@ final class WindowPolicyManager {
     /// Marks a window as already handled (e.g. by workspace restore) so launch policies do not re-apply.
     public func markHandled(windowID: CGWindowID) {
         appliedWindowIDs.insert(windowID)
+    }
+
+    /// Marks multiple windows as already handled so launch policies do not re-apply.
+    public func markHandled(windowIDs: Set<CGWindowID>) {
+        appliedWindowIDs.formUnion(windowIDs)
     }
 
     /// Handle a `WindowEvent` from the shared `EventBus`.

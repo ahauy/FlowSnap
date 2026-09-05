@@ -88,7 +88,9 @@ extension WorkspaceManager: WorkspaceRestoring {
             var stamped = workspace
             stamped.lastRestoredAt = Date()
             try await store.upsert(stamped)
+            self.activeWorkspace = stamped
         } catch {
+            self.activeWorkspace = workspace
             NSLog("[WorkspaceManager] Could not record lastRestoredAt: \(error.localizedDescription)")
         }
         await reload()
