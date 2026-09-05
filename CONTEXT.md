@@ -122,6 +122,9 @@
 | **ScratchpadRecord** | Sendable model holding assigned scratchpad identity (windowID, PID, bundleID, appName, assignedAt) | "Scratchpad registration model" | `ScratchpadRecord` | US-SNAP-022, Domain |
 | **ScratchpadState** | State enum representing scratchpad visibility: `.unassigned`, `.visible`, `.hidden` | "Scratchpad lifecycle state" | `ScratchpadState` | US-SNAP-022, Domain |
 | **PreSummonFocus** | Struct capturing prior frontmost application PID and window ID for clean focus restoration | "Pre-summon focus snapshot" | `PreSummonFocus` | US-SNAP-022, Domain / Core |
+| **LaunchAtLoginManaging** | Sendable protocol abstracting SMAppService login item registration and status query | "Launch at login service interface" | `LaunchAtLoginManaging` | US-SNAP-024, Domain |
+| **LaunchAtLoginStatus** | Domain status enum (.enabled, .notRegistered, .requiresApproval, .notFound, .error) | "Login item state model" | `LaunchAtLoginStatus` | US-SNAP-024, Domain |
+| **SystemLaunchAtLoginManager** | macOS 14+ implementation bridging SMAppService.mainApp to FlowSnap | "System login item service" | `SystemLaunchAtLoginManager` | US-SNAP-024, Infrastructure |
 
 ## Where to Look
 
