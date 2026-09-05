@@ -43,6 +43,8 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
     case previousDisplay = "previousDisplay"
     case moveWorkspaceNextDisplay = "moveWorkspaceNextDisplay"
     case moveWorkspacePreviousDisplay = "moveWorkspacePreviousDisplay"
+    case moveGroupNextDisplay = "moveGroupNextDisplay"
+    case moveGroupPreviousDisplay = "moveGroupPreviousDisplay"
 
     // MARK: - Pinning (US-SNAP-021)
     case togglePinFocusedWindow = "togglePinFocusedWindow"
@@ -75,6 +77,8 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
         case .previousDisplay: return "Move to Previous Display"
         case .moveWorkspaceNextDisplay: return "Move Workspace to Next Display"
         case .moveWorkspacePreviousDisplay: return "Move Workspace to Previous Display"
+        case .moveGroupNextDisplay: return "Move Group to Next Display"
+        case .moveGroupPreviousDisplay: return "Move Group to Previous Display"
         case .togglePinFocusedWindow: return "Pin / Unpin Window"
         case .toggleScratchpad: return "Toggle Quick Scratchpad"
         case .assignScratchpad: return "Assign Scratchpad Window"
@@ -90,7 +94,7 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
             return .quarters
         case .left70_30, .rightOneThird, .leftThird, .centerThird, .rightThird:
             return .asymmetric
-        case .nextDisplay, .previousDisplay, .moveWorkspaceNextDisplay, .moveWorkspacePreviousDisplay:
+        case .nextDisplay, .previousDisplay, .moveWorkspaceNextDisplay, .moveWorkspacePreviousDisplay, .moveGroupNextDisplay, .moveGroupPreviousDisplay:
             return .displays
         case .togglePinFocusedWindow:
             return .pinning
@@ -103,6 +107,7 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
     public var defaultShortcut: KeyboardShortcut? {
         let ctrlOpt = UInt32(controlKey | optionKey)
         let ctrlOptShift = UInt32(controlKey | optionKey | shiftKey)
+        let ctrlOptCmd = UInt32(controlKey | optionKey | cmdKey)
 
         switch self {
         case .leftHalf:
@@ -145,6 +150,10 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
         case .moveWorkspacePreviousDisplay:
             let ctrlOptShiftCmd = UInt32(controlKey | optionKey | shiftKey | cmdKey)
             return KeyboardShortcut(keyCode: 123, carbonModifiers: ctrlOptShiftCmd) // ⌃⌥⇧⌘←
+        case .moveGroupNextDisplay:
+            return KeyboardShortcut(keyCode: 124, carbonModifiers: ctrlOptCmd) // ⌃⌥⌘→
+        case .moveGroupPreviousDisplay:
+            return KeyboardShortcut(keyCode: 123, carbonModifiers: ctrlOptCmd) // ⌃⌥⌘←
         case .togglePinFocusedWindow:
             return KeyboardShortcut(keyCode: 35, carbonModifiers: ctrlOpt) // ⌃⌥P (kVK_ANSI_P = 35)
         case .toggleScratchpad:
@@ -176,6 +185,8 @@ public enum ShortcutAction: String, CaseIterable, Codable, Sendable, Identifiabl
         case .previousDisplay: return .moveToPreviousDisplay
         case .moveWorkspaceNextDisplay: return .migrateWorkspace(.next)
         case .moveWorkspacePreviousDisplay: return .migrateWorkspace(.previous)
+        case .moveGroupNextDisplay: return .moveGroupToNextDisplay
+        case .moveGroupPreviousDisplay: return .moveGroupToPreviousDisplay
         case .togglePinFocusedWindow: return .togglePinFocusedWindow
         case .toggleScratchpad: return .toggleScratchpad
         case .assignScratchpad: return .assignScratchpad
