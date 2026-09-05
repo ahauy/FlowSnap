@@ -22,8 +22,10 @@ public struct MenuBarView: View {
                 permissionWarningBanner
             }
 
-            // Quick Snap Actions Grid
-            snapActionsSection
+            // Quick Snap Actions Grid (Visual Screen Canvas)
+            VisualSnapGridView(isEnabled: viewModel.isAccessibilityTrusted) { action in
+                viewModel.triggerSnap(action)
+            }
 
             // Presets (US-WORK-012)
             if !viewModel.presets.isEmpty {
@@ -51,10 +53,11 @@ public struct MenuBarView: View {
             footerSection
         }
         .padding(12)
-        .frame(width: 280)
+        .frame(width: 300)
         .onAppear {
             viewModel.refreshState()
         }
+
         .sheet(isPresented: saveSheetBinding) {
             if let workspaceVM = viewModel.workspaceViewModel {
                 WorkspaceSaveSheet(viewModel: workspaceVM) {
@@ -76,12 +79,23 @@ public struct MenuBarView: View {
 
     private var presetsSection: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("PRESETS")
-                .font(.system(size: 9, weight: .bold))
+            HStack {
+                Text("PRESETS")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+
+                Button("Manage…") {
+                    viewModel.openSettings(tab: .presets)
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: 9, weight: .medium))
                 .foregroundStyle(.secondary)
+            }
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
-                ForEach(viewModel.presets) { preset in
+                ForEach(viewModel.presets.prefix(4)) { preset in
                     presetButton(preset)
                 }
             }
@@ -140,14 +154,30 @@ public struct MenuBarView: View {
                 Button {
                     workspaceVM.presentSaveSheet()
                 } label: {
-                    Image(systemName: "plus")
-                        .font(.system(size: 11, weight: .semibold))
+                    HStack(spacing: 2) {
+                        Image(systemName: "plus")
+                        Text("Save")
+                    }
+                    .font(.system(size: 9, weight: .medium))
                 }
-                .buttonStyle(.borderless)
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
                 .help("Save current layout as a workspace")
+
+                Text("•")
+                    .font(.system(size: 8))
+                    .foregroundStyle(.tertiary)
+
+                Button("Manage…") {
+                    viewModel.openSettings(tab: .workspaces)
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: 9, weight: .medium))
+                .foregroundStyle(.secondary)
             }
 
             WorkspaceListView(viewModel: workspaceVM)
+
 
             Button {
                 viewModel.triggerMigrateWorkspace(.next)
@@ -377,106 +407,67 @@ public struct MenuBarView: View {
     // MARK: - Permission Warning Banner
 
     private var permissionWarningBanner: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundStyle(.orange)
-                    .font(.system(size: 12))
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 8) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.orange.opacity(0.15))
+                        .frame(width: 24, height: 24)
 
-                Text("Accessibility Required")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.orange)
+                    Image(systemName: "hand.raised.fill")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(.orange)
+                }
+
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Accessibility Access Needed")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(.primary)
+
+                    Text("Window snapping is currently disabled")
+                        .font(.system(size: 9))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
             }
 
-            Text("FlowSnap needs Accessibility permission to position and resize your windows.")
+            Text("FlowSnap needs Accessibility permission in macOS Settings to detect and snap application windows.")
                 .font(.system(size: 10))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
+                .lineSpacing(1.5)
 
             Button {
                 viewModel.requestAccessibilityPermission()
             } label: {
-                HStack(spacing: 4) {
-                    Text("Grant Permission")
+                HStack(spacing: 5) {
+                    Image(systemName: "gearshape.fill")
+                        .font(.system(size: 10))
+                    Text("Open System Settings")
+                        .font(.system(size: 10, weight: .semibold))
                     Image(systemName: "arrow.up.forward.app")
+                        .font(.system(size: 9))
                 }
-                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.accentColor)
+                )
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.small)
-            .tint(.orange)
+            .buttonStyle(.plain)
         }
-        .padding(8)
+        .padding(10)
         .background(
-            RoundedRectangle(cornerRadius: 6)
-                .fill(Color.orange.opacity(0.08))
-                .stroke(Color.orange.opacity(0.25), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color(nsColor: .controlBackgroundColor))
         )
-    }
-
-    // MARK: - Snap Actions Grid
-
-    private var snapActionsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("QUICK SNAP")
-                .font(.system(size: 9, weight: .bold))
-                .foregroundStyle(.secondary)
-
-            // Halves & Full
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
-                snapButton(action: .leftHalf)
-                snapButton(action: .rightHalf)
-                snapButton(action: .topHalf)
-                snapButton(action: .bottomHalf)
-                snapButton(action: .maximize)
-                snapButton(action: .restore)
-            }
-
-            Text("QUARTERS")
-                .font(.system(size: 9, weight: .bold))
-                .foregroundStyle(.secondary)
-                .padding(.top, 2)
-
-            // 4 Quarters
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
-                snapButton(action: .topLeft)
-                snapButton(action: .topRight)
-                snapButton(action: .bottomLeft)
-                snapButton(action: .bottomRight)
-            }
-        }
-    }
-
-    private func snapButton(action: MenuBarAction) -> some View {
-        Button {
-            viewModel.triggerSnap(action)
-        } label: {
-            HStack(spacing: 6) {
-                Image(systemName: action.iconName)
-                    .font(.system(size: 12))
-                    .frame(width: 14)
-
-                Text(action.rawValue)
-                    .font(.system(size: 11))
-
-                Spacer()
-
-                Text(action.shortcutBadge)
-                    .font(.system(size: 9, weight: .regular, design: .monospaced))
-                    .foregroundStyle(.secondary)
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 5)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 5)
-                    .fill(Color(nsColor: .controlBackgroundColor).opacity(0.6))
-            )
-        }
-        .buttonStyle(.plain)
-        .disabled(!viewModel.isAccessibilityTrusted)
-        .opacity(viewModel.isAccessibilityTrusted ? 1.0 : 0.5)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.orange.opacity(0.35), lineWidth: 1)
+        )
     }
 
     // MARK: - Footer (System Controls)

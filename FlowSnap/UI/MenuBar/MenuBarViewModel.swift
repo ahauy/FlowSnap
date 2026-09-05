@@ -268,16 +268,19 @@ public final class MenuBarViewModel {
         accessibilityService.openSystemSettings()
     }
 
-    /// Opens the application settings window.
-    public func openSettings() {
+    /// Opens the application settings window, optionally navigating directly to a specific tab.
+    public func openSettings(tab: SettingsTab? = nil) {
         dismissMenuBarWindow()
-        if let settingsWindowPresenter {
+        if let tab, let settingsWindowPresenter {
+            settingsWindowPresenter.showSettingsWindow(tab: tab)
+        } else if let settingsWindowPresenter {
             settingsWindowPresenter.showSettingsWindow()
         } else {
             NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
             NSApp.activate(ignoringOtherApps: true)
         }
     }
+
 
     /// Cleanly terminates the FlowSnap application.
     public func quitApp() {

@@ -7,6 +7,14 @@ import SwiftUI
 public protocol SettingsWindowPresenting: AnyObject, Sendable {
     /// Presents and focuses the settings window, bringing FlowSnap to the foreground.
     func showSettingsWindow()
+    /// Presents and focuses the settings window at a specific tab.
+    func showSettingsWindow(tab: SettingsTab)
+}
+
+public extension SettingsWindowPresenting {
+    func showSettingsWindow(tab: SettingsTab) {
+        showSettingsWindow()
+    }
 }
 
 /// Floating panel subclass ensuring the settings panel can become key and accept user interactions.
@@ -52,7 +60,26 @@ public final class SettingsWindowController: NSObject, NSWindowDelegate, Setting
 
     /// Presents and focuses the settings window as a floating overlay above other windows.
     public func showSettingsWindow() {
+        showSettingsWindow(tab: nil)
+    }
+
+    /// Presents and focuses the settings window at a specific tab.
+    public func showSettingsWindow(tab: SettingsTab) {
+        showSettingsWindow(tab: Optional(tab))
+    }
+
+    public func showSettingsWindow(tab: SettingsTab? = nil) {
         if let existingWindow = window {
+            if let host = existingWindow.contentViewController as? NSHostingController<SettingsView> {
+                host.rootView = SettingsView(
+                    store: preferencesStore,
+                    workspaceManager: workspaceManager,
+                    windowGroupManager: windowGroupManager,
+                    presetResolver: presetResolver,
+                    commandDispatcher: commandDispatcher,
+                    initialTab: tab ?? .general
+                )
+            }
             if existingWindow.isMiniaturized {
                 existingWindow.deminiaturize(nil)
             }
@@ -68,19 +95,22 @@ public final class SettingsWindowController: NSObject, NSWindowDelegate, Setting
             workspaceManager: workspaceManager,
             windowGroupManager: windowGroupManager,
             presetResolver: presetResolver,
-            commandDispatcher: commandDispatcher
+            commandDispatcher: commandDispatcher,
+            initialTab: tab ?? .general
         )
         let hostingController = NSHostingController(rootView: settingsView)
 
         let newWindow = SettingsFloatingPanel(contentViewController: hostingController)
         newWindow.title = "FlowSnap Settings"
-        newWindow.styleMask = [.titled, .closable, .miniaturizable, .nonactivatingPanel]
+        newWindow.styleMask = [.titled, .closable, .miniaturizable, .resizable, .nonactivatingPanel]
         newWindow.isReleasedWhenClosed = false
         newWindow.level = .floating
         newWindow.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         newWindow.isFloatingPanel = true
         newWindow.becomesKeyOnlyIfNeeded = false
         newWindow.delegate = self
+        newWindow.setContentSize(NSSize(width: 720, height: 520))
+        newWindow.minSize = NSSize(width: 650, height: 460)
         newWindow.center()
 
         self.window = newWindow
@@ -88,6 +118,7 @@ public final class SettingsWindowController: NSObject, NSWindowDelegate, Setting
         newWindow.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
+
 
     // MARK: - NSWindowDelegate
 

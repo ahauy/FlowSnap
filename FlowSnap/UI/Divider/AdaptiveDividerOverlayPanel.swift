@@ -236,8 +236,12 @@ public final class AdaptiveDividerOverlayView: NSView {
     private func renderWindowOutlines() {
         windowBordersContainerLayer.sublayers?.forEach { $0.removeFromSuperlayer() }
 
-        // Individual Window Outlines (without intrusive desktop workspace container border)
-        for window in windows {
+        // Only outline primary windows that directly participate in divider seams,
+        // preventing unwanted outlines around child/floating panels (e.g. Antigravity chat popup)
+        let seamWindowIDs = Set(dividers.flatMap { $0.leadingWindowIDs + $0.trailingWindowIDs })
+        let targetWindows = seamWindowIDs.isEmpty ? windows : windows.filter { seamWindowIDs.contains($0.id) }
+
+        for window in targetWindows {
             let localRect = window.frame.offsetBy(
                 dx: -containerFrame.minX,
                 dy: -containerFrame.minY

@@ -173,6 +173,9 @@ public struct PresetGalleryView: View {
             ShortcutRecorderField(
                 shortcut: store.shortcut(forPresetID: preset.id),
                 conflictAction: nil,
+                onRecordingChange: { isRecording in
+                    store.setRecordingShortcut(isRecording)
+                },
                 onRecord: { recorded in
                     handleRecordShortcut(recorded, for: preset)
                 },

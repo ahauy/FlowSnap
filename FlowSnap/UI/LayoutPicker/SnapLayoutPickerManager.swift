@@ -61,8 +61,8 @@ public final class SnapLayoutPickerManager: SnapLayoutPickerManaging {
         currentHoveredSlot = nil
         panel.updateView(hoveredSlotId: nil, templates: currentTemplates)
 
-        panel.setFrame(targetFrame, display: true)
-        panel.alphaValue = 1.0
+        panel.setFrame(initialFrame, display: true)
+        panel.alphaValue = 0.0
         panel.orderFrontRegardless()
 
         NSAnimationContext.runAnimationGroup { context in

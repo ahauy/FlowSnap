@@ -24,22 +24,8 @@ public struct WorkspaceSettingsView: View {
     @State private var pendingDelete: Workspace?
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Saved Workspaces")
-                    .font(.headline)
-                Spacer()
-                Button {
-                    viewModel.presentSaveSheet()
-                } label: {
-                    Label("Save Current Layout", systemImage: "plus")
-                }
-            }
-
-            Text("Save a set of window positions and restore them in one click. FlowSnap launches any app that isn't running.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+        VStack(alignment: .leading, spacing: 14) {
+            headerSection
 
             Divider()
 
@@ -47,9 +33,9 @@ public struct WorkspaceSettingsView: View {
                 emptyState
             } else {
                 ScrollView {
-                    VStack(spacing: 6) {
+                    VStack(spacing: 12) {
                         ForEach(viewModel.workspaces) { workspace in
-                            row(workspace)
+                            workspaceCard(workspace)
                         }
                     }
                     .padding(1)
@@ -94,56 +80,170 @@ public struct WorkspaceSettingsView: View {
         }
     }
 
+    // MARK: - Header
+
+    private var headerSection: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Saved Workspaces")
+                    .font(.headline)
+
+                Text("Save sets of window positions and restore them in one click. FlowSnap launches any app that isn't running.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer()
+
+            Button {
+                viewModel.presentSaveSheet()
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "plus")
+                    Text("Save Current Layout")
+                }
+                .font(.system(size: 11, weight: .medium))
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.small)
+            .help("Save the current window layout as a workspace")
+        }
+    }
+
     // MARK: - Empty state
 
     private var emptyState: some View {
-        VStack(spacing: 6) {
-            Image(systemName: "square.stack.3d.up.slash")
-                .font(.system(size: 28))
+        VStack(spacing: 12) {
+            Image(systemName: "square.stack.3d.up")
+                .font(.system(size: 36))
                 .foregroundStyle(.secondary)
-            Text("No saved workspaces")
-                .font(.system(size: 13, weight: .medium))
-            Text("Arrange your windows, then click “Save Current Layout”.")
+
+            Text("No Saved Workspaces")
+                .font(.system(size: 13, weight: .semibold))
+
+            Text("Arrange your windows on screen, then click below to save your current layout as a workspace.")
                 .font(.system(size: 11))
                 .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 360)
+
+            Button {
+                viewModel.presentSaveSheet()
+            } label: {
+                HStack(spacing: 5) {
+                    Image(systemName: "plus")
+                    Text("Save Current Layout...")
+                }
+                .font(.system(size: 11, weight: .medium))
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.regular)
+            .padding(.top, 4)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 40)
     }
 
-    // MARK: - Row
+    // MARK: - Workspace Card
 
-    private func row(_ workspace: Workspace) -> some View {
-        HStack(spacing: 10) {
+    private func workspaceCard(_ workspace: Workspace) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            workspaceCardHeader(workspace)
+
+            if !workspace.orderedPlacements.isEmpty && renamingID != workspace.id {
+                Divider()
+                placementsList(workspace)
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color(nsColor: .controlBackgroundColor))
+                .stroke(Color.gray.opacity(0.18), lineWidth: 1)
+        )
+    }
+
+    private func workspaceCardHeader(_ workspace: Workspace) -> some View {
+        HStack(spacing: 8) {
             Image(systemName: workspace.icon)
-                .font(.system(size: 16))
-                .frame(width: 22)
+                .font(.system(size: 14))
+                .foregroundStyle(Color.accentColor)
 
             if renamingID == workspace.id {
                 renameField(workspace)
             } else {
-                titleBlock(workspace)
+                Text(workspace.name)
+                    .font(.system(size: 13, weight: .semibold))
+
+                Text("\(workspace.appCount) apps • \(workspace.expectedWindowTotal) windows")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(
+                        Capsule()
+                            .fill(Color.gray.opacity(0.15))
+                    )
+
                 Spacer()
+
                 rowActions(workspace)
             }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .background(
-            RoundedRectangle(cornerRadius: 7)
-                .fill(Color(nsColor: .controlBackgroundColor))
-        )
     }
 
-    /// The name + app-count label shown when the row is not being renamed.
-    private func titleBlock(_ workspace: Workspace) -> some View {
-        VStack(alignment: .leading, spacing: 1) {
-            Text(workspace.name)
-                .font(.system(size: 13, weight: .medium))
-            Text("\(workspace.appCount) \(workspace.appCount == 1 ? "app" : "apps")")
-                .font(.system(size: 10))
+    private func placementsList(_ workspace: Workspace) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Configured Placements")
+                .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(.secondary)
+
+            VStack(spacing: 4) {
+                ForEach(workspace.orderedPlacements, id: \.self) { placement in
+                    placementRow(placement)
+                }
+            }
         }
+    }
+
+    private func placementRow(_ placement: WindowPlacement) -> some View {
+        let appName = formatBundleName(placement.bundleIdentifier)
+        let zoneTitle = displayName(for: placement.zone)
+
+        return HStack(spacing: 8) {
+            Image(systemName: iconForBundle(placement.bundleIdentifier))
+                .font(.system(size: 12))
+                .foregroundStyle(Color.accentColor)
+                .frame(width: 16)
+
+            Text(appName)
+                .font(.system(size: 11, weight: .semibold))
+
+            Spacer()
+
+            Text(zoneTitle)
+                .font(.system(size: 10, weight: .medium))
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.accentColor.opacity(0.12))
+                )
+                .foregroundStyle(Color.accentColor)
+
+            if placement.expectedWindowCount > 1 {
+                Text("\(placement.expectedWindowCount) windows")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(
+            RoundedRectangle(cornerRadius: 5)
+                .fill(Color(nsColor: .controlColor).opacity(0.4))
+        )
     }
 
     /// The trailing Restore / Rename / Delete controls.
@@ -249,5 +349,69 @@ public struct WorkspaceSettingsView: View {
         }
         .padding(10)
         .background(RoundedRectangle(cornerRadius: 7).fill(Color.orange.opacity(0.08)))
+    }
+}
+
+// MARK: - Workspace Placement Helpers
+
+private func formatBundleName(_ bundleID: String) -> String {
+    let lower = bundleID.lowercased()
+    if lower.contains("brave") { return "Brave" }
+    if lower.contains("chrome") { return "Chrome" }
+    if lower.contains("safari") { return "Safari" }
+    if lower.contains("antigravity") { return "Antigravity IDE" }
+    if lower.contains("vscode") || lower.contains("visualstudio") { return "VS Code" }
+    if lower.contains("cursor") { return "Cursor" }
+    if lower.contains("xcode") { return "Xcode" }
+    if lower.contains("finder") { return "Finder" }
+    if lower.contains("terminal") || lower.contains("iterm") { return "Terminal" }
+    if lower.contains("slack") { return "Slack" }
+    if lower.contains("notes") { return "Notes" }
+    return bundleID.components(separatedBy: ".").last?.capitalized ?? bundleID
+}
+
+private func iconForBundle(_ bundleID: String) -> String {
+    let lower = bundleID.lowercased()
+    if lower.contains("brave") || lower.contains("chrome") || lower.contains("safari") || lower.contains("edge") {
+        return "globe"
+    }
+    if lower.contains("antigravity") || lower.contains("vscode") || lower.contains("xcode") || lower.contains("cursor") {
+        return "chevron.left.forwardslash.chevron.right"
+    }
+    if lower.contains("terminal") || lower.contains("iterm") {
+        return "terminal"
+    }
+    if lower.contains("finder") {
+        return "folder"
+    }
+    if lower.contains("slack") || lower.contains("discord") || lower.contains("telegram") || lower.contains("zalo") {
+        return "message"
+    }
+    if lower.contains("notes") {
+        return "note.text"
+    }
+    return "macwindow"
+}
+
+private func displayName(for zone: LayoutZone) -> String {
+    switch zone {
+    case .leftHalf, .left50_50: return "Left Half"
+    case .rightHalf, .right50_50: return "Right Half"
+    case .topHalf: return "Top Half"
+    case .bottomHalf: return "Bottom Half"
+    case .maximize: return "Full Screen"
+    case .topLeft: return "Top Left"
+    case .topRight: return "Top Right"
+    case .bottomLeft: return "Bottom Left"
+    case .bottomRight: return "Bottom Right"
+    case .left70_30: return "Left 70%"
+    case .rightOneThird, .right20_80: return "Right 30%"
+    case .leftThird, .left25: return "Left 1/3"
+    case .centerThird, .center50: return "Center"
+    case .rightThird, .right25: return "Right 1/3"
+    case .left60_40: return "Left 60%"
+    case .right40_60: return "Right 40%"
+    case .left80_20: return "Left 80%"
+    default: return zone.rawValue.capitalized
     }
 }
