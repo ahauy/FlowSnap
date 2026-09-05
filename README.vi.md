@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="README.md">🇬🇧 English</a> •
-  <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg"><strong>📥 Tải về (.dmg)</strong></a> •
+  <a href="#-cài-đặt-nhanh-qua-terminal-khuyên-dùng"><strong>⚡ Cài đặt nhanh</strong></a> •
   <a href="#tính-năng-nổi-bật">Tính năng</a> •
   <a href="#hướng-dẫn-cài-đặt--khởi-chạy">Cài đặt & Chạy</a> •
   <a href="#bảng-phím-tắt-mặc-định">Phím tắt</a> •
@@ -22,22 +22,23 @@
   <img src="https://img.shields.io/badge/Apple%20API-100%25%20Zero%20Private%20APIs-blue?style=flat-square" alt="Zero Private APIs">
   <img src="https://img.shields.io/badge/Architecture-DDD%20%26%20Deep%20Modules-purple?style=flat-square" alt="DDD Architecture">
   <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="MIT License">
-</p>
-
-<p align="center">
-  <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg">
-    <img src="https://img.shields.io/badge/T%E1%BA%A3i%20v%E1%BB%81%20cho%20macOS-FlowSnap.dmg-0071e3?style=for-the-badge&logo=apple&logoColor=white" alt="Tải FlowSnap cho macOS">
-  </a>
   <a href="https://github.com/ahauy/FlowSnap/releases/latest">
-    <img src="https://img.shields.io/badge/Phi%C3%AAn%20b%E1%BA%A3n%20m%E1%BB%9Bi%20nh%E1%BA%A5t-v1.3.1-success?style=for-the-badge" alt="Phiên bản v1.3.1">
+    <img src="https://img.shields.io/badge/B%E1%BA%A3n%20ph%C3%A1t%20h%C3%A0nh-v1.3.1-0071e3?style=flat-square" alt="Bản phát hành v1.3.1">
   </a>
 </p>
 
-<p align="center">
-  📥 <strong>Tải về trực tiếp:</strong> <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg"><strong>FlowSnap.dmg (Bản mới nhất v1.3.1)</strong></a> • <a href="https://github.com/ahauy/FlowSnap/releases/latest">Ghi chú phát hành</a><br>
-  ⚡ <strong>Cài đặt nhanh 1 dòng lệnh Terminal:</strong> <code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"</code><br>
-  <em>~ Tương thích macOS 14.0 Sonoma trở lên (Apple Silicon & Intel) ~</em>
-</p>
+---
+
+### ⚡ Cài đặt nhanh qua Terminal (Khuyên dùng)
+
+Mở **Terminal** trên máy Mac và dán câu lệnh sau để tự động tải, thiết lập quyền hạn và mở FlowSnap ngay tức thì:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"
+```
+
+> [!NOTE]
+> **Cam kết Bảo mật & Quyền riêng tư:** FlowSnap là dự án nguồn mở 100% miễn phí, chỉ sử dụng Public Apple APIs và tuyệt đối không thu thập dữ liệu cá nhân. Lệnh cài đặt tự động này giúp cấu hình quyền hạn sạch sẽ, khởi chạy ứng dụng trơn tru mà không bị chặn bởi cảnh báo Gatekeeper của macOS. _(Bạn vẫn có thể tải thủ công file `.dmg` tại mục [Hướng dẫn cài đặt & Khởi chạy](#hướng-dẫn-cài-đặt--khởi-chạy) bên dưới)._
 
 ---
 

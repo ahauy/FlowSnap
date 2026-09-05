@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="README.vi.md">🇻🇳 Tiếng Việt</a> •
-  <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg"><strong>📥 Download (.dmg)</strong></a> •
+  <a href="#-quick-install-recommended"><strong>⚡ Quick Install</strong></a> •
   <a href="#-key-features">Key Features</a> •
   <a href="#-installation--getting-started">Installation</a> •
   <a href="#%EF%B8%8F-keyboard-shortcuts">Shortcuts</a> •
@@ -22,22 +22,23 @@
   <img src="https://img.shields.io/badge/Apple%20API-100%25%20Zero%20Private%20APIs-0071e3?style=flat-square" alt="Zero Private APIs">
   <img src="https://img.shields.io/badge/Architecture-DDD%20%26%20Deep%20Modules-7928ca?style=flat-square" alt="DDD Architecture">
   <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="MIT License">
-</p>
-
-<p align="center">
-  <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg">
-    <img src="https://img.shields.io/badge/Download%20for%20macOS-FlowSnap.dmg-0071e3?style=for-the-badge&logo=apple&logoColor=white" alt="Download FlowSnap for macOS">
-  </a>
   <a href="https://github.com/ahauy/FlowSnap/releases/latest">
-    <img src="https://img.shields.io/badge/Latest%20Release-v1.3.1-success?style=for-the-badge" alt="Latest Release v1.3.1">
+    <img src="https://img.shields.io/badge/Latest%20Release-v1.3.1-0071e3?style=flat-square" alt="Latest Release v1.3.1">
   </a>
 </p>
 
-<p align="center">
-  📥 <strong>Direct Download:</strong> <a href="https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg"><strong>FlowSnap.dmg (Latest v1.3.1)</strong></a> • <a href="https://github.com/ahauy/FlowSnap/releases/latest">Release Notes</a><br>
-  ⚡ <strong>One-Line Terminal Install:</strong> <code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"</code><br>
-  <em>~ Compatible with macOS 14.0 Sonoma and later (Apple Silicon & Intel) ~</em>
-</p>
+---
+
+### ⚡ Quick Install (Recommended)
+
+Run this single command in your macOS **Terminal** to download, configure permissions, and launch FlowSnap seamlessly:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"
+```
+
+> [!NOTE]
+> **Privacy & Security Assurance:** FlowSnap is 100% free and open-source, built strictly with public Apple APIs and zero telemetry. Running the one-line terminal installer prepares permissions cleanly and launches FlowSnap without triggering macOS Gatekeeper verification warnings. _(Manual `.dmg` download is also available below under [Installation & Getting Started](#-installation--getting-started))._
 
 <p align="center">
   <img src="docs/user-guides/images/top-edge-layout-picker/01_layout_picker_flyout.png" width="780" alt="FlowSnap Top-Edge Layout Picker Preview">
