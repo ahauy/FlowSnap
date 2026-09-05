@@ -183,6 +183,9 @@ Click the link below to immediately trigger the native browser download dialog:
 
 1. Your browser will prompt to save **`FlowSnap.dmg`** (or save it directly into your `Downloads` folder).
 2. Double-click the downloaded `.dmg` and drag **FlowSnap** into your **Applications** folder.
+3. **First-time launch (macOS Gatekeeper)**: Because FlowSnap is an open-source project without a paid Apple Developer certificate ($99/year), macOS may show an _"Apple could not verify FlowSnap"_ warning on first launch. You can allow it via either:
+   - **Terminal (Fastest)**: Run `xattr -cr /Applications/FlowSnap.app`
+   - **System Settings**: Go to **System Settings → Privacy & Security**, scroll down to **Security**, and click **Open Anyway**.
 
 ---
 

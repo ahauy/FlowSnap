@@ -207,6 +207,9 @@ Bấm vào link bên dưới để trình duyệt bật ngay cửa sổ lưu fil
 
 1. Trình duyệt của bạn sẽ tự động bật popup hỏi nơi lưu file **`FlowSnap.dmg`** (như cửa sổ Save file trong macOS).
 2. Sau khi tải xong, nhấp đúp để mở file `.dmg` và kéo biểu tượng **FlowSnap** vào thư mục **Applications**.
+3. **Mở lần đầu (Cơ chế bảo mật macOS Gatekeeper)**: Vì FlowSnap là phần mềm mã nguồn mở độc lập (chưa đăng ký tài khoản Apple Developer trả phí $99/năm để lấy chứng chỉ Notarization), macOS sẽ hiện cảnh báo _"Apple could not verify FlowSnap"_. Bạn chỉ cần:
+   - **Cách 1 (Nhanh nhất)**: Mở Terminal và chạy lệnh: `xattr -cr /Applications/FlowSnap.app`
+   - **Cách 2**: Vào **System Settings (Cài đặt hệ thống) → Privacy & Security (Quyền riêng tư & Bảo mật)**, cuộn xuống phần **Security** và bấm nút **Open Anyway (Vẫn mở)**.
 
 ---
 
