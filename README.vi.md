@@ -51,7 +51,7 @@ Trải nghiệm quản lý cửa sổ mặc định trên macOS thường khiế
 
 > **Người dùng quyết định cửa sổ ở đâu. FlowSnap lo phần còn lại.**
 
-FlowSnap kết hợp trải nghiệm trực quan của **Snap Layouts kiểu Windows 11** với hệ thống **Workspace theo ý định (Intent-Based Workspace)** được thiết kế tối ưu riêng cho hệ sinh thái Mac.
+FlowSnap kết hợp trải nghiệm trực quan của **Bảng chọn bố cục cạnh trên (Top-Edge Snap Flyout)** với hệ thống **Workspace theo ý định (Intent-Based Workspace)** được thiết kế tối ưu riêng cho hệ sinh thái Mac.
 
 ---
 
@@ -159,7 +159,7 @@ FlowSnap/
 │   └── Persistence/  # Lưu trữ JSON nguyên tử & PreferencesStore UserDefaults
 └── UI/               # Giao diện khai báo SwiftUI & các NSPanel chuyên dụng
     ├── SnapPreview/  # Panel hiển thị khung mờ preview không kích hoạt focus
-    ├── LayoutPicker/ # Bảng chọn layout cạnh trên kiểu Windows 11
+    ├── LayoutPicker/ # Bảng chọn layout cạnh trên tương tác trực quan
     ├── MenuBar/      # NSStatusItem & popover điều khiển nhanh
     └── Settings/     # Cửa sổ cài đặt đa tab & bộ thu phím tùy biến
 ```

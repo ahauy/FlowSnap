@@ -55,13 +55,13 @@ Even worse is **unwanted Space hopping**: opening an app suddenly pulls you acro
 
 > **You decide where windows belong. FlowSnap takes care of the rest.**
 
-FlowSnap pairs the visual intuition of **Windows 11-style Snap Layouts** with an **Intent-Based Workspace Engine** engineered specifically for macOS. It delivers instant, fluid window tiling without sacrificing the flexibility of floating windows.
+FlowSnap pairs an intuitive **Top-Edge Snap Layout Flyout** with an **Intent-Based Workspace Engine** engineered specifically for macOS. It delivers instant, fluid window tiling without sacrificing the flexibility of floating windows.
 
 ---
 
 ## ✨ Key Features
 
-### 1. 🪟 Windows 11-Style Top-Edge Snap Layout Picker
+### 1. 🪟 Interactive Top-Edge Snap Layout Picker
 
 Drag any window towards the top center edge of your screen to summon an instant layout picker. Hover over partition zones (50/50, 70/30, 3-column, 4-quarters) and release to snap windows into place with zero effort.
 
@@ -278,7 +278,7 @@ FlowSnap/
 │   └── Persistence/  # Atomic JSON storage & UserDefaults PreferencesStore
 └── UI/               # Declarative SwiftUI & non-activating NSPanels
     ├── SnapPreview/  # Translucent ghost overlay panel
-    ├── LayoutPicker/ # Top-edge Windows 11-style interactive flyout
+    ├── LayoutPicker/ # Interactive top-edge visual flyout
     ├── MenuBar/      # NSStatusItem & popover visual snap grid
     └── Settings/     # Full-featured tabbed settings & shortcut recorder
 ```
