@@ -19,7 +19,8 @@ public final class AppDependencies {
     public lazy var accessibilityService: AccessibilityService = AXAccessibilityService()
     public lazy var displayManager: DisplayManaging = DisplayManager()
     public lazy var hotkeyManager: GlobalHotkeyManaging = GlobalHotkeyManager()
-    public lazy var preferencesStore: PreferencesStore = PreferencesStore()
+    public lazy var launchAtLoginManager: any LaunchAtLoginManaging = SystemLaunchAtLoginManager()
+    public lazy var preferencesStore: PreferencesStore = PreferencesStore(launchAtLoginManager: launchAtLoginManager)
     public lazy var settingsWindowController: SettingsWindowController = SettingsWindowController(
         preferencesStore: preferencesStore,
         workspaceManager: workspaceManager,

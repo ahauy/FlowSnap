@@ -1,10 +1,11 @@
+import AppKit
 import Combine
 import CoreGraphics
 import Foundation
 
 /// Persists user preferences (general settings, hotkeys, drag-to-snap toggles, app policies).
 ///
-/// MVP uses UserDefaults. See spec §45, US-SNAP-008, US-SNAP-010, ADR-0004, ADR-0005.
+/// MVP uses UserDefaults. See spec §45, US-SNAP-008, US-SNAP-010, ADR-0004, ADR-0005, ADR-0017.
 ///
 /// MainActor-isolated observable store with Combine `@Published`
 /// surfaces for SwiftUI bindings.
@@ -24,7 +25,17 @@ public final class PreferencesStore: ObservableObject {
     public static let defaultScratchpadDismissOnBlur: Bool = false
     public static let defaultScratchpadDismissOnEsc: Bool = true
 
+    private final class ObserverTokenBox: @unchecked Sendable {
+        let token: any NSObjectProtocol
+        init(_ token: any NSObjectProtocol) { self.token = token }
+        deinit {
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
+
     private let defaults: UserDefaults
+    private let launchAtLoginManager: any LaunchAtLoginManaging
+    private var activeObserverToken: ObserverTokenBox?
 
     // MARK: - Published Properties
 
@@ -35,6 +46,7 @@ public final class PreferencesStore: ObservableObject {
     @Published public private(set) var isDragToSnapEnabled: Bool
     @Published public private(set) var dragPreviewDwellDelay: Double
     @Published public private(set) var launchAtLogin: Bool
+    @Published public private(set) var launchAtLoginStatus: LaunchAtLoginStatus
     @Published public private(set) var isStageManagerAutoGroupingEnabled: Bool
     @Published public private(set) var isStageManagerLaunchCoexistenceEnabled: Bool
     @Published public private(set) var isScratchpadDismissOnBlurEnabled: Bool
@@ -45,7 +57,10 @@ public final class PreferencesStore: ObservableObject {
 
     // MARK: - Initialization
 
-    public init(defaults: UserDefaults = .standard) {
+    public init(
+        defaults: UserDefaults = .standard,
+        launchAtLoginManager: (any LaunchAtLoginManaging)? = nil
+    ) {
         self.defaults = defaults
 
         // Stage Manager Auto-Grouping Enabled
@@ -100,8 +115,12 @@ public final class PreferencesStore: ObservableObject {
             self.dragPreviewDwellDelay = Self.defaultDragPreviewDwellDelay
         }
 
-        // Launch at Login
-        self.launchAtLogin = defaults.bool(forKey: "launchAtLogin")
+        // Launch at Login & SMAppService (US-SNAP-024)
+        let manager = launchAtLoginManager ?? SystemLaunchAtLoginManager()
+        self.launchAtLoginManager = manager
+        let initialStatus = manager.currentStatus()
+        self.launchAtLoginStatus = initialStatus
+        self.launchAtLogin = initialStatus.isEnabled
 
         // Custom Shortcuts
         var loadedShortcuts: [ShortcutAction: KeyboardShortcut] = [:]
@@ -143,6 +162,18 @@ public final class PreferencesStore: ObservableObject {
             loadedRememberedFrames = frames
         }
         self.rememberedFrames = loadedRememberedFrames
+
+        // Subscribe to app activation for two-way login item status sync (BR-LAL-004)
+        let token = NotificationCenter.default.addObserver(
+            forName: NSApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.refreshLaunchAtLoginStatus()
+            }
+        }
+        self.activeObserverToken = ObserverTokenBox(token)
     }
 
     // MARK: - Window Gap (BR-CRW-002)
@@ -177,10 +208,48 @@ public final class PreferencesStore: ObservableObject {
         dragPreviewDwellDelay = clamped
     }
 
-    /// Set launch at login preference.
+    // MARK: - Launch at Login (US-SNAP-024, BR-LAL-001..006)
+
+    /// Set launch at login preference via SMAppService (US-SNAP-024, BR-LAL-001..006).
     public func setLaunchAtLogin(_ enabled: Bool) {
-        defaults.set(enabled, forKey: "launchAtLogin")
-        launchAtLogin = enabled
+        if enabled {
+            do {
+                try launchAtLoginManager.register()
+                let newStatus = launchAtLoginManager.currentStatus()
+                launchAtLoginStatus = newStatus
+                launchAtLogin = newStatus.isEnabled
+                defaults.set(newStatus.isEnabled, forKey: "launchAtLogin")
+            } catch {
+                launchAtLoginStatus = .error(error.localizedDescription)
+                launchAtLogin = false
+                defaults.set(false, forKey: "launchAtLogin")
+            }
+        } else {
+            do {
+                try launchAtLoginManager.unregister()
+                let newStatus = launchAtLoginManager.currentStatus()
+                launchAtLoginStatus = newStatus
+                launchAtLogin = false
+                defaults.set(false, forKey: "launchAtLogin")
+            } catch {
+                launchAtLoginStatus = .error(error.localizedDescription)
+                launchAtLogin = false
+                defaults.set(false, forKey: "launchAtLogin")
+            }
+        }
+    }
+
+    /// Refresh login item status from system ServiceManagement (BR-LAL-004).
+    public func refreshLaunchAtLoginStatus() {
+        let current = launchAtLoginManager.currentStatus()
+        launchAtLoginStatus = current
+        launchAtLogin = current.isEnabled
+        defaults.set(current.isEnabled, forKey: "launchAtLogin")
+    }
+
+    /// Directs the user to macOS System Settings > Login Items pane (BR-LAL-005).
+    public func openSystemLoginItemsSettings() {
+        launchAtLoginManager.openSystemSettings()
     }
 
     // MARK: - Shortcuts Customization (US-SNAP-010, BR-SET-001..005)

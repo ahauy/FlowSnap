@@ -29,9 +29,6 @@
 		10C6D96E5F5FBB63585938FD /* StageManagerLaunchCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40B23B119B8F2FE328B89119 /* StageManagerLaunchCoordinator.swift */; };
 		10E7D8877B5C8411E7ECA08F /* WorkspaceMigratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82687F711746A32F9AFEDDCE /* WorkspaceMigratorTests.swift */; };
 		1151B12C1F11349473627AAE /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D161FB100C76864DFB4BC2 /* MenuBarView.swift */; };
-		1151B12C1F11349473627AAF /* VisualSnapGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D161FB100C76864DFB4BC3 /* VisualSnapGridView.swift */; };
-		5D514036E10395D778F332BF /* VisualSnapGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D161FB100C76864DFB4BC3 /* VisualSnapGridView.swift */; };
-
 		121D4518E744D8C4DCEF83FE /* WorkspaceManager+Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DB803B2BF2F06890640E2D6 /* WorkspaceManager+Migration.swift */; };
 		12765875CA661C560263763A /* SettingsWindowControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A60EBD2236857FB85336329 /* SettingsWindowControllerTests.swift */; };
 		129E787FCC505FB5111F2976 /* AdaptiveDividerOverlayManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92BA0883D33E22B7D2455E77 /* AdaptiveDividerOverlayManaging.swift */; };
@@ -77,6 +74,7 @@
 		326D010FE4333DECBF968D10 /* FullScreenEscapeResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECF9E03E1DB53163E9E72BDB /* FullScreenEscapeResult.swift */; };
 		3499FF9B34F4E4611F66C1E0 /* LayoutGraph.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB17D99BB5262DA1C6C19E4 /* LayoutGraph.swift */; };
 		34A5C60FEC500B209BB23CB3 /* MockSnapLayoutPickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8BAB02898594FFE68F841F1 /* MockSnapLayoutPickerManager.swift */; };
+		34B2E1A1E5C8529DC214BAA6 /* LaunchAtLoginManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617845204CDE7FB43B977EE0 /* LaunchAtLoginManaging.swift */; };
 		3517692F274E545D61FEFE01 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99CCBFB82F9AFF970639431B /* Layout.swift */; };
 		361E93A3F8672B537FA61EBB /* RestoreSummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CA3D4B71397EC9E964C91C /* RestoreSummary.swift */; };
 		3637FA178A9EC1DC229C6BE5 /* MockSnapPreviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E2160B91A2A106A84779F1 /* MockSnapPreviewManager.swift */; };
@@ -157,6 +155,7 @@
 		5E124D0B99DC8415F3A8429A /* ApplicationObserving.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30036FD9800962793C02FC7F /* ApplicationObserving.swift */; };
 		5E4B331D10EA7EA19428B380 /* MenuBarAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653A6E84B108C9D50A69E0B9 /* MenuBarAction.swift */; };
 		5EE65B389046FAADC099922B /* AccessibilityError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76D0B80FCFB6F792B006F531 /* AccessibilityError.swift */; };
+		5F4116442529BFBCA2002EF6 /* MockLaunchAtLoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97D16E4C0740E58D2FB26024 /* MockLaunchAtLoginManager.swift */; };
 		6037FFFED5F59C7EC61F7594 /* AboutSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 410E5B0C45CA9208DCED5FA9 /* AboutSettingsView.swift */; };
 		603C49BD23A32046D90446A1 /* SpaceManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9329DD1D2BB54E77B49F4DF2 /* SpaceManaging.swift */; };
 		60C278D190E66675A0A8F0DF /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE0245EE1CAFDD5CF0D07F1 /* PreferencesStore.swift */; };
@@ -213,6 +212,7 @@
 		7FACCCE31342A4D7AAB864FB /* LaunchObservationEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF63D64DEF714703C7D2525C /* LaunchObservationEvent.swift */; };
 		80BBA10D4427F4E9F562B365 /* StageManagerDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11CD15C785B2ADB6982FEB1 /* StageManagerDetector.swift */; };
 		810BC3A051C9C95E67FA2BC0 /* PresetResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB19B08F5F90CF2E7CC34EE2 /* PresetResolverTests.swift */; };
+		814C71D47E4E882D2F3C7F6A /* LaunchAtLoginManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617845204CDE7FB43B977EE0 /* LaunchAtLoginManaging.swift */; };
 		81D4A8D2D4BA79CFF9BA9F1D /* Display.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E52A8E94F9EB5A1D0F44862 /* Display.swift */; };
 		822A1EA7F662ED25A095C516 /* SystemSettingsRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DDE2E77E406CFDF8547F5FE /* SystemSettingsRouter.swift */; };
 		83ACA4BD294CE9B2993A73A9 /* WorkspaceManager+Restore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85E038761CD5334F1805C86B /* WorkspaceManager+Restore.swift */; };
@@ -224,6 +224,7 @@
 		867C3104BC177A1A84D30BA2 /* WindowManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C6911D56317FEF60CD4913 /* WindowManagerTests.swift */; };
 		86C7C2164FC240779D1098B5 /* FullScreenEscapeCoordinating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19AAC68E4DC27E32B552C967 /* FullScreenEscapeCoordinating.swift */; };
 		8778884C0674E7BC6CC9896C /* WindowGroupSyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F05357F9E5D35CBCA087385F /* WindowGroupSyncTests.swift */; };
+		885A41B624837848DA69B4B8 /* LaunchAtLoginManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6053655C142D226B91261C47 /* LaunchAtLoginManagerTests.swift */; };
 		88795DA83AB6BD1689B060E1 /* LayoutTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E86A52CDD346011E59BA03BE /* LayoutTemplate.swift */; };
 		88FE1060FD115878151B3B99 /* WorkspaceManagerStageManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A28B545D1D1B2AB77CEA22 /* WorkspaceManagerStageManagerTests.swift */; };
 		8932AA46A9C293F8DC6B5C1E /* SnapTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FF830A73925B54810D8FE9 /* SnapTarget.swift */; };
@@ -281,6 +282,7 @@
 		B09F8CA4BF2EAA18568EF1EF /* CoordinateTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5CDE4302888B2B4A80F528 /* CoordinateTransformer.swift */; };
 		B0FD8131683519A6A1D26521 /* DisplayTopologyProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0F4B444E9EA76105662140 /* DisplayTopologyProfile.swift */; };
 		B1362B8BA53ECC223C1B4307 /* SnapDetecting.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDACBDDD0A94D4F5D20661DD /* SnapDetecting.swift */; };
+		B15D37EC8E3A7874EE931FEA /* VisualSnapGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1ABEC3FE207BD69CA10699 /* VisualSnapGridView.swift */; };
 		B1779DC2A1369E44B857B29D /* WorkspacePreset.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0E89D1C12F80560F77984E3 /* WorkspacePreset.swift */; };
 		B29D4F78A19D8AC879B9065C /* FullScreenEscapeTier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF5BC61DB1047D61FEB0660 /* FullScreenEscapeTier.swift */; };
 		B2CE7A91DA0EA3B6B8101041 /* PresetAndGroupViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C83D60DC2A6D135FC70F444 /* PresetAndGroupViewTests.swift */; };
@@ -299,6 +301,7 @@
 		BBEB3C815C54C1DA5F725350 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01516D7EAF5546C728E483AC /* SettingsView.swift */; };
 		BC87EDADF108289AED7D9AA2 /* AdaptiveDividerCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BA69149664035E0F4CAB412 /* AdaptiveDividerCoordinatorTests.swift */; };
 		BDBA1165D640585414C372F7 /* SnapLayoutPickerPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4478153F69D2D41C613786 /* SnapLayoutPickerPanel.swift */; };
+		BE76F759A3128C355BA54B57 /* SystemLaunchAtLoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A816BE50B57D03E74AC02464 /* SystemLaunchAtLoginManager.swift */; };
 		C0100519EF8A64DDFBFDB859 /* StageManagerDetecting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F48D300BDCCD67ED85D23BB /* StageManagerDetecting.swift */; };
 		C0427047F7EB3954591BEC1E /* DisplayTopologyProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B0F4B444E9EA76105662140 /* DisplayTopologyProfile.swift */; };
 		C086FA946C107AEDC45BAAAD /* WorkspaceCapturing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96189A839FAD9DB60FE48251 /* WorkspaceCapturing.swift */; };
@@ -333,6 +336,7 @@
 		D698B52E9F310E30254DEE86 /* PreSummonFocus.swift in Sources */ = {isa = PBXBuildFile; fileRef = C547EB407A19A148257B3E4A /* PreSummonFocus.swift */; };
 		D7C6BA3A7303A3F3BA2AB407 /* ManagedWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEF5A45967837FE4040D7E2 /* ManagedWindow.swift */; };
 		D7E94041FDB1652A132111DD /* LayoutRatio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EA9B4CE1F11DA1B1DAD55C7 /* LayoutRatio.swift */; };
+		D811F00446221514D176E609 /* VisualSnapGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1ABEC3FE207BD69CA10699 /* VisualSnapGridView.swift */; };
 		DB5D6BEB09196B0BAE845300 /* DragToSnapCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6B091BED16E1302709EB19D /* DragToSnapCoordinator.swift */; };
 		DBADA00FF7A233C9BAA7EFE4 /* PinnedWindowRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84ABBD2D811F302DF789F185 /* PinnedWindowRecord.swift */; };
 		DC9C65A0093146C9C8556942 /* ScratchpadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418376524DDE66E270534E0B /* ScratchpadState.swift */; };
@@ -379,6 +383,7 @@
 		FBF33ED4DBCA688124413367 /* PreSummonFocus.swift in Sources */ = {isa = PBXBuildFile; fileRef = C547EB407A19A148257B3E4A /* PreSummonFocus.swift */; };
 		FC7BC0B70A3B5CB061A21D11 /* AppPolicyRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FABA445713B050C40D0F804 /* AppPolicyRule.swift */; };
 		FDC3B1D4C0A0F461DF6468D7 /* LayoutEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C83FDEF7A27D286A096EFAF2 /* LayoutEngine.swift */; };
+		FE793C3629D5426D1EF631EA /* SystemLaunchAtLoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A816BE50B57D03E74AC02464 /* SystemLaunchAtLoginManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -476,10 +481,10 @@
 		5D35E2C3FA79D0D98600EEE2 /* WindowPolicyModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPolicyModelTests.swift; sourceTree = "<group>"; };
 		5FD4689A896B1DA2CBCCDEED /* WindowKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowKind.swift; sourceTree = "<group>"; };
 		6048935A57B1266F07E337F2 /* MockFullScreenEscapeCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockFullScreenEscapeCoordinator.swift; sourceTree = "<group>"; };
+		6053655C142D226B91261C47 /* LaunchAtLoginManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginManagerTests.swift; sourceTree = "<group>"; };
 		615B2559672792FFE7465C4F /* MultiMonitorSnapEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiMonitorSnapEngineTests.swift; sourceTree = "<group>"; };
+		617845204CDE7FB43B977EE0 /* LaunchAtLoginManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginManaging.swift; sourceTree = "<group>"; };
 		62D161FB100C76864DFB4BC2 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
-		62D161FB100C76864DFB4BC3 /* VisualSnapGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualSnapGridView.swift; sourceTree = "<group>"; };
-
 		6315D6754B25CC7092C6F0B4 /* MouseDragTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseDragTracker.swift; sourceTree = "<group>"; };
 		63733F0E866C2305895BB57F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		639CFEADCB5AF267EDA26732 /* WindowGroupManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowGroupManagerTests.swift; sourceTree = "<group>"; };
@@ -527,6 +532,7 @@
 		94FAC609D843724BE2A35D6C /* SnapLayoutPickerSnapshotRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapLayoutPickerSnapshotRenderer.swift; sourceTree = "<group>"; };
 		96189A839FAD9DB60FE48251 /* WorkspaceCapturing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceCapturing.swift; sourceTree = "<group>"; };
 		96C37D1A8C736ADE0A6350BB /* ShortcutSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutSettingsView.swift; sourceTree = "<group>"; };
+		97D16E4C0740E58D2FB26024 /* MockLaunchAtLoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockLaunchAtLoginManager.swift; sourceTree = "<group>"; };
 		990BD7C021BD1D53FCC3C008 /* RestoreSummaryBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreSummaryBanner.swift; sourceTree = "<group>"; };
 		99C9788A97066D5A76C2B1E4 /* PresetShortcutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetShortcutTests.swift; sourceTree = "<group>"; };
 		99CCBFB82F9AFF970639431B /* Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
@@ -545,6 +551,7 @@
 		A2DF15A0E9D6F66564F8FE16 /* WindowPolicyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPolicyManager.swift; sourceTree = "<group>"; };
 		A51C6600DA4F0ACB3F097A04 /* WorkspaceCrossDisplayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceCrossDisplayTests.swift; sourceTree = "<group>"; };
 		A7D036E46C318D613851C247 /* LayoutEngineOddPixelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutEngineOddPixelTests.swift; sourceTree = "<group>"; };
+		A816BE50B57D03E74AC02464 /* SystemLaunchAtLoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemLaunchAtLoginManager.swift; sourceTree = "<group>"; };
 		A9C2B39D95E9A7EF7F084843 /* LayoutCalculating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCalculating.swift; sourceTree = "<group>"; };
 		AA46F6F4F782A433C28D9AF3 /* RelativeFrameScaler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelativeFrameScaler.swift; sourceTree = "<group>"; };
 		ACB17D99BB5262DA1C6C19E4 /* LayoutGraph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutGraph.swift; sourceTree = "<group>"; };
@@ -629,6 +636,7 @@
 		F8BAB02898594FFE68F841F1 /* MockSnapLayoutPickerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSnapLayoutPickerManager.swift; sourceTree = "<group>"; };
 		F936393DBDC9814BC7CCCFBE /* MockStageManagerDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockStageManagerDetector.swift; sourceTree = "<group>"; };
 		F9C5E088241091ECD6698E94 /* SnapEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapEngineTests.swift; sourceTree = "<group>"; };
+		FA1ABEC3FE207BD69CA10699 /* VisualSnapGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualSnapGridView.swift; sourceTree = "<group>"; };
 		FB17343FFEFED3191F63675D /* LiveResizeThrottlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveResizeThrottlerTests.swift; sourceTree = "<group>"; };
 		FE8B0EC11DA1EF4E377CF247 /* ZoneInference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneInference.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -844,6 +852,7 @@
 				FECE043A4468F11DD7AC873D /* Hotkeys */,
 				27D50972EC84252C820DAD51 /* macOS */,
 				4FB4DCD42F0E5EED7DCD93CE /* Persistence */,
+				EBB41824185F708167C12B10 /* Services */,
 				2EEED02F36C5A4D7311090E8 /* StageManager */,
 			);
 			path = Infrastructure;
@@ -1004,10 +1013,9 @@
 			isa = PBXGroup;
 			children = (
 				62D161FB100C76864DFB4BC2 /* MenuBarView.swift */,
-				62D161FB100C76864DFB4BC3 /* VisualSnapGridView.swift */,
 				08FA844B145B9202F72B62F4 /* MenuBarViewModel.swift */,
+				FA1ABEC3FE207BD69CA10699 /* VisualSnapGridView.swift */,
 			);
-
 			path = MenuBar;
 			sourceTree = "<group>";
 		};
@@ -1048,6 +1056,14 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		B302713537774E7DA17CCAFC /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				617845204CDE7FB43B977EE0 /* LaunchAtLoginManaging.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		B4F2BF246946B131DB1BCCBF /* Hotkeys */ = {
 			isa = PBXGroup;
 			children = (
@@ -1076,6 +1092,7 @@
 				9C1016C885FB74B3B5D30815 /* Hotkeys */,
 				662186505D04B727685872D3 /* Layout */,
 				F06B475D2719E5C66E96AA25 /* MenuBar */,
+				B302713537774E7DA17CCAFC /* Services */,
 				8F4CF2B4F94E5358468F055E /* StageManager */,
 				07FDC45A365E962596AA583B /* Window */,
 				5055BEA91118C9C9A8430311 /* Workspace */,
@@ -1163,6 +1180,7 @@
 				C4190A239266C626C2766C6F /* FullScreenEscapeCoordinatorTests.swift */,
 				D454A20DDBBBD2159F17015D /* FullScreenGeometryTests.swift */,
 				ADA412B9E411DF21D0643F9E /* GlobalHotkeyManagerTests.swift */,
+				6053655C142D226B91261C47 /* LaunchAtLoginManagerTests.swift */,
 				3C35869412EF6395FFA95073 /* PreferencesStoreTests.swift */,
 				99C9788A97066D5A76C2B1E4 /* PresetShortcutTests.swift */,
 				B8056553D776319D7B4B1FFD /* StageManagerDetectorTests.swift */,
@@ -1181,6 +1199,14 @@
 				1C8140860715C5605A9A5D22 /* FlowSnapApp.swift */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		EBB41824185F708167C12B10 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A816BE50B57D03E74AC02464 /* SystemLaunchAtLoginManager.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 		F06B475D2719E5C66E96AA25 /* MenuBar */ = {
@@ -1233,6 +1259,7 @@
 				ACB206EE2C4737642FEF4B25 /* MockDisplayManager.swift */,
 				6048935A57B1266F07E337F2 /* MockFullScreenEscapeCoordinator.swift */,
 				6796640B54466D70EFD5A929 /* MockGlobalHotkeyManager.swift */,
+				97D16E4C0740E58D2FB26024 /* MockLaunchAtLoginManager.swift */,
 				D987C0F7235F0BC2657BC60D /* MockMouseDragTracker.swift */,
 				22098A94A5B0BC50088E0D47 /* MockScratchpadCoordinator.swift */,
 				44396BAC6B83274360A58E6E /* MockSettingsWindowPresenter.swift */,
@@ -1422,6 +1449,7 @@
 				AD8A9F383369DE876E4898DD /* HotkeyBinding.swift in Sources */,
 				647FAAFE999A08F132D60470 /* InputMonitoringPermissionProvider.swift in Sources */,
 				0D0C536AE6805ADD51D25BEC /* KeyboardShortcut.swift in Sources */,
+				814C71D47E4E882D2F3C7F6A /* LaunchAtLoginManaging.swift in Sources */,
 				7FACCCE31342A4D7AAB864FB /* LaunchObservationEvent.swift in Sources */,
 				9F338C6E3F351223BCE08429 /* Layout.swift in Sources */,
 				E3CED88FD6DD4221BFCE8275 /* LayoutCalculating.swift in Sources */,
@@ -1437,9 +1465,7 @@
 				3DBF00D0C88F0962666AAAE0 /* ManagedWindow.swift in Sources */,
 				5E4B331D10EA7EA19428B380 /* MenuBarAction.swift in Sources */,
 				5D514036E10395D778F332BE /* MenuBarView.swift in Sources */,
-				5D514036E10395D778F332BF /* VisualSnapGridView.swift in Sources */,
 				3673E933CBDC858ED26861C6 /* MenuBarViewModel.swift in Sources */,
-
 				ADCC3D3499C0CA87BE801CE9 /* MouseDragTracker.swift in Sources */,
 				85066C74D1A2689540F551EF /* MouseDragTracking.swift in Sources */,
 				0A2D9D17991BB771DE4857B4 /* PinnedWindowRecord.swift in Sources */,
@@ -1479,10 +1505,12 @@
 				80BBA10D4427F4E9F562B365 /* StageManagerDetector.swift in Sources */,
 				2BB00883722035172C99B76D /* StageManagerLaunchCoordinating.swift in Sources */,
 				10C6D96E5F5FBB63585938FD /* StageManagerLaunchCoordinator.swift in Sources */,
+				BE76F759A3128C355BA54B57 /* SystemLaunchAtLoginManager.swift in Sources */,
 				822A1EA7F662ED25A095C516 /* SystemSettingsRouter.swift in Sources */,
 				9E72FAC98DBF004E2C73029E /* TopologyFingerprint.swift in Sources */,
 				6DA703552C45B7F85956AF13 /* TopologyProfileManager.swift in Sources */,
 				AB591BA3E46BF910DCC47EEB /* TopologyProfileManaging.swift in Sources */,
+				D811F00446221514D176E609 /* VisualSnapGridView.swift in Sources */,
 				B423E48FAB514D318198738D /* WindowClassification.swift in Sources */,
 				C55AB549C23D054AA66D7C42 /* WindowCommand.swift in Sources */,
 				2B15364C09FF8CE559B2CBAA /* WindowEvent.swift in Sources */,
@@ -1541,6 +1569,7 @@
 				97FCBAD8B8A1B1C3467DEE04 /* FullScreenGeometryTests.swift in Sources */,
 				AF3EA493CC68900032EE9727 /* GlobalHotkeyManagerTests.swift in Sources */,
 				E90138B69F2EB77E70272374 /* KeyboardShortcutTests.swift in Sources */,
+				885A41B624837848DA69B4B8 /* LaunchAtLoginManagerTests.swift in Sources */,
 				3CE19CAE271FB79EA8183DFD /* LaunchObservationEventTests.swift in Sources */,
 				5148290E0887DC83963A9F9A /* LayoutEngineOddPixelTests.swift in Sources */,
 				527F2E409FB9FF627C9B0694 /* LayoutEngineTests.swift in Sources */,
@@ -1559,6 +1588,7 @@
 				48C3F5452502C46907984E53 /* MockDisplayManager.swift in Sources */,
 				4144F7F55D6B37619A72F729 /* MockFullScreenEscapeCoordinator.swift in Sources */,
 				E624413D6DC5071304C80D54 /* MockGlobalHotkeyManager.swift in Sources */,
+				5F4116442529BFBCA2002EF6 /* MockLaunchAtLoginManager.swift in Sources */,
 				896F5039F01281D903743A80 /* MockMouseDragTracker.swift in Sources */,
 				4ED07D0818C3A15EC9B82349 /* MockScratchpadCoordinator.swift in Sources */,
 				AB9CAEFBD5937F993727D42E /* MockSettingsWindowPresenter.swift in Sources */,
@@ -1667,6 +1697,7 @@
 				A1220A09147E13AD793E64D7 /* HotkeyBinding.swift in Sources */,
 				51B45E330ACFBAE30290C5E3 /* InputMonitoringPermissionProvider.swift in Sources */,
 				446B98FF28FA70B48EC04DC9 /* KeyboardShortcut.swift in Sources */,
+				34B2E1A1E5C8529DC214BAA6 /* LaunchAtLoginManaging.swift in Sources */,
 				3E66017C2FF4457189392CAF /* LaunchObservationEvent.swift in Sources */,
 				3517692F274E545D61FEFE01 /* Layout.swift in Sources */,
 				8DE7192A1B7190E6213DA61B /* LayoutCalculating.swift in Sources */,
@@ -1682,9 +1713,7 @@
 				D7C6BA3A7303A3F3BA2AB407 /* ManagedWindow.swift in Sources */,
 				170E7DA22E4F01A9354B8D4A /* MenuBarAction.swift in Sources */,
 				1151B12C1F11349473627AAE /* MenuBarView.swift in Sources */,
-				1151B12C1F11349473627AAF /* VisualSnapGridView.swift in Sources */,
 				0C87D451692ACA9945DF7D08 /* MenuBarViewModel.swift in Sources */,
-
 				085C44182063C920AFD99B7A /* MouseDragTracker.swift in Sources */,
 				6F89CDBD125A3554DE63B747 /* MouseDragTracking.swift in Sources */,
 				DBADA00FF7A233C9BAA7EFE4 /* PinnedWindowRecord.swift in Sources */,
@@ -1724,10 +1753,12 @@
 				67AF5C0126F9CA604993CAFC /* StageManagerDetector.swift in Sources */,
 				2810BEE7F7201409B616363B /* StageManagerLaunchCoordinating.swift in Sources */,
 				E0207CD4BDB2408334F2D743 /* StageManagerLaunchCoordinator.swift in Sources */,
+				FE793C3629D5426D1EF631EA /* SystemLaunchAtLoginManager.swift in Sources */,
 				EDBBFB35DE035BFA9CD5A122 /* SystemSettingsRouter.swift in Sources */,
 				0DD0673515333B551C35AB3A /* TopologyFingerprint.swift in Sources */,
 				2859F6733397D7B9DE175A51 /* TopologyProfileManager.swift in Sources */,
 				EAC981FB90EAFE6D3B552A08 /* TopologyProfileManaging.swift in Sources */,
+				B15D37EC8E3A7874EE931FEA /* VisualSnapGridView.swift in Sources */,
 				AC1FE9DB4C94843844598EC6 /* WindowClassification.swift in Sources */,
 				2C06745ABDBEF158D5CE2E9A /* WindowCommand.swift in Sources */,
 				90524EAD2D1453E8098C62B0 /* WindowEvent.swift in Sources */,
