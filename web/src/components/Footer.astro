@@ -1,0 +1,230 @@
+---
+interface Props {
+  githubUrl?: string;
+  authorUrl?: string;
+}
+
+const {
+  githubUrl = 'https://github.com/ahauy/FlowSnap',
+  authorUrl = 'https://github.com/ahauy',
+} = Astro.props;
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="page-container footer-inner">
+    <!-- Top Grid -->
+    <div class="footer-grid">
+      <!-- Column 1: Brand & Manifesto -->
+      <div class="footer-col brand-col">
+        <div class="footer-brand">
+          <svg class="footer-logo" viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="6" fill="var(--surface-elevated)" stroke="var(--border-color)" stroke-width="1.2" />
+            <rect x="4" y="4" width="7" height="16" rx="2" fill="var(--accent-blue)" opacity="0.9" />
+            <rect x="13" y="4" width="7" height="7" rx="1.5" fill="var(--text-secondary)" opacity="0.4" />
+            <rect x="13" y="13" width="7" height="7" rx="1.5" fill="var(--text-secondary)" opacity="0.4" />
+          </svg>
+          <span class="footer-title">FlowSnap</span>
+        </div>
+        <p class="footer-desc">
+          Native macOS window management engineered with intent-based layouts, Windows 11-style snap picker, and zero private APIs.
+        </p>
+        <div class="manifesto-badge">
+          <span>Swift 6</span>
+          <span class="dot">•</span>
+          <span>Zero Private APIs</span>
+          <span class="dot">•</span>
+          <span>Apple HIG Compliant</span>
+        </div>
+      </div>
+
+      <!-- Column 2: Product -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Product</h4>
+        <ul class="footer-links">
+          <li><a href="#features" class="footer-link">Bento Features</a></li>
+          <li><a href="#showcase" class="footer-link">Interactive Simulator</a></li>
+          <li><a href="#shortcuts" class="footer-link">Shortcut Matrix</a></li>
+          <li><a href="#download" class="footer-link">Download DMG & Terminal</a></li>
+        </ul>
+      </div>
+
+      <!-- Column 3: Open Source & Community -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Open Source</h4>
+        <ul class="footer-links">
+          <li>
+            <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="footer-link">
+              GitHub Repository
+            </a>
+          </li>
+          <li>
+            <a href={`${githubUrl}/releases`} target="_blank" rel="noopener noreferrer" class="footer-link">
+              Releases & Changelog
+            </a>
+          </li>
+          <li>
+            <a href={`${githubUrl}/tree/main/docs`} target="_blank" rel="noopener noreferrer" class="footer-link">
+              Architecture & Guides
+            </a>
+          </li>
+          <li>
+            <a href={`${githubUrl}/issues`} target="_blank" rel="noopener noreferrer" class="footer-link">
+              Report an Issue
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom">
+      <div class="footer-legal">
+        <span>© {currentYear} FlowSnap. Released under the <a href={`${githubUrl}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer" class="legal-link">MIT License</a>.</span>
+      </div>
+      <div class="footer-author">
+        <span>Designed & developed by <a href={authorUrl} target="_blank" rel="noopener noreferrer" class="author-link">@ahauy</a></span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+    width: 100%;
+    background-color: var(--surface-color);
+    border-top: 1px solid var(--border-color);
+    padding: 56px 0 32px 0;
+    transition: background-color var(--duration-normal) ease, border-color var(--duration-normal) ease;
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 48px;
+  }
+
+  .footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .brand-col {
+    max-width: 380px;
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .footer-desc {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .manifesto-badge {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    background-color: var(--surface-elevated);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    width: fit-content;
+  }
+
+  .dot {
+    color: var(--accent-blue);
+  }
+
+  .footer-heading {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-primary);
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-link {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--duration-fast) ease;
+  }
+
+  .footer-link:hover {
+    color: var(--text-primary);
+  }
+
+  /* Bottom Bar */
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+    font-size: 12px;
+    color: var(--text-tertiary);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .legal-link,
+  .author-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--duration-fast) ease;
+  }
+
+  .legal-link:hover,
+  .author-link:hover {
+    color: var(--accent-blue);
+  }
+
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .brand-col {
+      max-width: 100%;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

@@ -1,0 +1,176 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  version?: string;
+  githubUrl?: string;
+}
+
+const {
+  version = 'v1.3.1',
+  githubUrl = 'https://github.com/ahauy/FlowSnap',
+} = Astro.props;
+---
+
+<header class="site-header">
+  <div class="page-container header-inner">
+    <!-- Brand identity -->
+    <a href="/" class="brand-group" aria-label="FlowSnap Home">
+      <div class="brand-icon-wrapper">
+        <svg class="brand-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="28" height="28" rx="7" fill="var(--surface-elevated)" stroke="var(--border-color)" stroke-width="1.5" />
+          <!-- Left window pane -->
+          <rect x="4.5" y="5" width="8" height="18" rx="2.5" fill="var(--accent-blue)" opacity="0.9" />
+          <!-- Right window pane (split top/bottom) -->
+          <rect x="15.5" y="5" width="8" height="8" rx="2" fill="var(--text-secondary)" opacity="0.4" />
+          <rect x="15.5" y="15" width="8" height="8" rx="2" fill="var(--text-secondary)" opacity="0.4" />
+        </svg>
+      </div>
+      <div class="brand-text-container">
+        <span class="brand-name">FlowSnap</span>
+        <span class="version-badge">{version}</span>
+      </div>
+    </a>
+
+    <!-- Center navigation anchors -->
+    <nav class="header-nav" aria-label="Main Navigation">
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#showcase" class="nav-link">Simulator</a>
+      <a href="#shortcuts" class="nav-link">Shortcuts</a>
+      <a href="#download" class="nav-link">Download</a>
+    </nav>
+
+    <!-- Header actions -->
+    <div class="header-actions">
+      <a
+        href={githubUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="github-btn action-pill-secondary"
+        aria-label="View FlowSnap on GitHub"
+      >
+        <svg class="github-icon" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+        </svg>
+        <span class="github-label">GitHub</span>
+      </a>
+
+      <ThemeToggle />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background-color: rgba(255, 255, 255, 0.85);
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color var(--duration-normal) ease, border-color var(--duration-normal) ease;
+  }
+
+  :global([data-theme="dark"]) .site-header,
+  :global(:root:not([data-theme="light"])) .site-header {
+    background-color: rgba(9, 9, 11, 0.82);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    gap: 16px;
+  }
+
+  /* Brand */
+  .brand-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+  }
+
+  .brand-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    transition: transform var(--duration-fast) var(--ease-spring);
+  }
+
+  .brand-group:hover .brand-icon-wrapper {
+    transform: scale(1.06);
+  }
+
+  .brand-text-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  /* Navigation Links */
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .nav-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--duration-fast) ease;
+    padding: 4px 2px;
+  }
+
+  .nav-link:hover {
+    color: var(--text-primary);
+  }
+
+  /* Actions */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .github-btn {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+
+  .github-icon {
+    flex-shrink: 0;
+  }
+
+  /* Responsive styling */
+  @media (max-width: 768px) {
+    .header-nav {
+      display: none;
+    }
+
+    .github-label {
+      display: none;
+    }
+
+    .github-btn {
+      padding: 0 10px;
+    }
+  }
+</style>
