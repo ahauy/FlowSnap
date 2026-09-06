@@ -1,17 +1,313 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout
+  title="FlowSnap — macOS Window Manager with Intent & Snap Precision"
+  description="Native macOS window manager with Windows 11-style snap picker, multi-display intent restoration, Quake scratchpad, and zero private APIs."
+>
+  <Header />
+
+  <main class="main-content">
+    <!-- Hero Section Baseline -->
+    <section class="hero-section page-container">
+      <div class="hero-badge-wrapper">
+        <div class="version-badge">
+          <span>FlowSnap for macOS</span>
+          <span class="badge-separator">•</span>
+          <span>Version 1.3.1</span>
+        </div>
+      </div>
+
+      <h1 class="hero-title">
+        Your Mac. Your Layout. <br />
+        <span class="hero-highlight">Your Flow.</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Native window management engineered with intent-based workspace restoration,
+        Windows 11-style top-edge layout picker, and zero private APIs.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#download" class="action-pill">
+          <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
+            <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+            <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+          </svg>
+          <span>Download FlowSnap</span>
+        </a>
+
+        <a href="#showcase" class="action-pill-secondary">
+          <span>Try Interactive Sandbox</span>
+          <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+          </svg>
+        </a>
+      </div>
+
+      <!-- Keycap quick hint -->
+      <div class="quick-hint">
+        <span class="hint-text">Instant snap hotkey:</span>
+        <span class="key-pill">⌃</span>
+        <span class="key-pill">⌥</span>
+        <span class="key-pill">← / →</span>
+        <span class="hint-text hint-divider">|</span>
+        <span class="hint-text">Quake scratchpad:</span>
+        <span class="key-pill">⌥</span>
+        <span class="key-pill">Space</span>
+      </div>
+    </section>
+
+    <!-- Anchors & Placeholders for Subsequent Stories in Sprint 8 -->
+    <div class="page-container sections-container">
+      <section id="showcase" class="section-card">
+        <div class="section-header">
+          <span class="section-tag">Hero Experience</span>
+          <h2 class="section-title">3D Interactive macOS Desktop Simulator</h2>
+          <p class="section-desc">Drag windows, test top-edge snap layouts, and trigger translucent HUD previews directly in your browser.</p>
+        </div>
+        <div class="placeholder-box">
+          <div class="placeholder-content">
+            <div class="traffic-lights">
+              <span class="dot-red"></span>
+              <span class="dot-yellow"></span>
+              <span class="dot-green"></span>
+            </div>
+            <p class="placeholder-text">Interactive Sandbox Canvas arriving in <code>US-WEB-026</code></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section-card">
+        <div class="section-header">
+          <span class="section-tag">Core Architecture</span>
+          <h2 class="section-title">Engineered for Focus & Intent</h2>
+          <p class="section-desc">6 breakthrough capabilities bringing Windows 11 elegance to native macOS speed.</p>
+        </div>
+        <div class="placeholder-box">
+          <p class="placeholder-text">Bento Grid Feature Showcase arriving in <code>US-WEB-027</code></p>
+        </div>
+      </section>
+
+      <section id="shortcuts" class="section-card">
+        <div class="section-header">
+          <span class="section-tag">Tactile Speed</span>
+          <h2 class="section-title">Keyboard Shortcuts Matrix</h2>
+          <p class="section-desc">Full spectrum keyboard navigation for windows, multi-display throws, and presets.</p>
+        </div>
+        <div class="placeholder-box">
+          <p class="placeholder-text">Interactive Shortcut Matrix arriving in <code>US-WEB-027</code></p>
+        </div>
+      </section>
+
+      <section id="download" class="section-card">
+        <div class="section-header">
+          <span class="section-tag">Distribution</span>
+          <h2 class="section-title">Get Started with FlowSnap</h2>
+          <p class="section-desc">One-click terminal install, verified DMG packages, and offline privacy manifesto.</p>
+        </div>
+        <div class="placeholder-box">
+          <p class="placeholder-text">Terminal 1-Click & DMG Hub arriving in <code>US-WEB-028</code></p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+    padding-bottom: 80px;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: 80px;
+    padding-bottom: 20px;
+    max-width: 860px;
+  }
+
+  .hero-badge-wrapper {
+    margin-bottom: 24px;
+  }
+
+  .badge-separator {
+    color: var(--accent-blue);
+    margin: 0 4px;
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(38px, 6vw, 64px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+  }
+
+  .hero-highlight {
+    color: var(--accent-blue);
+  }
+
+  .hero-subtitle {
+    font-size: clamp(16px, 2vw, 19px);
+    line-height: 1.6;
+    color: var(--text-secondary);
+    max-width: 680px;
+    margin-bottom: 36px;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .quick-hint {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    padding: 8px 16px;
+    background-color: var(--surface-color);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-color);
+  }
+
+  .hint-divider {
+    margin: 0 4px;
+    color: var(--border-color);
+  }
+
+  /* Sections Container */
+  .sections-container {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+  }
+
+  .section-card {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .section-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .section-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent-blue);
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 3.5vw, 30px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .section-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 600px;
+  }
+
+  .placeholder-box {
+    width: 100%;
+    min-height: 180px;
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    background-color: var(--surface-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .placeholder-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .traffic-lights {
+    display: flex;
+    gap: 6px;
+  }
+
+  .dot-red,
+  .dot-yellow,
+  .dot-green {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-red { background-color: #ff5f56; }
+  .dot-yellow { background-color: #ffbd2e; }
+  .dot-green { background-color: #27c93f; }
+
+  .placeholder-text {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .placeholder-text code {
+    background-color: var(--surface-elevated);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    color: var(--accent-blue);
+  }
+
+  @media (max-width: 640px) {
+    .main-content {
+      gap: 56px;
+      padding-bottom: 56px;
+    }
+
+    .hero-section {
+      padding-top: 48px;
+    }
+
+    .hero-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .hero-actions .action-pill,
+    .hero-actions .action-pill-secondary {
+      width: 100%;
+    }
+  }
+</style>
