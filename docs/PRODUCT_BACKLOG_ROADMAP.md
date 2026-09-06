@@ -54,6 +54,8 @@ schema-version: "1.1"
     - [EPIC 13: Advanced Multi-Monitor Topology \& Cross-Display Navigation (Hỗ trợ Màn hình rời Toàn diện)](#epic-13-advanced-multi-monitor-topology--cross-display-navigation-hỗ-trợ-màn-hình-rời-toàn-diện)
     - [EPIC 14: Stage Manager Co-existence \& Universal Fullscreen Escape (Tương thích Stage Manager \& Thoát Full Screen)](#epic-14-stage-manager-co-existence--universal-fullscreen-escape-tương-thích-stage-manager--thoát-full-screen)
     - [EPIC 15: Universal Always-On-Top Pinning \& Stage Manager Launch Co-existence (Ghim Cửa sổ Luôn Trên Cùng \& Hòa hợp Stage Manager)](#epic-15-universal-always-on-top-pinning--stage-manager-launch-co-existence-ghim-cửa-sổ-luôn-trên-cùng--hòa-hợp-stage-manager)
+  - [4.3. Giai đoạn 3: Official Web Distribution & 3D Interactive Showcase (Phase 3 Backlog)](#43-giai-đoạn-3-official-web-distribution--3d-interactive-showcase-phase-3-backlog)
+    - [EPIC 16: Official Product Landing Page, 3D Interactive Showcase & Web Distribution Portal](#epic-16-official-product-landing-page-3d-interactive-showcase--web-distribution-portal)
   - [5. Lộ trình phát hành theo Giai đoạn \& Sprint](#5-lộ-trình-phát-hành-theo-giai-đoạn--sprint)
   - [6. Quy chuẩn định nghĩa hoàn thành (Definition of Done - DoD)](#6-quy-chuẩn-định-nghĩa-hoàn-thành-definition-of-done---dod)
   - [7. Phân tích Kỹ thuật Chuyên sâu, Rủi ro Hệ thống \& Kế hoạch Phát hành](#7-phân-tích-kỹ-thuật-chuyên-sâu-rủi-ro-hệ-thống--kế-hoạch-phát-hành)
@@ -149,23 +151,24 @@ graph TD
 
 ## 3. Bảng ma trận ưu tiên MoSCoW & RICE
 
-| Mã Epic         | Tên Nghiệp vụ / Tính năng                                 |     MoSCoW      | Reach | Impact | Confidence | Effort | RICE Score |        Mức ưu tiên         |   Target Sprint    |
-| :-------------- | :-------------------------------------------------------- | :-------------: | :---: | :----: | :--------: | :----: | :--------: | :------------------------: | :----------------: |
-| **EPIC-01**     | Trợ năng & Nhận diện Cửa sổ Trọng tâm (AX Discovery)      |  **Must-Have**  |  10   |  3.0   |    100%    |  1.0   |  **30.0**  |      **P0 (Blocker)**      |      Sprint 1      |
-| **EPIC-02**     | Động cơ Tính toán Bố cục Snap Cơ bản (Core Layout Engine) |  **Must-Have**  |  10   |  3.0   |    100%    |  1.5   |  **20.0**  |     **P0 (Core USP)**      |      Sprint 1      |
-| **EPIC-03**     | Nhận diện & Thao tác Cửa sổ Đa Màn hình (Multi-Monitor)   |  **Must-Have**  |   8   |  2.5   |    90%     |  1.5   |  **12.0**  |       **P0 (High)**        |      Sprint 1      |
-| **EPIC-04**     | Phím tắt Toàn cục & Hệ thống Điều phối (Global Hotkeys)   |  **Must-Have**  |  10   |  3.0   |    95%     |  1.5   |  **19.0**  |       **P0 (Core)**        |      Sprint 1      |
-| **EPIC-05**     | Menu Bar Status Item & Bảng Điều khiển Nhanh              |  **Must-Have**  |   9   |  2.0   |    100%    |  1.0   |  **18.0**  |     **P0 (Usability)**     |      Sprint 1      |
-| **EPIC-06**     | Kéo Thả Cạnh Màn hình & Lớp Phủ Xem trước (HUD Preview)   | **Should-Have** |   8   |  2.0   |    90%     |  2.0   |  **7.2**   |    **P1 (Experience)**     |      Sprint 2      |
-| **EPIC-07**     | Snap Layout Picker Cạnh Trên (Windows 11-style)           | **Should-Have** |   8   |  2.5   |    85%     |  2.5   |  **6.8**   |  **P1 (Differentiator)**   |      Sprint 2      |
-| **EPIC-08**     | Tỷ lệ Tùy chỉnh (60/40, 70/30) & Window Gaps Thẩm mỹ      | **Should-Have** |   7   |  1.5   |    95%     |  1.5   |  **6.6**   |      **P1 (Visual)**       |      Sprint 2      |
-| **EPIC-09**     | Kéo Đường Phân cách Chung (Adaptive Divider Resize)       | **Could-Have**  |   6   |  2.0   |    80%     |  3.0   |  **3.2**   |     **P2 (Advanced)**      |      Sprint 2      |
-| **EPIC-10**     | Cài đặt SwiftUI & Tùy biến Phím tắt (Settings & Config)   | **Should-Have** |   8   |  1.5   |    95%     |  1.5   |  **7.6**   |     **P1 (Settings)**      |      Sprint 2      |
-| **EPIC-11**     | Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspaces) | **Should-Have** |   8   |  3.0   |    100%    |  2.5   |  **9.1**   |   **P1 (Hero Feature)**    |    Sprint 3 ✅     |
-| **EPIC-12**     | Nhóm Cửa sổ & Workspace Presets (Coding, Research)        | **Should-Have** |   7   |  2.0   |    90%     |  1.5   |  **8.4**   |     **P1 (Value-Add)**     |      Sprint 3      |
-| **EPIC-13**     | Phát hiện Mở Ứng dụng & Giữ ở Workspace Hiện tại          |  **Must-Have**  |   9   |  3.0   |    85%     |  2.5   |  **9.1**   |   **P0 (Hero Feature)**    |      Sprint 3      |
-| **EPIC-14**     | Quy tắc Riêng theo Ứng dụng & Cửa sổ Nổi (Floating Stack) | **Should-Have** |   7   |  2.0   |    90%     |  2.0   |  **6.3**   |    **P1 (Flexibility)**    |      Sprint 3      |
-| **US-SNAP-024** | Khởi động cùng macOS qua SMAppService (Launch at Login)   |  **Must-Have**  |  10   |  2.5   |    100%    |  1.0   |  **25.0**  | **P0 (Utility Essential)** | Sprint 7 ✅ (Done) |
+| Mã Epic         | Tên Nghiệp vụ / Tính năng                                 |     MoSCoW      | Reach | Impact | Confidence | Effort | RICE Score |        Mức ưu tiên         |     Target Sprint     |
+| :-------------- | :-------------------------------------------------------- | :-------------: | :---: | :----: | :--------: | :----: | :--------: | :------------------------: | :-------------------: |
+| **EPIC-01**     | Trợ năng & Nhận diện Cửa sổ Trọng tâm (AX Discovery)      |  **Must-Have**  |  10   |  3.0   |    100%    |  1.0   |  **30.0**  |      **P0 (Blocker)**      |       Sprint 1        |
+| **EPIC-02**     | Động cơ Tính toán Bố cục Snap Cơ bản (Core Layout Engine) |  **Must-Have**  |  10   |  3.0   |    100%    |  1.5   |  **20.0**  |     **P0 (Core USP)**      |       Sprint 1        |
+| **EPIC-03**     | Nhận diện & Thao tác Cửa sổ Đa Màn hình (Multi-Monitor)   |  **Must-Have**  |   8   |  2.5   |    90%     |  1.5   |  **12.0**  |       **P0 (High)**        |       Sprint 1        |
+| **EPIC-04**     | Phím tắt Toàn cục & Hệ thống Điều phối (Global Hotkeys)   |  **Must-Have**  |  10   |  3.0   |    95%     |  1.5   |  **19.0**  |       **P0 (Core)**        |       Sprint 1        |
+| **EPIC-05**     | Menu Bar Status Item & Bảng Điều khiển Nhanh              |  **Must-Have**  |   9   |  2.0   |    100%    |  1.0   |  **18.0**  |     **P0 (Usability)**     |       Sprint 1        |
+| **EPIC-06**     | Kéo Thả Cạnh Màn hình & Lớp Phủ Xem trước (HUD Preview)   | **Should-Have** |   8   |  2.0   |    90%     |  2.0   |  **7.2**   |    **P1 (Experience)**     |       Sprint 2        |
+| **EPIC-07**     | Snap Layout Picker Cạnh Trên (Windows 11-style)           | **Should-Have** |   8   |  2.5   |    85%     |  2.5   |  **6.8**   |  **P1 (Differentiator)**   |       Sprint 2        |
+| **EPIC-08**     | Tỷ lệ Tùy chỉnh (60/40, 70/30) & Window Gaps Thẩm mỹ      | **Should-Have** |   7   |  1.5   |    95%     |  1.5   |  **6.6**   |      **P1 (Visual)**       |       Sprint 2        |
+| **EPIC-09**     | Kéo Đường Phân cách Chung (Adaptive Divider Resize)       | **Could-Have**  |   6   |  2.0   |    80%     |  3.0   |  **3.2**   |     **P2 (Advanced)**      |       Sprint 2        |
+| **EPIC-10**     | Cài đặt SwiftUI & Tùy biến Phím tắt (Settings & Config)   | **Should-Have** |   8   |  1.5   |    95%     |  1.5   |  **7.6**   |     **P1 (Settings)**      |       Sprint 2        |
+| **EPIC-11**     | Lưu & Khôi phục Bố cục Workspace theo Ý định (Workspaces) | **Should-Have** |   8   |  3.0   |    100%    |  2.5   |  **9.1**   |   **P1 (Hero Feature)**    |      Sprint 3 ✅      |
+| **EPIC-12**     | Nhóm Cửa sổ & Workspace Presets (Coding, Research)        | **Should-Have** |   7   |  2.0   |    90%     |  1.5   |  **8.4**   |     **P1 (Value-Add)**     |       Sprint 3        |
+| **EPIC-13**     | Phát hiện Mở Ứng dụng & Giữ ở Workspace Hiện tại          |  **Must-Have**  |   9   |  3.0   |    85%     |  2.5   |  **9.1**   |   **P0 (Hero Feature)**    |       Sprint 3        |
+| **EPIC-14**     | Quy tắc Riêng theo Ứng dụng & Cửa sổ Nổi (Floating Stack) | **Should-Have** |   7   |  2.0   |    90%     |  2.0   |  **6.3**   |    **P1 (Flexibility)**    |       Sprint 3        |
+| **US-SNAP-024** | Khởi động cùng macOS qua SMAppService (Launch at Login)   |  **Must-Have**  |  10   |  2.5   |    100%    |  1.0   |  **25.0**  | **P0 (Utility Essential)** |  Sprint 7 ✅ (Done)   |
+| **EPIC-16**     | Official Landing Page, 3D Showcase & Distribution Portal  |  **Must-Have**  |  10   |  3.0   |    95%     |  2.0   |  **14.2**  |   **P1 (Distribution)**    | Sprint 8 [/] (Active) |
 
 ---
 
@@ -852,6 +855,63 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
 
 ---
 
+### 4.3. Giai đoạn 3: Official Web Distribution & 3D Interactive Showcase (Phase 3 Backlog)
+
+#### EPIC 16: Official Product Landing Page, 3D Interactive Showcase & Web Distribution Portal
+
+- **Mục tiêu:** Xây dựng cổng thông tin giới thiệu sản phẩm và phân phối chính thức của FlowSnap trên nền tảng Web (`web/`) sử dụng Astro Framework tĩnh, tích hợp hệ thống Design Tokens cảm hứng từ Shadcn & Apple HIG, và khung giả lập macOS Desktop 3D/Interactive sandbox mượt mà (Three.js/Canvas).
+- **Phân kỳ mục tiêu:** Sprint 8 — Web Distribution & Visual Showcase.
+- **Mức độ ưu tiên:** P1 (Must-Have cho chiến dịch phân phối cộng đồng).
+
+##### US-WEB-025: Khung kiến trúc Astro, Shadcn Design Tokens & Base Responsive Layout
+
+- **Vai trò:** Là một khách truy cập web, tôi muốn trang web tải tức thì (< 1s), giao diện đồng nhất chuẩn mực Apple HIG (hỗ trợ Dark/Light mode tự động) và không bị giật lag font (Zero FOIT/FOUT).
+- **Acceptance Criteria (AC):**
+  - [ ] Khởi tạo thư mục `web/` với Astro v4/v5 (static output mode, zero-JS baseline).
+  - [ ] Thiết lập `web/DESIGN.md` tích hợp chuẩn Shadcn tokens (Geist/SF Pro, spacing scale `4/8/12/16/24/32`, 1px hairline border `#ffffff14` / `#e4e4e7`, obsidian dark canvas `#09090b`).
+  - [ ] Xây dựng `BaseLayout.astro` với meta tags tối ưu SEO, hỗ trợ đổi giao diện Light/Dark không chớp giật (FOUC).
+  - [ ] Header Sticky với logo FlowSnap, badge phiên bản (`v1.3.1`), GitHub Stars widget và nút chuyển đổi chủ đề.
+  - [ ] Footer chuyên nghiệp chuẩn mực mã nguồn mở (MIT License, liên kết tác giả `@ahauy`, links tới Guides/Changelog).
+
+##### US-WEB-026: Khung giả lập macOS Desktop 3D / Interactive Sandbox (Hero Showcase)
+
+- **Vai trò:** Là một người dùng quan tâm đến FlowSnap, tôi muốn tương tác kéo thử cửa sổ ảo ngay trên trình duyệt để cảm nhận độ mượt và cơ chế snap độc bản trước khi tải app về máy.
+- **Acceptance Criteria (AC):**
+  - [ ] Khung màn hình macOS ảo Liquid Retina (tỷ lệ 16:10) với Menu Bar và Dock mô phỏng.
+  - [ ] Cửa sổ ảo (Mock Window) hỗ trợ kéo thả tự do bằng chuột/cảm ứng đa điểm (`PointerEvents`).
+  - [ ] **Top-Edge Layout Picker Trigger:** Khi kéo cửa sổ ảo chạm vùng đỉnh màn hình, thanh layout picker trượt xuống mượt mà; rê chuột vào ô layout và nhả chuột sẽ snap cửa sổ tức thì.
+  - [ ] **Real-time Translucent HUD Preview:** Khi kéo sát các mép cạnh (Trái/Phải/Góc), lớp phủ kính mờ hiện ra đón trước vị trí snap với animation spring.
+  - [ ] Tích hợp hiệu ứng 3D perspective tilt hoặc Three.js canvas nhẹ nhàng khi di chuột, tự động dừng animation loop (IntersectionObserver) khi cuộn khỏi màn hình để bảo toàn tài nguyên CPU/GPU (0.0% idle).
+  - [ ] Nút Reset Sandbox để khôi phục trạng thái ban đầu của cửa sổ bất cứ lúc nào.
+
+##### US-WEB-027: Bento Grid Features Showcase, Proof & Interactive Shortcut Matrix
+
+- **Vai trò:** Là một power user, tôi muốn tìm hiểu nhanh 6 tính năng đột phá của FlowSnap và tra cứu các tổ hợp phím tắt hỗ trợ.
+- **Acceptance Criteria (AC):**
+  - [ ] 6 ô Bento Grid trực quan: Top-Edge Picker, Collinear 2D Resize, Current Space Anchoring, Workspaces & Presets, Quake Scratchpad, Multi-Monitor Topology (sử dụng ảnh WebP tối ưu).
+  - [ ] Dải Metrics Proof: Swift 6 Strict Concurrency, 0 Private APIs, 470+ Unit Tests, < 1ms Snap Math, 60 FPS Divider Resize.
+  - [ ] Bảng tra cứu phím tắt tương tác (Interactive Shortcut Matrix) có bộ lọc theo danh mục (`Cửa sổ`, `Màn hình`, `Workspace`, `Tiện ích`).
+
+##### US-WEB-028: Distribution Hub, 1-Click Terminal Copy, DMG & Privacy Manifesto
+
+- **Vai trò:** Là một người dùng macOS, tôi muốn tải và cài đặt FlowSnap một cách nhanh chóng, minh bạch và an toàn.
+- **Acceptance Criteria (AC):**
+  - [ ] Khung lệnh Terminal One-Line Installer kèm nút Copy 1-click có phản hồi thị giác trực quan.
+  - [ ] Nút tải file `.dmg` trực tiếp trỏ đến bản phát hành GitHub Releases mới nhất.
+  - [ ] Cam kết bảo mật & quyền riêng tư rõ ràng: 100% Offline, Zero Telemetry, giải thích quyền Accessibility `AXUIElement`.
+  - [ ] Hướng dẫn khắc phục cảnh báo Gatekeeper (`xattr -cr`) minh bạch, chi tiết.
+
+##### US-WEB-029: SEO, OpenGraph, JSON-LD Schema & Automated GitHub Pages CI/CD
+
+- **Vai trò:** Là nhà phát triển dự án, tôi muốn trang web được lập chỉ mục Google hoàn hảo và tự động xuất bản (deploy) khi có cập nhật.
+- **Acceptance Criteria (AC):**
+  - [ ] Thẻ OpenGraph / Twitter Cards chuẩn mực với ảnh preview chất lượng cao.
+  - [ ] Dữ liệu có cấu trúc `SoftwareApplication` JSON-LD Schema chuẩn Google Search.
+  - [ ] Thiết lập GitHub Actions workflow `.github/workflows/deploy-pages.yml` để build và deploy tĩnh lên GitHub Pages mỗi khi commit lên nhánh `main`.
+  - [ ] Điểm số Google Lighthouse đạt tối thiểu `95+` trên cả 4 hạng mục: Performance, Accessibility, Best Practices, SEO.
+
+---
+
 ## 5. Lộ trình phát hành theo Giai đoạn & Sprint
 
 ```
@@ -899,6 +959,13 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
 
 [ Sprint 7: Launch Automation & System Preferences (Active Backlog) ]  ──► [ COMPLETED ✅ ]
   └── [x] US-SNAP-024: Tự động Khởi động cùng macOS qua SMAppService (Launch at Login Integration) ✅
+
+[ Sprint 8: Web Distribution & 3D Interactive Landing Page (Active) ]  ──► [ IN PROGRESS 🔄 ]
+  ├── [/] US-WEB-025: Astro Baseline, Shadcn-Inspired Design Tokens (DESIGN.md) & Base Layout
+  ├── [ ] US-WEB-026: 3D/Interactive macOS Desktop Simulator (Three.js & Pointer Drag Sandbox)
+  ├── [ ] US-WEB-027: Bento Grid Features Showcase, Proof & Interactive Shortcuts Matrix
+  ├── [ ] US-WEB-028: Download Hub, 1-Click Terminal Copy, DMG & Gatekeeper / Privacy Manifesto
+  └── [ ] US-WEB-029: SEO, OpenGraph/Twitter Cards, JSON-LD Schema & GitHub Pages CI/CD
 
 [ Future Horizons (V3.0+) ]
   ├── US-FUTURE-001: Visual Canvas-based Interactive Layout Editor
