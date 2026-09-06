@@ -1,0 +1,86 @@
+/**
+ * FlowSnap Web Design Tokens
+ * Conforming to web/DESIGN.md (Shadcn Minimalist + Apple macOS HIG)
+ */
+
+:root {
+  /* Canvas & Surfaces (Light default) */
+  --bg-color: #ffffff;
+  --surface-color: #fafafa;
+  --surface-elevated: #f4f4f5;
+  --border-color: #e4e4e7;
+  --border-subtle: #f4f4f5;
+  --border-focus: #0071e3;
+
+  /* Text hierarchy */
+  --text-primary: #09090b;
+  --text-secondary: #52525b;
+  --text-tertiary: #71717a;
+
+  /* Brand & Accents */
+  --accent-blue: #0071e3;
+  --accent-blue-vibrant: #0a84ff;
+  --accent-swift: #fa7343;
+
+  /* Liquid Glass HUD */
+  --liquid-glass-bg: rgba(0, 113, 227, 0.12);
+  --liquid-glass-border: rgba(0, 113, 227, 0.4);
+  --glass-blur: blur(20px);
+
+  /* Typography Stack */
+  --font-display:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+  --font-body:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+}
+
+[data-theme="dark"],
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    /* Obsidian Dark Theme */
+    --bg-color: #09090b;
+    --surface-color: #121215;
+    --surface-elevated: #18181b;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-subtle: rgba(255, 255, 255, 0.04);
+    --border-focus: #0a84ff;
+
+    --text-primary: #f4f4f5;
+    --text-secondary: #a1a1aa;
+    --text-tertiary: #71717a;
+
+    --accent-blue: #0a84ff;
+    --liquid-glass-bg: rgba(10, 132, 255, 0.18);
+    --liquid-glass-border: rgba(10, 132, 255, 0.5);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
