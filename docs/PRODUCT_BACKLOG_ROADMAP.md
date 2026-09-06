@@ -867,11 +867,18 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
 
 - **Vai trò:** Là một khách truy cập web, tôi muốn trang web tải tức thì (< 1s), giao diện đồng nhất chuẩn mực Apple HIG (hỗ trợ Dark/Light mode tự động) và không bị giật lag font (Zero FOIT/FOUT).
 - **Acceptance Criteria (AC):**
-  - [ ] Khởi tạo thư mục `web/` với Astro v4/v5 (static output mode, zero-JS baseline).
-  - [ ] Thiết lập `web/DESIGN.md` tích hợp chuẩn Shadcn tokens (Geist/SF Pro, spacing scale `4/8/12/16/24/32`, 1px hairline border `#ffffff14` / `#e4e4e7`, obsidian dark canvas `#09090b`).
-  - [ ] Xây dựng `BaseLayout.astro` với meta tags tối ưu SEO, hỗ trợ đổi giao diện Light/Dark không chớp giật (FOUC).
-  - [ ] Header Sticky với logo FlowSnap, badge phiên bản (`v1.3.1`), GitHub Stars widget và nút chuyển đổi chủ đề.
-  - [ ] Footer chuyên nghiệp chuẩn mực mã nguồn mở (MIT License, liên kết tác giả `@ahauy`, links tới Guides/Changelog).
+  - [x] Khởi tạo thư mục `web/` với Astro v4/v5 (static output mode, zero-JS baseline).
+  - [x] Thiết lập `web/DESIGN.md` tích hợp chuẩn Shadcn tokens (Geist/SF Pro, spacing scale `4/8/12/16/24/32`, 1px hairline border `#ffffff14` / `#e4e4e7`, obsidian dark canvas `#09090b`).
+  - [x] Xây dựng `BaseLayout.astro` với meta tags tối ưu SEO, hỗ trợ đổi giao diện Light/Dark không chớp giật (FOUC).
+  - [x] Header Sticky với logo FlowSnap, badge phiên bản (`v1.3.1`), GitHub Stars widget và nút chuyển đổi chủ đề.
+  - [x] Footer chuyên nghiệp chuẩn mực mã nguồn mở (MIT License, liên kết tác giả `@ahauy`, links tới Guides/Changelog).
+  - **Deliverables**:
+    - Domain Baseline: `.specify/features/web-baseline-layout/baseline.md` (SIGNED-OFF v1.0)
+    - Spec & Plan: `.specify/features/web-baseline-layout/spec.md`, `plan.md`
+    - Tasks Breakdown: `.specify/features/web-baseline-layout/tasks.md`
+    - Technical Docs: `docs/features/web-baseline-layout/README.md`
+    - End-User Guide: `docs/user-guides/web-baseline-layout.md`
+    - Test Plan: `.specify/features/web-baseline-layout/test-plan.md`
 
 ##### US-WEB-026: Khung giả lập macOS Desktop 3D / Interactive Sandbox (Hero Showcase)
 
@@ -961,7 +968,7 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
   └── [x] US-SNAP-024: Tự động Khởi động cùng macOS qua SMAppService (Launch at Login Integration) ✅
 
 [ Sprint 8: Web Distribution & 3D Interactive Landing Page (Active) ]  ──► [ IN PROGRESS 🔄 ]
-  ├── [/] US-WEB-025: Astro Baseline, Shadcn-Inspired Design Tokens (DESIGN.md) & Base Layout
+  ├── [x] US-WEB-025: Astro Baseline, Shadcn-Inspired Design Tokens (DESIGN.md) & Base Layout ✅
   ├── [ ] US-WEB-026: 3D/Interactive macOS Desktop Simulator (Three.js & Pointer Drag Sandbox)
   ├── [ ] US-WEB-027: Bento Grid Features Showcase, Proof & Interactive Shortcuts Matrix
   ├── [ ] US-WEB-028: Download Hub, 1-Click Terminal Copy, DMG & Gatekeeper / Privacy Manifesto
