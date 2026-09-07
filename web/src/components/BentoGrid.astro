@@ -54,8 +54,8 @@ import { bentoFeatures } from '../data/bento-data';
                   <circle cx="162" cy="111" r="3" fill="#ff5f56" />
                   <circle cx="170" cy="111" r="3" fill="#ffbd2e" />
                   <circle cx="178" cy="111" r="3" fill="#27c93f" />
-                  <line x1="220" y1="95" x2="220" y2="88" stroke="var(--brand-apple-blue)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3" />
-                  <polygon points="220,84 216,90 224,90" fill="var(--brand-apple-blue)" />
+                  <line x1="220" y1="95" x2="220" y2="88" stroke="var(--brand-apple-blue, #0071e3)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3" />
+                  <polygon points="220,84 216,90 224,90" fill="var(--brand-apple-blue, #0071e3)" />
                 </g>
                 <!-- Snapped HUD Preview Left 50% -->
                 <rect x="20" y="44" width="195" height="156" rx="8" class="svg-hud-preview" />
@@ -81,12 +81,12 @@ import { bentoFeatures } from '../data/bento-data';
                 <circle cx="162" cy="33" r="2.5" fill="#ff5f56" />
                 <circle cx="169" cy="33" r="2.5" fill="#ffbd2e" />
                 <!-- Shared Collinear Divider Bar -->
-                <line x1="148" y1="20" x2="148" y2="164" stroke="var(--brand-apple-blue)" stroke-width="3" stroke-linecap="round" />
+                <line x1="148" y1="20" x2="148" y2="164" stroke="var(--brand-apple-blue, #0071e3)" stroke-width="3" stroke-linecap="round" />
                 <!-- Crosshair Handle -->
-                <circle cx="148" cy="92" r="8" fill="var(--color-surface-elevated)" stroke="var(--brand-apple-blue)" stroke-width="2" />
-                <path d="M144 92h8M148 88v8" stroke="var(--brand-apple-blue)" stroke-width="1.5" stroke-linecap="round" />
+                <circle cx="148" cy="92" r="8" fill="var(--color-surface, #ffffff)" stroke="var(--brand-apple-blue, #0071e3)" stroke-width="2" />
+                <path d="M144 92h8M148 88v8" stroke="var(--brand-apple-blue, #0071e3)" stroke-width="1.5" stroke-linecap="round" />
                 <!-- Direction arrows -->
-                <path d="M136 92l-4 -3v6l4 -3zM160 92l4 -3v6l-4 -3z" fill="var(--color-text-secondary)" />
+                <path d="M136 92l-4 -3v6l4 -3zM160 92l4 -3v6l-4 -3z" fill="var(--color-text-secondary, #64748b)" />
               </svg>
             </div>
           )}
@@ -99,11 +99,11 @@ import { bentoFeatures } from '../data/bento-data';
                 <!-- Spaces Top Bar -->
                 <rect x="10" y="10" width="240" height="26" rx="8" class="svg-menubar" />
                 <!-- Active Space 1 Pill -->
-                <rect x="20" y="14" width="56" height="18" rx="4" fill="var(--brand-apple-blue)" />
+                <rect x="20" y="14" width="56" height="18" rx="4" fill="var(--brand-apple-blue, #0071e3)" />
                 <text x="48" y="27" text-anchor="middle" font-size="9" font-weight="600" fill="#ffffff">Space 1</text>
                 <!-- Inactive Space 2 -->
                 <rect x="82" y="14" width="56" height="18" rx="4" class="svg-zone" />
-                <text x="110" y="27" text-anchor="middle" font-size="9" fill="var(--color-text-tertiary)">Space 2</text>
+                <text x="110" y="27" text-anchor="middle" font-size="9" fill="var(--color-text-tertiary, #94a3b8)">Space 2</text>
                 <!-- Anchored Window -->
                 <rect x="40" y="52" width="180" height="100" rx="6" class="svg-window-box" />
                 <rect x="40" y="52" width="180" height="20" rx="6" class="svg-window-header" />
@@ -112,10 +112,10 @@ import { bentoFeatures } from '../data/bento-data';
                 <circle cx="66" cy="62" r="2.5" fill="#27c93f" />
                 <!-- Lock & Anchor Badge -->
                 <g transform="translate(90, 85)">
-                  <rect width="80" height="24" rx="12" fill="var(--color-surface-elevated)" stroke="var(--brand-apple-blue)" stroke-width="1" />
+                  <rect width="80" height="24" rx="12" fill="var(--color-surface, #ffffff)" stroke="var(--brand-apple-blue, #0071e3)" stroke-width="1.2" />
                   <circle cx="16" cy="12" r="5" fill="#30d158" />
-                  <path d="M14 12l1.5 1.5 3 -3" stroke="#000" stroke-width="1.2" stroke-linecap="round" />
-                  <text x="46" y="16" text-anchor="middle" font-size="9" font-weight="600" fill="var(--color-text-primary)">Anchored</text>
+                  <path d="M14 12l1.5 1.5 3 -3" stroke="#fff" stroke-width="1.2" stroke-linecap="round" />
+                  <text x="46" y="15" text-anchor="middle" font-size="9" font-weight="600" fill="var(--color-text-primary, #09090b)">Anchored</text>
                 </g>
               </svg>
             </div>
@@ -133,19 +133,19 @@ import { bentoFeatures } from '../data/bento-data';
                 <rect x="18" y="36" width="136" height="124" rx="5" class="svg-window-box" />
                 <rect x="18" y="36" width="136" height="16" rx="5" class="svg-window-header" />
                 <circle cx="27" cy="44" r="2" fill="#ff5f56" />
-                <text x="86" y="48" text-anchor="middle" font-size="8" fill="var(--color-text-secondary)">VS Code (60%)</text>
+                <text x="86" y="47" text-anchor="middle" font-size="8" font-weight="600" fill="var(--color-text-secondary, #52525b)">VS Code (60%)</text>
                 <!-- 2. Chrome DevTools (Top Right 25%) -->
                 <rect x="160" y="36" width="82" height="64" rx="5" class="svg-window-box" />
                 <rect x="160" y="36" width="82" height="16" rx="5" class="svg-window-header" />
-                <text x="201" y="48" text-anchor="middle" font-size="8" fill="var(--color-text-secondary)">Chrome</text>
+                <text x="201" y="47" text-anchor="middle" font-size="8" font-weight="600" fill="var(--color-text-secondary, #52525b)">Chrome</text>
                 <!-- 3. Terminal (Bottom Right 15%) -->
                 <rect x="160" y="106" width="82" height="54" rx="5" class="svg-window-box" />
                 <rect x="160" y="106" width="82" height="16" rx="5" class="svg-window-header" />
-                <text x="201" y="118" text-anchor="middle" font-size="8" fill="var(--color-text-secondary)">Terminal</text>
+                <text x="201" y="117" text-anchor="middle" font-size="8" font-weight="600" fill="var(--color-text-secondary, #52525b)">Terminal</text>
                 <!-- Preset Hotkey Chip -->
                 <g transform="translate(68, 134)">
-                  <rect width="64" height="20" rx="10" fill="var(--color-surface-elevated)" stroke="var(--color-border)" stroke-width="1" />
-                  <text x="32" y="14" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-weight="600" fill="var(--brand-apple-blue)">⌃⌥⌘1</text>
+                  <rect width="64" height="20" rx="10" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e4e4e7)" stroke-width="1" />
+                  <text x="32" y="14" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-weight="600" fill="var(--brand-apple-blue, #0071e3)">⌃⌥⌘1</text>
                 </g>
               </svg>
             </div>
@@ -158,7 +158,7 @@ import { bentoFeatures } from '../data/bento-data';
                 <rect x="10" y="10" width="420" height="200" rx="10" class="svg-bezel" />
                 <!-- Background App Window (Brave / Figma) unaffected -->
                 <rect x="30" y="44" width="380" height="156" rx="8" class="svg-window-box" opacity="0.6" />
-                <text x="220" y="130" text-anchor="middle" font-size="12" fill="var(--color-text-tertiary)">Background App (100% Size Preserved)</text>
+                <text x="220" y="130" text-anchor="middle" font-size="12" font-weight="500" fill="var(--color-text-tertiary, #71717a)">Background App (100% Size Preserved)</text>
                 <!-- Quake Terminal Dropping from Top Edge -->
                 <g class="svg-scratchpad-modal">
                   <rect x="90" y="20" width="260" height="120" rx="8" class="svg-terminal-box" />
@@ -166,14 +166,14 @@ import { bentoFeatures } from '../data/bento-data';
                   <circle cx="104" cy="32" r="3" fill="#ff5f56" />
                   <circle cx="113" cy="32" r="3" fill="#ffbd2e" />
                   <circle cx="122" cy="32" r="3" fill="#27c93f" />
-                  <text x="220" y="36" text-anchor="middle" font-size="10" font-weight="600" fill="var(--color-text-primary)">iTerm2 — Quick Scratchpad</text>
+                  <text x="220" y="36" text-anchor="middle" font-size="10" font-weight="600" fill="#f4f4f5">iTerm2 — Quick Scratchpad</text>
                   <!-- Terminal Prompt -->
                   <text x="106" y="64" font-family="var(--font-mono)" font-size="10" fill="#30d158">$ git status</text>
-                  <text x="106" y="80" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-secondary)">On branch feat/web-landing-page</text>
-                  <text x="106" y="96" font-family="var(--font-mono)" font-size="10" fill="var(--brand-apple-blue)">$ █</text>
+                  <text x="106" y="80" font-family="var(--font-mono)" font-size="9" fill="#a1a1aa">On branch feat/web-landing-page</text>
+                  <text x="106" y="96" font-family="var(--font-mono)" font-size="10" fill="#0a84ff">$ █</text>
                   <!-- Summon & Dismiss Badges -->
-                  <rect x="238" y="108" width="102" height="20" rx="4" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1" />
-                  <text x="289" y="122" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-weight="600" fill="var(--brand-apple-blue)">⌥Space / ESC</text>
+                  <rect x="238" y="108" width="102" height="20" rx="4" fill="#18181b" stroke="rgba(255,255,255,0.15)" stroke-width="1" />
+                  <text x="289" y="122" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-weight="600" fill="#0a84ff">⌥Space / ESC</text>
                 </g>
               </svg>
             </div>
@@ -185,22 +185,22 @@ import { bentoFeatures } from '../data/bento-data';
                 <!-- Monitor Left (Retina Display 1440x900) -->
                 <rect x="12" y="36" width="104" height="74" rx="5" class="svg-bezel" />
                 <rect x="12" y="36" width="104" height="14" rx="5" class="svg-menubar" />
-                <rect x="48" y="112" width="32" height="14" class="svg-bezel" />
-                <rect x="36" y="126" width="56" height="5" rx="2" class="svg-bezel" />
-                <text x="64" y="82" text-anchor="middle" font-size="8" fill="var(--color-text-tertiary)">Retina 16"</text>
+                <rect x="48" y="110" width="32" height="16" class="svg-monitor-stand" />
+                <rect x="36" y="126" width="56" height="5" rx="2" class="svg-monitor-base" />
+                <text x="64" y="80" text-anchor="middle" font-size="8" font-weight="600" fill="var(--color-text-tertiary, #71717a)">Retina 16"</text>
                 <!-- Monitor Right (4K Display 3840x2160) -->
                 <rect x="136" y="20" width="112" height="96" rx="6" class="svg-bezel" />
                 <rect x="136" y="20" width="112" height="16" rx="6" class="svg-menubar" />
-                <rect x="176" y="118" width="32" height="18" class="svg-bezel" />
-                <rect x="160" y="136" width="64" height="5" rx="2" class="svg-bezel" />
-                <text x="192" y="74" text-anchor="middle" font-size="8" fill="var(--color-text-tertiary)">Pro 4K 27"</text>
+                <rect x="176" y="116" width="32" height="20" class="svg-monitor-stand" />
+                <rect x="160" y="136" width="64" height="5" rx="2" class="svg-monitor-base" />
+                <text x="192" y="72" text-anchor="middle" font-size="8" font-weight="600" fill="var(--color-text-tertiary, #71717a)">Pro 4K 27"</text>
                 <!-- Trajectory Throw Arrow from Left to Right -->
-                <path d="M72 58 Q 124 16, 170 54" stroke="var(--brand-apple-blue)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3" fill="none" />
-                <polygon points="174,56 166,50 170,60" fill="var(--brand-apple-blue)" />
+                <path d="M72 58 Q 124 16, 170 54" stroke="var(--brand-apple-blue, #0071e3)" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3" fill="none" />
+                <polygon points="174,56 166,50 170,60" fill="var(--brand-apple-blue, #0071e3)" />
                 <!-- Throw Hotkey Pill -->
                 <g transform="translate(100, 72)">
-                  <rect width="60" height="20" rx="10" fill="var(--color-surface-elevated)" stroke="var(--brand-apple-blue)" stroke-width="1" />
-                  <text x="30" y="14" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-weight="600" fill="var(--color-text-primary)">⌃⌥⇧→</text>
+                  <rect width="60" height="20" rx="10" fill="var(--color-surface, #ffffff)" stroke="var(--brand-apple-blue, #0071e3)" stroke-width="1" />
+                  <text x="30" y="14" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-weight="600" fill="var(--color-text-primary, #09090b)">⌃⌥⇧→</text>
                 </g>
               </svg>
             </div>
@@ -245,12 +245,14 @@ import { bentoFeatures } from '../data/bento-data';
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
+    background: var(--color-surface, #ffffff);
+    border: 1px solid var(--color-border, #e4e4e7);
+    border-radius: var(--radius-xl, 18px);
     padding: 28px;
-    box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-medium), border-color var(--transition-fast), box-shadow var(--transition-medium);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    transition: transform var(--transition-medium, 250ms cubic-bezier(0.16, 1, 0.3, 1)),
+                border-color var(--transition-fast, 150ms cubic-bezier(0.16, 1, 0.3, 1)),
+                box-shadow var(--transition-medium, 250ms cubic-bezier(0.16, 1, 0.3, 1));
     overflow: hidden;
     position: relative;
   }
@@ -258,7 +260,7 @@ import { bentoFeatures } from '../data/bento-data';
   .bento-card:hover {
     transform: translateY(-2px);
     border-color: rgba(10, 132, 255, 0.35);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-md, 0 4px 12px -2px rgba(0, 0, 0, 0.08));
   }
 
   /* Header */
@@ -281,20 +283,20 @@ import { bentoFeatures } from '../data/bento-data';
     align-items: center;
     padding: 3px 10px;
     font-family: var(--font-display);
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-xs, 12px);
     font-weight: 600;
-    color: var(--brand-apple-blue-vibrant);
+    color: var(--brand-apple-blue-vibrant, #0071e3);
     background: rgba(10, 132, 255, 0.1);
     border: 1px solid rgba(10, 132, 255, 0.25);
-    border-radius: var(--radius-full);
+    border-radius: var(--radius-full, 9999px);
     letter-spacing: 0.02em;
   }
 
   .card-title {
     font-family: var(--font-display);
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-xl, 22px);
     font-weight: 700;
-    color: var(--color-text-primary);
+    color: var(--color-text-primary, #09090b);
     line-height: 1.25;
     letter-spacing: -0.02em;
     margin: 0;
@@ -302,8 +304,8 @@ import { bentoFeatures } from '../data/bento-data';
 
   .card-desc {
     font-family: var(--font-body);
-    font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm, 14px);
+    color: var(--color-text-secondary, #52525b);
     line-height: 1.55;
     margin: 0;
   }
@@ -319,6 +321,17 @@ import { bentoFeatures } from '../data/bento-data';
     margin-bottom: 20px;
     position: relative;
     z-index: 1;
+    background: var(--surface-elevated, #f4f4f5);
+    border: 1px solid var(--border-color, #e4e4e7);
+    border-radius: var(--radius-lg, 14px);
+    padding: 14px;
+    box-sizing: border-box;
+  }
+
+  :global([data-theme="dark"]) .illustration-stage,
+  :global(:root:not([data-theme="light"])) .illustration-stage {
+    background: #0e0e11;
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
   .vector-art {
@@ -334,60 +347,61 @@ import { bentoFeatures } from '../data/bento-data';
     max-height: 200px;
   }
 
-  /* SVG Vector Styling Tokens */
+  /* SVG Vector Styling Tokens (Light Mode Defaults) */
   .svg-bezel {
-    fill: var(--color-surface-elevated);
-    stroke: var(--color-border);
-    stroke-width: 1;
+    fill: #ffffff;
+    stroke: #cbd5e1;
+    stroke-width: 1.5;
   }
 
   .svg-menubar {
-    fill: var(--color-surface);
-    stroke: var(--color-border);
+    fill: #f1f5f9;
+    stroke: #cbd5e1;
     stroke-width: 1;
   }
 
   .svg-traffic-dot {
-    fill: var(--color-text-tertiary);
+    fill: #94a3b8;
   }
 
   .svg-picker-panel {
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.12));
   }
 
   .svg-picker-bg {
-    fill: var(--color-surface-elevated);
-    stroke: var(--color-border);
-    stroke-width: 1;
+    fill: #ffffff;
+    stroke: #94a3b8;
+    stroke-width: 1.2;
   }
 
   .svg-zone {
-    fill: var(--color-surface);
-    stroke: var(--color-border);
+    fill: #f1f5f9;
+    stroke: #cbd5e1;
     stroke-width: 1;
   }
 
   .svg-zone-active {
-    fill: rgba(10, 132, 255, 0.25);
-    stroke: var(--brand-apple-blue);
+    fill: rgba(0, 113, 227, 0.18);
+    stroke: var(--brand-apple-blue, #0071e3);
     stroke-width: 1.5;
   }
 
   .svg-window-box {
-    fill: var(--color-surface-elevated);
-    stroke: var(--color-border);
-    stroke-width: 1;
+    fill: #ffffff;
+    stroke: #94a3b8;
+    stroke-width: 1.5;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.06));
   }
 
   .svg-window-header {
-    fill: var(--color-surface);
-    stroke: var(--color-border);
-    stroke-width: 0.8;
+    fill: #f8fafc;
+    stroke: #cbd5e1;
+    stroke-width: 1;
   }
 
   .svg-hud-preview {
-    fill: rgba(10, 132, 255, 0.12);
-    stroke: var(--brand-apple-blue);
+    fill: rgba(0, 113, 227, 0.12);
+    stroke: var(--brand-apple-blue, #0071e3);
     stroke-width: 1.5;
     stroke-dasharray: 4 4;
   }
@@ -396,27 +410,108 @@ import { bentoFeatures } from '../data/bento-data';
     font-family: var(--font-display);
     font-size: 11px;
     font-weight: 600;
-    fill: var(--brand-apple-blue-vibrant);
+    fill: var(--brand-apple-blue, #0071e3);
   }
 
   .svg-terminal-box {
     fill: #09090b;
-    stroke: var(--color-border);
+    stroke: rgba(255, 255, 255, 0.15);
     stroke-width: 1;
-    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.4));
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.35));
   }
 
   .svg-terminal-header {
     fill: #18181b;
-    stroke: var(--color-border);
+    stroke: rgba(255, 255, 255, 0.1);
     stroke-width: 0.8;
+  }
+
+  .svg-monitor-stand,
+  .svg-monitor-base {
+    fill: #e2e8f0;
+    stroke: #cbd5e1;
+    stroke-width: 1;
+  }
+
+  /* Dark Theme Specific Overrides for SVG */
+  :global([data-theme="dark"]) .svg-bezel,
+  :global(:root:not([data-theme="light"])) .svg-bezel {
+    fill: #18181c;
+    stroke: rgba(255, 255, 255, 0.14);
+    stroke-width: 1;
+  }
+
+  :global([data-theme="dark"]) .svg-menubar,
+  :global(:root:not([data-theme="light"])) .svg-menubar {
+    fill: #1f1f26;
+    stroke: rgba(255, 255, 255, 0.1);
+  }
+
+  :global([data-theme="dark"]) .svg-traffic-dot,
+  :global(:root:not([data-theme="light"])) .svg-traffic-dot {
+    fill: #71717a;
+  }
+
+  :global([data-theme="dark"]) .svg-picker-panel,
+  :global(:root:not([data-theme="light"])) .svg-picker-panel {
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+  }
+
+  :global([data-theme="dark"]) .svg-picker-bg,
+  :global(:root:not([data-theme="light"])) .svg-picker-bg {
+    fill: #22222a;
+    stroke: rgba(255, 255, 255, 0.16);
+  }
+
+  :global([data-theme="dark"]) .svg-zone,
+  :global(:root:not([data-theme="light"])) .svg-zone {
+    fill: #18181f;
+    stroke: rgba(255, 255, 255, 0.1);
+  }
+
+  :global([data-theme="dark"]) .svg-zone-active,
+  :global(:root:not([data-theme="light"])) .svg-zone-active {
+    fill: rgba(10, 132, 255, 0.25);
+    stroke: #0a84ff;
+  }
+
+  :global([data-theme="dark"]) .svg-window-box,
+  :global(:root:not([data-theme="light"])) .svg-window-box {
+    fill: #222228;
+    stroke: rgba(255, 255, 255, 0.18);
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+  }
+
+  :global([data-theme="dark"]) .svg-window-header,
+  :global(:root:not([data-theme="light"])) .svg-window-header {
+    fill: #2a2a34;
+    stroke: rgba(255, 255, 255, 0.12);
+  }
+
+  :global([data-theme="dark"]) .svg-hud-preview,
+  :global(:root:not([data-theme="light"])) .svg-hud-preview {
+    fill: rgba(10, 132, 255, 0.16);
+    stroke: #0a84ff;
+  }
+
+  :global([data-theme="dark"]) .svg-hud-text,
+  :global(:root:not([data-theme="light"])) .svg-hud-text {
+    fill: #0a84ff;
+  }
+
+  :global([data-theme="dark"]) .svg-monitor-stand,
+  :global(:root:not([data-theme="light"])) .svg-monitor-stand,
+  :global([data-theme="dark"]) .svg-monitor-base,
+  :global(:root:not([data-theme="light"])) .svg-monitor-base {
+    fill: #1f1f26;
+    stroke: rgba(255, 255, 255, 0.1);
   }
 
   /* Footer Tags */
   .card-footer {
     display: flex;
     align-items: center;
-    border-top: 1px solid var(--color-border-subtle);
+    border-top: 1px solid var(--color-border-subtle, #f4f4f5);
     padding-top: 16px;
     z-index: 2;
   }
@@ -429,12 +524,12 @@ import { bentoFeatures } from '../data/bento-data';
 
   .highlight-pill {
     font-family: var(--font-display);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-secondary);
-    background: var(--color-surface-elevated);
+    font-size: var(--font-size-xs, 12px);
+    color: var(--color-text-secondary, #52525b);
+    background: var(--color-surface-elevated, #f4f4f5);
     padding: 3px 8px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm, 6px);
+    border: 1px solid var(--color-border, #e4e4e7);
   }
 
   /* Responsive Breakpoints */
@@ -464,7 +559,7 @@ import { bentoFeatures } from '../data/bento-data';
       padding: 20px;
     }
     .card-title {
-      font-size: var(--font-size-lg);
+      font-size: var(--font-size-lg, 18px);
     }
   }
 </style>
