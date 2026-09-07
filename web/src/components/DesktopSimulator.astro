@@ -1,0 +1,1065 @@
+---
+/**
+ * DesktopSimulator.astro
+ * 3D Interactive macOS Desktop Simulator (Hero Showcase)
+ * Feature: web-desktop-sandbox (US-WEB-026)
+ *
+ * Implements hardware-accelerated CSS 3D transforms, multi-window concurrency (VS Code & Terminal),
+ * authentic FlowSnap Menu Bar popover, Windows 11-style top-edge layout picker with true 70/30 proportions,
+ * liquid glass HUD snap preview, and buttery 120 FPS pointer drag physics.
+ */
+---
+
+<div class="simulator-wrapper" id="desktop-simulator-root">
+  <!-- Sandbox Controls / Header Toolbar -->
+  <div class="sandbox-toolbar">
+    <div class="toolbar-hint">
+      <span class="hint-pulse"></span>
+      <span class="hint-text">
+        <strong>Interactive Sandbox:</strong> Drag any window to top edge to snap, or click <strong>FlowSnap icon</strong> on Menu Bar/Dock.
+      </span>
+    </div>
+
+    <div class="toolbar-actions">
+      <!-- Quick Snap Action Chips -->
+      <div class="quick-chips" role="group" aria-label="Quick Snap Presets">
+        <button type="button" class="chip-btn" data-snap-action="split-50" aria-label="Balanced Split 50/50">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
+            <rect x="2" y="3" width="5.5" height="10" rx="1.5" fill="#0a84ff" />
+            <rect x="8.5" y="3" width="5.5" height="10" rx="1.5" fill="#0a84ff" />
+          </svg>
+          <span>Balanced Split (50/50)</span>
+        </button>
+
+        <button type="button" class="chip-btn" data-snap-action="coding-preset" aria-label="Apply Coding Preset 70/30 Split">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
+            <rect x="2" y="3" width="7.5" height="10" rx="1.5" fill="#0a84ff" />
+            <rect x="10.5" y="3" width="3.5" height="10" rx="1.5" fill="#10b981" />
+          </svg>
+          <span>Coding Split (70/30)</span>
+        </button>
+
+        <button type="button" class="chip-btn" data-snap-action="left-50" aria-label="Snap Focused Window Left 50%">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
+            <rect x="2" y="3" width="5.5" height="10" rx="1.5" />
+            <rect x="8.5" y="3" width="5.5" height="10" rx="1.5" fill-opacity="0.3" />
+          </svg>
+          <span>50/50 Left</span>
+        </button>
+
+        <button type="button" class="chip-btn" data-snap-action="right-50" aria-label="Snap Focused Window Right 50%">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
+            <rect x="2" y="3" width="5.5" height="10" rx="1.5" fill-opacity="0.3" />
+            <rect x="8.5" y="3" width="5.5" height="10" rx="1.5" />
+          </svg>
+          <span>50/50 Right</span>
+        </button>
+
+        <button type="button" class="chip-btn" data-snap-action="left-70" aria-label="Snap Focused Window 70% Wide">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
+            <rect x="2" y="3" width="8" height="10" rx="1.5" />
+            <rect x="11" y="3" width="3" height="10" rx="1.5" fill-opacity="0.3" />
+          </svg>
+          <span>70/30 Wide</span>
+        </button>
+      </div>
+
+      <!-- Reset Sandbox Button -->
+      <button type="button" class="reset-btn" id="simulator-reset-btn" aria-label="Reset Sandbox to default position">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75">
+          <path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9L2 6" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M2 2.5v3.5h3.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>Reset Sandbox</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 3D Perspective Viewport -->
+  <div class="perspective-stage" id="perspective-stage">
+    <!-- Simulated macOS Desktop Screen Frame -->
+    <div class="mac-desktop-frame" id="mac-desktop-frame" role="region" aria-label="Interactive macOS Desktop Simulator">
+      <!-- Dynamic Bezel Specular Glare Reflection -->
+      <div class="bezel-glare" id="bezel-glare"></div>
+
+      <!-- Virtual macOS Menu Bar -->
+      <header class="mac-menubar">
+        <div class="menubar-left">
+          <svg class="apple-logo" viewBox="0 0 170 170" width="12" height="12" fill="currentColor">
+            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.04-7.7-7.85-12-14.44-6-9.19-10.74-19.8-14.22-31.85-3.48-12.04-5.22-23.3-5.22-33.78 0-14.07 3.51-25.96 10.53-35.68 7.02-9.72 16.03-14.67 27.02-14.86 4.79 0 10.37 1.34 16.74 4.02 6.37 2.68 10.22 4.07 11.55 4.17 1.56-.1 5.68-1.57 12.35-4.42 6.67-2.85 12.44-4.14 17.31-3.87 13.06.74 23.47 5.67 31.23 14.8-11.44 6.89-17.06 16.38-16.86 28.47.2 9.53 3.91 17.51 11.13 23.94 7.22 6.43 15.65 10.05 25.29 10.86-2.12 6.55-4.68 13.5-7.68 20.86zM119.22 31.84c0-7.72 2.76-14.88 8.28-21.48 5.53-6.61 12.32-10.36 20.37-11.26.2 1.13.3 2.22.3 3.27 0 7.6-2.93 14.85-8.79 21.75-5.86 6.9-12.83 10.72-20.9 11.46-.2-1.22-.26-2.47-.26-3.74z" />
+          </svg>
+          <span class="app-name">FlowSnap</span>
+          <nav class="dummy-menus">
+            <span class="menu-item">File</span>
+            <span class="menu-item">Edit</span>
+            <span class="menu-item">Layout</span>
+            <span class="menu-item">Window</span>
+            <span class="menu-item">Help</span>
+          </nav>
+        </div>
+
+        <div class="menubar-right">
+          <!-- FlowSnap Status Item (Clickable Popover Trigger) -->
+          <div class="status-icon fs-status-icon" id="fs-menubar-trigger" role="button" tabindex="0" title="Click to open FlowSnap Menu Bar Grid">
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor">
+              <rect x="2" y="3" width="5.5" height="10" rx="1" />
+              <rect x="8.5" y="3" width="5.5" height="10" rx="1" fill-opacity="0.4" />
+            </svg>
+            <span class="status-dot"></span>
+          </div>
+
+          <!-- Wi-Fi Icon -->
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" class="status-icon">
+            <path d="M8 12.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5zm-3.5-2.75a4.95 4.95 0 0 1 7 0 .75.75 0 0 0 1.06-1.06 6.45 6.45 0 0 0-9.12 0 .75.75 0 0 0 1.06 1.06zm-2.5-2.75a8.45 8.45 0 0 1 12 0 .75.75 0 0 0 1.06-1.06 9.95 9.95 0 0 0-14.12 0 .75.75 0 0 0 1.06 1.06z" />
+          </svg>
+
+          <!-- Battery Icon -->
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor" class="status-icon">
+            <path d="M2 5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H2zm13 3a1 1 0 0 0-1-1v2a1 1 0 0 1 1-1zM2 6.5h10a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V7a.5.5 0 0 1 .5-.5z" />
+            <rect x="3" y="7.5" width="6.5" height="1" rx="0.5" fill="currentColor" />
+          </svg>
+
+          <!-- Virtual Clock -->
+          <span class="virtual-clock" id="virtual-clock">09:41</span>
+        </div>
+
+        <!-- FlowSnap Native Menu Bar Popover Dropdown -->
+        <div class="fs-menubar-popover" id="fs-menubar-popover" aria-hidden="true">
+          <div class="popover-header">
+            <div class="popover-title-row">
+              <span class="popover-brand">FlowSnap Menu</span>
+              <span class="popover-badge">v1.3.1</span>
+            </div>
+            <span class="popover-focus-label">Target: <strong id="popover-target-name">SnapEngine.swift</strong></span>
+          </div>
+
+          <div class="popover-section-title">Visual Snap Grid</div>
+          <div class="popover-grid">
+            <button type="button" class="popover-grid-btn" data-popover-snap="left-50" title="Snap Left 50%">
+              <div class="tile-icon split-left"></div>
+              <span>Left 1/2</span>
+            </button>
+            <button type="button" class="popover-grid-btn" data-popover-snap="right-50" title="Snap Right 50%">
+              <div class="tile-icon split-right"></div>
+              <span>Right 1/2</span>
+            </button>
+            <button type="button" class="popover-grid-btn" data-popover-snap="left-70" title="Snap Left 70%">
+              <div class="tile-icon split-70"></div>
+              <span>Left 70%</span>
+            </button>
+            <button type="button" class="popover-grid-btn" data-popover-snap="right-30" title="Snap Right 30%">
+              <div class="tile-icon split-30"></div>
+              <span>Right 30%</span>
+            </button>
+            <button type="button" class="popover-grid-btn" data-popover-snap="center-50" title="Center 50%">
+              <div class="tile-icon split-center"></div>
+              <span>Center 1/2</span>
+            </button>
+            <button type="button" class="popover-grid-btn" data-popover-snap="maximize" title="Maximize">
+              <div class="tile-icon split-max"></div>
+              <span>Maximize</span>
+            </button>
+          </div>
+
+          <div class="popover-divider"></div>
+
+          <div class="popover-section-title">Dual Window Presets</div>
+          <div class="popover-presets">
+            <button type="button" class="preset-row-btn" data-popover-preset="coding">
+              <div class="preset-info">
+                <span class="preset-name">Coding Workspace</span>
+                <span class="preset-desc">Code Editor 70% • Terminal 30%</span>
+              </div>
+              <span class="preset-keycap">⌃⌥C</span>
+            </button>
+            <button type="button" class="preset-row-btn" data-popover-preset="research">
+              <div class="preset-info">
+                <span class="preset-name">Balanced Side-by-Side</span>
+                <span class="preset-desc">Code Editor 50% • Terminal 50%</span>
+              </div>
+              <span class="preset-keycap">⌃⌥R</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Desktop Usable Workspace -->
+      <div class="mac-workspace" id="mac-workspace">
+        <!-- Windows 11-Style Top-Edge Snap Picker -->
+        <div class="snap-picker" id="snap-picker" aria-hidden="true">
+          <div class="picker-header">
+            <span class="picker-title">FlowSnap Smart Layouts</span>
+            <span class="picker-badge">Release to Snap</span>
+          </div>
+
+          <div class="picker-templates-grid">
+            <!-- Template 1: Two Columns Equal (50 / 50) -->
+            <div class="template-card" data-template-name="2 Columns (50/50)">
+              <div class="template-preview">
+                <div class="snap-zone-btn" data-zone-id="two-col-left" data-left="0" data-top="0" data-width="50" data-height="100" data-label="Left 50%"></div>
+                <div class="snap-zone-btn" data-zone-id="two-col-right" data-left="50" data-top="0" data-width="50" data-height="100" data-label="Right 50%"></div>
+              </div>
+              <span class="template-label">50 / 50</span>
+            </div>
+
+            <!-- Template 2: Two Columns Asymmetric (70 / 30) - PROPORTIONAL FIX -->
+            <div class="template-card" data-template-name="2 Columns (70/30)">
+              <div class="template-preview preview-70-30">
+                <div class="snap-zone-btn zone-70" data-zone-id="two-col-asym-left" data-left="0" data-top="0" data-width="70" data-height="100" data-label="Left 70%"></div>
+                <div class="snap-zone-btn zone-30" data-zone-id="two-col-asym-right" data-left="70" data-top="0" data-width="30" data-height="100" data-label="Right 30%"></div>
+              </div>
+              <span class="template-label">70 / 30</span>
+            </div>
+
+            <!-- Template 3: Three Columns (25 / 50 / 25) - PROPORTIONAL FIX -->
+            <div class="template-card" data-template-name="3 Columns (25/50/25)">
+              <div class="template-preview preview-25-50-25">
+                <div class="snap-zone-btn zone-25" data-zone-id="three-col-left" data-left="0" data-top="0" data-width="25" data-height="100" data-label="Left 25%"></div>
+                <div class="snap-zone-btn zone-50" data-zone-id="three-col-center" data-left="25" data-top="0" data-width="50" data-height="100" data-label="Center 50%"></div>
+                <div class="snap-zone-btn zone-25" data-zone-id="three-col-right" data-left="75" data-top="0" data-width="25" data-height="100" data-label="Right 25%"></div>
+              </div>
+              <span class="template-label">25 / 50 / 25</span>
+            </div>
+
+            <!-- Template 4: Four Quarters (25% each) -->
+            <div class="template-card" data-template-name="4 Quarters">
+              <div class="template-preview grid-quarters">
+                <div class="snap-zone-btn" data-zone-id="quarter-top-left" data-left="0" data-top="0" data-width="50" data-height="50" data-label="Top Left 25%"></div>
+                <div class="snap-zone-btn" data-zone-id="quarter-top-right" data-left="50" data-top="0" data-width="50" data-height="50" data-label="Top Right 25%"></div>
+                <div class="snap-zone-btn" data-zone-id="quarter-bottom-left" data-left="0" data-top="50" data-width="50" data-height="50" data-label="Bottom Left 25%"></div>
+                <div class="snap-zone-btn" data-zone-id="quarter-bottom-right" data-left="50" data-top="50" data-width="50" data-height="50" data-label="Bottom Right 25%"></div>
+              </div>
+              <span class="template-label">4 Corners</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Translucent Liquid Glass HUD Snap Preview Overlay -->
+        <div class="hud-snap-preview" id="hud-snap-preview" aria-hidden="true">
+          <div class="hud-preview-content">
+            <span class="hud-preview-badge" id="hud-preview-badge">Left 50%</span>
+          </div>
+        </div>
+
+        <!-- WINDOW 1: Mini Code Editor (VS Code) -->
+        <div class="mock-window active-window" id="mock-window-code" data-window-name="SnapEngine.swift">
+          <div class="mock-titlebar" id="titlebar-code" title="Drag to move SnapEngine.swift">
+            <div class="traffic-lights">
+              <button type="button" class="traffic-light red" data-win-action="close" aria-label="Close window" title="Close window"></button>
+              <button type="button" class="traffic-light yellow" data-win-action="minimize" aria-label="Minimize window" title="Minimize to dock"></button>
+              <button type="button" class="traffic-light green" data-win-action="maximize" aria-label="Toggle maximize" title="Toggle maximize"></button>
+            </div>
+            <div class="titlebar-info">
+              <svg class="file-icon" viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
+                <path d="M4 1.5A1.5 1.5 0 0 0 2.5 3v10A1.5 1.5 0 0 0 4 14.5h8a1.5 1.5 0 0 0 1.5-1.5V6L9 1.5H4zm5 1V5a1 1 0 0 0 1 1h2.5L9 2.5z" />
+              </svg>
+              <span class="titlebar-text">SnapEngine.swift</span>
+            </div>
+            <div class="snap-status-badge">
+              <span class="status-pulse-dot"></span>
+              <span class="status-label status-label-code">Zone: Free Float</span>
+            </div>
+          </div>
+
+          <div class="mock-code-body">
+            <div class="code-line-numbers">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+              <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <pre class="code-content"><code><span class="token-comment">// FlowSnap Core Snap Engine</span>
+<span class="token-keyword">import</span> <span class="token-type">Cocoa</span>
+
+<span class="token-attr">@MainActor</span>
+<span class="token-keyword">public struct</span> <span class="token-type">SnapEngine</span> &#123;
+    <span class="token-keyword">public static let</span> shared = <span class="token-type">SnapEngine</span>()
+    <span class="token-keyword">public func</span> <span class="token-func">snapWindow</span>(to zone: <span class="token-type">LayoutZone</span>) <span class="token-keyword">async</span> &#123;
+        <span class="token-keyword">let</span> frame = zone.<span class="token-func">computeGeometry</span>(for: activeDisplay)
+        <span class="token-keyword">await</span> <span class="token-type">WindowBridge</span>.<span class="token-func">animateTo</span>(frame, spring: .macOSDefault)
+    &#125;
+&#125;</code></pre>
+          </div>
+          <div class="mock-window-footer">
+            <span class="footer-tag">Swift 6.0</span>
+            <span class="footer-tag highlight">PID: 4092</span>
+          </div>
+        </div>
+
+        <!-- WINDOW 2: macOS Terminal (flowsnap-cli) -->
+        <div class="mock-window" id="mock-window-terminal" data-window-name="Terminal — zsh">
+          <div class="mock-titlebar" id="titlebar-terminal" title="Drag to move Terminal">
+            <div class="traffic-lights">
+              <button type="button" class="traffic-light red" data-win-action="close" aria-label="Close window" title="Close window"></button>
+              <button type="button" class="traffic-light yellow" data-win-action="minimize" aria-label="Minimize window" title="Minimize to dock"></button>
+              <button type="button" class="traffic-light green" data-win-action="maximize" aria-label="Toggle maximize" title="Toggle maximize"></button>
+            </div>
+            <div class="titlebar-info">
+              <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" class="terminal-mini-icon">
+                <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm5.854 4.146a.5.5 0 0 0-.708.708L7.293 9 5.146 11.146a.5.5 0 0 0 .708.708l2.5-2.5a.5.5 0 0 0 0-.708l-2.5-2.5zM9 11.5a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H9z" />
+              </svg>
+              <span class="titlebar-text">vutuanhau@MacBook-Pro: ~ (zsh)</span>
+            </div>
+            <div class="snap-status-badge">
+              <span class="status-pulse-dot terminal-pulse"></span>
+              <span class="status-label status-label-terminal">Zone: Free Float</span>
+            </div>
+          </div>
+
+          <div class="mock-terminal-body">
+            <div class="terminal-line"><span class="t-prompt">➜</span> <span class="t-dir">~</span> <span class="t-cmd">flowsnap status</span></div>
+            <div class="terminal-line t-output"><span class="t-green">✔</span> Daemon: Active (Zero Private APIs)</div>
+            <div class="terminal-line t-output"><span class="t-green">✔</span> Topology: 2 Displays • ProMotion 120Hz</div>
+            <div class="terminal-line t-output"><span class="t-blue">ℹ</span> Snap Zones: 4 Templates Loaded (70/30 active)</div>
+            <div class="terminal-line"><span class="t-prompt">➜</span> <span class="t-dir">~</span> <span class="t-cursor">_</span></div>
+          </div>
+          <div class="mock-window-footer">
+            <span class="footer-tag">zsh 5.9</span>
+            <span class="footer-tag highlight">CPU: 0.0%</span>
+          </div>
+        </div>
+
+        <!-- Adaptive Collinear Split Divider Bar (EPIC 08) -->
+        <div class="desktop-split-divider" id="desktop-split-divider" aria-hidden="true" title="Drag to resize adjacent windows (Double-click for 50/50)">
+          <div class="divider-line"></div>
+          <div class="divider-handle">
+            <svg viewBox="0 0 16 16" width="10" height="10" fill="currentColor">
+              <circle cx="5.5" cy="3" r="1.2" />
+              <circle cx="10.5" cy="3" r="1.2" />
+              <circle cx="5.5" cy="8" r="1.2" />
+              <circle cx="10.5" cy="8" r="1.2" />
+              <circle cx="5.5" cy="13" r="1.2" />
+              <circle cx="10.5" cy="13" r="1.2" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Virtual macOS Dock -->
+      <footer class="mac-dock-wrapper">
+        <div class="mac-dock">
+          <!-- Finder -->
+          <div class="dock-item" id="dock-finder" title="Finder">
+            <div class="dock-icon finder-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="3" width="18" height="18" rx="4" />
+                <path d="M3 11c5 0 6 3 9 3s4-3 9-3" />
+                <circle cx="8" cy="8" r="1" fill="currentColor" />
+                <circle cx="16" cy="8" r="1" fill="currentColor" />
+                <path d="M10 16c1 1 3 1 4 0" stroke-linecap="round" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- FlowSnap (Toggles Menu Bar Popover) -->
+          <div class="dock-item active" id="dock-flowsnap" title="FlowSnap App (Click to open menu)">
+            <div class="dock-icon flowsnap-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                <rect x="3" y="4" width="8.5" height="16" rx="2" fill="#0a84ff" />
+                <rect x="12.5" y="4" width="8.5" height="16" rx="2" fill="#0071e3" fill-opacity="0.6" />
+                <circle cx="7.25" cy="7" r="1" fill="#ffffff" />
+              </svg>
+            </div>
+            <span class="dock-dot"></span>
+          </div>
+
+          <!-- VS Code (Launches/Focuses Code Window) -->
+          <div class="dock-item active" id="dock-vscode" title="VS Code (SnapEngine.swift)">
+            <div class="dock-icon vscode-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#007acc">
+                <path d="M17.5 2.5 7.5 10.5 3 7l-1 1 4.5 4-4.5 4 1 1 4.5-3.5 10 8 4-2V4.5l-4-2zm0 4.5v10l-6-5 6-5z" />
+              </svg>
+            </div>
+            <span class="dock-dot" id="dot-code"></span>
+          </div>
+
+          <!-- Terminal (Launches/Focuses Terminal Window) -->
+          <div class="dock-item active" id="dock-terminal" title="Terminal (flowsnap status)">
+            <div class="dock-icon terminal-icon">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#18181b">
+                <rect x="2" y="4" width="20" height="16" rx="3" fill="#1f1f23" stroke="rgba(255,255,255,0.2)" />
+                <path d="m6 9 3 3-3 3M11 15h6" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" />
+              </svg>
+            </div>
+            <span class="dock-dot" id="dot-terminal"></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<style>
+  .simulator-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    user-select: none;
+  }
+
+  .sandbox-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+  }
+
+  .toolbar-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .hint-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background: var(--accent-blue);
+    box-shadow: 0 0 8px var(--accent-blue);
+    animation: pulseGlow 2s infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.6; transform: scale(0.95); }
+    50% { opacity: 1; transform: scale(1.15); }
+  }
+
+  .toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .quick-chips {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .chip-btn, .reset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-spring);
+  }
+
+  .reset-btn {
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+  }
+
+  .chip-btn:hover, .reset-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-color);
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
+  }
+
+  .perspective-stage {
+    perspective: 1200px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .mac-desktop-frame {
+    position: relative;
+    width: 100%;
+    max-width: 1080px;
+    aspect-ratio: 16 / 10;
+    min-height: 490px;
+    max-height: 640px;
+    background: radial-gradient(circle at 50% 20%, #161824 0%, #0c0d12 60%, #07070a 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow:
+      0 30px 60px -12px rgba(0, 0, 0, 0.65),
+      0 0 0 1px rgba(255, 255, 255, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    overflow: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.25s var(--ease-spring);
+  }
+
+  .bezel-glare {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+    z-index: 50;
+    transition: background 0.15s ease-out;
+  }
+
+  /* macOS Menu Bar */
+  .mac-menubar {
+    position: relative;
+    height: 28px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    background: rgba(18, 18, 22, 0.86);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.85);
+    z-index: 45;
+  }
+
+  .menubar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .apple-logo { color: rgba(255, 255, 255, 0.95); }
+  .app-name { font-weight: 600; }
+  .dummy-menus { display: flex; align-items: center; gap: 10px; }
+  .menu-item { color: rgba(255, 255, 255, 0.7); font-size: 0.72rem; cursor: pointer; }
+  .menu-item:hover { color: #fff; }
+
+  .menubar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .status-icon {
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .fs-status-icon {
+    position: relative;
+    padding: 3px 6px;
+    border-radius: 4px;
+    transition: background 0.15s ease;
+  }
+
+  .fs-status-icon:hover, .fs-status-icon.active {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .status-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 4px;
+    height: 4px;
+    background: #10b981;
+    border-radius: var(--radius-full);
+  }
+
+  .virtual-clock {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+  }
+
+  /* FlowSnap Menu Bar Popover */
+  .fs-menubar-popover {
+    position: absolute;
+    top: 32px;
+    right: 48px;
+    width: 250px;
+    background: rgba(24, 24, 30, 0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
+    padding: 12px;
+    z-index: 60;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px) scale(0.96);
+    transition: all 0.18s var(--ease-spring);
+  }
+
+  .fs-menubar-popover.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+  }
+
+  .popover-header { margin-bottom: 10px; }
+  .popover-title-row { display: flex; justify-content: space-between; align-items: center; }
+  .popover-brand { font-size: 0.78rem; font-weight: 700; color: #fff; }
+  .popover-badge { font-size: 0.65rem; color: var(--accent-blue-vibrant); background: rgba(10, 132, 255, 0.15); padding: 1px 6px; border-radius: 10px; }
+  .popover-focus-label { font-size: 0.68rem; color: rgba(255, 255, 255, 0.6); display: block; margin-top: 2px; }
+  .popover-focus-label strong { color: rgba(255, 255, 255, 0.9); }
+
+  .popover-section-title {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 6px;
+  }
+
+  .popover-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .popover-grid-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.62rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .popover-grid-btn:hover {
+    background: rgba(10, 132, 255, 0.25);
+    border-color: var(--accent-blue);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  .tile-icon {
+    width: 22px;
+    height: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    position: relative;
+  }
+
+  .tile-icon.split-left::after { content: ''; position: absolute; left: 0; top: 0; width: 50%; height: 100%; background: var(--accent-blue); }
+  .tile-icon.split-right::after { content: ''; position: absolute; right: 0; top: 0; width: 50%; height: 100%; background: var(--accent-blue); }
+  .tile-icon.split-70::after { content: ''; position: absolute; left: 0; top: 0; width: 70%; height: 100%; background: var(--accent-blue); }
+  .tile-icon.split-30::after { content: ''; position: absolute; right: 0; top: 0; width: 30%; height: 100%; background: var(--accent-blue); }
+  .tile-icon.split-center::after { content: ''; position: absolute; left: 25%; top: 0; width: 50%; height: 100%; background: var(--accent-blue); }
+  .tile-icon.split-max::after { content: ''; position: absolute; inset: 0; background: var(--accent-blue); }
+
+  .popover-divider { height: 1px; background: rgba(255, 255, 255, 0.08); margin: 10px 0; }
+
+  .popover-presets { display: flex; flex-direction: column; gap: 4px; }
+  .preset-row-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    color: #fff;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+  }
+
+  .preset-row-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .preset-info { display: flex; flex-direction: column; }
+  .preset-name { font-size: 0.68rem; font-weight: 500; }
+  .preset-desc { font-size: 0.58rem; color: rgba(255, 255, 255, 0.5); }
+  .preset-keycap { font-size: 0.65rem; font-family: var(--font-mono); background: rgba(0, 0, 0, 0.4); padding: 2px 5px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.15); color: rgba(255, 255, 255, 0.7); }
+
+  /* Desktop Usable Workspace */
+  .mac-workspace {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 28px - 56px);
+    overflow: hidden;
+  }
+
+  /* Top-Edge Snap Picker */
+  .snap-picker {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -120%) scale(0.95);
+    background: rgba(22, 22, 28, 0.94);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 0 0 14px 14px;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+    padding: 10px 14px;
+    z-index: 45;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.22s var(--ease-spring), opacity 0.18s ease;
+  }
+
+  .snap-picker.is-visible {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+
+  .picker-title { font-size: 0.72rem; font-weight: 600; color: #fff; }
+  .picker-badge { font-size: 0.65rem; color: var(--accent-blue-vibrant); background: rgba(10, 132, 255, 0.14); padding: 2px 6px; border-radius: var(--radius-full); }
+
+  .picker-templates-grid { display: flex; align-items: center; gap: 10px; }
+  .template-card { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+
+  .template-preview {
+    display: flex;
+    gap: 3px;
+    width: 60px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 3px;
+  }
+
+  .template-preview.preview-70-30 .zone-70 { flex: 7; }
+  .template-preview.preview-70-30 .zone-30 { flex: 3; }
+
+  .template-preview.preview-25-50-25 .zone-25 { flex: 1; }
+  .template-preview.preview-25-50-25 .zone-50 { flex: 2; }
+
+  .template-preview.grid-quarters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 3px;
+  }
+
+  .snap-zone-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .snap-zone-btn:hover, .snap-zone-btn.is-active {
+    background: var(--accent-blue);
+    box-shadow: 0 0 8px rgba(10, 132, 255, 0.7);
+    transform: scale(1.04);
+  }
+
+  .template-label { font-size: 0.65rem; color: rgba(255, 255, 255, 0.6); font-weight: 500; }
+
+  /* Liquid Glass HUD Snap Preview */
+  .hud-snap-preview {
+    position: absolute;
+    background: var(--liquid-glass-bg);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid var(--accent-blue);
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(10, 132, 255, 0.3);
+    pointer-events: none;
+    z-index: 25;
+    opacity: 0;
+    transform: scale(0.98);
+    transition: left 0.15s var(--ease-spring), top 0.15s var(--ease-spring), width 0.15s var(--ease-spring), height 0.15s var(--ease-spring), opacity 0.15s ease;
+  }
+
+  .hud-snap-preview.is-active { opacity: 1; transform: scale(1); }
+  .hud-preview-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  .hud-preview-badge { padding: 4px 10px; background: rgba(10, 132, 255, 0.3); border: 1px solid rgba(10, 132, 255, 0.6); border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: #fff; }
+
+  /* Mock Windows (Shared Window Styling) */
+  .mock-window {
+    position: absolute;
+    background: rgba(22, 22, 28, 0.94);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 30;
+    transition: left 0.22s var(--ease-spring), top 0.22s var(--ease-spring), width 0.22s var(--ease-spring), height 0.22s var(--ease-spring), box-shadow 0.2s ease, opacity 0.2s ease;
+  }
+
+  .mock-window.active-window {
+    z-index: 35;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  }
+
+  .mock-window.is-dragging {
+    transition: none !important;
+    cursor: grabbing;
+    z-index: 40 !important;
+    box-shadow: 0 35px 70px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(10, 132, 255, 0.5);
+  }
+
+  .mock-window.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.9);
+  }
+
+  /* Specific Window Positions */
+  #mock-window-code {
+    left: 8%;
+    top: 10%;
+    width: 54%;
+    height: 70%;
+  }
+
+  #mock-window-terminal {
+    left: 48%;
+    top: 22%;
+    width: 46%;
+    height: 62%;
+  }
+
+  .mock-titlebar {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    background: rgba(28, 28, 36, 0.95);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+
+  .traffic-lights { display: flex; align-items: center; gap: 7px; }
+  .traffic-light { width: 11px; height: 11px; border-radius: 50%; border: none; padding: 0; cursor: pointer; transition: opacity 0.15s ease; }
+  .traffic-light:hover { opacity: 0.8; }
+  .traffic-light.red { background: #ff5f56; }
+  .traffic-light.yellow { background: #ffbd2e; }
+  .traffic-light.green { background: #27c93f; }
+
+  .titlebar-info { display: flex; align-items: center; gap: 6px; color: rgba(255, 255, 255, 0.85); font-size: 0.75rem; font-weight: 500; }
+  .file-icon { color: var(--accent-swift); }
+  .terminal-mini-icon { color: #10b981; }
+
+  .snap-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .status-pulse-dot { width: 5px; height: 5px; background: #10b981; border-radius: 50%; }
+  .terminal-pulse { background: #0a84ff; }
+
+  /* Window Bodies */
+  .mock-code-body, .mock-terminal-body {
+    flex: 1;
+    display: flex;
+    background: #0f0f13;
+    padding: 12px;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.5;
+  }
+
+  .code-line-numbers {
+    display: flex;
+    flex-direction: column;
+    color: rgba(255, 255, 255, 0.25);
+    padding-right: 12px;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    text-align: right;
+  }
+
+  .code-content { flex: 1; padding-left: 12px; margin: 0; color: #e4e4e7; overflow-x: auto; }
+  .token-comment { color: #6b7280; }
+  .token-keyword { color: #f472b6; font-weight: 600; }
+  .token-type { color: #38bdf8; }
+  .token-attr { color: #fbbf24; }
+  .token-func { color: #a78bfa; }
+
+  .mock-terminal-body {
+    flex-direction: column;
+    background: #0b0c10;
+    gap: 4px;
+    color: #e5e7eb;
+  }
+
+  .terminal-line { display: flex; align-items: center; gap: 6px; }
+  .t-prompt { color: #10b981; font-weight: 700; }
+  .t-dir { color: #38bdf8; }
+  .t-cmd { color: #f3f4f6; }
+  .t-output { font-size: 0.68rem; color: #9ca3af; margin-left: 12px; }
+  .t-green { color: #10b981; }
+  .t-blue { color: #60a5fa; }
+  .t-cursor { animation: blink 1s infinite; color: #10b981; }
+  @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+  .mock-window-footer {
+    height: 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 12px;
+    background: rgba(18, 18, 22, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .footer-tag.highlight { color: var(--accent-blue-vibrant); }
+
+  /* Virtual macOS Dock */
+  .mac-dock-wrapper {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 40;
+  }
+
+  .mac-dock {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    background: rgba(24, 24, 30, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+    pointer-events: auto;
+  }
+
+  .dock-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.15s var(--ease-spring);
+  }
+
+  .dock-item:hover { transform: scale(1.18) translateY(-4px); }
+  .dock-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .dock-dot { position: absolute; bottom: -4px; width: 4px; height: 4px; background: rgba(255, 255, 255, 0.85); border-radius: 50%; }
+
+  /* Adaptive Collinear Split Divider Bar (EPIC 08) */
+  .desktop-split-divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    margin-left: -10px;
+    z-index: 45;
+    cursor: col-resize;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+    user-select: none;
+    transition: left 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .desktop-split-divider.is-visible {
+    display: flex;
+  }
+
+  .desktop-split-divider.is-dragging {
+    transition: none;
+  }
+
+  .divider-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 1px;
+    transition: width var(--duration-fast), background var(--duration-fast), box-shadow var(--duration-fast);
+  }
+
+  .desktop-split-divider:hover .divider-line,
+  .desktop-split-divider.is-dragging .divider-line {
+    width: 3px;
+    background: var(--accent-blue);
+    box-shadow: 0 0 8px rgba(10, 132, 255, 0.6);
+  }
+
+  .divider-handle {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 38px;
+    border-radius: var(--radius-full);
+    background: rgba(24, 24, 27, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    transition: all var(--duration-fast) var(--ease-spring);
+  }
+
+  .desktop-split-divider:hover .divider-handle,
+  .desktop-split-divider.is-dragging .divider-handle {
+    transform: scale(1.1);
+    background: var(--surface-elevated);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    box-shadow: 0 0 12px rgba(10, 132, 255, 0.5);
+  }
+
+  @media (max-width: 768px) {
+    .mac-desktop-frame { aspect-ratio: auto; height: 470px; }
+    .dummy-menus { display: none; }
+    .quick-chips { overflow-x: auto; width: 100%; }
+    .toolbar-actions { width: 100%; justify-content: space-between; }
+    #mock-window-terminal { display: none; }
+    #mock-window-code { left: 5%; width: 90%; }
+    .desktop-split-divider { display: none !important; }
+  }
+</style>
+
+<script src="../scripts/desktop-simulator.ts"></script>

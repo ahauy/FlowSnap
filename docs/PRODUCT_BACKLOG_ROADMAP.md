@@ -884,12 +884,16 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
 
 - **Vai trò:** Là một người dùng quan tâm đến FlowSnap, tôi muốn tương tác kéo thử cửa sổ ảo ngay trên trình duyệt để cảm nhận độ mượt và cơ chế snap độc bản trước khi tải app về máy.
 - **Acceptance Criteria (AC):**
-  - [ ] Khung màn hình macOS ảo Liquid Retina (tỷ lệ 16:10) với Menu Bar và Dock mô phỏng.
-  - [ ] Cửa sổ ảo (Mock Window) hỗ trợ kéo thả tự do bằng chuột/cảm ứng đa điểm (`PointerEvents`).
-  - [ ] **Top-Edge Layout Picker Trigger:** Khi kéo cửa sổ ảo chạm vùng đỉnh màn hình, thanh layout picker trượt xuống mượt mà; rê chuột vào ô layout và nhả chuột sẽ snap cửa sổ tức thì.
-  - [ ] **Real-time Translucent HUD Preview:** Khi kéo sát các mép cạnh (Trái/Phải/Góc), lớp phủ kính mờ hiện ra đón trước vị trí snap với animation spring.
-  - [ ] Tích hợp hiệu ứng 3D perspective tilt hoặc Three.js canvas nhẹ nhàng khi di chuột, tự động dừng animation loop (IntersectionObserver) khi cuộn khỏi màn hình để bảo toàn tài nguyên CPU/GPU (0.0% idle).
-  - [ ] Nút Reset Sandbox để khôi phục trạng thái ban đầu của cửa sổ bất cứ lúc nào.
+  - [x] Khung màn hình macOS ảo Liquid Retina (tỷ lệ 16:10) với Menu Bar và Dock mô phỏng.
+  - [x] Cửa sổ ảo (Mock Window) hỗ trợ kéo thả tự do bằng chuột/cảm ứng đa điểm (`PointerEvents`).
+  - [x] **Top-Edge Layout Picker Trigger:** Khi kéo cửa sổ ảo chạm vùng đỉnh màn hình, thanh layout picker trượt xuống mượt mà; rê chuột vào ô layout và nhả chuột sẽ snap cửa sổ tức thì.
+  - [x] **Real-time Translucent HUD Preview:** Khi kéo sát các mép cạnh (Trái/Phải/Góc), lớp phủ kính mờ hiện ra đón trước vị trí snap với animation spring.
+  - [x] Tích hợp hiệu ứng 3D perspective tilt nhẹ nhàng khi di chuột, tự động dừng animation loop (IntersectionObserver) khi cuộn khỏi màn hình để bảo toàn tài nguyên CPU/GPU (0.0% idle).
+  - [x] Nút Reset Sandbox để khôi phục trạng thái ban đầu của cửa sổ bất cứ lúc nào.
+  - **Deliverables:**
+    - Feature Doc: `docs/features/web-desktop-sandbox/README.md`
+    - End-User Guide: `docs/user-guides/web-desktop-sandbox.md`
+    - Test Plan: `.specify/features/web-desktop-sandbox/test-plan.md`
 
 ##### US-WEB-027: Bento Grid Features Showcase, Proof & Interactive Shortcut Matrix
 
@@ -969,7 +973,7 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
 
 [ Sprint 8: Web Distribution & 3D Interactive Landing Page (Active) ]  ──► [ IN PROGRESS 🔄 ]
   ├── [x] US-WEB-025: Astro Baseline, Shadcn-Inspired Design Tokens (DESIGN.md) & Base Layout ✅
-  ├── [ ] US-WEB-026: 3D/Interactive macOS Desktop Simulator (Three.js & Pointer Drag Sandbox)
+  ├── [x] US-WEB-026: 3D/Interactive macOS Desktop Simulator (Hardware CSS 3D & Pointer Drag Sandbox) ✅
   ├── [ ] US-WEB-027: Bento Grid Features Showcase, Proof & Interactive Shortcuts Matrix
   ├── [ ] US-WEB-028: Download Hub, 1-Click Terminal Copy, DMG & Gatekeeper / Privacy Manifesto
   └── [ ] US-WEB-029: SEO, OpenGraph/Twitter Cards, JSON-LD Schema & GitHub Pages CI/CD

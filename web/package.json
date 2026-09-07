@@ -9,6 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "test": "node tests/desktop-simulator.test.mjs",
     "astro": "astro"
   },
   "dependencies": {
