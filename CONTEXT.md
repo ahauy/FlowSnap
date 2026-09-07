@@ -125,6 +125,9 @@
 | **LaunchAtLoginManaging** | Sendable protocol abstracting SMAppService login item registration and status query | "Launch at login service interface" | `LaunchAtLoginManaging` | US-SNAP-024, Domain |
 | **LaunchAtLoginStatus** | Domain status enum (.enabled, .notRegistered, .requiresApproval, .notFound, .error) | "Login item state model" | `LaunchAtLoginStatus` | US-SNAP-024, Domain |
 | **SystemLaunchAtLoginManager** | macOS 14+ implementation bridging SMAppService.mainApp to FlowSnap | "System login item service" | `SystemLaunchAtLoginManager` | US-SNAP-024, Infrastructure |
+| **BentoGridShowcase** | 6-card asymmetric grid highlighting FlowSnap core pillars with native SVG micro-illustrations | "Bento features showcase component" | `BentoGridShowcase` | US-WEB-027, Web / UI |
+| **MetricsProofRibbon** | Verifiable technical proof strip showcasing Swift 6, 0 Private APIs, 470+ Tests, < 1ms math, 60fps | "Metrics proof banner" | `MetricsProofRibbon` | US-WEB-027, Web / UI |
+| **ShortcutMatrix** | Interactive keyboard shortcut explorer with real-time category filter, live search, and 1-click copy | "Keyboard shortcuts table/matrix" | `ShortcutMatrix` | US-WEB-027, Web / UI |
 
 ## Where to Look
 

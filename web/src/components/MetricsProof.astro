@@ -1,0 +1,153 @@
+---
+import { metricsProof } from '../data/metrics-data';
+---
+
+<div id="metrics-proof-root" class="metrics-ribbon" role="region" aria-label="Technical Verification Metrics">
+  <div class="metrics-grid">
+    {metricsProof.map((item) => (
+      <div class="metric-card" data-metric-id={item.id}>
+        <div class="metric-icon-wrap">
+          {item.icon === 'concurrency' && (
+            <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
+          )}
+          {item.icon === 'shield' && (
+            <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+          )}
+          {item.icon === 'check' && (
+            <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m9 11 3 3L22 4" />
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+            </svg>
+          )}
+          {item.icon === 'speed' && (
+            <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+          )}
+          {item.icon === 'fps' && (
+            <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          )}
+        </div>
+        <div class="metric-text-group">
+          <div class="metric-value">{item.value}</div>
+          <div class="metric-label">{item.label}</div>
+          <div class="metric-sublabel">{item.sublabel}</div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .metrics-ribbon {
+    width: 100%;
+    margin-bottom: 32px;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+
+  .metric-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px 18px;
+    background: var(--color-surface, #ffffff);
+    border: 1px solid var(--color-border, #e4e4e7);
+    border-radius: var(--radius-lg, 14px);
+    box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+    transition: transform var(--transition-fast, 150ms ease), border-color var(--transition-fast, 150ms ease), box-shadow var(--transition-fast, 150ms ease);
+  }
+
+  .metric-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(10, 132, 255, 0.3);
+    box-shadow: var(--shadow-md, 0 4px 12px -2px rgba(0, 0, 0, 0.08));
+  }
+
+  .metric-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md, 10px);
+    background: var(--color-surface-elevated, #f4f4f5);
+    border: 1px solid var(--color-border, #e4e4e7);
+    color: var(--brand-apple-blue-vibrant, #0071e3);
+    margin-bottom: 14px;
+  }
+
+  .metric-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .metric-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .metric-value {
+    font-family: var(--font-display);
+    font-size: var(--font-size-2xl, 30px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--color-text-primary, #09090b);
+    line-height: 1.1;
+  }
+
+  .metric-label {
+    font-family: var(--font-display);
+    font-size: var(--font-size-sm, 14px);
+    font-weight: 600;
+    color: var(--color-text-primary, #09090b);
+    line-height: 1.3;
+  }
+
+  .metric-sublabel {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs, 12px);
+    color: var(--color-text-tertiary, #71717a);
+    line-height: 1.4;
+    margin-top: 2px;
+  }
+
+  /* Responsive Breakpoints */
+  @media (max-width: 1024px) {
+    .metrics-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .metrics-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .metric-card {
+      padding: 16px 14px;
+    }
+    .metric-value {
+      font-size: var(--font-size-xl);
+    }
+  }
+
+  @media (max-width: 420px) {
+    .metrics-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -12,20 +12,40 @@
   --border-subtle: #f4f4f5;
   --border-focus: #0071e3;
 
+  /* Semantic Aliases for Universal Compatibility */
+  --color-bg: var(--bg-color);
+  --color-surface: var(--surface-color);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border: var(--border-color);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-focus: var(--border-focus);
+
   /* Text hierarchy */
   --text-primary: #09090b;
   --text-secondary: #52525b;
   --text-tertiary: #71717a;
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
 
   /* Brand & Accents */
   --accent-blue: #0071e3;
   --accent-blue-vibrant: #0a84ff;
   --accent-swift: #fa7343;
+  --brand-apple-blue: var(--accent-blue);
+  --brand-apple-blue-vibrant: var(--accent-blue-vibrant);
 
   /* Liquid Glass HUD */
   --liquid-glass-bg: rgba(0, 113, 227, 0.12);
   --liquid-glass-border: rgba(0, 113, 227, 0.4);
   --glass-blur: blur(20px);
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md:
+    0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
   /* Typography Stack */
   --font-display:
@@ -33,6 +53,14 @@
   --font-body:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
   --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* Typography Font Sizes */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  --font-size-2xl: 30px;
 
   /* Radii */
   --radius-sm: 6px;
@@ -45,6 +73,9 @@
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --duration-fast: 150ms;
   --duration-normal: 250ms;
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-medium: 250ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-theme="dark"] {
@@ -56,11 +87,24 @@
   --border-subtle: rgba(255, 255, 255, 0.04);
   --border-focus: #0a84ff;
 
+  --color-bg: var(--bg-color);
+  --color-surface: var(--surface-color);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border: var(--border-color);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-focus: var(--border-focus);
+
   --text-primary: #f4f4f5;
   --text-secondary: #a1a1aa;
   --text-tertiary: #71717a;
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
 
   --accent-blue: #0a84ff;
+  --accent-blue-vibrant: #0a84ff;
+  --brand-apple-blue: var(--accent-blue);
+  --brand-apple-blue-vibrant: var(--accent-blue-vibrant);
   --liquid-glass-bg: rgba(10, 132, 255, 0.18);
   --liquid-glass-border: rgba(10, 132, 255, 0.5);
 }
@@ -75,11 +119,24 @@
     --border-subtle: rgba(255, 255, 255, 0.04);
     --border-focus: #0a84ff;
 
+    --color-bg: var(--bg-color);
+    --color-surface: var(--surface-color);
+    --color-surface-elevated: var(--surface-elevated);
+    --color-border: var(--border-color);
+    --color-border-subtle: var(--border-subtle);
+    --color-border-focus: var(--border-focus);
+
     --text-primary: #f4f4f5;
     --text-secondary: #a1a1aa;
     --text-tertiary: #71717a;
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-text-tertiary: var(--text-tertiary);
 
     --accent-blue: #0a84ff;
+    --accent-blue-vibrant: #0a84ff;
+    --brand-apple-blue: var(--accent-blue);
+    --brand-apple-blue-vibrant: var(--accent-blue-vibrant);
     --liquid-glass-bg: rgba(10, 132, 255, 0.18);
     --liquid-glass-border: rgba(10, 132, 255, 0.5);
   }
@@ -91,6 +148,10 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 html {
