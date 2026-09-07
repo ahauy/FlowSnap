@@ -3,7 +3,7 @@
  * Traces to: .specify/features/web-bento-shortcuts/test-plan.md (TC-001 through TC-007)
  */
 
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert';
@@ -12,11 +12,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const distPath = resolve(__dirname, '../dist/index.html');
+const astroDir = resolve(__dirname, '../dist/_astro');
 
 console.log('🧪 Starting Bento Grid & Shortcut Matrix Test Suite...\n');
 
 assert.ok(existsSync(distPath), 'Build artifact dist/index.html must exist before running test assertions');
 const html = readFileSync(distPath, 'utf8');
+const cssFiles = existsSync(astroDir)
+  ? readdirSync(astroDir).filter((f) => f.endsWith('.css')).map((f) => readFileSync(resolve(astroDir, f), 'utf8')).join('\n')
+  : '';
 
 // TC-001: 6 Bento Cards & Asymmetric Grid Structure
 console.log('Checking TC-001: 6 Bento Cards & Asymmetric Grid Structure...');
@@ -89,5 +93,12 @@ assert.ok(!html.includes('from-purple-500'), 'Must not include unrequested gener
 assert.ok(!html.includes('from-pink-500'), 'Must not include unrequested generic pink gradients');
 assert.ok(html.includes('keycap-pill'), 'Authentic keycap-pill styling must be present');
 console.log('✅ TC-007 Passed!\n');
+
+// TC-008: CSS [hidden] Enforcement & Search Normalization
+console.log('Checking TC-008: CSS [hidden] Enforcement & Search Normalization...');
+assert.ok(cssFiles.includes('[hidden]') || html.includes('[hidden]'), 'Global [hidden] reset rule must be defined');
+assert.ok(cssFiles.includes('display:none!important') || cssFiles.includes('display: none !important'), 'Enforced display none for hidden elements must be compiled');
+assert.ok(html.includes('data-search-text='), 'Search index data attribute must be present on shortcut cards');
+console.log('✅ TC-008 Passed!\n');
 
 console.log('🎉 All Bento Grid & Shortcut Matrix Tests Passed Successfully!\n');

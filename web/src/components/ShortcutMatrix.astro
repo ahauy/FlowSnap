@@ -61,7 +61,7 @@ const counts = {
         class="shortcut-card"
         data-shortcut-id={item.id}
         data-category={item.category}
-        data-search-text={`${item.action.toLowerCase()} ${item.displayString.toLowerCase()} ${item.description.toLowerCase()}`}
+        data-search-text={`${item.action} ${item.displayString} ${item.description} ${item.keys.join(' ')} ${item.category} ${item.badge || ''}`}
         data-copy-shortcut={item.displayString}
       >
         <div class="shortcut-info">
@@ -119,6 +119,15 @@ const counts = {
 </div>
 
 <script>
+  function normalizeSearch(str: string): string {
+    return str
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .trim();
+  }
+
   function setupShortcutMatrix() {
     const root = document.getElementById('shortcut-matrix-root');
     if (!root) return;
@@ -138,28 +147,39 @@ const counts = {
     function applyFilter() {
       let visibleCount = 0;
       const query = currentSearch.trim().toLowerCase();
+      const normQuery = normalizeSearch(query);
 
       cards.forEach((card) => {
         const cat = card.getAttribute('data-category') || '';
-        const text = card.getAttribute('data-search-text') || '';
+        const rawText = (card.getAttribute('data-search-text') || '').toLowerCase();
+        const normText = normalizeSearch(rawText);
 
         const matchCat = currentCategory === 'all' || cat === currentCategory;
-        const matchSearch = query === '' || text.includes(query);
+        const matchSearch =
+          query === '' ||
+          rawText.includes(query) ||
+          (normQuery.length > 0 && normText.includes(normQuery));
 
         if (matchCat && matchSearch) {
           card.hidden = false;
+          card.style.display = 'flex';
           visibleCount++;
         } else {
           card.hidden = true;
+          card.style.display = 'none';
         }
       });
 
       if (emptyState) {
-        emptyState.hidden = visibleCount > 0;
+        const isEmpty = visibleCount === 0;
+        emptyState.hidden = !isEmpty;
+        emptyState.style.display = isEmpty ? 'flex' : 'none';
       }
 
       if (clearBtn && searchInput) {
-        clearBtn.hidden = searchInput.value.length === 0;
+        const hasText = searchInput.value.trim().length > 0;
+        clearBtn.hidden = !hasText;
+        clearBtn.style.display = hasText ? 'flex' : 'none';
       }
     }
 
@@ -182,6 +202,14 @@ const counts = {
       searchInput.addEventListener('input', () => {
         currentSearch = searchInput.value;
         applyFilter();
+      });
+
+      searchInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Escape') {
+          searchInput.value = '';
+          currentSearch = '';
+          applyFilter();
+        }
       });
     }
 
@@ -260,6 +288,9 @@ const counts = {
         copyShortcut(text, btn);
       });
     });
+
+    // Initial run on mount to ensure clean state
+    applyFilter();
   }
 
   if (document.readyState === 'loading') {
@@ -267,6 +298,9 @@ const counts = {
   } else {
     setupShortcutMatrix();
   }
+
+  document.addEventListener('astro:after-swap', setupShortcutMatrix);
+  document.addEventListener('astro:page-load', setupShortcutMatrix);
 </script>
 
 <style>
@@ -411,6 +445,13 @@ const counts = {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 14px;
+  }
+
+  /* Enforce hidden attribute for flex containers */
+  .shortcut-card[hidden],
+  .empty-state-card[hidden],
+  .search-clear-btn[hidden] {
+    display: none !important;
   }
 
   .shortcut-card {
