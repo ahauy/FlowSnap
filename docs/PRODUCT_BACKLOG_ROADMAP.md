@@ -897,11 +897,25 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
 
 ##### US-WEB-027: Bento Grid Features Showcase, Proof & Interactive Shortcut Matrix
 
+- **Slug:** `web-bento-shortcuts`
+- **Effort:** M
+- **Context-budget:** single-session
+- **Priority:** Should-Have (P1)
+- **Depends-on:** `US-WEB-026` ✅
+- **Blocks:** `US-WEB-028`
 - **Vai trò:** Là một power user, tôi muốn tìm hiểu nhanh 6 tính năng đột phá của FlowSnap và tra cứu các tổ hợp phím tắt hỗ trợ.
+- **Mô tả:** Giới thiệu 6 tính năng cốt lõi bằng Bento Grid tương tác kết hợp visual vector/WebP; dải metrics chứng minh chất lượng mã nguồn & hiệu năng thực tế; và bảng tra cứu phím tắt tương tác có lọc theo danh mục kèm mô phỏng keycap chuẩn macOS.
 - **Acceptance Criteria (AC):**
-  - [ ] 6 ô Bento Grid trực quan: Top-Edge Picker, Collinear 2D Resize, Current Space Anchoring, Workspaces & Presets, Quake Scratchpad, Multi-Monitor Topology (sử dụng ảnh WebP tối ưu).
-  - [ ] Dải Metrics Proof: Swift 6 Strict Concurrency, 0 Private APIs, 470+ Unit Tests, < 1ms Snap Math, 60 FPS Divider Resize.
-  - [ ] Bảng tra cứu phím tắt tương tác (Interactive Shortcut Matrix) có bộ lọc theo danh mục (`Cửa sổ`, `Màn hình`, `Workspace`, `Tiện ích`).
+  - [x] 6 ô Bento Grid trực quan: Top-Edge Picker, Collinear 2D Resize, Current Space Anchoring, Workspaces & Presets, Quake Scratchpad, Multi-Monitor Topology (sử dụng vector/WebP tối ưu).
+  - [x] Dải Metrics Proof: Swift 6 Strict Concurrency, 0 Private APIs, 470+ Unit Tests, < 1ms Snap Math, 60 FPS Divider Resize.
+  - [x] Bảng tra cứu phím tắt tương tác (Interactive Shortcut Matrix) có bộ lọc theo danh mục (`Cửa sổ`, `Màn hình`, `Workspace`, `Tiện ích`).
+  - **Deliverables khi [x]:**
+    - Domain Baseline: `.specify/features/web-bento-shortcuts/baseline.md` (SIGNED-OFF v1.0)
+    - Spec & Plan: `.specify/features/web-bento-shortcuts/spec.md`, `plan.md`
+    - Tasks Breakdown: `.specify/features/web-bento-shortcuts/tasks.md`
+    - Technical Docs: `docs/features/web-bento-shortcuts/README.md`
+    - End-User Guide: `docs/user-guides/web-bento-shortcuts.md`
+    - Test Plan: `.specify/features/web-bento-shortcuts/test-plan.md`
 
 ##### US-WEB-028: Distribution Hub, 1-Click Terminal Copy, DMG & Privacy Manifesto
 
@@ -974,7 +988,7 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
 [ Sprint 8: Web Distribution & 3D Interactive Landing Page (Active) ]  ──► [ IN PROGRESS 🔄 ]
   ├── [x] US-WEB-025: Astro Baseline, Shadcn-Inspired Design Tokens (DESIGN.md) & Base Layout ✅
   ├── [x] US-WEB-026: 3D/Interactive macOS Desktop Simulator (Hardware CSS 3D & Pointer Drag Sandbox) ✅
-  ├── [ ] US-WEB-027: Bento Grid Features Showcase, Proof & Interactive Shortcuts Matrix
+  ├── [x] US-WEB-027: Bento Grid Features Showcase, Proof & Interactive Shortcuts Matrix ✅
   ├── [ ] US-WEB-028: Download Hub, 1-Click Terminal Copy, DMG & Gatekeeper / Privacy Manifesto
   └── [ ] US-WEB-029: SEO, OpenGraph/Twitter Cards, JSON-LD Schema & GitHub Pages CI/CD
 

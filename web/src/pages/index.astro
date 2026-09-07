@@ -3,6 +3,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import DesktopSimulator from '../components/DesktopSimulator.astro';
+import MetricsProof from '../components/MetricsProof.astro';
+import BentoGrid from '../components/BentoGrid.astro';
+import ShortcutMatrix from '../components/ShortcutMatrix.astro';
 ---
 
 <BaseLayout
@@ -81,9 +84,8 @@ import DesktopSimulator from '../components/DesktopSimulator.astro';
           <h2 class="section-title">Engineered for Focus & Intent</h2>
           <p class="section-desc">6 breakthrough capabilities bringing Windows 11 elegance to native macOS speed.</p>
         </div>
-        <div class="placeholder-box">
-          <p class="placeholder-text">Bento Grid Feature Showcase arriving in <code>US-WEB-027</code></p>
-        </div>
+        <MetricsProof />
+        <BentoGrid />
       </section>
 
       <section id="shortcuts" class="section-card">
@@ -92,9 +94,7 @@ import DesktopSimulator from '../components/DesktopSimulator.astro';
           <h2 class="section-title">Keyboard Shortcuts Matrix</h2>
           <p class="section-desc">Full spectrum keyboard navigation for windows, multi-display throws, and presets.</p>
         </div>
-        <div class="placeholder-box">
-          <p class="placeholder-text">Interactive Shortcut Matrix arriving in <code>US-WEB-027</code></p>
-        </div>
+        <ShortcutMatrix />
       </section>
 
       <section id="download" class="section-card">
