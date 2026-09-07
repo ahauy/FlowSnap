@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import DesktopSimulator from '../components/DesktopSimulator.astro';
 ---
 
 <BaseLayout
@@ -69,15 +70,8 @@ import Footer from '../components/Footer.astro';
           <h2 class="section-title">3D Interactive macOS Desktop Simulator</h2>
           <p class="section-desc">Drag windows, test top-edge snap layouts, and trigger translucent HUD previews directly in your browser.</p>
         </div>
-        <div class="placeholder-box">
-          <div class="placeholder-content">
-            <div class="traffic-lights">
-              <span class="dot-red"></span>
-              <span class="dot-yellow"></span>
-              <span class="dot-green"></span>
-            </div>
-            <p class="placeholder-text">Interactive Sandbox Canvas arriving in <code>US-WEB-026</code></p>
-          </div>
+        <div class="simulator-mount-container">
+          <DesktopSimulator />
         </div>
       </section>
 
