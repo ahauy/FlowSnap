@@ -1,0 +1,579 @@
+---
+import { TERMINAL_TABS } from '../data/distribution-data';
+---
+
+<div id="terminal-installer-root" class="terminal-box" data-component="terminal-installer">
+  <div class="terminal-inner">
+    <!-- Top Identity Section (Symmetrical to DmgCard) -->
+    <div class="card-identity-block">
+      <div class="card-header">
+        <div class="app-brand">
+          <!-- Terminal Icon Squircle (44x44 matching DmgCard) -->
+          <div class="terminal-icon-squircle" aria-hidden="true">
+            <svg class="terminal-logo-svg" viewBox="0 0 44 44" fill="none" width="44" height="44">
+              <rect width="44" height="44" rx="11" fill="url(#termAppGrad)" />
+              <rect x="1" y="1" width="42" height="21" rx="10" fill="url(#termSpecularGloss)" />
+              <!-- Traffic lights inside icon -->
+              <circle cx="9" cy="9" r="2.5" fill="#FF5F56" />
+              <circle cx="15.5" cy="9" r="2.5" fill="#FFBD2E" />
+              <circle cx="22" cy="9" r="2.5" fill="#27C93F" />
+              <!-- Terminal prompt glyph >_ -->
+              <path d="M10 21L17 26.5L10 32" stroke="#30D158" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+              <line x1="20" y1="32" x2="32" y2="32" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.85" />
+              <defs>
+                <linearGradient id="termAppGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#242632" />
+                  <stop offset="1" stop-color="#12131a" />
+                </linearGradient>
+                <linearGradient id="termSpecularGloss" x1="22" y1="1" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="white" stop-opacity="0.16" />
+                  <stop offset="1" stop-color="white" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <div class="brand-text">
+            <div class="badge-row">
+              <!-- Segmented Tabs Switcher -->
+              <div class="terminal-tabs" role="tablist" aria-label="Installation method tabs">
+                {TERMINAL_TABS.map((tab) => (
+                  <button
+                    type="button"
+                    class={`terminal-tab ${tab.defaultActive ? 'active' : ''}`}
+                    role="tab"
+                    aria-selected={tab.defaultActive ? 'true' : 'false'}
+                    aria-controls={`terminal-panel-${tab.id}`}
+                    id={`terminal-tab-${tab.id}`}
+                    data-install-tab={tab.id}
+                    data-command={tab.command}
+                    data-description={tab.description}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              <span class="terminal-badge">CLI ENGINE</span>
+            </div>
+            <h3 class="terminal-title">One-Line Automated Installer</h3>
+          </div>
+        </div>
+
+        <span class="license-tag">POSIX Shell</span>
+      </div>
+
+      <p class="terminal-desc" id="terminal-tab-desc">
+        {TERMINAL_TABS[0].description}
+      </p>
+    </div>
+
+    <!-- Interactive Console Action Section (Height & Position Aligned with DmgCard CTA) -->
+    <div class="cta-wrapper">
+      <div class="console-box">
+        <div class="command-row">
+          <span class="terminal-prompt" aria-hidden="true">$</span>
+          <pre class="code-wrapper"><code class="terminal-code" id="active-terminal-command">{TERMINAL_TABS[0].command}</code></pre>
+        </div>
+
+        <button
+          type="button"
+          class="terminal-copy-btn"
+          id="terminal-copy-btn"
+          data-copy-trigger="terminal"
+          aria-label="Copy terminal installation command to clipboard"
+        >
+          <svg class="copy-icon icon-neutral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+          <svg class="copy-icon icon-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          <span class="copy-label">Copy</span>
+        </button>
+      </div>
+
+      <!-- Symmetrical Chips (Balances with DmgCard specs chips!) -->
+      <div class="specs-grid">
+        <div class="spec-chip">
+          <svg class="spec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+          <span>Sudo-less (Không cần root)</span>
+        </div>
+
+        <div class="spec-chip">
+          <svg class="spec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
+            <rect x="4" y="4" width="16" height="16" rx="2" />
+            <rect x="9" y="9" width="6" height="6" />
+          </svg>
+          <span>Tự phát hiện Apple Silicon & Intel</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Footer (Symmetrical to DmgCard footer) -->
+    <div class="card-footer">
+      <div class="checksum-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12" class="shield-hint-svg" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <path d="m9 12 2 2 4-4" />
+        </svg>
+        <span class="hint-label">Tự động kiểm tra kiến trúc chip và kích hoạt cài đặt an toàn</span>
+      </div>
+      <a
+        href="https://github.com/ahauy/FlowSnap/blob/main/install.sh"
+        class="releases-link"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span>Xem script trên GitHub</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
+          <path d="M7 17L17 7M17 7H7M17 7V17" />
+        </svg>
+      </a>
+    </div>
+
+    <div class="sr-only" aria-live="polite" id="terminal-copy-status"></div>
+  </div>
+</div>
+
+<script>
+  function initTerminalInstaller() {
+    const root = document.getElementById('terminal-installer-root');
+    if (!root) return;
+
+    const tabs = root.querySelectorAll<HTMLButtonElement>('[data-install-tab]');
+    const commandCode = root.querySelector<HTMLElement>('#active-terminal-command');
+    const tabDesc = root.querySelector<HTMLElement>('#terminal-tab-desc');
+    const copyBtn = root.querySelector<HTMLButtonElement>('#terminal-copy-btn');
+    const copyStatus = root.querySelector<HTMLElement>('#terminal-copy-status');
+
+    let currentCommand = tabs[0]?.getAttribute('data-command') || '';
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        tabs.forEach((t) => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+
+        const newCommand = tab.getAttribute('data-command') || '';
+        const newDesc = tab.getAttribute('data-description') || '';
+
+        currentCommand = newCommand;
+        if (commandCode) commandCode.textContent = newCommand;
+        if (tabDesc) tabDesc.textContent = newDesc;
+      });
+    });
+
+    copyBtn?.addEventListener('click', async () => {
+      if (!currentCommand) return;
+      await copyToClipboard(currentCommand, copyBtn, copyStatus);
+    });
+  }
+
+  async function copyToClipboard(text: string, btn: HTMLButtonElement, liveRegion: HTMLElement | null) {
+    let success = false;
+
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        success = true;
+      } catch {
+        success = fallbackCopyText(text);
+      }
+    } else {
+      success = fallbackCopyText(text);
+    }
+
+    if (success) {
+      btn.classList.add('copied');
+      const label = btn.querySelector('.copy-label');
+      if (label) label.textContent = 'Copied!';
+      if (liveRegion) liveRegion.textContent = 'Command copied to clipboard!';
+
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        if (label) label.textContent = 'Copy';
+        if (liveRegion) liveRegion.textContent = '';
+      }, 2000);
+    }
+  }
+
+  function fallbackCopyText(text: string): boolean {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    let successful = false;
+    try {
+      successful = document.execCommand('copy');
+    } catch {
+      successful = false;
+    }
+
+    document.body.removeChild(textArea);
+    return successful;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTerminalInstaller);
+  } else {
+    initTerminalInstaller();
+  }
+</script>
+
+<style>
+  .terminal-box {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+    transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+  }
+
+  .terminal-box:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: var(--shadow-md);
+  }
+
+  :global(.light) .terminal-box:hover {
+    border-color: rgba(0, 0, 0, 0.16);
+  }
+
+  .terminal-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    gap: 22px;
+  }
+
+  .card-identity-block {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Header (Identical to DmgCard) */
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .app-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .terminal-icon-squircle {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  :global(.light) .terminal-icon-squircle {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+    border-color: rgba(0, 0, 0, 0.12);
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .badge-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Segmented Tab Controls */
+  .terminal-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--color-surface-elevated);
+    padding: 2px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+  }
+
+  .terminal-tab {
+    padding: 2px 10px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-tertiary);
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: calc(var(--radius-sm) - 2px);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+    font-family: var(--font-mono);
+  }
+
+  .terminal-tab:hover {
+    color: var(--color-text-primary);
+  }
+
+  .terminal-tab.active {
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  }
+
+  .terminal-badge {
+    font-size: 10px;
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+    letter-spacing: 0.06em;
+  }
+
+  .license-tag {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-elevated);
+    border: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .terminal-title {
+    font-size: var(--font-lg);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+
+  .terminal-desc {
+    font-size: var(--font-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* CTA Area (Aligned with DmgCard) */
+  .cta-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .console-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #0d0e14;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    padding: 10px 18px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+    min-height: 52px;
+  }
+
+  :global(.light) .console-box {
+    background: #14161f;
+    border-color: rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.25);
+  }
+
+  .command-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .terminal-prompt {
+    color: #30d158;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 13px;
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  .code-wrapper {
+    flex: 1;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .code-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .terminal-code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #f4f4f5;
+    white-space: nowrap;
+    line-height: 1.4;
+  }
+
+  .terminal-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #f4f4f5;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .terminal-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
+  }
+
+  .terminal-copy-btn:active {
+    transform: translateY(0);
+  }
+
+  .terminal-copy-btn .icon-success {
+    display: none;
+  }
+
+  .terminal-copy-btn.copied {
+    background: rgba(48, 209, 88, 0.2);
+    border-color: rgba(48, 209, 88, 0.45);
+    color: #30d158;
+  }
+
+  .terminal-copy-btn.copied .icon-neutral {
+    display: none;
+  }
+
+  .terminal-copy-btn.copied .icon-success {
+    display: inline-block;
+  }
+
+  /* Matching Specs Chips */
+  .specs-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .spec-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-elevated);
+    border: 1px solid var(--color-border);
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+  }
+
+  .spec-icon {
+    color: var(--color-text-tertiary);
+  }
+
+  /* Footer (Matching DmgCard) */
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+    font-size: 11px;
+  }
+
+  .checksum-hint {
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 320px;
+  }
+
+  .shield-hint-svg {
+    color: var(--color-success);
+    flex-shrink: 0;
+  }
+
+  .hint-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .releases-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-text-tertiary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  .releases-link:hover {
+    color: var(--color-text-primary);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  @media (max-width: 640px) {
+    .terminal-box {
+      padding: 20px;
+    }
+  }
+</style>

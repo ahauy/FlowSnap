@@ -1,0 +1,69 @@
+---
+import DmgCard from './DmgCard.astro';
+import TerminalInstaller from './TerminalInstaller.astro';
+import PrivacyManifesto from './PrivacyManifesto.astro';
+import GatekeeperGuide from './GatekeeperGuide.astro';
+---
+
+<div id="distribution-hub-root" class="distribution-hub" data-component="distribution-hub">
+  <!-- Tier 1: Dual Download & CLI Showcase (Symmetric Equal-Height Columns) -->
+  <div class="hub-hero-row">
+    <div class="hub-hero-col">
+      <DmgCard />
+    </div>
+    <div class="hub-hero-col">
+      <TerminalInstaller />
+    </div>
+  </div>
+
+  <!-- Tier 2: Security, Trust & Frictionless Onboarding (Full-Width Symmetrical Flow) -->
+  <div class="hub-trust-tier">
+    <PrivacyManifesto />
+    <GatekeeperGuide />
+  </div>
+</div>
+
+<style>
+  .distribution-hub {
+    width: 100%;
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* Tier 1: Side-by-side Equal Height Columns */
+  .hub-hero-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .hub-hero-col {
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hub-hero-col > :global(*) {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Tier 2: Full-width Trust & Security Stack */
+  .hub-trust-tier {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+  }
+
+  @media (max-width: 1023px) {
+    .hub-hero-row {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+</style>

@@ -1,0 +1,339 @@
+---
+import { PRIVACY_PILLARS } from '../data/distribution-data';
+---
+
+<div id="privacy-manifesto-root" class="privacy-manifesto" data-component="privacy-manifesto">
+  <!-- Top Section Header -->
+  <div class="manifesto-top-header">
+    <div class="header-left">
+      <div class="header-badge">
+        <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+        <span>Zero Telemetry Guarantee</span>
+      </div>
+      <h3 class="manifesto-title">Tuyên ngôn Quyền riêng tư & Minh bạch</h3>
+    </div>
+    <p class="manifesto-desc">
+      FlowSnap được xây dựng cho các kỹ sư và chuyên gia coi trọng an toàn thông tin. Không thỏa hiệp dữ liệu cá nhân.
+    </p>
+  </div>
+
+  <!-- 3-Column Symmetrical Grid -->
+  <div class="pillars-grid">
+    {PRIVACY_PILLARS.map((pillar) => (
+      <div class="pillar-pane" data-pillar-id={pillar.id}>
+        <div class="pane-top-content">
+          <div class="pane-header">
+            <div class="pillar-icon-wrap" aria-hidden="true">
+              {pillar.icon === 'offline' && (
+                <svg class="pillar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                  <path d="M1 1l22 22" />
+                  <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+                  <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
+                  <path d="M10.71 5.05A16 16 0 0 1 22.58 9" />
+                  <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+                  <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+                  <line x1="12" y1="20" x2="12.01" y2="20" />
+                </svg>
+              )}
+              {pillar.icon === 'shield' && (
+                <svg class="pillar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+              )}
+              {pillar.icon === 'lock' && (
+                <svg class="pillar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              )}
+            </div>
+            <span class="pillar-badge">{pillar.badge}</span>
+          </div>
+
+          <div class="pane-content">
+            <h4 class="pillar-title">{pillar.title}</h4>
+            <p class="pillar-desc">{pillar.description}</p>
+          </div>
+        </div>
+
+        <ul class="pillar-details">
+          {pillar.details.map((detail) => (
+            <li class="detail-item">
+              <svg class="detail-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span>{detail}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+
+  <!-- Bottom Verification Footer -->
+  <div class="manifesto-audit-footer">
+    <div class="audit-left">
+      <span class="audit-dot" aria-hidden="true"></span>
+      <span class="audit-label">Mã nguồn kiểm toán độc lập 100% công khai:</span>
+    </div>
+    <a
+      href="https://github.com/ahauy/FlowSnap"
+      class="audit-link"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <span>github.com/ahauy/FlowSnap</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
+        <path d="M7 17L17 7M17 7H7M17 7V17" />
+      </svg>
+    </a>
+  </div>
+</div>
+
+<style>
+  .privacy-manifesto {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color var(--transition-normal);
+    width: 100%;
+  }
+
+  .privacy-manifesto:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+
+  :global(.light) .privacy-manifesto:hover {
+    border-color: rgba(0, 0, 0, 0.16);
+  }
+
+  .manifesto-top-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    background: rgba(10, 132, 255, 0.1);
+    border: 1px solid rgba(10, 132, 255, 0.25);
+    color: var(--brand-apple-blue-vibrant);
+    font-size: 11px;
+    font-weight: 600;
+    width: fit-content;
+  }
+
+  .badge-icon {
+    color: var(--brand-apple-blue-vibrant);
+  }
+
+  .manifesto-title {
+    font-size: var(--font-lg);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    letter-spacing: -0.02em;
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  .manifesto-desc {
+    font-size: var(--font-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+    margin: 0;
+    max-width: 480px;
+  }
+
+  /* 3-Column Symmetrical Grid */
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .pillar-pane {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface-elevated);
+    border: 1px solid var(--color-border);
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+    min-width: 0;
+    height: 100%;
+  }
+
+  .pillar-pane:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+
+  :global(.light) .pillar-pane:hover {
+    border-color: rgba(0, 0, 0, 0.16);
+  }
+
+  .pane-top-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pane-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .pillar-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: rgba(10, 132, 255, 0.1);
+    border: 1px solid rgba(10, 132, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brand-apple-blue-vibrant);
+    flex-shrink: 0;
+  }
+
+  .pillar-badge {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--color-text-tertiary);
+    background: var(--color-surface);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .pane-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .pillar-title {
+    font-size: var(--font-sm);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .pillar-desc {
+    font-size: var(--font-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .pillar-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--color-border);
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+  }
+
+  .detail-check {
+    color: var(--color-success);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Bottom Verification Footer */
+  .manifesto-audit-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 18px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .audit-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .audit-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--color-success);
+    box-shadow: 0 0 6px var(--color-success);
+  }
+
+  .audit-label {
+    font-size: var(--font-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .audit-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--brand-apple-blue-vibrant);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: var(--font-xs);
+    transition: opacity var(--transition-fast);
+  }
+
+  .audit-link:hover {
+    opacity: 0.8;
+  }
+
+  @media (max-width: 1023px) {
+    .pillars-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .privacy-manifesto {
+      padding: 20px;
+    }
+  }
+</style>
