@@ -919,12 +919,25 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
 
 ##### US-WEB-028: Distribution Hub, 1-Click Terminal Copy, DMG & Privacy Manifesto
 
+- **Slug:** `web-distribution-hub`
+- **Effort:** M
+- **Context-budget:** single-session
+- **Priority:** Should-Have (P1)
+- **Depends-on:** `US-WEB-027` ✅
+- **Blocks:** `US-WEB-029`
 - **Vai trò:** Là một người dùng macOS, tôi muốn tải và cài đặt FlowSnap một cách nhanh chóng, minh bạch và an toàn.
 - **Acceptance Criteria (AC):**
-  - [ ] Khung lệnh Terminal One-Line Installer kèm nút Copy 1-click có phản hồi thị giác trực quan.
-  - [ ] Nút tải file `.dmg` trực tiếp trỏ đến bản phát hành GitHub Releases mới nhất.
-  - [ ] Cam kết bảo mật & quyền riêng tư rõ ràng: 100% Offline, Zero Telemetry, giải thích quyền Accessibility `AXUIElement`.
-  - [ ] Hướng dẫn khắc phục cảnh báo Gatekeeper (`xattr -cr`) minh bạch, chi tiết.
+  - [x] Khung lệnh Terminal One-Line Installer kèm nút Copy 1-click có phản hồi thị giác trực quan.
+  - [x] Nút tải file `.dmg` trực tiếp trỏ đến bản phát hành GitHub Releases mới nhất.
+  - [x] Cam kết bảo mật & quyền riêng tư rõ ràng: 100% Offline, Zero Telemetry, giải thích quyền Accessibility `AXUIElement`.
+  - [x] Hướng dẫn khắc phục cảnh báo Gatekeeper (`xattr -cr`) minh bạch, chi tiết.
+- **Deliverables khi [x]:**
+  - Domain Baseline: `.specify/features/web-distribution-hub/baseline.md` (SIGNED-OFF v1.0)
+  - Spec & Plan: `.specify/features/web-distribution-hub/spec.md`, `plan.md`
+  - Tasks Breakdown: `.specify/features/web-distribution-hub/tasks.md`
+  - Technical Docs: `docs/features/web-distribution-hub/README.md`
+  - End-User Guide: `docs/user-guides/web-distribution-hub.md`
+  - Test Plan: `.specify/features/web-distribution-hub/test-plan.md`
 
 ##### US-WEB-029: SEO, OpenGraph, JSON-LD Schema & Automated GitHub Pages CI/CD
 
@@ -989,7 +1002,7 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
   ├── [x] US-WEB-025: Astro Baseline, Shadcn-Inspired Design Tokens (DESIGN.md) & Base Layout ✅
   ├── [x] US-WEB-026: 3D/Interactive macOS Desktop Simulator (Hardware CSS 3D & Pointer Drag Sandbox) ✅
   ├── [x] US-WEB-027: Bento Grid Features Showcase, Proof & Interactive Shortcuts Matrix ✅
-  ├── [ ] US-WEB-028: Download Hub, 1-Click Terminal Copy, DMG & Gatekeeper / Privacy Manifesto
+  ├── [x] US-WEB-028: Download Hub, 1-Click Terminal Copy, DMG & Gatekeeper / Privacy Manifesto ✅
   └── [ ] US-WEB-029: SEO, OpenGraph/Twitter Cards, JSON-LD Schema & GitHub Pages CI/CD
 
 [ Future Horizons (V3.0+) ]
