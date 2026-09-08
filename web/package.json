@@ -9,7 +9,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "test": "node tests/desktop-simulator.test.mjs && node tests/bento-shortcuts.test.mjs",
+    "test": "node tests/desktop-simulator.test.mjs && node tests/bento-shortcuts.test.mjs && node tests/distribution-hub.test.mjs && node tests/seo-cicd.test.mjs",
     "astro": "astro"
   },
   "dependencies": {
