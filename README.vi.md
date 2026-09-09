@@ -7,6 +7,7 @@
 
 <p align="center">
   <a href="README.md">🇬🇧 English</a> •
+  <a href="https://ahauy.github.io/FlowSnap/"><strong>🌐 Trang Web Trực Tuyến & Giả Lập 3D</strong></a> •
   <a href="#-cài-đặt-nhanh-qua-terminal-khuyên-dùng"><strong>⚡ Cài đặt nhanh</strong></a> •
   <a href="#tính-năng-nổi-bật">Tính năng</a> •
   <a href="#hướng-dẫn-cài-đặt--khởi-chạy">Cài đặt & Chạy</a> •
@@ -16,6 +17,9 @@
 </p>
 
 <p align="center">
+  <a href="https://ahauy.github.io/FlowSnap/">
+    <img src="https://img.shields.io/badge/Tr%E1%BA%A3i%20nghi%E1%BB%87m%20Online-ahauy.github.io%2FFlowSnap-0071e3?style=flat-square&logo=safari&logoColor=white" alt="Trải nghiệm Trực tuyến">
+  </a>
   <img src="https://img.shields.io/badge/macOS-14.0%2B%20(Sonoma%20%2F%20Sequoia)-black?style=flat-square&logo=apple" alt="macOS 14.0+">
   <img src="https://img.shields.io/badge/Swift-6.0%20Strict%20Concurrency-orange?style=flat-square&logo=swift" alt="Swift 6.0">
   <img src="https://img.shields.io/badge/Tests-470%20Passing%20(70%20Suites)-brightgreen?style=flat-square" alt="Tests 470 Passing">
@@ -26,6 +30,10 @@
     <img src="https://img.shields.io/badge/B%E1%BA%A3n%20ph%C3%A1t%20h%C3%A0nh-v1.3.1-0071e3?style=flat-square" alt="Bản phát hành v1.3.1">
   </a>
 </p>
+
+> [!TIP]
+> **Trải nghiệm FlowSnap trực tiếp trên trình duyệt trước khi tải về:**
+> Thử kéo cửa sổ ảo trong Giả lập Desktop 3D, thử các bố cục snap thông minh và bảng phím tắt trực quan tại **[ahauy.github.io/FlowSnap](https://ahauy.github.io/FlowSnap/)**.
 
 ---
 

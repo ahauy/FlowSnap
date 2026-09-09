@@ -7,6 +7,7 @@
 
 <p align="center">
   <a href="README.vi.md">🇻🇳 Tiếng Việt</a> •
+  <a href="https://ahauy.github.io/FlowSnap/"><strong>🌐 Live Website & 3D Simulator</strong></a> •
   <a href="#-quick-install-recommended"><strong>⚡ Quick Install</strong></a> •
   <a href="#-key-features">Key Features</a> •
   <a href="#-installation--getting-started">Installation</a> •
@@ -16,6 +17,9 @@
 </p>
 
 <p align="center">
+  <a href="https://ahauy.github.io/FlowSnap/">
+    <img src="https://img.shields.io/badge/Live%20Showcase-ahauy.github.io%2FFlowSnap-0071e3?style=flat-square&logo=safari&logoColor=white" alt="Live Interactive Showcase">
+  </a>
   <img src="https://img.shields.io/badge/macOS-14.0%2B%20(Sonoma%20%2F%20Sequoia)-000000?style=flat-square&logo=apple&logoColor=white" alt="macOS 14.0+">
   <img src="https://img.shields.io/badge/Swift-6.0%20Strict%20Concurrency-FA7343?style=flat-square&logo=swift&logoColor=white" alt="Swift 6.0">
   <img src="https://img.shields.io/badge/Tests-470%20Passing%20(70%20Suites)-2ea44f?style=flat-square" alt="Tests 470 Passing">
@@ -26,6 +30,10 @@
     <img src="https://img.shields.io/badge/Latest%20Release-v1.3.1-0071e3?style=flat-square" alt="Latest Release v1.3.1">
   </a>
 </p>
+
+> [!TIP]
+> **Experience FlowSnap in your browser before downloading:**
+> Try the 3D Desktop Simulator, interactive snap layouts, and shortcut matrix live at **[ahauy.github.io/FlowSnap](https://ahauy.github.io/FlowSnap/)**.
 
 ---
 
