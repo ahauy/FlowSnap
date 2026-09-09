@@ -941,12 +941,25 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
 
 ##### US-WEB-029: SEO, OpenGraph, JSON-LD Schema & Automated GitHub Pages CI/CD
 
+- **Slug:** `web-seo-cicd`
+- **Effort:** M
+- **Context-budget:** single-session
+- **Priority:** Should-Have (P1)
+- **Depends-on:** `US-WEB-028` ✅
+- **Blocks:** _(none)_
 - **Vai trò:** Là nhà phát triển dự án, tôi muốn trang web được lập chỉ mục Google hoàn hảo và tự động xuất bản (deploy) khi có cập nhật.
 - **Acceptance Criteria (AC):**
-  - [ ] Thẻ OpenGraph / Twitter Cards chuẩn mực với ảnh preview chất lượng cao.
-  - [ ] Dữ liệu có cấu trúc `SoftwareApplication` JSON-LD Schema chuẩn Google Search.
-  - [ ] Thiết lập GitHub Actions workflow `.github/workflows/deploy-pages.yml` để build và deploy tĩnh lên GitHub Pages mỗi khi commit lên nhánh `main`.
-  - [ ] Điểm số Google Lighthouse đạt tối thiểu `95+` trên cả 4 hạng mục: Performance, Accessibility, Best Practices, SEO.
+  - [x] Thẻ OpenGraph / Twitter Cards chuẩn mực với ảnh preview chất lượng cao.
+  - [x] Dữ liệu có cấu trúc `SoftwareApplication` JSON-LD Schema chuẩn Google Search.
+  - [x] Thiết lập GitHub Actions workflow `.github/workflows/deploy-pages.yml` để build và deploy tĩnh lên GitHub Pages mỗi khi commit lên nhánh `main`.
+  - [x] Điểm số Google Lighthouse đạt tối thiểu `95+` trên cả 4 hạng mục: Performance, Accessibility, Best Practices, SEO.
+- **Deliverables khi [x]:**
+  - Domain Baseline: `.specify/features/web-seo-cicd/baseline.md` (SIGNED-OFF v1.0)
+  - Spec & Plan: `.specify/features/web-seo-cicd/spec.md`, `plan.md`
+  - Tasks Breakdown: `.specify/features/web-seo-cicd/tasks.md`
+  - Technical Docs: `docs/features/web-seo-cicd/README.md`
+  - End-User Guide: `docs/user-guides/web-seo-cicd.md`
+  - Test Plan: `.specify/features/web-seo-cicd/test-plan.md`
 
 ---
 
@@ -998,12 +1011,12 @@ _Mục tiêu: Cho phép ghim nổi bất kỳ ứng dụng nào luôn trên cùn
 [ Sprint 7: Launch Automation & System Preferences (Active Backlog) ]  ──► [ COMPLETED ✅ ]
   └── [x] US-SNAP-024: Tự động Khởi động cùng macOS qua SMAppService (Launch at Login Integration) ✅
 
-[ Sprint 8: Web Distribution & 3D Interactive Landing Page (Active) ]  ──► [ IN PROGRESS 🔄 ]
+[ Sprint 8: Web Distribution & 3D Interactive Landing Page (Active) ]  ──► [ COMPLETED ✅ ]
   ├── [x] US-WEB-025: Astro Baseline, Shadcn-Inspired Design Tokens (DESIGN.md) & Base Layout ✅
   ├── [x] US-WEB-026: 3D/Interactive macOS Desktop Simulator (Hardware CSS 3D & Pointer Drag Sandbox) ✅
   ├── [x] US-WEB-027: Bento Grid Features Showcase, Proof & Interactive Shortcuts Matrix ✅
   ├── [x] US-WEB-028: Download Hub, 1-Click Terminal Copy, DMG & Gatekeeper / Privacy Manifesto ✅
-  └── [ ] US-WEB-029: SEO, OpenGraph/Twitter Cards, JSON-LD Schema & GitHub Pages CI/CD
+  └── [x] US-WEB-029: SEO, OpenGraph/Twitter Cards, JSON-LD Schema & GitHub Pages CI/CD ✅
 
 [ Future Horizons (V3.0+) ]
   ├── US-FUTURE-001: Visual Canvas-based Interactive Layout Editor

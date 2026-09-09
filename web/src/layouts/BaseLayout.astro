@@ -6,47 +6,108 @@ interface Props {
   description?: string;
   canonicalUrl?: string;
   ogImage?: string;
+  keywords?: string[];
+  author?: string;
 }
+
+const siteUrl = Astro.site ? Astro.site.href.replace(/\/$/, '') : 'https://ahauy.github.io';
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const defaultCanonical = `${siteUrl}${basePath || '/FlowSnap'}`;
 
 const {
   title = 'FlowSnap — macOS Window Manager with Intent & Snap Precision',
   description = 'Native macOS window manager with Windows 11-style snap picker, multi-display intent restoration, Quake scratchpad, and zero private APIs.',
-  canonicalUrl = 'https://ahauy.github.io/FlowSnap',
+  canonicalUrl = defaultCanonical,
   ogImage = '/og-preview.png',
+  keywords = [
+    'FlowSnap',
+    'macOS window manager',
+    'snap layouts',
+    'Windows 11 snap macOS',
+    'Swift 6',
+    'macOS utility',
+    'tiling window manager',
+    'multi-monitor macOS',
+    'Quake scratchpad',
+  ],
+  author = 'ahauy',
 } = Astro.props;
+
+const canonical = canonicalUrl;
+const absoluteOgImage = ogImage.startsWith('http')
+  ? ogImage
+  : `${siteUrl}${basePath || '/FlowSnap'}/${ogImage.replace(/^\//, '')}`;
+
+const jsonLdSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'FlowSnap',
+  operatingSystem: 'macOS 14.0+',
+  applicationCategory: 'UtilitiesApplication',
+  softwareVersion: '1.3.1',
+  description: description,
+  url: canonical,
+  downloadUrl: 'https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg',
+  screenshot: absoluteOgImage,
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  author: {
+    '@type': 'Person',
+    name: author,
+    url: 'https://github.com/ahauy',
+  },
+  license: 'https://opensource.org/licenses/MIT',
+};
 ---
 
 <!doctype html>
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href={`${basePath || ''}/favicon.svg`} />
+    <link rel="icon" href={`${basePath || ''}/favicon.ico`} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="canonical" href={canonicalUrl} />
+    <link rel="canonical" href={canonical} />
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>
     <meta name="title" content={title} />
     <meta name="description" content={description} />
+    <meta name="keywords" content={keywords.join(', ')} />
+    <meta name="author" content={author} />
+    <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={absoluteOgImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:site_name" content="FlowSnap" />
+    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:url" content={canonical} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image" content={absoluteOgImage} />
+    <meta name="twitter:image:alt" content={title} />
+    <meta name="twitter:site" content="@ahauy" />
+    <meta name="twitter:creator" content="@ahauy" />
+
+    <!-- Structured Data: Schema.org SoftwareApplication JSON-LD -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdSchema)} />
 
     <!-- Anti-FOUC Blocking Theme Initialization Script -->
     <script is:inline>
