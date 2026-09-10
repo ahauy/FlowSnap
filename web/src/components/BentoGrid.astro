@@ -1,10 +1,31 @@
 ---
 import { bentoFeatures } from '../data/bento-data';
+import { getI18n, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = getI18n(lang);
+
+const featureMap = new Map(t.bento.features.map((f) => [f.id, f]));
+const localizedCards = bentoFeatures.map((card) => {
+  const loc = featureMap.get(card.id);
+  if (!loc) return card;
+  return {
+    ...card,
+    title: loc.title,
+    badge: loc.badge,
+    description: loc.description,
+    highlights: loc.highlights,
+  };
+});
 ---
 
 <div id="bento-grid-root" class="bento-container" role="region" aria-label="Core Feature Pillars Bento Grid">
   <div class="bento-grid">
-    {bentoFeatures.map((card) => (
+    {localizedCards.map((card) => (
       <article
         class={`bento-card ${card.span === 'hero' ? 'bento-hero' : 'bento-standard'}`}
         data-bento-card={card.id}

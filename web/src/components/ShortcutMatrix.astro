@@ -1,22 +1,58 @@
 ---
 import { shortcutCategories, shortcutsCatalog } from '../data/shortcuts-data';
+import { getI18n, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = getI18n(lang);
+
+// Localized categories
+const localizedCategories = shortcutCategories.map((cat) => ({
+  ...cat,
+  label: t.shortcuts.categories[cat.key] || cat.label,
+}));
+
+// Localized shortcuts catalog
+const itemMap = new Map(t.shortcuts.items.map((i) => [i.id, i]));
+const localizedCatalog = shortcutsCatalog.map((item, index) => {
+  const loc = itemMap.get(item.id);
+  return {
+    ...item,
+    action: loc?.action || item.action,
+    description: loc?.description || item.description,
+    badge: loc?.badge || item.badge,
+    initialIndex: index,
+  };
+});
 
 // Calculate counts per category
 const counts = {
-  all: shortcutsCatalog.length,
-  window: shortcutsCatalog.filter((s) => s.category === 'window').length,
-  display: shortcutsCatalog.filter((s) => s.category === 'display').length,
-  workspace: shortcutsCatalog.filter((s) => s.category === 'workspace').length,
-  utility: shortcutsCatalog.filter((s) => s.category === 'utility').length,
+  all: localizedCatalog.length,
+  window: localizedCatalog.filter((s) => s.category === 'window').length,
+  display: localizedCatalog.filter((s) => s.category === 'display').length,
+  workspace: localizedCatalog.filter((s) => s.category === 'workspace').length,
+  utility: localizedCatalog.filter((s) => s.category === 'utility').length,
 };
 ---
 
-<div id="shortcut-matrix-root" class="shortcut-matrix-wrapper" role="region" aria-label="Interactive Keyboard Shortcuts Matrix">
+<div
+  id="shortcut-matrix-root"
+  class="shortcut-matrix-wrapper"
+  role="region"
+  aria-label="Interactive Keyboard Shortcuts Matrix"
+  data-copy-label={t.shortcuts.controls.copyLabel}
+  data-copied-label={t.shortcuts.controls.copiedLabel}
+  data-show-all-label={t.shortcuts.controls.showAll}
+  data-show-fewer-label={t.shortcuts.controls.showFewer}
+>
   <!-- Top Controls Bar: Categories & Search Bar -->
   <div class="matrix-controls-bar">
     <!-- Category Filter Tabs -->
     <div class="category-tabs" role="tablist" aria-label="Shortcut categories">
-      {shortcutCategories.map((cat, idx) => (
+      {localizedCategories.map((cat, idx) => (
         <button
           type="button"
           class={`cat-tab-btn ${idx === 0 ? 'active' : ''}`}
@@ -41,12 +77,12 @@ const counts = {
         type="text"
         id="shortcut-search-input"
         class="search-input"
-        placeholder="Tìm kiếm theo phím tắt hoặc tác vụ... (vd: ⌥Space, ném màn hình, snap)"
-        aria-label="Tìm kiếm phím tắt"
+        placeholder={t.shortcuts.controls.searchPlaceholder}
+        aria-label={t.shortcuts.controls.searchAria}
         autocomplete="off"
         spellcheck="false"
       />
-      <button type="button" id="shortcut-search-clear" class="search-clear-btn" aria-label="Xóa nội dung tìm kiếm" hidden>
+      <button type="button" id="shortcut-search-clear" class="search-clear-btn" aria-label={t.shortcuts.controls.clearSearchAria} hidden>
         <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
         </svg>
@@ -56,13 +92,16 @@ const counts = {
 
   <!-- Shortcuts Grid / Directory -->
   <div class="shortcuts-grid" id="shortcuts-grid-container">
-    {shortcutsCatalog.map((item) => (
+    {localizedCatalog.map((item, index) => (
       <div
-        class="shortcut-card"
+        class={`shortcut-card ${index >= 6 ? 'is-extra-shortcut' : ''}`}
         data-shortcut-id={item.id}
+        data-index={index}
         data-category={item.category}
         data-search-text={`${item.action} ${item.displayString} ${item.description} ${item.keys.join(' ')} ${item.category} ${item.badge || ''}`}
         data-copy-shortcut={item.displayString}
+        hidden={index >= 6}
+        style={index >= 6 ? 'display: none;' : undefined}
       >
         <div class="shortcut-info">
           <div class="shortcut-header-row">
@@ -74,7 +113,7 @@ const counts = {
 
         <div class="shortcut-action-group">
           <!-- Keycap Pills -->
-          <div class="keycaps-container" title="Click để sao chép phím tắt">
+          <div class="keycaps-container" title={t.shortcuts.controls.keycapTitle}>
             {item.keys.map((k) => (
               <kbd class="keycap-pill">{k}</kbd>
             ))}
@@ -85,7 +124,7 @@ const counts = {
             type="button"
             class="copy-shortcut-btn"
             data-copy-target={item.displayString}
-            aria-label={`Sao chép phím tắt ${item.displayString}`}
+            aria-label={`${t.shortcuts.controls.copyAria} ${item.displayString}`}
           >
             <svg class="copy-icon default-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" aria-hidden="true">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
@@ -94,11 +133,27 @@ const counts = {
             <svg class="copy-icon check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" aria-hidden="true">
               <polyline points="20 6 9 17 4 12" />
             </svg>
-            <span class="copy-label">Sao chép</span>
+            <span class="copy-label">{t.shortcuts.controls.copyLabel}</span>
           </button>
         </div>
       </div>
     ))}
+  </div>
+
+  <!-- Expand / Collapse Action Button (Default 6 basic shortcuts) -->
+  <div class="expand-action-wrap" id="shortcuts-expand-wrap">
+    <button
+      type="button"
+      id="toggle-shortcuts-expand"
+      class="expand-toggle-btn action-pill-secondary"
+      aria-expanded="false"
+      aria-controls="shortcuts-grid-container"
+    >
+      <span class="expand-btn-text" id="expand-btn-text">{t.shortcuts.controls.showAll}</span>
+      <svg class="expand-chevron" viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+      </svg>
+    </button>
   </div>
 
   <!-- Zero-Match Empty State -->
@@ -110,10 +165,10 @@ const counts = {
         <line x1="8" y1="11" x2="14" y2="11" />
       </svg>
     </div>
-    <h4 class="empty-title">Không tìm thấy phím tắt phù hợp</h4>
-    <p class="empty-desc">Thử tìm kiếm với từ khóa khác như "snap", "màn hình", "preset" hoặc chọn danh mục "Tất cả".</p>
+    <h4 class="empty-title">{t.shortcuts.controls.emptyTitle}</h4>
+    <p class="empty-desc">{t.shortcuts.controls.emptyDesc}</p>
     <button type="button" id="shortcut-reset-filter-btn" class="reset-filter-btn">
-      Xóa bộ lọc & Hiển thị tất cả
+      {t.shortcuts.controls.resetFilter}
     </button>
   </div>
 </div>
@@ -140,19 +195,34 @@ const counts = {
     const emptyState = document.getElementById('shortcut-empty-state') as HTMLElement | null;
     const copyButtons = root.querySelectorAll<HTMLButtonElement>('.copy-shortcut-btn');
     const keycapContainers = root.querySelectorAll<HTMLElement>('.keycaps-container');
+    const expandWrap = document.getElementById('shortcuts-expand-wrap') as HTMLElement | null;
+    const toggleExpandBtn = document.getElementById('toggle-shortcuts-expand') as HTMLButtonElement | null;
+    const expandBtnText = document.getElementById('expand-btn-text');
+
+    const copyLabel = root.getAttribute('data-copy-label') || 'Copy';
+    const copiedLabel = root.getAttribute('data-copied-label') || 'Copied!';
+    const showAllLabel = root.getAttribute('data-show-all-label') || 'Show all 15 shortcuts';
+    const showFewerLabel = root.getAttribute('data-show-fewer-label') || 'Show fewer shortcuts';
 
     let currentCategory = 'all';
     let currentSearch = '';
+    let isExpanded = false;
 
     function applyFilter() {
       let visibleCount = 0;
       const query = currentSearch.trim().toLowerCase();
       const normQuery = normalizeSearch(query);
+      const isDefaultView = currentCategory === 'all' && query === '';
+
+      if (expandWrap) {
+        expandWrap.style.display = isDefaultView ? 'flex' : 'none';
+      }
 
       cards.forEach((card) => {
         const cat = card.getAttribute('data-category') || '';
         const rawText = (card.getAttribute('data-search-text') || '').toLowerCase();
         const normText = normalizeSearch(rawText);
+        const cardIndex = parseInt(card.getAttribute('data-index') || '0', 10);
 
         const matchCat = currentCategory === 'all' || cat === currentCategory;
         const matchSearch =
@@ -161,9 +231,14 @@ const counts = {
           (normQuery.length > 0 && normText.includes(normQuery));
 
         if (matchCat && matchSearch) {
-          card.hidden = false;
-          card.style.display = 'flex';
-          visibleCount++;
+          if (isDefaultView && !isExpanded && cardIndex >= 6) {
+            card.hidden = true;
+            card.style.display = 'none';
+          } else {
+            card.hidden = false;
+            card.style.display = 'flex';
+            visibleCount++;
+          }
         } else {
           card.hidden = true;
           card.style.display = 'none';
@@ -182,6 +257,20 @@ const counts = {
         clearBtn.style.display = hasText ? 'flex' : 'none';
       }
     }
+
+    // Toggle expand button click
+    toggleExpandBtn?.addEventListener('click', () => {
+      isExpanded = !isExpanded;
+      toggleExpandBtn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+      toggleExpandBtn.classList.toggle('expanded', isExpanded);
+      if (expandBtnText) {
+        expandBtnText.textContent = isExpanded ? showFewerLabel : showAllLabel;
+      }
+      applyFilter();
+      if (!isExpanded) {
+        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
 
     // Category Tabs click
     tabs.forEach((tab) => {
@@ -229,6 +318,12 @@ const counts = {
         searchInput.value = '';
         currentSearch = '';
         currentCategory = 'all';
+        isExpanded = false;
+        toggleExpandBtn?.setAttribute('aria-expanded', 'false');
+        toggleExpandBtn?.classList.remove('expanded');
+        if (expandBtnText) {
+          expandBtnText.textContent = showAllLabel;
+        }
         tabs.forEach((t) => {
           const isAll = t.getAttribute('data-filter-category') === 'all';
           t.classList.toggle('active', isAll);
@@ -259,10 +354,10 @@ const counts = {
         if (button) {
           button.classList.add('copied');
           const label = button.querySelector('.copy-label');
-          if (label) label.textContent = 'Copied!';
+          if (label) label.textContent = copiedLabel;
           setTimeout(() => {
             button.classList.remove('copied');
-            if (label) label.textContent = 'Sao chép';
+            if (label) label.textContent = copyLabel;
           }, 1500);
         }
       } catch (err) {
@@ -592,6 +687,45 @@ const counts = {
 
   .copy-shortcut-btn.copied .check-icon {
     display: inline-block;
+  }
+
+  /* Expand Action Wrap */
+  .expand-action-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .expand-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    transition: all var(--transition-fast);
+  }
+
+  .expand-toggle-btn:hover {
+    border-color: rgba(10, 132, 255, 0.4);
+    background: var(--color-surface-elevated);
+    transform: translateY(-1px);
+  }
+
+  .expand-chevron {
+    transition: transform var(--transition-fast, 150ms ease);
+    color: var(--color-text-secondary);
+  }
+
+  .expand-toggle-btn.expanded .expand-chevron {
+    transform: rotate(180deg);
   }
 
   /* Empty State */

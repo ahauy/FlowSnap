@@ -47,11 +47,19 @@ console.log('✅ TC-DIST-003 Passed!\n');
 // TC-DIST-004: Privacy & Security Manifesto (3 Pillars)
 console.log('Checking TC-DIST-004: Privacy & Security Manifesto (3 Pillars)...');
 assert.ok(html.includes('id="privacy-manifesto-root"') || html.includes('class="privacy-manifesto"'), 'Privacy manifesto container must be present');
-assert.ok(html.includes('100% Hoạt động Offline'), 'Pillar 1: 100% Offline must be present');
+assert.ok(html.includes('100% Offline Operation'), 'Pillar 1: 100% Offline must be present in English index');
 assert.ok(html.includes('Zero Telemetry &amp; Tracking') || html.includes('Zero Telemetry & Tracking'), 'Pillar 2: Zero Telemetry must be present');
-assert.ok(html.includes('Quyền Trợ Năng Minh Bạch'), 'Pillar 3: Accessibility Transparency must be present');
+assert.ok(html.includes('Transparent Accessibility Permissions'), 'Pillar 3: Accessibility Transparency must be present in English index');
 assert.ok(html.includes('AXUIElement'), 'AXUIElement reference must be explicitly mentioned');
 assert.ok(html.includes('Zero Keylogging'), 'Zero Keylogging guarantee must be present');
+
+// Also verify Vietnamese locale output at dist/vi/index.html
+const distViPath = resolve(__dirname, '../dist/vi/index.html');
+if (existsSync(distViPath)) {
+  const htmlVi = readFileSync(distViPath, 'utf8');
+  assert.ok(htmlVi.includes('100% Hoạt động Offline'), 'Pillar 1: 100% Offline must be present in VI index');
+  assert.ok(htmlVi.includes('Quyền Trợ Năng Minh Bạch'), 'Pillar 3: Accessibility Transparency must be present in VI index');
+}
 console.log('✅ TC-DIST-004 Passed!\n');
 
 // TC-DIST-005: Gatekeeper Remediation Guide Accordion

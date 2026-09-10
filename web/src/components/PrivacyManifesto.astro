@@ -1,5 +1,26 @@
 ---
 import { PRIVACY_PILLARS } from '../data/distribution-data';
+import { getI18n, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = getI18n(lang);
+
+const pillarMap = new Map(t.distribution.privacy.pillars.map((p) => [p.id, p]));
+const localizedPillars = PRIVACY_PILLARS.map((pillar) => {
+  const loc = pillarMap.get(pillar.id);
+  if (!loc) return pillar;
+  return {
+    ...pillar,
+    title: loc.title,
+    badge: loc.badge,
+    description: loc.description,
+    details: loc.details,
+  };
+});
 ---
 
 <div id="privacy-manifesto-root" class="privacy-manifesto" data-component="privacy-manifesto">
@@ -10,18 +31,18 @@ import { PRIVACY_PILLARS } from '../data/distribution-data';
         <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" aria-hidden="true">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
         </svg>
-        <span>Zero Telemetry Guarantee</span>
+        <span>{t.distribution.privacy.badge}</span>
       </div>
-      <h3 class="manifesto-title">Tuyên ngôn Quyền riêng tư & Minh bạch</h3>
+      <h3 class="manifesto-title">{t.distribution.privacy.title}</h3>
     </div>
     <p class="manifesto-desc">
-      FlowSnap được xây dựng cho các kỹ sư và chuyên gia coi trọng an toàn thông tin. Không thỏa hiệp dữ liệu cá nhân.
+      {t.distribution.privacy.desc}
     </p>
   </div>
 
   <!-- 3-Column Symmetrical Grid -->
   <div class="pillars-grid">
-    {PRIVACY_PILLARS.map((pillar) => (
+    {localizedPillars.map((pillar) => (
       <div class="pillar-pane" data-pillar-id={pillar.id}>
         <div class="pane-top-content">
           <div class="pane-header">
@@ -77,7 +98,7 @@ import { PRIVACY_PILLARS } from '../data/distribution-data';
   <div class="manifesto-audit-footer">
     <div class="audit-left">
       <span class="audit-dot" aria-hidden="true"></span>
-      <span class="audit-label">Mã nguồn kiểm toán độc lập 100% công khai:</span>
+      <span class="audit-label">{t.distribution.privacy.auditLabel}</span>
     </div>
     <a
       href="https://github.com/ahauy/FlowSnap"
