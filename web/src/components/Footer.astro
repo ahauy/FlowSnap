@@ -1,14 +1,19 @@
 ---
+import { getI18n, type Locale } from '../i18n';
+
 interface Props {
   githubUrl?: string;
   authorUrl?: string;
+  lang?: Locale;
 }
 
 const {
   githubUrl = 'https://github.com/ahauy/FlowSnap',
   authorUrl = 'https://github.com/ahauy',
+  lang = 'en',
 } = Astro.props;
 
+const t = getI18n(lang);
 const currentYear = new Date().getFullYear();
 ---
 
@@ -28,50 +33,50 @@ const currentYear = new Date().getFullYear();
           <span class="footer-title">FlowSnap</span>
         </div>
         <p class="footer-desc">
-          Native macOS window management engineered with intent-based layouts, Windows 11-style snap picker, and zero private APIs.
+          {t.footer.desc}
         </p>
         <div class="manifesto-badge">
-          <span>Swift 6</span>
+          <span>{t.footer.badges.swift}</span>
           <span class="dot">•</span>
-          <span>Zero Private APIs</span>
+          <span>{t.footer.badges.zeroPrivate}</span>
           <span class="dot">•</span>
-          <span>Apple HIG Compliant</span>
+          <span>{t.footer.badges.hig}</span>
         </div>
       </div>
 
       <!-- Column 2: Product -->
       <div class="footer-col">
-        <h4 class="footer-heading">Product</h4>
+        <h4 class="footer-heading">{t.footer.product.heading}</h4>
         <ul class="footer-links">
-          <li><a href="#features" class="footer-link">Bento Features</a></li>
-          <li><a href="#showcase" class="footer-link">Interactive Simulator</a></li>
-          <li><a href="#shortcuts" class="footer-link">Shortcut Matrix</a></li>
-          <li><a href="#download" class="footer-link">Download DMG & Terminal</a></li>
+          <li><a href="#features" class="footer-link">{t.footer.product.features}</a></li>
+          <li><a href="#showcase" class="footer-link">{t.footer.product.simulator}</a></li>
+          <li><a href="#shortcuts" class="footer-link">{t.footer.product.shortcuts}</a></li>
+          <li><a href="#download" class="footer-link">{t.footer.product.download}</a></li>
         </ul>
       </div>
 
       <!-- Column 3: Open Source & Community -->
       <div class="footer-col">
-        <h4 class="footer-heading">Open Source</h4>
+        <h4 class="footer-heading">{t.footer.openSource.heading}</h4>
         <ul class="footer-links">
           <li>
             <a href={githubUrl} target="_blank" rel="noopener noreferrer" class="footer-link">
-              GitHub Repository
+              {t.footer.openSource.repo}
             </a>
           </li>
           <li>
             <a href={`${githubUrl}/releases`} target="_blank" rel="noopener noreferrer" class="footer-link">
-              Releases & Changelog
+              {t.footer.openSource.releases}
             </a>
           </li>
           <li>
             <a href={`${githubUrl}/tree/main/docs`} target="_blank" rel="noopener noreferrer" class="footer-link">
-              Architecture & Guides
+              {t.footer.openSource.guides}
             </a>
           </li>
           <li>
             <a href={`${githubUrl}/issues`} target="_blank" rel="noopener noreferrer" class="footer-link">
-              Report an Issue
+              {t.footer.openSource.issues}
             </a>
           </li>
         </ul>
@@ -81,10 +86,10 @@ const currentYear = new Date().getFullYear();
     <!-- Bottom Bar -->
     <div class="footer-bottom">
       <div class="footer-legal">
-        <span>© {currentYear} FlowSnap. Released under the <a href={`${githubUrl}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer" class="legal-link">MIT License</a>.</span>
+        <span>© {currentYear} FlowSnap. {t.footer.legal.releasedUnder} <a href={`${githubUrl}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer" class="legal-link">{t.footer.legal.mit}</a>.</span>
       </div>
       <div class="footer-author">
-        <span>Designed & developed by <a href={authorUrl} target="_blank" rel="noopener noreferrer" class="author-link">@ahauy</a></span>
+        <span>{t.footer.legal.designedBy} <a href={authorUrl} target="_blank" rel="noopener noreferrer" class="author-link">@ahauy</a></span>
       </div>
     </div>
   </div>

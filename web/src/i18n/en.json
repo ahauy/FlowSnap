@@ -1,0 +1,347 @@
+{
+  "site": {
+    "title": "FlowSnap — macOS Window Manager with Intent & Snap Precision",
+    "description": "Native macOS window manager with Windows 11-style snap picker, multi-display intent restoration, Quake scratchpad, and zero private APIs.",
+    "keywords": [
+      "FlowSnap",
+      "macOS window manager",
+      "snap layouts",
+      "Windows 11 snap macOS",
+      "Swift 6",
+      "macOS utility",
+      "tiling window manager",
+      "multi-monitor macOS",
+      "Quake scratchpad"
+    ]
+  },
+  "header": {
+    "nav": {
+      "features": "Features",
+      "simulator": "Simulator",
+      "shortcuts": "Shortcuts",
+      "download": "Download"
+    },
+    "github": "GitHub",
+    "langSwitcher": {
+      "en": "EN",
+      "vi": "VI"
+    }
+  },
+  "hero": {
+    "badge": "FlowSnap for macOS",
+    "version": "Version 1.3.1",
+    "titleLine1": "Your Mac. Your Layout.",
+    "titleHighlight": "Your Flow.",
+    "subtitle": "Native window management engineered with intent-based workspace restoration, Windows 11-style top-edge layout picker, and zero private APIs.",
+    "downloadCta": "Download FlowSnap",
+    "sandboxCta": "Try Interactive Sandbox",
+    "instantSnapHint": "Instant snap hotkey:",
+    "quakeHint": "Quake scratchpad:"
+  },
+  "sections": {
+    "showcase": {
+      "tag": "Hero Experience",
+      "title": "3D Interactive macOS Desktop Simulator",
+      "desc": "Drag windows, test top-edge snap layouts, and trigger translucent HUD previews directly in your browser.",
+      "mobileFallback": "Best experienced on desktop — try the interactive sandbox on a larger screen"
+    },
+    "features": {
+      "tag": "Core Architecture",
+      "title": "Engineered for Focus & Intent",
+      "desc": "6 breakthrough capabilities bringing Windows 11 elegance to native macOS speed."
+    },
+    "shortcuts": {
+      "tag": "Tactile Speed",
+      "title": "Keyboard Shortcuts Matrix",
+      "desc": "Full spectrum keyboard navigation for windows, multi-display throws, and presets."
+    },
+    "download": {
+      "tag": "Distribution",
+      "title": "Get Started with FlowSnap",
+      "desc": "One-click terminal install, verified DMG packages, and offline privacy manifesto."
+    }
+  },
+  "bento": {
+    "features": [
+      {
+        "id": "top-edge-picker",
+        "title": "Top-Edge Snap Layout Picker",
+        "badge": "Windows 11-Style on Mac",
+        "description": "Drag any window to the top edge to reveal an intuitive layout picker: 50/50, 70/30, 3-column, and 4-corner grids. Drop into any zone for instant snapping.",
+        "highlights": [
+          "Smooth slide-in physics",
+          "Liquid Glass translucent HUD",
+          "4 smart layout templates"
+        ]
+      },
+      {
+        "id": "collinear-2d",
+        "title": "Adaptive Collinear 2D Resize",
+        "badge": "Tiling Precision",
+        "description": "Drag shared divider borders or crosshair intersections to simultaneously resize 2 to 4 adjacent windows at 60 FPS without breaking layout symmetry.",
+        "highlights": [
+          "T-junction & crosshair snapping",
+          "Rock-solid 60 FPS fluidity"
+        ]
+      },
+      {
+        "id": "current-space",
+        "title": "Current Space Preservation",
+        "badge": "Flow Continuity",
+        "description": "Newly launched apps appear strictly in your current active workspace. Permanently ends macOS from jarringly jumping to another virtual desktop space.",
+        "highlights": ["100% Public APIs", "Zero workspace disruption"]
+      },
+      {
+        "id": "workspaces-presets",
+        "title": "Intent-Based Workspaces & Presets",
+        "badge": "Multi-App Harmony",
+        "description": "Save and restore full application workspace groups (Coding, Research, Writing) mapped by screen-independent percentages with a single keystroke.",
+        "highlights": [
+          "Coding & Research Presets",
+          "Seamless multi-display restore"
+        ]
+      },
+      {
+        "id": "quake-scratchpad",
+        "title": "Quake-Style Quick Scratchpad",
+        "badge": "Instant Summon (⌥Space)",
+        "description": "Summon a dedicated utility window (Terminal, Notes, Finder) floating in front in < 50ms. Dismiss quickly with ESC without shrinking underlying windows by 1 pixel.",
+        "highlights": [
+          "Instant < 50ms summon",
+          "Auto-dismiss on outside click",
+          "Zero-shrink background apps"
+        ]
+      },
+      {
+        "id": "multi-monitor",
+        "title": "Display-Aware Multi-Monitor Topology",
+        "badge": "Coordinate Inversion Math",
+        "description": "Throw windows across screens with dedicated hotkeys (⌃⌥⇧→), automatically scaling proportions between Retina displays and 4K monitors with pixel-perfect math.",
+        "highlights": [
+          "1-touch display throw",
+          "Preserves aspect ratio across 4K & Retina"
+        ]
+      }
+    ]
+  },
+  "shortcuts": {
+    "categories": {
+      "all": "All",
+      "window": "Window",
+      "display": "Display",
+      "workspace": "Workspace",
+      "utility": "Utility"
+    },
+    "controls": {
+      "searchPlaceholder": "Search shortcuts by keys or actions... (e.g. ⌥Space, throw display, snap)",
+      "searchAria": "Search keyboard shortcuts",
+      "clearSearchAria": "Clear search input",
+      "keycapTitle": "Click to copy shortcut",
+      "copyAria": "Copy shortcut",
+      "copyLabel": "Copy",
+      "copiedLabel": "Copied!",
+      "emptyTitle": "No matching shortcuts found",
+      "emptyDesc": "Try searching with different keywords like \"snap\", \"display\", \"preset\", or select \"All\".",
+      "resetFilter": "Reset filters & Show all",
+      "showAll": "Show all 15 shortcuts",
+      "showFewer": "Show fewer shortcuts"
+    },
+    "items": [
+      {
+        "id": "snap-left",
+        "action": "Snap Left Half (50%)",
+        "description": "Snap focused window to the left 50% of the active display",
+        "badge": "Basic"
+      },
+      {
+        "id": "snap-right",
+        "action": "Snap Right Half (50%)",
+        "description": "Snap focused window to the right 50% of the active display",
+        "badge": "Basic"
+      },
+      {
+        "id": "snap-maximize",
+        "action": "Maximize Window",
+        "description": "Expand window to fill 100% of usable desktop workspace (excluding Dock/Menu Bar)"
+      },
+      {
+        "id": "snap-restore",
+        "action": "Restore Previous Size",
+        "description": "Return window to its original size and coordinates prior to snapping"
+      },
+      {
+        "id": "snap-quarters",
+        "action": "Snap 4 Corners (25%)",
+        "description": "Tile window into 1 of 4 screen corners (1: Top-Left, 2: Top-Right, 3: Bottom-Left, 4: Bottom-Right)"
+      },
+      {
+        "id": "pin-always-on-top",
+        "action": "Pin Always on Top",
+        "description": "Keep window floating above all other application windows",
+        "badge": "New"
+      },
+      {
+        "id": "throw-next-display",
+        "action": "Throw to Next Display",
+        "description": "Move window to the adjacent right display with automatic aspect ratio scaling",
+        "badge": "Multi-display"
+      },
+      {
+        "id": "throw-prev-display",
+        "action": "Throw to Previous Display",
+        "description": "Move window to the adjacent left display with automatic aspect ratio scaling",
+        "badge": "Multi-display"
+      },
+      {
+        "id": "migrate-workspace-display",
+        "action": "Migrate Full Workspace to Display",
+        "description": "Move all active windows in the current workspace cluster to another display simultaneously"
+      },
+      {
+        "id": "preset-coding",
+        "action": "Coding Flow Preset",
+        "description": "Restore 3-window layout: VS Code (60%), Chrome DevTools (25%), Terminal (15%)",
+        "badge": "Preset"
+      },
+      {
+        "id": "preset-research",
+        "action": "Research & Writing Preset",
+        "description": "Restore document layout: Arc Browser (70%) + Notion / Notes (30%)",
+        "badge": "Preset"
+      },
+      {
+        "id": "snapshot-save",
+        "action": "Save Workspace Snapshot",
+        "description": "Capture current workspace window positions and save to custom workspaces list"
+      },
+      {
+        "id": "toggle-scratchpad",
+        "action": "Toggle Quake Scratchpad",
+        "description": "Toggle floating scratchpad terminal or notes window; press again or ESC to dismiss",
+        "badge": "Breakthrough"
+      },
+      {
+        "id": "universal-fullscreen-escape",
+        "action": "Universal Fullscreen Escape",
+        "description": "Multi-layer fullscreen escape supporting both native macOS and Electron apps"
+      },
+      {
+        "id": "open-settings",
+        "action": "Open FlowSnap Settings",
+        "description": "Configure hotkeys, window gaps, padding, and launch-at-login settings"
+      }
+    ]
+  },
+  "distribution": {
+    "dmg": {
+      "title": "Official macOS Disk Image",
+      "desc": "Download verified, pre-built universal macOS (.dmg) package optimized for both Apple Silicon and Intel architectures.",
+      "btnHeadline": "Download for macOS",
+      "verifiedChecksum": "SHA-256 Checksum Verified",
+      "viewAllReleases": "View all releases on GitHub"
+    },
+    "terminal": {
+      "title": "One-Line Automated Installer",
+      "curlDesc": "Automatically downloads and installs the latest Universal DMG into /Applications",
+      "brewDesc": "Install and manage version updates via official Homebrew Cask tap",
+      "chipSudo": "Sudo-less (No root required)",
+      "chipArch": "Auto-detects Apple Silicon & Intel",
+      "footerHint": "Auto-verifies chip architecture and activates safe installation",
+      "footerLink": "View script on GitHub",
+      "copyAria": "Copy terminal installation command to clipboard"
+    },
+    "privacy": {
+      "badge": "Zero Telemetry Guarantee",
+      "title": "Privacy & Transparency Manifesto",
+      "desc": "FlowSnap is built for engineers and power users who value security. Zero compromises on personal data.",
+      "auditLabel": "100% publicly auditable source code:",
+      "pillars": [
+        {
+          "id": "offline",
+          "title": "100% Offline Operation",
+          "badge": "Zero Network Outbound",
+          "description": "FlowSnap runs completely locally on your Mac without making any external outbound network requests.",
+          "details": [
+            "No account registration or login required",
+            "Zero configuration or layout data sent outside",
+            "Functions flawlessly even completely air-gapped"
+          ]
+        },
+        {
+          "id": "telemetry",
+          "title": "Zero Telemetry & Tracking",
+          "badge": "No Tracking SDKs",
+          "description": "Strictly zero telemetry, analytics, user profiling, or behavioral tracking SDKs integrated.",
+          "details": [
+            "No Google Analytics, Sentry, or Mixpanel SDKs",
+            "No cookies, fingerprinting, or device identifiers",
+            "100% open source for independent public audits"
+          ]
+        },
+        {
+          "id": "accessibility",
+          "title": "Transparent Accessibility Permissions",
+          "badge": "AXUIElement Only",
+          "description": "Accessibility (AX) APIs are strictly utilized to compute and navigate window frame coordinates.",
+          "details": [
+            "Operates strictly on window size and position frames",
+            "Zero Keylogging guarantee: Never listens to keystroke contents",
+            "Zero memory inspection or interference with other applications"
+          ]
+        }
+      ]
+    },
+    "gatekeeper": {
+      "title": "Seeing \"Unidentified Developer\" warning from macOS Gatekeeper?",
+      "summary": "Because FlowSnap is community-driven open source (without a commercial paid Apple Developer certificate), macOS applies quarantine flags on first launch.",
+      "hint": "Quick 5-second quarantine removal for macOS Sequoia & Sonoma",
+      "toggleLabel": "Details",
+      "command": "xattr -cr /Applications/FlowSnap.app",
+      "copyAria": "Copy xattr command to clipboard",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "title": "Drag FlowSnap into Applications",
+          "instruction": "Open the downloaded FlowSnap.dmg and drag the FlowSnap icon into /Applications as usual."
+        },
+        {
+          "stepNumber": 2,
+          "title": "Open Terminal and clear quarantine flag",
+          "instruction": "Copy and paste the command below into Terminal, then press Enter to remove com.apple.quarantine."
+        },
+        {
+          "stepNumber": 3,
+          "title": "Open app and grant Accessibility permission",
+          "instruction": "Launch FlowSnap from Launchpad or Spotlight, and grant Accessibility permission when prompted to enjoy fluid snapping."
+        }
+      ]
+    }
+  },
+  "footer": {
+    "desc": "Native macOS window management engineered with intent-based layouts, Windows 11-style snap picker, and zero private APIs.",
+    "badges": {
+      "swift": "Swift 6",
+      "zeroPrivate": "Zero Private APIs",
+      "hig": "Apple HIG Compliant"
+    },
+    "product": {
+      "heading": "Product",
+      "features": "Bento Features",
+      "simulator": "Interactive Simulator",
+      "shortcuts": "Shortcut Matrix",
+      "download": "Download DMG & Terminal"
+    },
+    "openSource": {
+      "heading": "Open Source",
+      "repo": "GitHub Repository",
+      "releases": "Releases & Changelog",
+      "guides": "Architecture & Guides",
+      "issues": "Report an Issue"
+    },
+    "legal": {
+      "releasedUnder": "Released under the",
+      "mit": "MIT License",
+      "designedBy": "Designed & developed by"
+    }
+  }
+}

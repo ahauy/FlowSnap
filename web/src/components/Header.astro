@@ -1,21 +1,30 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import { getI18n, type Locale } from '../i18n';
 
 interface Props {
   version?: string;
   githubUrl?: string;
+  lang?: Locale;
 }
 
 const {
   version = 'v1.3.1',
   githubUrl = 'https://github.com/ahauy/FlowSnap',
+  lang = 'en',
 } = Astro.props;
+
+const t = getI18n(lang);
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
+const homeUrl = lang === 'vi' ? `${basePath || ''}/vi` : (import.meta.env.BASE_URL || '/');
+const enUrl = `${basePath || ''}/`;
+const viUrl = `${basePath || ''}/vi`;
 ---
 
 <header class="site-header">
   <div class="page-container header-inner">
     <!-- Brand identity -->
-    <a href={import.meta.env.BASE_URL} class="brand-group" aria-label="FlowSnap Home">
+    <a href={homeUrl} class="brand-group" aria-label="FlowSnap Home">
       <div class="brand-icon-wrapper">
         <svg class="brand-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="28" height="28" rx="7" fill="var(--surface-elevated)" stroke="var(--border-color)" stroke-width="1.5" />
@@ -34,14 +43,39 @@ const {
 
     <!-- Center navigation anchors -->
     <nav class="header-nav" aria-label="Main Navigation">
-      <a href="#features" class="nav-link">Features</a>
-      <a href="#showcase" class="nav-link">Simulator</a>
-      <a href="#shortcuts" class="nav-link">Shortcuts</a>
-      <a href="#download" class="nav-link">Download</a>
+      <a href="#features" class="nav-link">{t.header.nav.features}</a>
+      <a href="#showcase" class="nav-link">{t.header.nav.simulator}</a>
+      <a href="#shortcuts" class="nav-link">{t.header.nav.shortcuts}</a>
+      <a href="#download" class="nav-link">{t.header.nav.download}</a>
     </nav>
 
     <!-- Header actions -->
     <div class="header-actions">
+      <!-- Compact Language Switcher (EN | VI) -->
+      <div class="lang-switcher" role="group" aria-label="Language Switcher">
+        <a
+          href={enUrl}
+          class={`lang-btn ${lang === 'en' ? 'active' : ''}`}
+          data-lang-target="en"
+          data-base-href={enUrl}
+          aria-label="Switch to English"
+          aria-current={lang === 'en' ? 'page' : undefined}
+        >
+          {t.header.langSwitcher.en}
+        </a>
+        <span class="lang-divider" aria-hidden="true">|</span>
+        <a
+          href={viUrl}
+          class={`lang-btn ${lang === 'vi' ? 'active' : ''}`}
+          data-lang-target="vi"
+          data-base-href={viUrl}
+          aria-label="Chuyển sang Tiếng Việt"
+          aria-current={lang === 'vi' ? 'page' : undefined}
+        >
+          {t.header.langSwitcher.vi}
+        </a>
+      </div>
+
       <a
         href={githubUrl}
         target="_blank"
@@ -52,13 +86,37 @@ const {
         <svg class="github-icon" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
           <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
         </svg>
-        <span class="github-label">GitHub</span>
+        <span class="github-label">{t.header.github}</span>
       </a>
 
       <ThemeToggle />
     </div>
   </div>
 </header>
+
+<script>
+  function initLanguageSwitcher() {
+    const langLinks = document.querySelectorAll<HTMLAnchorElement>('.lang-btn');
+    langLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        const hash = window.location.hash;
+        if (hash) {
+          const baseHref = link.getAttribute('data-base-href') || link.getAttribute('href') || '';
+          link.href = baseHref.replace(/#.*$/, '') + hash;
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLanguageSwitcher);
+  } else {
+    initLanguageSwitcher();
+  }
+
+  document.addEventListener('astro:after-swap', initLanguageSwitcher);
+  document.addEventListener('astro:page-load', initLanguageSwitcher);
+</script>
 
 <style>
   .site-header {
@@ -149,6 +207,52 @@ const {
     gap: 12px;
   }
 
+  /* Compact Language Switcher */
+  .lang-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full);
+    padding: 2px 4px;
+    height: 32px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .lang-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    padding: 3px 7px;
+    border-radius: var(--radius-full);
+    transition: all var(--duration-fast) ease;
+    user-select: none;
+  }
+
+  .lang-btn:hover {
+    color: var(--text-primary);
+  }
+
+  .lang-btn.active {
+    background: var(--surface-elevated);
+    color: var(--text-primary);
+    font-weight: 700;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  }
+
+  .lang-divider {
+    color: var(--border-color);
+    font-size: 10px;
+    user-select: none;
+    line-height: 1;
+  }
+
   .github-btn {
     height: 36px;
     padding: 0 14px;
@@ -171,6 +275,16 @@ const {
 
     .github-btn {
       padding: 0 10px;
+    }
+
+    .lang-switcher {
+      padding: 1px 3px;
+      height: 28px;
+    }
+
+    .lang-btn {
+      padding: 2px 5px;
+      font-size: 10px;
     }
   }
 </style>

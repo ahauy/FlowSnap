@@ -1,15 +1,15 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import DesktopSimulator from '../components/DesktopSimulator.astro';
-import MetricsProof from '../components/MetricsProof.astro';
-import BentoGrid from '../components/BentoGrid.astro';
-import ShortcutMatrix from '../components/ShortcutMatrix.astro';
-import DistributionHub from '../components/DistributionHub.astro';
-import { getI18n } from '../i18n';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import DesktopSimulator from '../../components/DesktopSimulator.astro';
+import MetricsProof from '../../components/MetricsProof.astro';
+import BentoGrid from '../../components/BentoGrid.astro';
+import ShortcutMatrix from '../../components/ShortcutMatrix.astro';
+import DistributionHub from '../../components/DistributionHub.astro';
+import { getI18n } from '../../i18n';
 
-const lang = 'en';
+const lang = 'vi';
 const t = getI18n(lang);
 ---
 
@@ -71,7 +71,7 @@ const t = getI18n(lang);
       </div>
     </section>
 
-    <!-- Anchors & Placeholders for Subsequent Stories in Sprint 8 -->
+    <!-- Anchors & Sections -->
     <div class="page-container sections-container">
       <section id="showcase" class="section-card">
         <div class="section-header">
@@ -236,56 +236,6 @@ const t = getI18n(lang);
     font-size: 14px;
     color: var(--text-secondary);
     max-width: 600px;
-  }
-
-  .placeholder-box {
-    width: 100%;
-    min-height: 180px;
-    border: 1px dashed var(--border-color);
-    border-radius: var(--radius-lg);
-    background-color: var(--surface-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-
-  .placeholder-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .traffic-lights {
-    display: flex;
-    gap: 6px;
-  }
-
-  .dot-red,
-  .dot-yellow,
-  .dot-green {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-
-  .dot-red { background-color: #ff5f56; }
-  .dot-yellow { background-color: #ffbd2e; }
-  .dot-green { background-color: #27c93f; }
-
-  .placeholder-text {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    color: var(--text-secondary);
-  }
-
-  .placeholder-text code {
-    background-color: var(--surface-elevated);
-    padding: 2px 6px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-    color: var(--accent-blue);
   }
 
   @media (max-width: 640px) {

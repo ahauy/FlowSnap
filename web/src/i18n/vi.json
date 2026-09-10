@@ -1,0 +1,347 @@
+{
+  "site": {
+    "title": "FlowSnap — Ứng dụng Quản lý Cửa sổ macOS Chuẩn xác & Tinh tế",
+    "description": "Ứng dụng quản lý cửa sổ native cho macOS với khay chọn bố cục kiểu Windows 11, khôi phục không gian đa màn hình, Quake scratchpad và hoàn toàn không dùng Private API.",
+    "keywords": [
+      "FlowSnap",
+      "macOS window manager",
+      "snap layouts",
+      "Windows 11 snap macOS",
+      "Swift 6",
+      "macOS utility",
+      "tiling window manager",
+      "multi-monitor macOS",
+      "Quake scratchpad"
+    ]
+  },
+  "header": {
+    "nav": {
+      "features": "Tính năng",
+      "simulator": "Trình mô phỏng",
+      "shortcuts": "Phím tắt",
+      "download": "Tải về"
+    },
+    "github": "GitHub",
+    "langSwitcher": {
+      "en": "EN",
+      "vi": "VI"
+    }
+  },
+  "hero": {
+    "badge": "FlowSnap cho macOS",
+    "version": "Phiên bản 1.3.1",
+    "titleLine1": "Mac của bạn. Bố cục của bạn.",
+    "titleHighlight": "Mạch làm việc của bạn.",
+    "subtitle": "Quản lý cửa sổ gốc được thiết kế với tính năng khôi phục workspace theo ngữ cảnh, khay snap mép trên kiểu Windows 11 và 100% Public APIs.",
+    "downloadCta": "Tải FlowSnap",
+    "sandboxCta": "Thử nghiệm Sandbox tương tác",
+    "instantSnapHint": "Phím tắt snap nhanh:",
+    "quakeHint": "Quake scratchpad:"
+  },
+  "sections": {
+    "showcase": {
+      "tag": "Trải nghiệm Tương tác",
+      "title": "Trình mô phỏng Màn hình macOS 3D",
+      "desc": "Kéo thả cửa sổ, trải nghiệm khay snap mép trên và kích hoạt xem trước HUD mờ trực tiếp trên trình duyệt.",
+      "mobileFallback": "Trải nghiệm tốt nhất trên máy tính — hãy thử sandbox tương tác trên màn hình lớn hơn"
+    },
+    "features": {
+      "tag": "Kiến trúc Cốt lõi",
+      "title": "Thiết kế cho Sự tập trung & Tinh tế",
+      "desc": "6 tính năng đột phá mang vẻ đẹp Windows 11 hòa quyện cùng tốc độ native của macOS."
+    },
+    "shortcuts": {
+      "tag": "Tốc độ Thực chiến",
+      "title": "Ma trận Phím tắt",
+      "desc": "Hệ thống phím tắt toàn diện điều khiển cửa sổ, ném đa màn hình và các bố cục mẫu."
+    },
+    "download": {
+      "tag": "Kênh Phân phối",
+      "title": "Bắt đầu cùng FlowSnap",
+      "desc": "Cài đặt 1 dòng lệnh Terminal, gói cài DMG chuẩn hóa và cam kết quyền riêng tư ngoại tuyến."
+    }
+  },
+  "bento": {
+    "features": [
+      {
+        "id": "top-edge-picker",
+        "title": "Khay chọn bố cục Snap mép trên",
+        "badge": "Phong cách Windows 11 trên Mac",
+        "description": "Kéo cửa sổ chạm mép trên cùng màn hình để mở khay chọn bố cục trực quan: 50/50, 70/30, 3 cột ngang và 4 góc. Thả vào ô bất kỳ để snap tức thì.",
+        "highlights": [
+          "Trượt xuống mượt mà",
+          "Xem trước kính mờ Liquid Glass",
+          "4 mẫu bố cục thông minh"
+        ]
+      },
+      {
+        "id": "collinear-2d",
+        "title": "Co giãn 2D Đồng trục Thông minh",
+        "badge": "Chuẩn xác từng Pixel",
+        "description": "Kéo đường phân cách chung hoặc ngã ba/ngã tư để đồng thời co giãn 2 đến 4 cửa sổ liền kề mượt mà ở 60 FPS mà không phá vỡ cấu trúc layout.",
+        "highlights": [
+          "Điểm giao chữ T & dấu cộng",
+          "Giữ nhịp 60 FPS không giật lag"
+        ]
+      },
+      {
+        "id": "current-space",
+        "title": "Bảo toàn Desktop Space Hiện tại",
+        "badge": "Giữ trọn Mạch tập trung",
+        "description": "Mở ứng dụng mới luôn xuất hiện tại không gian làm việc hiện tại. Chấm dứt vĩnh viễn ức chế bị macOS tự văng sang Desktop Space khác.",
+        "highlights": ["100% Public APIs", "Bảo toàn mạch tập trung tuyệt đối"]
+      },
+      {
+        "id": "workspaces-presets",
+        "title": "Workspaces & Bố cục theo Ngữ cảnh",
+        "badge": "Đồng bộ Đa ứng dụng",
+        "description": "Lưu và khôi phục trọn gói không gian làm việc (Coding, Research, Writing) theo tỷ lệ phần trăm độc lập kích thước màn hình chỉ với 1 phím tắt.",
+        "highlights": [
+          "Preset Coding & Research",
+          "Khôi phục đa màn hình mượt mà"
+        ]
+      },
+      {
+        "id": "quake-scratchpad",
+        "title": "Cửa sổ Tiện ích Quake Scratchpad",
+        "badge": "Triệu hồi tức thì (⌥Space)",
+        "description": "Triệu hồi cửa sổ tiện ích (Terminal, Notes, Finder) nổi lên trước mặt người dùng trong < 50ms. Thoát nhanh bằng phím ESC mà không co nhỏ ứng dụng đang làm việc 1 pixel nào.",
+        "highlights": [
+          "Triệu hồi tức thì < 50ms",
+          "Tự ẩn khi click ra ngoài",
+          "Zero-shrink ứng dụng nền"
+        ]
+      },
+      {
+        "id": "multi-monitor",
+        "title": "Cấu trúc Đa màn hình Thông minh",
+        "badge": "Toán học Đảo trục Tọa độ",
+        "description": "Ném cửa sổ xuyên màn hình bằng phím tắt (⌃⌥⇧→), tự co giãn tỷ lệ giữa màn hình Retina và màn 4K với toán học đảo trục tọa độ chuẩn xác 100%.",
+        "highlights": [
+          "Ném cửa sổ 1 chạm",
+          "Bảo toàn tỷ lệ khung hình giữa 4K & Retina"
+        ]
+      }
+    ]
+  },
+  "shortcuts": {
+    "categories": {
+      "all": "Tất cả",
+      "window": "Cửa sổ",
+      "display": "Màn hình",
+      "workspace": "Workspace",
+      "utility": "Tiện ích"
+    },
+    "controls": {
+      "searchPlaceholder": "Tìm kiếm theo phím tắt hoặc tác vụ... (vd: ⌥Space, ném màn hình, snap)",
+      "searchAria": "Tìm kiếm phím tắt",
+      "clearSearchAria": "Xóa nội dung tìm kiếm",
+      "keycapTitle": "Click để sao chép phím tắt",
+      "copyAria": "Sao chép phím tắt",
+      "copyLabel": "Sao chép",
+      "copiedLabel": "Đã sao chép!",
+      "emptyTitle": "Không tìm thấy phím tắt phù hợp",
+      "emptyDesc": "Thử tìm kiếm với từ khóa khác như \"snap\", \"màn hình\", \"preset\" hoặc chọn danh mục \"Tất cả\".",
+      "resetFilter": "Xóa bộ lọc & Hiển thị tất cả",
+      "showAll": "Hiển thị tất cả 15 phím tắt",
+      "showFewer": "Thu gọn danh sách"
+    },
+    "items": [
+      {
+        "id": "snap-left",
+        "action": "Snap Nửa Trái (50%)",
+        "description": "Chia cửa sổ vào 50% bên trái màn hình hiện tại",
+        "badge": "Cơ bản"
+      },
+      {
+        "id": "snap-right",
+        "action": "Snap Nửa Phải (50%)",
+        "description": "Chia cửa sổ vào 50% bên phải màn hình hiện tại",
+        "badge": "Cơ bản"
+      },
+      {
+        "id": "snap-maximize",
+        "action": "Phóng To Toàn Màn Hình",
+        "description": "Mở rộng chiếm 100% không gian làm việc khả dụng (trừ Dock/Menu Bar)"
+      },
+      {
+        "id": "snap-restore",
+        "action": "Khôi Phục Vị Trí Cũ",
+        "description": "Đưa cửa sổ về lại kích thước và tọa độ ban đầu trước khi snap"
+      },
+      {
+        "id": "snap-quarters",
+        "action": "Snap 4 Góc (25%)",
+        "description": "Xếp cửa sổ vào 1 trong 4 góc màn hình (1: Top-Left, 2: Top-Right, 3: Bottom-Left, 4: Bottom-Right)"
+      },
+      {
+        "id": "pin-always-on-top",
+        "action": "Ghim Luôn Trên Cùng",
+        "description": "Ghim cửa sổ luôn nổi lên trên các ứng dụng khác (Always-on-Top)",
+        "badge": "Mới"
+      },
+      {
+        "id": "throw-next-display",
+        "action": "Ném Sang Màn Hình Kế Tiếp",
+        "description": "Chuyển cửa sổ sang màn hình bên phải và tự co giãn tỷ lệ khung hình",
+        "badge": "Đa màn hình"
+      },
+      {
+        "id": "throw-prev-display",
+        "action": "Ném Sang Màn Hình Trước",
+        "description": "Chuyển cửa sổ sang màn hình bên trái và tự co giãn tỷ lệ khung hình",
+        "badge": "Đa màn hình"
+      },
+      {
+        "id": "migrate-workspace-display",
+        "action": "Di Chuyển Trọn Gói Workspace",
+        "description": "Chuyển toàn bộ nhóm cửa sổ đang làm việc sang màn hình khác đồng thời"
+      },
+      {
+        "id": "preset-coding",
+        "action": "Bố Cục Lập Trình (Coding Flow)",
+        "description": "Khôi phục bộ 3 cửa sổ: VS Code (60%), Chrome DevTools (25%), Terminal (15%)",
+        "badge": "Preset"
+      },
+      {
+        "id": "preset-research",
+        "action": "Bố Cục Nghiên Cứu & Viết Lách",
+        "description": "Khôi phục bố cục tài liệu: Arc Browser (70%) + Notion / Notes (30%)",
+        "badge": "Preset"
+      },
+      {
+        "id": "snapshot-save",
+        "action": "Lưu Nhanh Bố Cục Workspace",
+        "description": "Chụp ảnh không gian làm việc hiện tại và lưu vào danh sách Workspace cá nhân"
+      },
+      {
+        "id": "toggle-scratchpad",
+        "action": "Triệu Hồi Quake Scratchpad",
+        "description": "Bật/tắt nhanh cửa sổ ghi chú hoặc terminal nổi; nhấn lại hoặc ESC để ẩn",
+        "badge": "Đột phá"
+      },
+      {
+        "id": "universal-fullscreen-escape",
+        "action": "Thoát Toàn Màn Hình Tức Thì",
+        "description": "Thoát Fullscreen đa tầng hỗ trợ cả app macOS Native lẫn Electron"
+      },
+      {
+        "id": "open-settings",
+        "action": "Mở Cài Đặt FlowSnap",
+        "description": "Mở cửa sổ cấu hình phím tắt, khoảng hở viền (Gaps), và khởi động cùng macOS"
+      }
+    ]
+  },
+  "distribution": {
+    "dmg": {
+      "title": "Gói Cài Đặt Chuẩn macOS Disk Image",
+      "desc": "Tải trực tiếp gói cài đặt chuẩn macOS (.dmg) đã biên dịch sẵn với tối ưu hóa đa kiến trúc Apple Silicon & Intel.",
+      "btnHeadline": "Tải cho macOS",
+      "verifiedChecksum": "Xác thực mã băm SHA-256",
+      "viewAllReleases": "Xem tất cả bản phát hành trên GitHub"
+    },
+    "terminal": {
+      "title": "Cài Đặt Tự Động 1 Dòng Lệnh",
+      "curlDesc": "Tải và cài đặt tự động bản Universal DMG mới nhất vào /Applications",
+      "brewDesc": "Cài đặt và quản lý phiên bản qua Homebrew Cask tap chính thức",
+      "chipSudo": "Sudo-less (Không cần root)",
+      "chipArch": "Tự phát hiện Apple Silicon & Intel",
+      "footerHint": "Tự động kiểm tra kiến trúc chip và kích hoạt cài đặt an toàn",
+      "footerLink": "Xem script trên GitHub",
+      "copyAria": "Sao chép lệnh cài đặt terminal vào clipboard"
+    },
+    "privacy": {
+      "badge": "Cam kết Không thu thập Dữ liệu",
+      "title": "Tuyên ngôn Quyền riêng tư & Minh bạch",
+      "desc": "FlowSnap được xây dựng cho các kỹ sư và chuyên gia coi trọng an toàn thông tin. Không thỏa hiệp dữ liệu cá nhân.",
+      "auditLabel": "Mã nguồn kiểm toán độc lập 100% công khai:",
+      "pillars": [
+        {
+          "id": "offline",
+          "title": "100% Hoạt động Offline",
+          "badge": "Không Kết nối Mạng Ngoài",
+          "description": "FlowSnap hoạt động hoàn toàn cục bộ trên máy của bạn mà không tạo bất kỳ kết nối mạng ngoại vi nào.",
+          "details": [
+            "Không yêu cầu đăng ký tài khoản hay đăng nhập",
+            "Không gửi dữ liệu cấu hình hoặc bố cục ra bên ngoài",
+            "Hoạt động hoàn hảo ngay cả khi ngắt toàn bộ Internet"
+          ]
+        },
+        {
+          "id": "telemetry",
+          "title": "Zero Telemetry & Tracking",
+          "badge": "Không SDK Theo dõi",
+          "description": "Tuyệt đối không thu thập dữ liệu phân tích hành vi, thống kê hay thông tin cá nhân của người dùng.",
+          "details": [
+            "Không tích hợp Google Analytics, Sentry hay Mixpanel",
+            "Không lưu cookie hay fingerprint máy tính",
+            "Mã nguồn minh bạch 100% để cộng đồng tự do kiểm toán"
+          ]
+        },
+        {
+          "id": "accessibility",
+          "title": "Quyền Trợ Năng Minh Bạch",
+          "badge": "Chỉ Dùng AXUIElement",
+          "description": "Quyền Accessibility (AX) chỉ được dùng để tính toán và điều hướng tọa độ cửa sổ.",
+          "details": [
+            "Chỉ thao tác kích thước (size) và vị trí (position) cửa sổ",
+            "Cam kết Zero Keylogging: Không bao giờ theo dõi nội dung gõ phím",
+            "Không can thiệp vào bộ nhớ hoặc dữ liệu của ứng dụng khác"
+          ]
+        }
+      ]
+    },
+    "gatekeeper": {
+      "title": "Gặp cảnh báo \"Unidentified Developer\" từ macOS Gatekeeper?",
+      "summary": "Vì FlowSnap là phần mềm mã nguồn mở cộng đồng phi thương mại (không mua chứng chỉ Apple Developer trả phí), macOS sẽ gắn thuộc tính cách ly (quarantine) trong lần đầu mở app.",
+      "hint": "Cách khắc phục cách ly (quarantine) nhanh chóng trong 5 giây cho macOS Sequoia & Sonoma",
+      "toggleLabel": "Chi tiết",
+      "command": "xattr -cr /Applications/FlowSnap.app",
+      "copyAria": "Sao chép lệnh xattr vào clipboard",
+      "steps": [
+        {
+          "stepNumber": 1,
+          "title": "Kéo FlowSnap vào thư mục Applications",
+          "instruction": "Mở tệp FlowSnap.dmg vừa tải và kéo biểu tượng FlowSnap vào thư mục /Applications như bình thường."
+        },
+        {
+          "stepNumber": 2,
+          "title": "Mở Terminal và chạy lệnh gỡ cờ cách ly",
+          "instruction": "Sao chép và dán câu lệnh bên dưới vào Terminal rồi nhấn Enter để xóa thuộc tính com.apple.quarantine."
+        },
+        {
+          "stepNumber": 3,
+          "title": "Mở ứng dụng và cấp quyền Trợ năng",
+          "instruction": "Khởi chạy FlowSnap từ Launchpad hoặc Spotlight, sau đó cấp quyền Trợ năng (Accessibility) khi được hỏi để bắt đầu tận hưởng snap mượt mà."
+        }
+      ]
+    }
+  },
+  "footer": {
+    "desc": "Quản lý cửa sổ gốc được thiết kế với tính năng khôi phục workspace theo ngữ cảnh, khay snap mép trên kiểu Windows 11 và 100% Public APIs.",
+    "badges": {
+      "swift": "Swift 6",
+      "zeroPrivate": "Zero Private APIs",
+      "hig": "Apple HIG Compliant"
+    },
+    "product": {
+      "heading": "Sản phẩm",
+      "features": "Tính năng nổi bật",
+      "simulator": "Trình mô phỏng tương tác",
+      "shortcuts": "Ma trận phím tắt",
+      "download": "Tải DMG & Lệnh Terminal"
+    },
+    "openSource": {
+      "heading": "Mã nguồn mở",
+      "repo": "Kho mã nguồn GitHub",
+      "releases": "Bản phát hành & Nhật ký",
+      "guides": "Kiến trúc & Hướng dẫn",
+      "issues": "Báo lỗi / Góp ý"
+    },
+    "legal": {
+      "releasedUnder": "Phát hành theo",
+      "mit": "Giấy phép MIT",
+      "designedBy": "Thiết kế & phát triển bởi"
+    }
+  }
+}
