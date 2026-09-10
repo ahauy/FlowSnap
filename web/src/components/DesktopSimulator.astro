@@ -8,9 +8,112 @@
  * authentic FlowSnap Menu Bar popover, Windows 11-style top-edge layout picker with true 70/30 proportions,
  * liquid glass HUD snap preview, and buttery 120 FPS pointer drag physics.
  */
+import { getI18n, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = getI18n(lang);
 ---
 
 <div class="simulator-wrapper" id="desktop-simulator-root">
+  <!-- Mobile / Touch-Only Fallback Card -->
+  <div class="mobile-fallback-card" role="region" aria-label="macOS Desktop Preview">
+    <div class="mobile-fallback-banner">
+      <div class="banner-icon-wrap" aria-hidden="true">
+        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor">
+          <path fill-rule="evenodd" d="M2 4.5A2.5 2.5 0 014.5 2h11A2.5 2.5 0 0118 4.5v8a2.5 2.5 0 01-2.5 2.5h-3.25a.75.75 0 000 1.5H13a.75.75 0 010 1.5H7a.75.75 0 010-1.5h.75a.75.75 0 000-1.5H4.5A2.5 2.5 0 012 12.5v-8zm2.5-1a1 1 0 00-1 1v8a1 1 0 001 1h11a1 1 0 001-1v-8a1 1 0 00-1-1h-11z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <p class="banner-text">{t.sections.showcase.mobileFallback}</p>
+    </div>
+
+    <div class="static-preview-frame">
+      <div class="static-menubar">
+        <div class="static-menubar-left">
+          <svg class="apple-logo" viewBox="0 0 170 170" width="11" height="11" fill="currentColor">
+            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.04-7.7-7.85-12-14.44-6-9.19-10.74-19.8-14.22-31.85-3.48-12.04-5.22-23.3-5.22-33.78 0-14.07 3.51-25.96 10.53-35.68 7.02-9.72 16.03-14.67 27.02-14.86 4.79 0 10.37 1.34 16.74 4.02 6.37 2.68 10.22 4.07 11.55 4.17 1.56-.1 5.68-1.57 12.35-4.42 6.67-2.85 12.44-4.14 17.31-3.87 13.06.74 23.47 5.67 31.23 14.8-11.44 6.89-17.06 16.38-16.86 28.47.2 9.53 3.91 17.51 11.13 23.94 7.22 6.43 15.65 10.05 25.29 10.86-2.12 6.55-4.68 13.5-7.68 20.86zM119.22 31.84c0-7.72 2.76-14.88 8.28-21.48 5.53-6.61 12.32-10.36 20.37-11.26.2 1.13.3 2.22.3 3.27 0 7.6-2.93 14.85-8.79 21.75-5.86 6.9-12.83 10.72-20.9 11.46-.2-1.22-.26-2.47-.26-3.74z" />
+          </svg>
+          <span class="static-app-name">FlowSnap</span>
+        </div>
+        <div class="static-menubar-right">
+          <span class="static-clock">09:41</span>
+        </div>
+      </div>
+
+      <div class="static-split-stage">
+        <!-- 70% Left: Code Window -->
+        <div class="static-window static-win-code">
+          <div class="static-win-header">
+            <div class="traffic-lights">
+              <span class="traffic-light red"></span>
+              <span class="traffic-light yellow"></span>
+              <span class="traffic-light green"></span>
+            </div>
+            <span class="static-win-title">SnapEngine.swift</span>
+            <span class="static-badge">70% Zone</span>
+          </div>
+          <div class="static-code-content">
+            <pre><code><span class="token-comment">// FlowSnap Core Engine</span>
+<span class="token-keyword">import</span> <span class="token-type">Cocoa</span>
+
+<span class="token-attr">@MainActor</span>
+<span class="token-keyword">public struct</span> <span class="token-type">SnapEngine</span> &#123;
+    <span class="token-keyword">public static let</span> shared = <span class="token-type">SnapEngine</span>()
+    <span class="token-keyword">public func</span> <span class="token-func">snap</span>(to zone: <span class="token-type">LayoutZone</span>) &#123;
+        <span class="token-comment">// Hardware-accelerated 70/30</span>
+    &#125;
+&#125;</code></pre>
+          </div>
+        </div>
+
+        <!-- 30% Right: Terminal Window -->
+        <div class="static-window static-win-terminal">
+          <div class="static-win-header">
+            <div class="traffic-lights">
+              <span class="traffic-light red"></span>
+              <span class="traffic-light yellow"></span>
+              <span class="traffic-light green"></span>
+            </div>
+            <span class="static-win-title">zsh</span>
+            <span class="static-badge">30%</span>
+          </div>
+          <div class="static-terminal-content">
+            <div class="t-line"><span class="t-prompt">➜</span> <span class="t-cmd">flowsnap status</span></div>
+            <div class="t-line t-output"><span class="t-green">✔</span> Active (Zero Private APIs)</div>
+            <div class="t-line t-output"><span class="t-blue">ℹ</span> Snap: 70/30 Active</div>
+            <div class="t-line"><span class="t-prompt">➜</span> <span class="t-cursor">_</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Static Dock -->
+      <div class="static-dock">
+        <div class="static-dock-pill">
+          <div class="static-dock-icon active" title="FlowSnap">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <rect x="3" y="4" width="8.5" height="16" rx="2" fill="#0a84ff" />
+              <rect x="12.5" y="4" width="8.5" height="16" rx="2" fill="#0071e3" fill-opacity="0.6" />
+              <circle cx="7.25" cy="7" r="1" fill="#ffffff" />
+            </svg>
+          </div>
+          <div class="static-dock-icon" title="Code">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="#007acc">
+              <path d="M17.5 2.5 7.5 10.5 3 7l-1 1 4.5 4-4.5 4 1 1 4.5-3.5 10 8 4-2V4.5l-4-2zm0 4.5v10l-6-5 6-5z" />
+            </svg>
+          </div>
+          <div class="static-dock-icon" title="Terminal">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="#18181b">
+              <rect x="2" y="4" width="20" height="16" rx="3" fill="#1f1f23" stroke="rgba(255,255,255,0.2)" />
+              <path d="m6 9 3 3-3 3M11 15h6" stroke="#10b981" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Sandbox Controls / Header Toolbar -->
   <div class="sandbox-toolbar">
     <div class="toolbar-hint">
@@ -1051,14 +1154,187 @@
     box-shadow: 0 0 12px rgba(10, 132, 255, 0.5);
   }
 
-  @media (max-width: 768px) {
-    .mac-desktop-frame { aspect-ratio: auto; height: 470px; }
-    .dummy-menus { display: none; }
-    .quick-chips { overflow-x: auto; width: 100%; }
-    .toolbar-actions { width: 100%; justify-content: space-between; }
-    #mock-window-terminal { display: none; }
-    #mock-window-code { left: 5%; width: 90%; }
-    .desktop-split-divider { display: none !important; }
+  /* Mobile / Touch Fallback Card */
+  .mobile-fallback-card {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .mobile-fallback-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(10, 132, 255, 0.08);
+    border: 1px solid rgba(10, 132, 255, 0.22);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .banner-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--accent-blue);
+  }
+
+  .banner-text {
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .static-preview-frame {
+    background: radial-gradient(circle at 50% 20%, #161824 0%, #0c0d12 60%, #07070a 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+  }
+
+  .static-menubar {
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    background: rgba(18, 18, 22, 0.88);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .static-menubar-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+  }
+
+  .static-clock {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  .static-split-stage {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    min-height: 210px;
+  }
+
+  .static-window {
+    background: rgba(22, 22, 28, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .static-win-code {
+    flex: 7;
+  }
+
+  .static-win-terminal {
+    flex: 3;
+  }
+
+  .static-win-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 8px;
+    background: rgba(0, 0, 0, 0.35);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    gap: 6px;
+  }
+
+  .static-win-title {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .static-badge {
+    font-size: 0.58rem;
+    font-family: var(--font-mono);
+    color: var(--accent-blue);
+    background: rgba(10, 132, 255, 0.16);
+    padding: 1px 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .static-code-content, .static-terminal-content {
+    padding: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    line-height: 1.45;
+    color: #e4e4e7;
+    overflow: hidden;
+  }
+
+  .static-code-content pre {
+    margin: 0;
+  }
+
+  .static-terminal-content .t-line {
+    margin-bottom: 2px;
+  }
+
+  .static-dock {
+    display: flex;
+    justify-content: center;
+    padding: 4px 0 10px 0;
+  }
+
+  .static-dock-pill {
+    display: flex;
+    gap: 8px;
+    background: rgba(24, 24, 30, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    padding: 4px 10px;
+  }
+
+  .static-dock-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+  }
+
+  .static-dock-icon.active {
+    opacity: 1;
+  }
+
+  @media (max-width: 767px), (hover: none) and (pointer: coarse) {
+    .sandbox-toolbar {
+      display: none !important;
+    }
+
+    .perspective-stage {
+      display: none !important;
+    }
+
+    .mobile-fallback-card {
+      display: flex !important;
+    }
+  }
+
+  @media (min-width: 768px) and (hover: hover) {
+    .mobile-fallback-card {
+      display: none !important;
+    }
   }
 </style>
 

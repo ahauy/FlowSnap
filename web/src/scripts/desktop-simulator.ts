@@ -73,6 +73,15 @@ export class DesktopSimulatorController {
     this.initElements();
     if (!this.frameEl || !this.winCodeEl) return;
 
+    // Mobile / Touch-only Fallback Guard
+    const isMobileOrTouch = window.matchMedia(
+      "(max-width: 767px), (hover: none) and (pointer: coarse)",
+    ).matches;
+    if (isMobileOrTouch) {
+      this.setupClock();
+      return;
+    }
+
     this.activeWindowEl = this.winCodeEl;
     this.bindWindowFocus();
     this.bindDragEvents();
