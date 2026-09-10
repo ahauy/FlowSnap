@@ -1,5 +1,13 @@
 ---
 import { GATEKEEPER_DATA } from '../data/distribution-data';
+import { getI18n, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = getI18n(lang);
 ---
 
 <div class="gatekeeper-wrapper" data-component="gatekeeper-guide">
@@ -15,15 +23,15 @@ import { GATEKEEPER_DATA } from '../data/distribution-data';
         </div>
         <div class="summary-text-group">
           <div class="title-row">
-            <span class="summary-title">{GATEKEEPER_DATA.title}</span>
+            <span class="summary-title">{t.distribution.gatekeeper.title}</span>
             <span class="gatekeeper-badge">Gatekeeper Help</span>
           </div>
-          <span class="summary-hint">Cách khắc phục cách ly (quarantine) nhanh chóng trong 5 giây cho macOS Sequoia & Sonoma</span>
+          <span class="summary-hint">{t.distribution.gatekeeper.hint}</span>
         </div>
       </div>
 
       <div class="summary-right">
-        <span class="toggle-label">Chi tiết</span>
+        <span class="toggle-label">{t.distribution.gatekeeper.toggleLabel}</span>
         <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true">
           <polyline points="6 9 12 15 18 9" />
         </svg>
@@ -31,10 +39,10 @@ import { GATEKEEPER_DATA } from '../data/distribution-data';
     </summary>
 
     <div class="gatekeeper-body">
-      <p class="gatekeeper-desc">{GATEKEEPER_DATA.summary}</p>
+      <p class="gatekeeper-desc">{t.distribution.gatekeeper.summary}</p>
 
       <div class="steps-row">
-        {GATEKEEPER_DATA.steps.map((step) => (
+        {t.distribution.gatekeeper.steps.map((step) => (
           <div class="step-pane">
             <div class="step-top-content">
               <div class="step-header">
@@ -54,7 +62,7 @@ import { GATEKEEPER_DATA } from '../data/distribution-data';
                   id="gatekeeper-copy-btn"
                   data-copy-trigger="gatekeeper"
                   data-command={GATEKEEPER_DATA.command}
-                  aria-label="Copy xattr command to clipboard"
+                  aria-label={t.distribution.gatekeeper.copyAria}
                 >
                   <svg class="copy-icon icon-neutral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
@@ -63,7 +71,7 @@ import { GATEKEEPER_DATA } from '../data/distribution-data';
                   <svg class="copy-icon icon-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
-                  <span class="copy-text">Copy</span>
+                  <span class="copy-text">{t.shortcuts.controls.copyLabel}</span>
                 </button>
               </div>
             )}
@@ -81,6 +89,7 @@ import { GATEKEEPER_DATA } from '../data/distribution-data';
     const copyBtn = document.getElementById('gatekeeper-copy-btn') as HTMLButtonElement | null;
     const status = document.getElementById('gatekeeper-copy-status');
     const command = copyBtn?.getAttribute('data-command') || '';
+    const defaultCopyText = copyBtn?.querySelector('.copy-text')?.textContent || 'Copy';
 
     copyBtn?.addEventListener('click', async (e) => {
       e.stopPropagation();
@@ -106,7 +115,7 @@ import { GATEKEEPER_DATA } from '../data/distribution-data';
 
         setTimeout(() => {
           copyBtn.classList.remove('copied');
-          if (textSpan) textSpan.textContent = 'Copy';
+          if (textSpan) textSpan.textContent = defaultCopyText;
           if (status) status.textContent = '';
         }, 2000);
       }

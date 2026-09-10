@@ -3,23 +3,30 @@ import DmgCard from './DmgCard.astro';
 import TerminalInstaller from './TerminalInstaller.astro';
 import PrivacyManifesto from './PrivacyManifesto.astro';
 import GatekeeperGuide from './GatekeeperGuide.astro';
+import type { Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
 ---
 
 <div id="distribution-hub-root" class="distribution-hub" data-component="distribution-hub">
   <!-- Tier 1: Dual Download & CLI Showcase (Symmetric Equal-Height Columns) -->
   <div class="hub-hero-row">
     <div class="hub-hero-col">
-      <DmgCard />
+      <DmgCard lang={lang} />
     </div>
     <div class="hub-hero-col">
-      <TerminalInstaller />
+      <TerminalInstaller lang={lang} />
     </div>
   </div>
 
   <!-- Tier 2: Security, Trust & Frictionless Onboarding (Full-Width Symmetrical Flow) -->
   <div class="hub-trust-tier">
-    <PrivacyManifesto />
-    <GatekeeperGuide />
+    <PrivacyManifesto lang={lang} />
+    <GatekeeperGuide lang={lang} />
   </div>
 </div>
 

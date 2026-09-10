@@ -1,5 +1,18 @@
 ---
 import { TERMINAL_TABS } from '../data/distribution-data';
+import { getI18n, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = getI18n(lang);
+
+const localizedTabs = TERMINAL_TABS.map((tab) => ({
+  ...tab,
+  description: tab.id === 'curl' ? t.distribution.terminal.curlDesc : t.distribution.terminal.brewDesc,
+}));
 ---
 
 <div id="terminal-installer-root" class="terminal-box" data-component="terminal-installer">
@@ -37,7 +50,7 @@ import { TERMINAL_TABS } from '../data/distribution-data';
             <div class="badge-row">
               <!-- Segmented Tabs Switcher -->
               <div class="terminal-tabs" role="tablist" aria-label="Installation method tabs">
-                {TERMINAL_TABS.map((tab) => (
+                {localizedTabs.map((tab) => (
                   <button
                     type="button"
                     class={`terminal-tab ${tab.defaultActive ? 'active' : ''}`}
@@ -55,7 +68,7 @@ import { TERMINAL_TABS } from '../data/distribution-data';
               </div>
               <span class="terminal-badge">CLI ENGINE</span>
             </div>
-            <h3 class="terminal-title">One-Line Automated Installer</h3>
+            <h3 class="terminal-title">{t.distribution.terminal.title}</h3>
           </div>
         </div>
 
@@ -63,7 +76,7 @@ import { TERMINAL_TABS } from '../data/distribution-data';
       </div>
 
       <p class="terminal-desc" id="terminal-tab-desc">
-        {TERMINAL_TABS[0].description}
+        {localizedTabs[0].description}
       </p>
     </div>
 
@@ -72,7 +85,7 @@ import { TERMINAL_TABS } from '../data/distribution-data';
       <div class="console-box">
         <div class="command-row">
           <span class="terminal-prompt" aria-hidden="true">$</span>
-          <pre class="code-wrapper"><code class="terminal-code" id="active-terminal-command">{TERMINAL_TABS[0].command}</code></pre>
+          <pre class="code-wrapper"><code class="terminal-code" id="active-terminal-command">{localizedTabs[0].command}</code></pre>
         </div>
 
         <button
@@ -80,7 +93,7 @@ import { TERMINAL_TABS } from '../data/distribution-data';
           class="terminal-copy-btn"
           id="terminal-copy-btn"
           data-copy-trigger="terminal"
-          aria-label="Copy terminal installation command to clipboard"
+          aria-label={t.distribution.terminal.copyAria}
         >
           <svg class="copy-icon icon-neutral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
@@ -89,7 +102,7 @@ import { TERMINAL_TABS } from '../data/distribution-data';
           <svg class="copy-icon icon-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true">
             <polyline points="20 6 9 17 4 12" />
           </svg>
-          <span class="copy-label">Copy</span>
+          <span class="copy-label">{t.shortcuts.controls.copyLabel}</span>
         </button>
       </div>
 
@@ -100,7 +113,7 @@ import { TERMINAL_TABS } from '../data/distribution-data';
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             <path d="m9 12 2 2 4-4" />
           </svg>
-          <span>Sudo-less (Không cần root)</span>
+          <span>{t.distribution.terminal.chipSudo}</span>
         </div>
 
         <div class="spec-chip">
@@ -108,7 +121,7 @@ import { TERMINAL_TABS } from '../data/distribution-data';
             <rect x="4" y="4" width="16" height="16" rx="2" />
             <rect x="9" y="9" width="6" height="6" />
           </svg>
-          <span>Tự phát hiện Apple Silicon & Intel</span>
+          <span>{t.distribution.terminal.chipArch}</span>
         </div>
       </div>
     </div>
@@ -120,7 +133,7 @@ import { TERMINAL_TABS } from '../data/distribution-data';
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           <path d="m9 12 2 2 4-4" />
         </svg>
-        <span class="hint-label">Tự động kiểm tra kiến trúc chip và kích hoạt cài đặt an toàn</span>
+        <span class="hint-label">{t.distribution.terminal.footerHint}</span>
       </div>
       <a
         href="https://github.com/ahauy/FlowSnap/blob/main/install.sh"
@@ -128,7 +141,7 @@ import { TERMINAL_TABS } from '../data/distribution-data';
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span>Xem script trên GitHub</span>
+        <span>{t.distribution.terminal.footerLink}</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
           <path d="M7 17L17 7M17 7H7M17 7V17" />
         </svg>

@@ -1,5 +1,13 @@
 ---
 import { RELEASE_METADATA } from '../data/distribution-data';
+import { getI18n, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = getI18n(lang);
 ---
 
 <div class="dmg-card" data-component="dmg-card">
@@ -38,7 +46,7 @@ import { RELEASE_METADATA } from '../data/distribution-data';
               </span>
               <span class="release-date">{RELEASE_METADATA.releaseDate}</span>
             </div>
-            <h3 class="dmg-title">Official macOS Disk Image</h3>
+            <h3 class="dmg-title">{t.distribution.dmg.title}</h3>
           </div>
         </div>
 
@@ -46,7 +54,7 @@ import { RELEASE_METADATA } from '../data/distribution-data';
       </div>
 
       <p class="dmg-desc">
-        Tải trực tiếp gói cài đặt chuẩn macOS (.dmg) đã biên dịch sẵn với tối ưu hóa đa kiến trúc Apple Silicon & Intel.
+        {t.distribution.dmg.desc}
       </p>
     </div>
 
@@ -57,7 +65,7 @@ import { RELEASE_METADATA } from '../data/distribution-data';
         class="dmg-download-btn"
         target="_blank"
         rel="noopener noreferrer"
-        aria-label={`Download FlowSnap ${RELEASE_METADATA.version} for macOS (DMG)`}
+        aria-label={`${t.distribution.dmg.btnHeadline} ${RELEASE_METADATA.version} for macOS (DMG)`}
       >
         <div class="btn-left">
           <div class="apple-icon-wrap" aria-hidden="true">
@@ -66,7 +74,7 @@ import { RELEASE_METADATA } from '../data/distribution-data';
             </svg>
           </div>
           <div class="btn-copy">
-            <span class="btn-headline">Download for macOS</span>
+            <span class="btn-headline">{t.distribution.dmg.btnHeadline}</span>
             <span class="btn-specs">{RELEASE_METADATA.fileSize} • {RELEASE_METADATA.version}</span>
           </div>
         </div>
@@ -107,7 +115,7 @@ import { RELEASE_METADATA } from '../data/distribution-data';
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           <path d="m9 12 2 2 4-4" />
         </svg>
-        <span class="hint-label">SHA-256 Checksum Verified</span>
+        <span class="hint-label">{t.distribution.dmg.verifiedChecksum}</span>
       </div>
       <a
         href={RELEASE_METADATA.releasesPageUrl}
@@ -115,7 +123,7 @@ import { RELEASE_METADATA } from '../data/distribution-data';
         target="_blank"
         rel="noopener noreferrer"
       >
-        <span>View all releases on GitHub</span>
+        <span>{t.distribution.dmg.viewAllReleases}</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
           <path d="M7 17L17 7M17 7H7M17 7V17" />
         </svg>
