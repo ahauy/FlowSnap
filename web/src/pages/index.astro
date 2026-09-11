@@ -7,6 +7,7 @@ import MetricsProof from '../components/MetricsProof.astro';
 import BentoGrid from '../components/BentoGrid.astro';
 import ShortcutMatrix from '../components/ShortcutMatrix.astro';
 import DistributionHub from '../components/DistributionHub.astro';
+import BackToTop from '../components/BackToTop.astro';
 import { getI18n } from '../i18n';
 
 const lang = 'en';
@@ -115,6 +116,7 @@ const t = getI18n(lang);
   </main>
 
   <Footer lang={lang} />
+  <BackToTop lang={lang} />
 </BaseLayout>
 
 <style>
@@ -200,7 +202,7 @@ const t = getI18n(lang);
   .sections-container {
     display: flex;
     flex-direction: column;
-    gap: 64px;
+    gap: 88px;
   }
 
   .section-card {

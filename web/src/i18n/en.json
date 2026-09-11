@@ -115,7 +115,7 @@
       {
         "id": "multi-monitor",
         "title": "Display-Aware Multi-Monitor Topology",
-        "badge": "Coordinate Inversion Math",
+        "badge": "Multi-Display Topology",
         "description": "Throw windows across screens with dedicated hotkeys (⌃⌥⇧→), automatically scaling proportions between Retina displays and 4K monitors with pixel-perfect math.",
         "highlights": [
           "1-touch display throw",
@@ -233,6 +233,14 @@
     ]
   },
   "distribution": {
+    "unifiedTitle": "Get FlowSnap for macOS",
+    "unifiedSubtitle": "Download verified universal DMG package or install in seconds via one-line terminal script.",
+    "tabs": {
+      "dmg": "DMG Package",
+      "curl": "cURL Script",
+      "brew": "Homebrew"
+    },
+    "unifiedFooterVerified": "SHA-256 Checksum & Universal Script Verified",
     "dmg": {
       "title": "Official macOS Disk Image",
       "desc": "Download verified, pre-built universal macOS (.dmg) package optimized for both Apple Silicon and Intel architectures.",
@@ -246,7 +254,7 @@
       "brewDesc": "Install and manage version updates via official Homebrew Cask tap",
       "chipSudo": "Sudo-less (No root required)",
       "chipArch": "Auto-detects Apple Silicon & Intel",
-      "footerHint": "Auto-verifies chip architecture and activates safe installation",
+      "footerHint": "Universal Script Verified",
       "footerLink": "View script on GitHub",
       "copyAria": "Copy terminal installation command to clipboard"
     },

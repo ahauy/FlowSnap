@@ -869,14 +869,31 @@ export class DesktopSimulatorController {
   }
 }
 
-// Auto-initialize when mounted
+// Lazy Hydration & Viewport Deferred Initialization
 if (typeof document !== "undefined") {
-  if (document.readyState === "loading") {
-    document.addEventListener(
-      "DOMContentLoaded",
-      () => new DesktopSimulatorController(),
-    );
-  } else {
+  const initSimulator = () => {
     new DesktopSimulatorController();
+  };
+
+  const mountRoot = document.getElementById("desktop-simulator-root");
+  if (mountRoot && "IntersectionObserver" in window) {
+    const lazyObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          lazyObserver.disconnect();
+          initSimulator();
+        }
+      },
+      { rootMargin: "200px 0px" },
+    );
+    lazyObserver.observe(mountRoot);
+  } else {
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(() => initSimulator());
+    } else if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => initSimulator());
+    } else {
+      window.setTimeout(initSimulator, 100);
+    }
   }
 }

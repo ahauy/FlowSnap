@@ -203,7 +203,7 @@ const t = getI18n(lang);
 
         <div class="menubar-right">
           <!-- FlowSnap Status Item (Clickable Popover Trigger) -->
-          <div class="status-icon fs-status-icon" id="fs-menubar-trigger" role="button" tabindex="0" title="Click to open FlowSnap Menu Bar Grid">
+          <div class="status-icon fs-status-icon" id="fs-menubar-trigger" role="button" tabindex="0" aria-label="Open FlowSnap Menu Bar Grid" title="Click to open FlowSnap Menu Bar Grid">
             <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor">
               <rect x="2" y="3" width="5.5" height="10" rx="1" />
               <rect x="8.5" y="3" width="5.5" height="10" rx="1" fill-opacity="0.4" />
@@ -299,8 +299,8 @@ const t = getI18n(lang);
             <!-- Template 1: Two Columns Equal (50 / 50) -->
             <div class="template-card" data-template-name="2 Columns (50/50)">
               <div class="template-preview">
-                <div class="snap-zone-btn" data-zone-id="two-col-left" data-left="0" data-top="0" data-width="50" data-height="100" data-label="Left 50%"></div>
-                <div class="snap-zone-btn" data-zone-id="two-col-right" data-left="50" data-top="0" data-width="50" data-height="100" data-label="Right 50%"></div>
+                <div class="snap-zone-btn" role="button" tabindex="0" aria-label="Snap Left 50%" data-zone-id="two-col-left" data-left="0" data-top="0" data-width="50" data-height="100" data-label="Left 50%"></div>
+                <div class="snap-zone-btn" role="button" tabindex="0" aria-label="Snap Right 50%" data-zone-id="two-col-right" data-left="50" data-top="0" data-width="50" data-height="100" data-label="Right 50%"></div>
               </div>
               <span class="template-label">50 / 50</span>
             </div>
@@ -308,8 +308,8 @@ const t = getI18n(lang);
             <!-- Template 2: Two Columns Asymmetric (70 / 30) - PROPORTIONAL FIX -->
             <div class="template-card" data-template-name="2 Columns (70/30)">
               <div class="template-preview preview-70-30">
-                <div class="snap-zone-btn zone-70" data-zone-id="two-col-asym-left" data-left="0" data-top="0" data-width="70" data-height="100" data-label="Left 70%"></div>
-                <div class="snap-zone-btn zone-30" data-zone-id="two-col-asym-right" data-left="70" data-top="0" data-width="30" data-height="100" data-label="Right 30%"></div>
+                <div class="snap-zone-btn zone-70" role="button" tabindex="0" aria-label="Snap Left 70%" data-zone-id="two-col-asym-left" data-left="0" data-top="0" data-width="70" data-height="100" data-label="Left 70%"></div>
+                <div class="snap-zone-btn zone-30" role="button" tabindex="0" aria-label="Snap Right 30%" data-zone-id="two-col-asym-right" data-left="70" data-top="0" data-width="30" data-height="100" data-label="Right 30%"></div>
               </div>
               <span class="template-label">70 / 30</span>
             </div>
@@ -317,9 +317,9 @@ const t = getI18n(lang);
             <!-- Template 3: Three Columns (25 / 50 / 25) - PROPORTIONAL FIX -->
             <div class="template-card" data-template-name="3 Columns (25/50/25)">
               <div class="template-preview preview-25-50-25">
-                <div class="snap-zone-btn zone-25" data-zone-id="three-col-left" data-left="0" data-top="0" data-width="25" data-height="100" data-label="Left 25%"></div>
-                <div class="snap-zone-btn zone-50" data-zone-id="three-col-center" data-left="25" data-top="0" data-width="50" data-height="100" data-label="Center 50%"></div>
-                <div class="snap-zone-btn zone-25" data-zone-id="three-col-right" data-left="75" data-top="0" data-width="25" data-height="100" data-label="Right 25%"></div>
+                <div class="snap-zone-btn zone-25" role="button" tabindex="0" aria-label="Snap Left 25%" data-zone-id="three-col-left" data-left="0" data-top="0" data-width="25" data-height="100" data-label="Left 25%"></div>
+                <div class="snap-zone-btn zone-50" role="button" tabindex="0" aria-label="Snap Center 50%" data-zone-id="three-col-center" data-left="25" data-top="0" data-width="50" data-height="100" data-label="Center 50%"></div>
+                <div class="snap-zone-btn zone-25" role="button" tabindex="0" aria-label="Snap Right 25%" data-zone-id="three-col-right" data-left="75" data-top="0" data-width="25" data-height="100" data-label="Right 25%"></div>
               </div>
               <span class="template-label">25 / 50 / 25</span>
             </div>
@@ -327,10 +327,10 @@ const t = getI18n(lang);
             <!-- Template 4: Four Quarters (25% each) -->
             <div class="template-card" data-template-name="4 Quarters">
               <div class="template-preview grid-quarters">
-                <div class="snap-zone-btn" data-zone-id="quarter-top-left" data-left="0" data-top="0" data-width="50" data-height="50" data-label="Top Left 25%"></div>
-                <div class="snap-zone-btn" data-zone-id="quarter-top-right" data-left="50" data-top="0" data-width="50" data-height="50" data-label="Top Right 25%"></div>
-                <div class="snap-zone-btn" data-zone-id="quarter-bottom-left" data-left="0" data-top="50" data-width="50" data-height="50" data-label="Bottom Left 25%"></div>
-                <div class="snap-zone-btn" data-zone-id="quarter-bottom-right" data-left="50" data-top="50" data-width="50" data-height="50" data-label="Bottom Right 25%"></div>
+                <div class="snap-zone-btn" role="button" tabindex="0" aria-label="Snap Top Left 25%" data-zone-id="quarter-top-left" data-left="0" data-top="0" data-width="50" data-height="50" data-label="Top Left 25%"></div>
+                <div class="snap-zone-btn" role="button" tabindex="0" aria-label="Snap Top Right 25%" data-zone-id="quarter-top-right" data-left="50" data-top="0" data-width="50" data-height="50" data-label="Top Right 25%"></div>
+                <div class="snap-zone-btn" role="button" tabindex="0" aria-label="Snap Bottom Left 25%" data-zone-id="quarter-bottom-left" data-left="0" data-top="50" data-width="50" data-height="50" data-label="Bottom Left 25%"></div>
+                <div class="snap-zone-btn" role="button" tabindex="0" aria-label="Snap Bottom Right 25%" data-zone-id="quarter-bottom-right" data-left="50" data-top="50" data-width="50" data-height="50" data-label="Bottom Right 25%"></div>
               </div>
               <span class="template-label">4 Corners</span>
             </div>
@@ -440,7 +440,7 @@ const t = getI18n(lang);
       <footer class="mac-dock-wrapper">
         <div class="mac-dock">
           <!-- Finder -->
-          <div class="dock-item" id="dock-finder" title="Finder">
+          <div class="dock-item" id="dock-finder" role="button" tabindex="0" aria-label="Open Finder" title="Finder">
             <div class="dock-icon finder-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
                 <rect x="3" y="3" width="18" height="18" rx="4" />
@@ -453,7 +453,7 @@ const t = getI18n(lang);
           </div>
 
           <!-- FlowSnap (Toggles Menu Bar Popover) -->
-          <div class="dock-item active" id="dock-flowsnap" title="FlowSnap App (Click to open menu)">
+          <div class="dock-item active" id="dock-flowsnap" role="button" tabindex="0" aria-label="Toggle FlowSnap Layout Menu" title="FlowSnap App (Click to open menu)">
             <div class="dock-icon flowsnap-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
                 <rect x="3" y="4" width="8.5" height="16" rx="2" fill="#0a84ff" />
@@ -465,7 +465,7 @@ const t = getI18n(lang);
           </div>
 
           <!-- VS Code (Launches/Focuses Code Window) -->
-          <div class="dock-item active" id="dock-vscode" title="VS Code (SnapEngine.swift)">
+          <div class="dock-item active" id="dock-vscode" role="button" tabindex="0" aria-label="Focus Code Editor window" title="VS Code (SnapEngine.swift)">
             <div class="dock-icon vscode-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="#007acc">
                 <path d="M17.5 2.5 7.5 10.5 3 7l-1 1 4.5 4-4.5 4 1 1 4.5-3.5 10 8 4-2V4.5l-4-2zm0 4.5v10l-6-5 6-5z" />
@@ -475,7 +475,7 @@ const t = getI18n(lang);
           </div>
 
           <!-- Terminal (Launches/Focuses Terminal Window) -->
-          <div class="dock-item active" id="dock-terminal" title="Terminal (flowsnap status)">
+          <div class="dock-item active" id="dock-terminal" role="button" tabindex="0" aria-label="Focus Terminal window" title="Terminal (flowsnap status)">
             <div class="dock-icon terminal-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="#18181b">
                 <rect x="2" y="4" width="20" height="16" rx="3" fill="#1f1f23" stroke="rgba(255,255,255,0.2)" />
@@ -897,7 +897,7 @@ const t = getI18n(lang);
 
   .hud-snap-preview.is-active { opacity: 1; transform: scale(1); }
   .hud-preview-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-  .hud-preview-badge { padding: 4px 10px; background: rgba(10, 132, 255, 0.3); border: 1px solid rgba(10, 132, 255, 0.6); border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: #fff; }
+  .hud-preview-badge { padding: 4px 12px; background: rgba(0, 88, 208, 0.92); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: #ffffff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); }
 
   /* Mock Windows (Shared Window Styling) */
   .mock-window {

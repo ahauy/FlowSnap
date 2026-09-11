@@ -233,6 +233,14 @@
     ]
   },
   "distribution": {
+    "unifiedTitle": "Cài Đặt FlowSnap cho macOS",
+    "unifiedSubtitle": "Tải trực tiếp bản DMG chuẩn macOS hoặc cài đặt tự động trong vài giây qua dòng lệnh terminal.",
+    "tabs": {
+      "dmg": "Gói DMG",
+      "curl": "Lệnh cURL",
+      "brew": "Homebrew"
+    },
+    "unifiedFooterVerified": "Xác thực mã băm SHA-256 & Tập lệnh an toàn",
     "dmg": {
       "title": "Gói Cài Đặt Chuẩn macOS Disk Image",
       "desc": "Tải trực tiếp gói cài đặt chuẩn macOS (.dmg) đã biên dịch sẵn với tối ưu hóa đa kiến trúc Apple Silicon & Intel.",
@@ -246,7 +254,7 @@
       "brewDesc": "Cài đặt và quản lý phiên bản qua Homebrew Cask tap chính thức",
       "chipSudo": "Sudo-less (Không cần root)",
       "chipArch": "Tự phát hiện Apple Silicon & Intel",
-      "footerHint": "Tự động kiểm tra kiến trúc chip và kích hoạt cài đặt an toàn",
+      "footerHint": "Tập lệnh Universal đã xác thực",
       "footerLink": "Xem script trên GitHub",
       "copyAria": "Sao chép lệnh cài đặt terminal vào clipboard"
     },

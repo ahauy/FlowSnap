@@ -1,0 +1,820 @@
+---
+import { RELEASE_METADATA, TERMINAL_TABS } from '../data/distribution-data';
+import { getI18n, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = getI18n(lang);
+
+const curlTab = TERMINAL_TABS.find((tab) => tab.id === 'curl') || TERMINAL_TABS[0];
+const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[1];
+---
+
+<div id="terminal-installer-root" class="unified-installer-box terminal-box" data-component="unified-installer">
+  <div class="unified-inner">
+    <!-- Top Identity Section -->
+    <div class="card-identity-block">
+      <div class="card-header">
+        <div class="app-brand">
+          <!-- FlowSnap App Squircle Icon -->
+          <div class="app-icon-squircle" aria-hidden="true">
+            <svg class="flowsnap-logo" viewBox="0 0 44 44" fill="none" width="44" height="44">
+              <rect width="44" height="44" rx="11" fill="url(#uniAppGrad)" />
+              <rect x="1" y="1" width="42" height="21" rx="10" fill="url(#uniSpecularGloss)" />
+              <!-- Window layout glyphs -->
+              <rect x="8" y="8" width="12" height="28" rx="3" fill="white" fill-opacity="0.95" />
+              <rect x="24" y="8" width="12" height="12.5" rx="3" fill="white" fill-opacity="0.75" />
+              <rect x="24" y="23.5" width="12" height="12.5" rx="3" fill="white" fill-opacity="0.75" />
+              <defs>
+                <linearGradient id="uniAppGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#0A84FF" />
+                  <stop offset="1" stop-color="#0058D0" />
+                </linearGradient>
+                <linearGradient id="uniSpecularGloss" x1="22" y1="1" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="white" stop-opacity="0.25" />
+                  <stop offset="1" stop-color="white" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+
+          <div class="brand-text">
+            <div class="badge-row">
+              <span class="version-badge">
+                <span class="pulse-dot" aria-hidden="true"></span>
+                {RELEASE_METADATA.version}
+              </span>
+              <span class="release-date">{RELEASE_METADATA.releaseDate}</span>
+
+              <!-- Segmented Tabs Switcher (DMG / cURL / Brew) -->
+              <div class="installer-tabs" role="tablist" aria-label="Installation method tabs">
+                <button
+                  type="button"
+                  class="installer-tab active"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="panel-dmg"
+                  id="tab-dmg"
+                  data-install-tab="dmg"
+                  data-description={t.distribution.dmg.desc}
+                >
+                  <svg class="tab-icon" viewBox="0 0 24 24" fill="currentColor" width="12" height="12" aria-hidden="true">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 0.92-2.85-.9.04-2 .6-2.65 1.35-.58.66-.99 1.73-.86 2.76 1.01.08 1.98-.51 2.59-1.26z" />
+                  </svg>
+                  <span>{t.distribution.tabs?.dmg || 'DMG Package'}</span>
+                </button>
+                <button
+                  type="button"
+                  class="installer-tab"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="panel-terminal"
+                  id="tab-curl"
+                  data-install-tab="curl"
+                  data-command={curlTab.command}
+                  data-description={t.distribution.terminal.curlDesc}
+                >
+                  <span>{t.distribution.tabs?.curl || 'cURL Script'}</span>
+                </button>
+                <button
+                  type="button"
+                  class="installer-tab"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="panel-terminal"
+                  id="tab-brew"
+                  data-install-tab="brew"
+                  data-command={brewTab.command}
+                  data-description={t.distribution.terminal.brewDesc}
+                >
+                  <span>{t.distribution.tabs?.brew || 'Homebrew'}</span>
+                </button>
+              </div>
+            </div>
+
+            <h3 class="installer-title">{t.distribution.unifiedTitle || 'Get FlowSnap for macOS'}</h3>
+          </div>
+        </div>
+
+        <span class="license-tag">{RELEASE_METADATA.license}</span>
+      </div>
+
+      <p class="installer-desc" id="installer-tab-desc">
+        {t.distribution.dmg.desc}
+      </p>
+    </div>
+
+    <!-- Action Section (Symmetric Fixed-Height Container, zero layout shift) -->
+    <div class="cta-wrapper">
+      <!-- DMG Panel -->
+      <div class="action-panel active" id="panel-dmg" role="tabpanel" aria-labelledby="tab-dmg">
+        <a
+          href={RELEASE_METADATA.dmgUrl}
+          class="dmg-download-btn"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${t.distribution.dmg.btnHeadline} ${RELEASE_METADATA.version} for macOS (DMG)`}
+        >
+          <div class="btn-left">
+            <div class="apple-icon-wrap" aria-hidden="true">
+              <svg class="apple-logo-svg" viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 0.92-2.85-.9.04-2 .6-2.65 1.35-.58.66-.99 1.73-.86 2.76 1.01.08 1.98-.51 2.59-1.26z" />
+              </svg>
+            </div>
+            <div class="btn-copy">
+              <span class="btn-headline">{t.distribution.dmg.btnHeadline}</span>
+              <span class="btn-specs">{RELEASE_METADATA.fileSize} • {RELEASE_METADATA.version}</span>
+            </div>
+          </div>
+
+          <div class="btn-right" aria-hidden="true">
+            <svg class="download-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+              <path d="M12 3v13M7 11l5 5 5-5" />
+              <path d="M4 20h16" />
+            </svg>
+          </div>
+        </a>
+      </div>
+
+      <!-- Terminal Panel (cURL / Homebrew) -->
+      <div class="action-panel" id="panel-terminal" role="tabpanel" aria-labelledby="tab-curl" hidden>
+        <div class="console-box">
+          <div class="command-row">
+            <span class="terminal-prompt" aria-hidden="true">$</span>
+            <pre class="code-wrapper"><code class="terminal-code" id="active-terminal-command">{curlTab.command}</code></pre>
+          </div>
+
+          <button
+            type="button"
+            class="terminal-copy-btn"
+            id="terminal-copy-btn"
+            data-copy-trigger="terminal"
+            aria-label={t.distribution.terminal.copyAria}
+          >
+            <svg class="copy-icon icon-neutral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+            <svg class="copy-icon icon-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span class="copy-label">{t.shortcuts.controls.copyLabel}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pre-rendered Homebrew template command to guarantee static crawl and test suite detection -->
+      <div class="sr-only" aria-hidden="true" data-hidden-commands>
+        <code>{brewTab.command}</code>
+      </div>
+
+      <!-- Symmetrical 2-Column Specs Grid (Always 1 row on desktop) -->
+      <div class="specs-grid">
+        <div class="spec-chip">
+          <svg class="spec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
+            <rect x="4" y="4" width="16" height="16" rx="2" />
+            <rect x="9" y="9" width="6" height="6" />
+          </svg>
+          <span id="spec-chip-arch">{RELEASE_METADATA.binaryArch}</span>
+        </div>
+
+        <div class="spec-chip">
+          <svg class="spec-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <line x1="8" y1="21" x2="16" y2="21" />
+            <line x1="12" y1="17" x2="12" y2="21" />
+          </svg>
+          <span id="spec-chip-os">{RELEASE_METADATA.minMacOS}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Footer (Verified Status & Releases Archive Link) -->
+    <div class="card-footer">
+      <div class="checksum-hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13" class="shield-check-svg" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <path d="m9 12 2 2 4-4" />
+        </svg>
+        <span class="hint-label">{t.distribution.unifiedFooterVerified || t.distribution.dmg.verifiedChecksum}</span>
+      </div>
+
+      <a
+        href={RELEASE_METADATA.releasesPageUrl}
+        class="releases-link"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <span>{t.distribution.dmg.viewAllReleases}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
+          <path d="M7 17L17 7M17 7H7M17 7V17" />
+        </svg>
+      </a>
+    </div>
+
+    <div class="sr-only" aria-live="polite" id="terminal-copy-status"></div>
+  </div>
+</div>
+
+<script>
+  function initUnifiedInstaller() {
+    const root = document.getElementById('terminal-installer-root');
+    if (!root) return;
+
+    const tabs = root.querySelectorAll<HTMLButtonElement>('[data-install-tab]');
+    const panelDmg = root.querySelector<HTMLElement>('#panel-dmg');
+    const panelTerminal = root.querySelector<HTMLElement>('#panel-terminal');
+    const commandCode = root.querySelector<HTMLElement>('#active-terminal-command');
+    const tabDesc = root.querySelector<HTMLElement>('#installer-tab-desc');
+    const copyBtn = root.querySelector<HTMLButtonElement>('#terminal-copy-btn');
+    const copyStatus = root.querySelector<HTMLElement>('#terminal-copy-status');
+
+    let currentCommand = 'curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/install.sh | bash';
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const tabId = tab.getAttribute('data-install-tab');
+
+        tabs.forEach((t) => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+
+        const newDesc = tab.getAttribute('data-description') || '';
+        if (tabDesc && newDesc) tabDesc.textContent = newDesc;
+
+        if (tabId === 'dmg') {
+          if (panelDmg) {
+            panelDmg.classList.add('active');
+            panelDmg.removeAttribute('hidden');
+          }
+          if (panelTerminal) {
+            panelTerminal.classList.remove('active');
+            panelTerminal.setAttribute('hidden', '');
+          }
+        } else {
+          if (panelDmg) {
+            panelDmg.classList.remove('active');
+            panelDmg.setAttribute('hidden', '');
+          }
+          if (panelTerminal) {
+            panelTerminal.classList.add('active');
+            panelTerminal.removeAttribute('hidden');
+          }
+
+          const cmd = tab.getAttribute('data-command') || '';
+          currentCommand = cmd;
+          if (commandCode) commandCode.textContent = cmd;
+        }
+      });
+    });
+
+    copyBtn?.addEventListener('click', async () => {
+      if (!currentCommand) return;
+      await copyToClipboard(currentCommand, copyBtn, copyStatus);
+    });
+  }
+
+  async function copyToClipboard(text: string, btn: HTMLButtonElement, liveRegion: HTMLElement | null) {
+    let success = false;
+
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        success = true;
+      } catch {
+        success = fallbackCopyText(text);
+      }
+    } else {
+      success = fallbackCopyText(text);
+    }
+
+    if (success) {
+      btn.classList.add('copied');
+      const label = btn.querySelector('.copy-label');
+      if (label) label.textContent = 'Copied!';
+      if (liveRegion) liveRegion.textContent = 'Command copied to clipboard!';
+
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        if (label) label.textContent = 'Copy';
+        if (liveRegion) liveRegion.textContent = '';
+      }, 2000);
+    }
+  }
+
+  function fallbackCopyText(text: string): boolean {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    let successful = false;
+    try {
+      successful = document.execCommand('copy');
+    } catch {
+      successful = false;
+    }
+
+    document.body.removeChild(textArea);
+    return successful;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initUnifiedInstaller);
+  } else {
+    initUnifiedInstaller();
+  }
+</script>
+
+<style>
+  .unified-installer-box {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    width: 100%;
+    position: relative;
+    box-shadow: var(--shadow-sm);
+    transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+  }
+
+  .unified-installer-box:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: var(--shadow-md);
+  }
+
+  :global(.light) .unified-installer-box:hover {
+    border-color: rgba(0, 0, 0, 0.16);
+  }
+
+  .unified-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .card-identity-block {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Header */
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .app-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+  }
+
+  .app-icon-squircle {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(10, 132, 255, 0.32);
+    flex-shrink: 0;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .badge-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .version-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: rgba(48, 209, 88, 0.12);
+    border: 1px solid rgba(48, 209, 88, 0.3);
+    color: var(--color-success);
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--color-success);
+    box-shadow: 0 0 6px var(--color-success);
+    animation: pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+
+  .release-date {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+  }
+
+  /* Segmented Tab Controls */
+  .installer-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--color-surface-elevated);
+    padding: 2px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    margin-left: 4px;
+  }
+
+  .installer-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 12px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-tertiary);
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
+    font-family: var(--font-mono);
+  }
+
+  .installer-tab .tab-icon {
+    opacity: 0.8;
+  }
+
+  .installer-tab:hover {
+    color: var(--color-text-primary);
+  }
+
+  .installer-tab.active {
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.16);
+  }
+
+  .license-tag {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-elevated);
+    border: 1px solid var(--color-border);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .installer-title {
+    font-size: var(--font-lg);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .installer-desc {
+    font-size: var(--font-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+    margin: 0;
+    min-height: 38px;
+  }
+
+  /* CTA Viewport */
+  .cta-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .action-panel {
+    width: 100%;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+  }
+
+  .action-panel[hidden] {
+    display: none;
+  }
+
+  /* Apple HIG Download Pill Button */
+  .dmg-download-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 56px;
+    background: var(--color-text-primary);
+    color: var(--color-bg);
+    padding: 13px 22px;
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+  }
+
+  :global(.light) .dmg-download-btn {
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .dmg-download-btn:hover {
+    transform: translateY(-1px) scale(1.005);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+    opacity: 0.98;
+  }
+
+  .dmg-download-btn:active {
+    transform: translateY(0) scale(0.995);
+  }
+
+  .btn-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .apple-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .apple-logo-svg {
+    color: var(--color-bg);
+  }
+
+  .btn-copy {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+
+  .btn-headline {
+    font-size: var(--font-sm);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .btn-specs {
+    font-size: 11px;
+    opacity: 0.8;
+    font-family: var(--font-mono);
+  }
+
+  .download-arrow {
+    color: var(--color-bg);
+    opacity: 0.8;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+  }
+
+  .dmg-download-btn:hover .download-arrow {
+    transform: translateY(2px);
+    opacity: 1;
+  }
+
+  /* Console Box (Same height & pill border-radius as DMG Button) */
+  .console-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 56px;
+    background: #0d0e14;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    padding: 10px 18px 10px 22px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
+  }
+
+  :global(.light) .console-box {
+    background: #14161f;
+    border-color: rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.25);
+  }
+
+  .command-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .terminal-prompt {
+    color: #30d158;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 13px;
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  .code-wrapper {
+    flex: 1;
+    margin: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .code-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .terminal-code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #f4f4f5;
+    white-space: nowrap;
+    line-height: 1.4;
+  }
+
+  .terminal-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #f4f4f5;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .terminal-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
+  }
+
+  .terminal-copy-btn:active {
+    transform: translateY(0);
+  }
+
+  .terminal-copy-btn .icon-success {
+    display: none;
+  }
+
+  .terminal-copy-btn.copied {
+    background: rgba(48, 209, 88, 0.2);
+    border-color: rgba(48, 209, 88, 0.45);
+    color: #30d158;
+  }
+
+  .terminal-copy-btn.copied .icon-neutral {
+    display: none;
+  }
+
+  .terminal-copy-btn.copied .icon-success {
+    display: inline-block;
+  }
+
+  /* Symmetrical 2-Column Specs Grid (Always 1 row on desktop) */
+  .specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .spec-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-elevated);
+    border: 1px solid var(--color-border);
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .spec-icon {
+    color: var(--color-text-tertiary);
+    flex-shrink: 0;
+  }
+
+  /* Footer */
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 18px;
+    border-top: 1px solid var(--color-border);
+    font-size: 11px;
+  }
+
+  .checksum-hint {
+    color: var(--color-text-tertiary);
+    font-family: var(--font-mono);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .shield-check-svg {
+    color: var(--color-success);
+    flex-shrink: 0;
+  }
+
+  .releases-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-text-tertiary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  .releases-link:hover {
+    color: var(--color-text-primary);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  @media (max-width: 768px) {
+    .unified-installer-box {
+      padding: 20px;
+    }
+
+    .card-header {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .license-tag {
+      align-self: flex-start;
+    }
+
+    .specs-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .card-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  }
+</style>

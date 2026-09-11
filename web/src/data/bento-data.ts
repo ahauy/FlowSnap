@@ -22,11 +22,11 @@ export const bentoFeatures: BentoFeatureItem[] = [
     title: "Top-Edge Snap Layout Picker",
     badge: "Windows 11-Style on Mac",
     description:
-      "Kéo cửa sổ chạm mép trên cùng màn hình để mở khay chọn bố cục trực quan: 50/50, 70/30, 3 cột ngang và 4 góc. Thả vào ô bất kỳ để snap tức thì.",
+      "Drag any window to the top edge to reveal an intuitive layout picker: 50/50, 70/30, 3-column, and 4-corner grids. Drop into any zone for instant snapping.",
     highlights: [
-      "Trượt xuống mượt mà",
-      "Xem trước kính mờ Liquid Glass",
-      "4 mẫu bố cục thông minh",
+      "Smooth slide-in physics",
+      "Liquid Glass translucent HUD",
+      "4 smart layout templates",
     ],
     span: "hero",
     illustrationId: "top-edge",
@@ -36,10 +36,10 @@ export const bentoFeatures: BentoFeatureItem[] = [
     title: "Adaptive Collinear 2D Resize",
     badge: "Tiling Precision",
     description:
-      "Kéo đường phân cách chung hoặc ngã ba/ngã tư để đồng thời co giãn 2 đến 4 cửa sổ liền kề mượt mà ở 60 FPS mà không phá vỡ cấu trúc layout.",
+      "Drag shared divider borders or crosshair intersections to simultaneously resize 2 to 4 adjacent windows at 60 FPS without breaking layout symmetry.",
     highlights: [
-      "Điểm giao chữ T & dấu cộng",
-      "Giữ nhịp 60 FPS không giật lag",
+      "T-junction & crosshair snapping",
+      "Rock-solid 60 FPS fluidity",
     ],
     span: "standard",
     illustrationId: "collinear-2d",
@@ -49,8 +49,8 @@ export const bentoFeatures: BentoFeatureItem[] = [
     title: "Current Space Preservation",
     badge: "Flow Continuity",
     description:
-      "Mở ứng dụng mới luôn xuất hiện tại không gian làm việc hiện tại. Chấm dứt vĩnh viễn ức chế bị macOS tự văng sang Desktop Space khác.",
-    highlights: ["100% Public APIs", "Bảo toàn mạch tập trung tuyệt đối"],
+      "Newly launched apps appear strictly in your current active workspace. Permanently ends macOS from jarringly jumping to another virtual desktop space.",
+    highlights: ["100% Public APIs", "Zero workspace disruption"],
     span: "standard",
     illustrationId: "current-space",
   },
@@ -59,9 +59,9 @@ export const bentoFeatures: BentoFeatureItem[] = [
     title: "Intent-Based Workspaces & Presets",
     badge: "Multi-App Harmony",
     description:
-      "Lưu và khôi phục trọn gói không gian làm việc (Coding, Research, Writing) theo tỷ lệ phần trăm độc lập kích thước màn hình chỉ với 1 phím tắt.",
-    highlights: ["Preset Coding & Research", "Khôi phục đa màn hình mượt mà"],
-    span: "standard",
+      "Save and restore full application workspace groups (Coding, Research, Writing) mapped by screen-independent percentages with a single keystroke.",
+    highlights: ["Coding & Research Presets", "Seamless multi-display restore"],
+    span: "hero",
     illustrationId: "workspaces",
   },
   {
@@ -69,11 +69,11 @@ export const bentoFeatures: BentoFeatureItem[] = [
     title: "Quake-Style Quick Scratchpad",
     badge: "Instant Summon (⌥Space)",
     description:
-      "Triệu hồi cửa sổ tiện ích (Terminal, Notes, Finder) nổi lên trước mặt người dùng trong < 50ms. Thoát nhanh bằng phím ESC mà không co nhỏ ứng dụng đang làm việc 1 pixel nào.",
+      "Summon a dedicated utility window (Terminal, Notes, Finder) floating in front in < 50ms. Dismiss quickly with ESC without shrinking underlying windows by 1 pixel.",
     highlights: [
-      "Triệu hồi tức thì < 50ms",
-      "Tự ẩn khi click ra ngoài",
-      "Zero-shrink ứng dụng nền",
+      "Instant < 50ms summon",
+      "Auto-dismiss on outside click",
+      "Zero-shrink background apps",
     ],
     span: "hero",
     illustrationId: "scratchpad",
@@ -81,12 +81,12 @@ export const bentoFeatures: BentoFeatureItem[] = [
   {
     id: "multi-monitor",
     title: "Display-Aware Multi-Monitor Topology",
-    badge: "Coordinate Inversion Math",
+    badge: "Multi-Display Topology",
     description:
-      "Ném cửa sổ xuyên màn hình bằng phím tắt (⌃⌥⇧→), tự co giãn tỷ lệ giữa màn hình Retina và màn 4K với toán học đảo trục tọa độ chuẩn xác 100%.",
+      "Throw windows across screens with dedicated hotkeys (⌃⌥⇧→), automatically scaling proportions between Retina displays and 4K monitors with pixel-perfect math.",
     highlights: [
-      "Ném cửa sổ 1 chạm",
-      "Bảo toàn tỷ lệ khung hình giữa 4K & Retina",
+      "1-touch display throw",
+      "Preserves aspect ratio across 4K & Retina",
     ],
     span: "standard",
     illustrationId: "multi-monitor",

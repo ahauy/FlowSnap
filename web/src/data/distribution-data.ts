@@ -49,7 +49,7 @@ export const RELEASE_METADATA: ReleaseMetadata = {
   binaryArch: "Universal Binary (Apple Silicon & Intel)",
   minMacOS: "macOS 14.0+ (Sonoma & Sequoia)",
   fileSize: "~14.2 MB",
-  license: "MIT License (100% Free & Open Source)",
+  license: "MIT Open Source",
   sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
 };
 
@@ -60,7 +60,7 @@ export const TERMINAL_TABS: readonly TerminalTabItem[] = [
     command:
       "curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/install.sh | bash",
     description:
-      "Tải và cài đặt tự động bản Universal DMG mới nhất vào /Applications",
+      "Automatically download and install the latest Universal DMG into /Applications",
     defaultActive: true,
   },
   {
@@ -68,7 +68,7 @@ export const TERMINAL_TABS: readonly TerminalTabItem[] = [
     label: "Homebrew",
     command: "brew install --cask ahauy/tap/flowsnap",
     description:
-      "Cài đặt và quản lý phiên bản qua Homebrew Cask tap chính thức",
+      "Install and manage updates via the official Homebrew Cask tap",
     defaultActive: false,
   },
 ];
@@ -76,15 +76,15 @@ export const TERMINAL_TABS: readonly TerminalTabItem[] = [
 export const PRIVACY_PILLARS: readonly PrivacyPillarItem[] = [
   {
     id: "offline",
-    title: "100% Hoạt động Offline",
+    title: "100% Offline Operation",
     badge: "Zero Network Outbound",
     icon: "offline",
     description:
-      "FlowSnap hoạt động hoàn toàn cục bộ trên máy của bạn mà không tạo bất kỳ kết nối mạng ngoại vi nào.",
+      "FlowSnap operates entirely on your local machine without opening external network sockets or phoning home.",
     details: [
-      "Không yêu cầu đăng ký tài khoản hay đăng nhập",
-      "Không gửi dữ liệu cấu hình hoặc bố cục ra bên ngoài",
-      "Hoạt động hoàn hảo ngay cả khi ngắt toàn bộ Internet",
+      "No account creation, login, or cloud licensing required",
+      "Zero telemetry, layout data, or telemetry transmissions",
+      "Fully functional even with network interfaces disconnected",
     ],
   },
   {
@@ -93,51 +93,51 @@ export const PRIVACY_PILLARS: readonly PrivacyPillarItem[] = [
     badge: "No Tracking SDKs",
     icon: "shield",
     description:
-      "Tuyệt đối không thu thập dữ liệu phân tích hành vi, thống kê hay thông tin cá nhân của người dùng.",
+      "We strictly collect zero analytics, behavioral event telemetry, or personal identifiable information.",
     details: [
-      "Không tích hợp Google Analytics, Sentry hay Mixpanel",
-      "Không lưu cookie hay fingerprint máy tính",
-      "Mã nguồn minh bạch 100% để cộng đồng tự do kiểm toán",
+      "Zero Google Analytics, Mixpanel, or Sentry SDKs bundled",
+      "No cookies, local fingerprinting, or hardware serial tracking",
+      "100% open-source codebase for full community auditability",
     ],
   },
   {
     id: "accessibility",
-    title: "Quyền Trợ Năng Minh Bạch",
+    title: "Transparent Accessibility Permissions",
     badge: "AXUIElement Only",
     icon: "lock",
     description:
-      "Quyền Accessibility (AX) chỉ được dùng để tính toán và điều hướng tọa độ cửa sổ.",
+      "Accessibility (AX) privileges are used strictly for querying window coordinates and geometric resizing.",
     details: [
-      "Chỉ thao tác kích thước (size) và vị trí (position) cửa sổ",
-      "Cam kết Zero Keylogging: Không bao giờ theo dõi nội dung gõ phím",
-      "Không can thiệp vào bộ nhớ hoặc dữ liệu của ứng dụng khác",
+      "Mutates only window frame bounds (size) and position (origin)",
+      "Zero Keylogging guarantee: never reads keyboard input outside hotkeys",
+      "Never inspects application content, text payloads, or window data",
     ],
   },
 ];
 
 export const GATEKEEPER_DATA: GatekeeperGuideData = {
-  title: 'Gặp cảnh báo "Unidentified Developer" từ macOS Gatekeeper?',
+  title: 'Encountered macOS Gatekeeper "Unidentified Developer" Warning?',
   summary:
-    "Vì FlowSnap là phần mềm mã nguồn mở cộng đồng phi thương mại (không mua chứng chỉ Apple Developer trả phí), macOS sẽ gắn thuộc tính cách ly (quarantine) trong lần đầu mở app.",
+    "Because FlowSnap is an open-source community utility without Apple Developer Program signing, macOS applies a quarantine flag on first launch.",
   command: "xattr -cr /Applications/FlowSnap.app",
   steps: [
     {
       stepNumber: 1,
-      title: "Kéo FlowSnap vào thư mục Applications",
+      title: "Drag FlowSnap to Applications",
       instruction:
-        "Mở tệp FlowSnap.dmg vừa tải và kéo biểu tượng FlowSnap vào thư mục /Applications như bình thường.",
+        "Open the downloaded FlowSnap.dmg and drag the FlowSnap icon into your /Applications directory as usual.",
     },
     {
       stepNumber: 2,
-      title: "Mở Terminal và chạy lệnh gỡ cờ cách ly",
+      title: "Remove quarantine attribute via Terminal",
       instruction:
-        "Sao chép và dán câu lệnh bên dưới vào Terminal rồi nhấn Enter để xóa thuộc tính com.apple.quarantine.",
+        "Copy and paste the command below into Terminal, then press Enter to remove the com.apple.quarantine attribute.",
     },
     {
       stepNumber: 3,
-      title: "Mở ứng dụng và cấp quyền Trợ năng",
+      title: "Launch and grant Accessibility permissions",
       instruction:
-        "Khởi chạy FlowSnap từ Launchpad hoặc Spotlight, sau đó cấp quyền Trợ năng (Accessibility) khi được hỏi để bắt đầu tận hưởng snap mượt mà.",
+        "Open FlowSnap from Spotlight or Launchpad, then grant Accessibility access when prompted to enable window snapping.",
     },
   ],
 };
