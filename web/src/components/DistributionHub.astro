@@ -1,6 +1,5 @@
 ---
-import DmgCard from './DmgCard.astro';
-import TerminalInstaller from './TerminalInstaller.astro';
+import UnifiedInstaller from './UnifiedInstaller.astro';
 import PrivacyManifesto from './PrivacyManifesto.astro';
 import GatekeeperGuide from './GatekeeperGuide.astro';
 import type { Locale } from '../i18n';
@@ -13,14 +12,9 @@ const { lang = 'en' } = Astro.props;
 ---
 
 <div id="distribution-hub-root" class="distribution-hub" data-component="distribution-hub">
-  <!-- Tier 1: Dual Download & CLI Showcase (Symmetric Equal-Height Columns) -->
-  <div class="hub-hero-row">
-    <div class="hub-hero-col">
-      <DmgCard lang={lang} />
-    </div>
-    <div class="hub-hero-col">
-      <TerminalInstaller lang={lang} />
-    </div>
+  <!-- Tier 1: Unified 3-Tab Distribution Hub (DMG, cURL, Homebrew) -->
+  <div class="hub-hero-section">
+    <UnifiedInstaller lang={lang} />
   </div>
 
   <!-- Tier 2: Security, Trust & Frictionless Onboarding (Full-Width Symmetrical Flow) -->
@@ -39,24 +33,14 @@ const { lang = 'en' } = Astro.props;
     gap: 24px;
   }
 
-  /* Tier 1: Side-by-side Equal Height Columns */
-  .hub-hero-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    align-items: stretch;
+  /* Tier 1: Unified 3-Tab Hero Card Section */
+  .hub-hero-section {
     width: 100%;
-  }
-
-  .hub-hero-col {
     display: flex;
-    width: 100%;
-    height: 100%;
   }
 
-  .hub-hero-col > :global(*) {
+  .hub-hero-section > :global(*) {
     width: 100%;
-    height: 100%;
   }
 
   /* Tier 2: Full-width Trust & Security Stack */
@@ -65,12 +49,5 @@ const { lang = 'en' } = Astro.props;
     flex-direction: column;
     gap: 24px;
     width: 100%;
-  }
-
-  @media (max-width: 1023px) {
-    .hub-hero-row {
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
   }
 </style>

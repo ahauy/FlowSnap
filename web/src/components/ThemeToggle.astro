@@ -119,12 +119,39 @@
         document.documentElement.classList.remove('dark');
       }
 
+      const themeColor = newTheme === 'dark' ? '#09090b' : '#ffffff';
+      document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
+        m.setAttribute('content', themeColor);
+      });
+
       try {
         localStorage.setItem('flowsnap-theme', newTheme);
       } catch (_) {
         // Fallback gracefully for restricted environments
       }
     });
+
+    // Listen to OS-level system color-scheme changes if no manual preference stored
+    if (!window.__flowsnapThemeListenerAttached) {
+      window.__flowsnapThemeListenerAttached = true;
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        try {
+          if (!localStorage.getItem('flowsnap-theme')) {
+            const systemTheme = e.matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', systemTheme);
+            if (systemTheme === 'dark') {
+              document.documentElement.classList.add('dark');
+            } else {
+              document.documentElement.classList.remove('dark');
+            }
+            const col = systemTheme === 'dark' ? '#09090b' : '#ffffff';
+            document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
+              m.setAttribute('content', col);
+            });
+          }
+        } catch (_) {}
+      });
+    }
   }
 
   // Support initial mount & view transitions if enabled later

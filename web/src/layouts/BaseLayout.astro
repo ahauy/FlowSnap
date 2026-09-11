@@ -39,6 +39,8 @@ const defaultCanonical = lang === 'vi'
   : `${siteUrl}${basePath || '/FlowSnap'}`;
 
 const canonical = canonicalUrl || defaultCanonical;
+const enAlternate = `${siteUrl}${basePath || '/FlowSnap'}`;
+const viAlternate = `${siteUrl}${basePath || '/FlowSnap'}/vi`;
 const absoluteOgImage = ogImage.startsWith('http')
   ? ogImage
   : `${siteUrl}${basePath || '/FlowSnap'}/${ogImage.replace(/^\//, '')}`;
@@ -78,6 +80,9 @@ const jsonLdSchema = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={enAlternate} />
+    <link rel="alternate" hreflang="vi" href={viAlternate} />
+    <link rel="alternate" hreflang="x-default" href={enAlternate} />
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>

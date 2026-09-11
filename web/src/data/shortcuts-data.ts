@@ -17,160 +17,159 @@ export interface ShortcutDefinition {
 }
 
 export const shortcutCategories: ShortcutCategoryDef[] = [
-  { key: "all", label: "Tất cả" },
-  { key: "window", label: "Cửa sổ" },
-  { key: "display", label: "Màn hình" },
+  { key: "all", label: "All" },
+  { key: "window", label: "Window" },
+  { key: "display", label: "Display" },
   { key: "workspace", label: "Workspace" },
-  { key: "utility", label: "Tiện ích" },
+  { key: "utility", label: "Utility" },
 ];
 
 export const shortcutsCatalog: ShortcutDefinition[] = [
-  // Cửa sổ (Window & Snap)
+  // Window & Snap
   {
     id: "snap-left",
-    action: "Snap Nửa Trái (50%)",
+    action: "Snap Left Half (50%)",
     category: "window",
     keys: ["⌃", "⌥", "←"],
     displayString: "⌃⌥←",
-    description: "Chia cửa sổ vào 50% bên trái màn hình hiện tại",
-    badge: "Cơ bản",
+    description: "Snap focused window to the left 50% of the active display",
+    badge: "Basic",
   },
   {
     id: "snap-right",
-    action: "Snap Nửa Phải (50%)",
+    action: "Snap Right Half (50%)",
     category: "window",
     keys: ["⌃", "⌥", "→"],
     displayString: "⌃⌥→",
-    description: "Chia cửa sổ vào 50% bên phải màn hình hiện tại",
-    badge: "Cơ bản",
+    description: "Snap focused window to the right 50% of the active display",
+    badge: "Basic",
   },
   {
     id: "snap-maximize",
-    action: "Phóng To Toàn Màn Hình",
+    action: "Maximize Window (100%)",
     category: "window",
     keys: ["⌃", "⌥", "↑"],
     displayString: "⌃⌥↑",
     description:
-      "Mở rộng chiếm 100% không gian làm việc khả dụng (trừ Dock/Menu Bar)",
+      "Expand window to 100% usable workspace (respecting Dock & Menu Bar)",
   },
   {
     id: "snap-restore",
-    action: "Khôi Phục Vị Trí Cũ",
+    action: "Restore Previous Geometry",
     category: "window",
     keys: ["⌃", "⌥", "↓"],
     displayString: "⌃⌥↓",
     description:
-      "Đưa cửa sổ về lại kích thước và tọa độ ban đầu trước khi snap",
+      "Revert window back to its pre-snap coordinates and dimensions",
   },
   {
     id: "snap-quarters",
-    action: "Snap 4 Góc (25%)",
+    action: "Snap 4 Corners (25%)",
     category: "window",
     keys: ["⌃", "⌥", "1..4"],
     displayString: "⌃⌥1..4",
     description:
-      "Xếp cửa sổ vào 1 trong 4 góc màn hình (1: Top-Left, 2: Top-Right, 3: Bottom-Left, 4: Bottom-Right)",
+      "Tile window into one of 4 corners (1: Top-Left, 2: Top-Right, 3: Bottom-Left, 4: Bottom-Right)",
   },
   {
     id: "pin-always-on-top",
-    action: "Ghim Luôn Trên Cùng",
+    action: "Pin Always-on-Top",
     category: "window",
     keys: ["⌃", "⌥", "P"],
     displayString: "⌃⌥P",
-    description:
-      "Ghim cửa sổ luôn nổi lên trên các ứng dụng khác (Always-on-Top)",
-    badge: "Mới",
+    description: "Float window above all other applications (Floating Overlay)",
+    badge: "New",
   },
 
-  // Màn hình (Multi-Display)
+  // Multi-Display
   {
     id: "throw-next-display",
-    action: "Ném Sang Màn Hình Kế Tiếp",
+    action: "Throw to Next Display",
     category: "display",
     keys: ["⌃", "⌥", "⇧", "→"],
     displayString: "⌃⌥⇧→",
     description:
-      "Chuyển cửa sổ sang màn hình bên phải và tự co giãn tỷ lệ khung hình",
-    badge: "Đa màn hình",
+      "Move window to right adjacent screen with proportional scaling",
+    badge: "Multi-Screen",
   },
   {
     id: "throw-prev-display",
-    action: "Ném Sang Màn Hình Trước",
+    action: "Throw to Previous Display",
     category: "display",
     keys: ["⌃", "⌥", "⇧", "←"],
     displayString: "⌃⌥⇧←",
     description:
-      "Chuyển cửa sổ sang màn hình bên trái và tự co giãn tỷ lệ khung hình",
-    badge: "Đa màn hình",
+      "Move window to left adjacent screen with proportional scaling",
+    badge: "Multi-Screen",
   },
   {
     id: "migrate-workspace-display",
-    action: "Di Chuyển Trọn Gói Workspace",
+    action: "Migrate Entire Workspace",
     category: "display",
     keys: ["⌃", "⌥", "⇧", "⌘", "→"],
     displayString: "⌃⌥⇧⌘→",
     description:
-      "Chuyển toàn bộ nhóm cửa sổ đang làm việc sang màn hình khác đồng thời",
+      "Move all windows in the current group to another display simultaneously",
   },
 
-  // Workspace (Workspaces & Presets)
+  // Workspaces & Presets
   {
     id: "preset-coding",
-    action: "Bố Cục Lập Trình (Coding Flow)",
+    action: "Coding Layout Preset",
     category: "workspace",
     keys: ["⌃", "⌥", "⌘", "1"],
     displayString: "⌃⌥⌘1",
     description:
-      "Khôi phục bộ 3 cửa sổ: VS Code (60%), Chrome DevTools (25%), Terminal (15%)",
+      "Restore 3-window layout: VS Code (60%), Chrome DevTools (25%), Terminal (15%)",
     badge: "Preset",
   },
   {
     id: "preset-research",
-    action: "Bố Cục Nghiên Cứu & Viết Lách",
+    action: "Research & Writing Preset",
     category: "workspace",
     keys: ["⌃", "⌥", "⌘", "2"],
     displayString: "⌃⌥⌘2",
     description:
-      "Khôi phục bố cục tài liệu: Arc Browser (70%) + Notion / Notes (30%)",
+      "Restore document layout: Arc / Safari (70%) + Notion / Notes (30%)",
     badge: "Preset",
   },
   {
     id: "snapshot-save",
-    action: "Lưu Nhanh Bố Cục Workspace",
+    action: "Snapshot Current Workspace",
     category: "workspace",
     keys: ["⌃", "⌥", "⌘", "S"],
     displayString: "⌃⌥⌘S",
     description:
-      "Chụp ảnh không gian làm việc hiện tại và lưu vào danh sách Workspace cá nhân",
+      "Capture active layout coordinates and save as a custom workspace snapshot",
   },
 
-  // Tiện ích (Utilities & Focus)
+  // Utilities & Focus
   {
     id: "toggle-scratchpad",
-    action: "Triệu Hồi Quake Scratchpad",
+    action: "Summon Quake Scratchpad",
     category: "utility",
     keys: ["⌥", "Space"],
     displayString: "⌥Space",
     description:
-      "Bật/tắt nhanh cửa sổ ghi chú hoặc terminal nổi; nhấn lại hoặc ESC để ẩn",
-    badge: "Đột phá",
+      "Toggle instant floating terminal or scratchpad; press ESC to dismiss",
+    badge: "Instant",
   },
   {
     id: "universal-fullscreen-escape",
-    action: "Thoát Toàn Màn Hình Tức Thì",
+    action: "Universal Fullscreen Escape",
     category: "utility",
     keys: ["⌃", "⌘", "F"],
     displayString: "⌃⌘F",
     description:
-      "Thoát Fullscreen đa tầng hỗ trợ cả app macOS Native lẫn Electron",
+      "Instant exit from multi-level fullscreen for both Native and Electron apps",
   },
   {
     id: "open-settings",
-    action: "Mở Cài Đặt FlowSnap",
+    action: "Open FlowSnap Settings",
     category: "utility",
     keys: ["⌃", "⌥", ","],
     displayString: "⌃⌥,",
     description:
-      "Mở cửa sổ cấu hình phím tắt, khoảng hở viền (Gaps), và khởi động cùng macOS",
+      "Configure custom shortcuts, inner/outer margin gaps, and launch on login",
   },
 ];

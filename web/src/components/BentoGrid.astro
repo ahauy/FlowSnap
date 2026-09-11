@@ -144,27 +144,31 @@ const localizedCards = bentoFeatures.map((card) => {
 
           {card.illustrationId === 'workspaces' && (
             <div class="illustration-workspaces vector-art" aria-hidden="true">
-              <svg class="bento-svg" viewBox="0 0 260 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- Screen Frame -->
-                <rect x="10" y="10" width="240" height="160" rx="8" class="svg-bezel" />
-                <!-- Top Menu -->
-                <rect x="10" y="10" width="240" height="20" rx="8" class="svg-menubar" />
-                <!-- Tri-Split Coding Flow Preset -->
+              <svg class="bento-svg" viewBox="0 0 440 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Virtual Screen Bezel -->
+                <rect x="10" y="10" width="420" height="180" rx="8" class="svg-bezel" />
+                <!-- Top Menu Bar -->
+                <rect x="10" y="10" width="420" height="22" rx="8" class="svg-menubar" />
+                <circle cx="28" cy="21" r="3" class="svg-traffic-dot" />
+                <text x="56" y="24" font-size="9" font-weight="600" fill="var(--color-text-tertiary, #71717a)">Coding Flow</text>
+                <!-- Tri-Split Preset (Coding Flow) -->
                 <!-- 1. VS Code (Left 60%) -->
-                <rect x="18" y="36" width="136" height="124" rx="5" class="svg-window-box" />
-                <rect x="18" y="36" width="136" height="16" rx="5" class="svg-window-header" />
-                <circle cx="27" cy="44" r="2" fill="#ff5f56" />
-                <text x="86" y="47" text-anchor="middle" font-size="8" font-weight="600" fill="var(--color-text-secondary, #52525b)">VS Code (60%)</text>
+                <rect x="22" y="40" width="240" height="138" rx="6" class="svg-window-box" />
+                <rect x="22" y="40" width="240" height="20" rx="6" class="svg-window-header" />
+                <circle cx="34" cy="50" r="2.5" fill="#ff5f56" />
+                <circle cx="41" cy="50" r="2.5" fill="#ffbd2e" />
+                <circle cx="48" cy="50" r="2.5" fill="#27c93f" />
+                <text x="142" y="54" text-anchor="middle" font-size="9" font-weight="600" fill="var(--color-text-secondary, #52525b)">VS Code (60%)</text>
                 <!-- 2. Chrome DevTools (Top Right 25%) -->
-                <rect x="160" y="36" width="82" height="64" rx="5" class="svg-window-box" />
-                <rect x="160" y="36" width="82" height="16" rx="5" class="svg-window-header" />
-                <text x="201" y="47" text-anchor="middle" font-size="8" font-weight="600" fill="var(--color-text-secondary, #52525b)">Chrome</text>
+                <rect x="272" y="40" width="146" height="70" rx="6" class="svg-window-box" />
+                <rect x="272" y="40" width="146" height="18" rx="6" class="svg-window-header" />
+                <text x="345" y="52" text-anchor="middle" font-size="9" font-weight="600" fill="var(--color-text-secondary, #52525b)">Chrome DevTools</text>
                 <!-- 3. Terminal (Bottom Right 15%) -->
-                <rect x="160" y="106" width="82" height="54" rx="5" class="svg-window-box" />
-                <rect x="160" y="106" width="82" height="16" rx="5" class="svg-window-header" />
-                <text x="201" y="117" text-anchor="middle" font-size="8" font-weight="600" fill="var(--color-text-secondary, #52525b)">Terminal</text>
+                <rect x="272" y="118" width="146" height="60" rx="6" class="svg-window-box" />
+                <rect x="272" y="118" width="146" height="18" rx="6" class="svg-window-header" />
+                <text x="345" y="130" text-anchor="middle" font-size="9" font-weight="600" fill="var(--color-text-secondary, #52525b)">Terminal</text>
                 <!-- Preset Hotkey Chip -->
-                <g transform="translate(68, 134)">
+                <g transform="translate(112, 142)">
                   <rect width="64" height="20" rx="10" fill="var(--color-surface, #ffffff)" stroke="var(--color-border, #e4e4e7)" stroke-width="1" />
                   <text x="32" y="14" text-anchor="middle" font-family="var(--font-mono)" font-size="9" font-weight="600" fill="var(--brand-apple-blue, #0071e3)">⌃⌥⌘1</text>
                 </g>
