@@ -2,24 +2,24 @@
 
 ## Giới thiệu Trung tâm Phân phối FlowSnap
 
-Khu vực **Distribution Hub** (`#download`) trên trang chủ chính thức của FlowSnap cung cấp đầy đủ các phương thức cài đặt nhanh chóng, minh bạch và an toàn cho người dùng macOS.
+Khu vực **Distribution Hub** (`#download`) trên trang chủ chính thức của FlowSnap cung cấp thẻ cài đặt hợp nhất (Unified Installer Hub) với 3 tab chuyển đổi nhanh chóng, minh bạch và an toàn cho người dùng macOS:
 
 ![Distribution Hub Overview](./images/web-distribution-hub/distribution-hub-overview.png)
 
 ---
 
-## 1. Tải và cài đặt qua File DMG trực tiếp (Khuyên dùng cho người dùng phổ thông)
+## 1. Tải và cài đặt qua File DMG trực tiếp (Tab DMG Package)
 
 1. Cuộn đến khu vực **Get Started with FlowSnap** (`#download`) trên trang web.
-2. Nhấp vào nút **Download for macOS**. Tệp `FlowSnap.dmg` phiên bản mới nhất sẽ tự động được tải về từ GitHub Releases.
+2. Chọn tab **DMG Package** và nhấp vào nút **Download for macOS**. Tệp `FlowSnap.dmg` phiên bản mới nhất sẽ tự động được tải về từ GitHub Releases.
 3. Mở tệp `FlowSnap.dmg` đã tải và kéo biểu tượng **FlowSnap** vào thư mục **Applications**.
 4. Mở FlowSnap từ **Spotlight** (`⌘Space`) hoặc **Launchpad**.
 
 ---
 
-## 2. Cài đặt tự động bằng 1 dòng lệnh Terminal (Khuyên dùng cho Developers)
+## 2. Cài đặt tự động bằng 1 dòng lệnh Terminal (Tab cURL & Homebrew)
 
-FlowSnap cung cấp khung Terminal One-Line Installer hỗ trợ 2 công cụ phổ biến:
+Khung cài đặt tích hợp sẵn lệnh cho 2 công cụ phổ biến của developers:
 
 ### Cách 1: Sử dụng lệnh cURL (Mặc định)
 
