@@ -990,5 +990,44 @@ struct AdaptiveDividerCoordinatorTests {
         #expect(sut.hoveredJunction == nil)
         #expect(sut.currentCursor == .arrow)
     }
+
+    @Test("Hover and MouseDown blocked when overlapping foreground window covers divider coordinate")
+    func overlappingForegroundWindowBlocksHoverAndMouseDown() async {
+        let (sut, _, _, mockOverlay) = makeSUT()
+        let floatingTop = ManagedWindow(
+            id: 99, pid: 99, title: "Floating Window",
+            frame: CGRect(x: 400, y: 300, width: 640, height: 400),
+            isResizable: true, kind: .normal
+        )
+        let left = ManagedWindow(id: 1, pid: 10, title: "Left", frame: CGRect(x: 0, y: 0, width: 720, height: 900))
+        let right = ManagedWindow(id: 2, pid: 20, title: "Right", frame: CGRect(x: 720, y: 0, width: 720, height: 900))
+
+        // floatingTop is at index 0 (frontmost), covering X=720 from Y=300 to Y=700
+        sut.updateWindows([left, right], allVisibleWindows: [floatingTop, left, right])
+
+        // 1. Hover directly on divider at Y=500 (inside floatingTop's bounds) -> Must be occluded
+        await sut.handleMouseMoved(to: CGPoint(x: 720, y: 500))
+        #expect(sut.hoveredDivider == nil)
+        #expect(sut.currentCursor == .arrow)
+        #expect(mockOverlay?.isOverlayVisible == false)
+
+        // MouseDown at Y=500 -> Must return false and not start resizing
+        let didStartResize = await sut.handleMouseDown(at: CGPoint(x: 720, y: 500))
+        #expect(didStartResize == false)
+        #expect(sut.isResizing == false)
+
+        // 2. Hover on divider at Y=100 (outside floatingTop, exposed seam) -> Must detect divider
+        await sut.handleMouseMoved(to: CGPoint(x: 720, y: 100))
+        #expect(sut.hoveredDivider != nil)
+        #expect(sut.hoveredDivider?.coordinate == 720)
+        #expect(sut.currentCursor == .resizeLeftRight)
+        #expect(mockOverlay?.isOverlayVisible == true)
+
+        // MouseDown at Y=100 -> Must start resize successfully
+        let didStartResizeExposed = await sut.handleMouseDown(at: CGPoint(x: 720, y: 100))
+        #expect(didStartResizeExposed == true)
+        #expect(sut.isResizing == true)
+    }
 }
+
 

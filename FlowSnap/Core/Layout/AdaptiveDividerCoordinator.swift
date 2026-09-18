@@ -143,6 +143,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
 
     public private(set) var isTracking: Bool = false
     public private(set) var managedWindows: [ManagedWindow] = []
+    public private(set) var allVisibleWindows: [ManagedWindow] = []
     public private(set) var activeDivider: CollinearEdge?
     public private(set) var hoveredDivider: CollinearEdge?
     public private(set) var activeJunction: CrossJunction?
@@ -315,6 +316,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         lastCommittedFrames.removeAll()
         activeMinSizes.removeAll()
         dividerCache = nil
+        allVisibleWindows.removeAll()
         lastPresentedDividers = []
         lastPresentedWindows = []
         lastPresentedContainer = nil
@@ -360,7 +362,12 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     // MARK: - Window Management
 
     public func updateWindows(_ windows: [ManagedWindow]) {
+        updateWindows(windows, allVisibleWindows: windows)
+    }
+
+    public func updateWindows(_ windows: [ManagedWindow], allVisibleWindows: [ManagedWindow]?) {
         self.managedWindows = windows
+        self.allVisibleWindows = allVisibleWindows ?? windows
     }
 
     private func refreshWindowsIfNeeded() async {
@@ -371,6 +378,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             let workspaceBundleIDs = Set(activeWorkspace.placements.map { $0.bundleIdentifier.lowercased() })
             if let service = accessibilityService {
                 let visible = service.allVisibleManagedWindows()
+                self.allVisibleWindows = visible
                 let filtered = visible.filter { window in
                     guard let id = window.bundleIdentifier?.lowercased() else { return false }
                     return workspaceBundleIDs.contains(id)
@@ -382,6 +390,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             }
             if let registry = windowRegistry {
                 let tracked = await registry.allWindows
+                self.allVisibleWindows = tracked
                 let filtered = tracked.filter { window in
                     guard let id = window.bundleIdentifier?.lowercased() else { return false }
                     return workspaceBundleIDs.contains(id)
@@ -392,6 +401,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
                 }
             }
             self.managedWindows = []
+            self.allVisibleWindows = []
             self.dividerCache = nil
             return
         }
@@ -399,6 +409,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         if let service = accessibilityService, !service.isTrusted { return }
         if let service = accessibilityService {
             let visible = service.allVisibleManagedWindows()
+            self.allVisibleWindows = visible
             if visible.count >= 2 {
                 self.managedWindows = visible
                 return
@@ -406,12 +417,14 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         }
         if let registry = windowRegistry {
             let tracked = await registry.allWindows
+            self.allVisibleWindows = tracked
             if tracked.count >= 2 {
                 self.managedWindows = tracked
                 return
             }
         }
         self.managedWindows = []
+        self.allVisibleWindows = []
         self.dividerCache = nil
     }
 
@@ -545,6 +558,31 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         return result
     }
 
+    /// Checks whether `point` is occluded by any window that sits in front of the given participating windows in Z-order.
+    public func isPointOccluded(_ point: CGPoint, forParticipatingWindowIDs participatingIDs: [CGWindowID]) -> Bool {
+        guard !allVisibleWindows.isEmpty else { return false }
+        let participatingSet = Set(participatingIDs)
+
+        // Find the backmost Z-index among participating windows (highest index in front-to-back list)
+        var maxParticipatingIndex = -1
+        for (index, window) in allVisibleWindows.enumerated() {
+            if participatingSet.contains(window.id) {
+                maxParticipatingIndex = max(maxParticipatingIndex, index)
+            }
+        }
+        guard maxParticipatingIndex > 0 else { return false }
+
+        // Any window appearing before `maxParticipatingIndex` is in front of at least one participating window.
+        for index in 0..<maxParticipatingIndex {
+            let occluder = allVisibleWindows[index]
+            if participatingSet.contains(occluder.id) { continue }
+            if occluder.frame.contains(point) {
+                return true
+            }
+        }
+        return false
+    }
+
     // MARK: - Hover
 
     public func handleMouseMoved(to point: CGPoint) async {
@@ -619,8 +657,14 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         }
         let dividers = cachedDividers(for: displayWindows, container: container, gap: gap)
         let junctions = detector.detectJunctions(in: dividers, tolerance: max(gap + 12.0, 16.0))
-        let hoveredJunc = detector.hitTestJunction(at: point, in: junctions)
-        let hovered = hoveredJunc != nil ? nil : detector.hitTestDivider(at: point, in: dividers)
+        var hoveredJunc = detector.hitTestJunction(at: point, in: junctions)
+        if let junc = hoveredJunc, isPointOccluded(point, forParticipatingWindowIDs: junc.participatingWindowIDs) {
+            hoveredJunc = nil
+        }
+        var hovered = hoveredJunc != nil ? nil : detector.hitTestDivider(at: point, in: dividers)
+        if let div = hovered, isPointOccluded(point, forParticipatingWindowIDs: div.leadingWindowIDs + div.trailingWindowIDs) {
+            hovered = nil
+        }
 
         // Nothing on screen changes unless the seam set or the hovered seam/junction
         // changed, so skip the overlay refresh when they did not. Without this,
@@ -711,7 +755,7 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
             }
             if !belongsToWorkspaceScreen { return false }
         }
-        if isWorkspaceRestrictionEnabled && isNonWorkspaceAppFrontmost {
+        if isNonWorkspaceAppFrontmost {
             return false
         }
         let displayWindows = filterWindows(for: container)
@@ -719,6 +763,9 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         let junctions = detector.detectJunctions(in: dividers, tolerance: max(gap + 12.0, 16.0))
 
         if let junction = detector.hitTestJunction(at: point, in: junctions) {
+            guard !isPointOccluded(point, forParticipatingWindowIDs: junction.participatingWindowIDs) else {
+                return false
+            }
             activeJunction = junction
             activeDivider = nil
             dragDividers = dividers
@@ -754,6 +801,9 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
         }
 
         guard let divider = detector.hitTestDivider(at: point, in: dividers) else {
+            return false
+        }
+        guard !isPointOccluded(point, forParticipatingWindowIDs: divider.leadingWindowIDs + divider.trailingWindowIDs) else {
             return false
         }
 
