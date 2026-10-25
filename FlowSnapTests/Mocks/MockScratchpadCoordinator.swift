@@ -63,4 +63,9 @@ public final class MockScratchpadCoordinator: ScratchpadCoordinating {
         detachScratchpadCallsCount += 1
         state = .unassigned
     }
+
+    public var startObservingWorkspaceCallsCount: Int = 0
+    public func startObservingWorkspace() {
+        startObservingWorkspaceCallsCount += 1
+    }
 }

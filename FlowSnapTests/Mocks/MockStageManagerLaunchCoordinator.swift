@@ -11,4 +11,9 @@ public final class MockStageManagerLaunchCoordinator: StageManagerLaunchCoordina
     public func handleApplicationLaunched(processIdentifier: pid_t, bundleIdentifier: String?) async {
         handleApplicationLaunchedCalls.append((processIdentifier, bundleIdentifier))
     }
+
+    public var startObservingWorkspaceCallsCount: Int = 0
+    public func startObservingWorkspace() {
+        startObservingWorkspaceCallsCount += 1
+    }
 }

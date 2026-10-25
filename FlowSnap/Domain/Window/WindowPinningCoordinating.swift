@@ -25,4 +25,11 @@ public protocol WindowPinningCoordinating: AnyObject, Sendable {
 
     /// Handles system-wide window focus or activation changes to re-assert pinned windows.
     func handleFocusChange(activeWindowID: CGWindowID?, activePID: pid_t?) async
+
+    /// Starts observing system workspace application activation events to re-assert pinned windows.
+    func startObservingWorkspace()
+}
+
+extension WindowPinningCoordinating {
+    public func startObservingWorkspace() {}
 }

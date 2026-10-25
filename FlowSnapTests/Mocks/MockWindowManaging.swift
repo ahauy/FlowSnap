@@ -7,6 +7,7 @@ import Foundation
 @MainActor
 public final class MockWindowManaging: WindowManaging {
 
+    public var onWindowMoved: ((CGWindowID) -> Void)?
     public var mockFocusedWindow: ManagedWindow?
     public private(set) var movedWindows: [(window: ManagedWindow, frame: CGRect)] = []
     /// The element each move was addressed to, parallel to `movedWindows`.
