@@ -204,20 +204,12 @@ public final class AppDependencies {
         self.displayHotPlugObserver.startObserving()
         _ = self.topologyProfileManager
 
-        if let wm = self.windowManager as? WindowManager {
-            wm.onWindowMoved = { [weak self] windowID in
-                self?.windowPolicyManager.markHandled(windowID: windowID)
-            }
+        self.windowManager.onWindowMoved = { [weak self] windowID in
+            self?.windowPolicyManager.markHandled(windowID: windowID)
         }
 
-        if let pinCoordinator = self.windowPinningCoordinator as? WindowPinningCoordinator {
-            pinCoordinator.startObservingWorkspace()
-        }
-        if let launchCoordinator = self.stageManagerLaunchCoordinator as? StageManagerLaunchCoordinator {
-            launchCoordinator.startObservingWorkspace()
-        }
-        if let scratchCoordinator = self.scratchpadCoordinator as? ScratchpadCoordinator {
-            scratchCoordinator.startObservingWorkspace()
-        }
+        self.windowPinningCoordinator.startObservingWorkspace()
+        self.stageManagerLaunchCoordinator.startObservingWorkspace()
+        self.scratchpadCoordinator.startObservingWorkspace()
     }
 }

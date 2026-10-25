@@ -31,4 +31,11 @@ public protocol ScratchpadCoordinating: AnyObject, Sendable {
 
     /// Manually detaches the active Scratchpad, reverting to `.unassigned`.
     func detachScratchpad()
+
+    /// Starts observing workspace application termination events to manage Scratchpad state.
+    func startObservingWorkspace()
+}
+
+extension ScratchpadCoordinating {
+    public func startObservingWorkspace() {}
 }

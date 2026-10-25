@@ -53,4 +53,9 @@ public final class MockWindowPinningCoordinator: WindowPinningCoordinating {
     public func handleFocusChange(activeWindowID: CGWindowID?, activePID: pid_t?) async {
         handleFocusChangeCalls.append((activeWindowID, activePID))
     }
+
+    public var startObservingWorkspaceCallsCount: Int = 0
+    public func startObservingWorkspace() {
+        startObservingWorkspaceCallsCount += 1
+    }
 }

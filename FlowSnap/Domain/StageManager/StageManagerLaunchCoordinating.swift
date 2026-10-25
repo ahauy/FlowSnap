@@ -8,4 +8,11 @@ public protocol StageManagerLaunchCoordinating: AnyObject, Sendable {
 
     /// Handles an application launch event, snapshotting and preserving the active Stage.
     func handleApplicationLaunched(processIdentifier: pid_t, bundleIdentifier: String?) async
+
+    /// Starts observing workspace application launch events.
+    func startObservingWorkspace()
+}
+
+extension StageManagerLaunchCoordinating {
+    public func startObservingWorkspace() {}
 }
