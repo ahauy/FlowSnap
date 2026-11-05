@@ -110,9 +110,9 @@ public final class DragToSnapCoordinator {
         // 1. If Layout Picker is currently visible, manage the interaction corridor
         if layoutPickerManager.isVisible {
             let pickerFrame = layoutPickerManager.pickerFrame ?? CGRect(
-                x: activeDisplay.visibleFrame.midX - 215,
+                x: activeDisplay.visibleFrame.midX - 220,
                 y: activeDisplay.visibleFrame.maxY - 100,
-                width: 430,
+                width: 440,
                 height: 92
             )
             let corridorMinX = min(pickerFrame.minX - 60, activeDisplay.frame.minX + activeDisplay.frame.width * 0.25)

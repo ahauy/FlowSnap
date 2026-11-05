@@ -92,7 +92,7 @@ struct SnapLayoutPickerManagerTests {
         try await Task.sleep(nanoseconds: 400_000_000)
 
         if let frame = manager.pickerFrame {
-            // Verify horizontally centered on primary display (midX = 960, width = 430 -> minX = 745)
+            // Verify horizontally centered on primary display (midX = 960, width = 440 -> minX = 740)
             #expect(abs(frame.midX - primaryDisplay.visibleFrame.midX) <= 1.0)
             // Verify positioned at the top of the visible frame
             #expect(frame.maxY <= primaryDisplay.visibleFrame.maxY)
