@@ -1,0 +1,58 @@
+name: Test FlowSnap macOS App
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "FlowSnap/**"
+      - "FlowSnapTests/**"
+      - "FlowSnap.xcodeproj/**"
+      - "project.yml"
+      - ".github/workflows/macos-tests.yml"
+  pull_request:
+    paths:
+      - "FlowSnap/**"
+      - "FlowSnapTests/**"
+      - "FlowSnap.xcodeproj/**"
+      - "project.yml"
+      - ".github/workflows/macos-tests.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: macos-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-tests:
+    name: Swift unit tests (macOS)
+    runs-on: macos-14
+    timeout-mins: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Regenerate Xcode project when project.yml is newer
+        run: |
+          if [ ! -f FlowSnap.xcodeproj/project.pbxproj ] || [ project.yml -nt FlowSnap.xcodeproj/project.pbxproj ]; then
+            brew install xcodegen
+            xcodegen generate
+          fi
+
+      - name: Run unit tests
+        run: >-
+          mkdir -p artifacts &&
+          xcodebuild test
+          -project FlowSnap.xcodeproj
+          -scheme FlowSnap
+          -configuration Debug
+          -destination 'platform=macOS,arch=arm64'
+          -resultBundlePath artifacts/flowsnap-tests.xcresult
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flowsnap-test-results
+          path: artifacts/flowsnap-tests.xcresult
+          if-no-files-found: ignore
