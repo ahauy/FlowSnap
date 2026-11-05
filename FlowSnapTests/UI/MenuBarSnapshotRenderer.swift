@@ -7,8 +7,8 @@ import Testing
 @MainActor
 struct MenuBarSnapshotRenderer {
 
-    @Test func renderMenuBarGuideScreenshots() async throws {
-        let outputDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/menubar-quick-controls")
+    @Test(.disabled(if: ProcessInfo.processInfo.environment["FLOWSNAP_RENDER_DOCS"] != "1", comment: "documentation screenshot generator; run locally with FLOWSNAP_RENDER_DOCS=1")) func renderMenuBarGuideScreenshots() async throws {
+        let outputDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/menubar-quick-controls")
         try FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true)
 
         let primary = Display(

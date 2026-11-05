@@ -773,7 +773,7 @@ struct GeneralSettingsToggleGuideView: View {
 
 @MainActor
 func renderAndSaveAllScreenshots() {
-    let outputDir = "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/always-on-top-window-pinning"
+    let outputDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/always-on-top-window-pinning").path
     try? FileManager.default.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
 
     // Image 1: Floating Stack

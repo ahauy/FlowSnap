@@ -579,7 +579,7 @@ struct TopologySettingsVisualizerView: View {
 
 @MainActor
 func renderAndSaveImages() {
-    let baseDir = "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/display-topology-profiles-hotplug"
+    let baseDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/display-topology-profiles-hotplug").path
     try? FileManager.default.createDirectory(atPath: baseDir, withIntermediateDirectories: true)
 
     // Render View 1: Hot-Unplug Rebalancer
