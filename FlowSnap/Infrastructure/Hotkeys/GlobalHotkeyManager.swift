@@ -198,6 +198,8 @@ public final class GlobalHotkeyManager: GlobalHotkeyManaging, @unchecked Sendabl
             idCounter += 1
         }
 
+        preferencesStore.updateUnregisteredShortcuts(registeredList.filter { !$0.isRegistered }.map(\.shortcut))
+
         return registeredList
     }
 

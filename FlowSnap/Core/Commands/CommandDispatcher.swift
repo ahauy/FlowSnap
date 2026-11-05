@@ -169,6 +169,8 @@ public final class CommandDispatcher: CommandDispatching {
                 return false
             }
             let result = try await migrator.migrateActiveWorkspace(direction: direction)
+            // Every outcome, no-op included, carries a line the menu can render.
+            self.lastRestoreSummary = result.restoreSummary
             switch result {
             case .success:
                 return true
@@ -407,6 +409,7 @@ public final class CommandDispatcher: CommandDispatching {
         // 2. Fall back to active Workspace migration
         if let migrator = self.workspaceMigrator {
             let result = try await migrator.migrateActiveWorkspace(direction: isNext ? .next : .previous)
+            self.lastRestoreSummary = result.restoreSummary
             switch result {
             case .success:
                 return true

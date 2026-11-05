@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 
 /// About tab in FlowSnap Settings.
@@ -8,7 +9,22 @@ public struct AboutSettingsView: View {
 
     @State private var isAccessibilityTrusted: Bool = AXIsProcessTrusted()
 
+    /// The About pane is where a user confirms they granted Accessibility, so the
+    /// status must move on its own while the pane is open.
+    private let trustPoller = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    private var versionText: String {
+        let info = Bundle.main.infoDictionary
+        let short = info?["CFBundleShortVersionString"] as? String ?? "0.0.0"
+        let build = info?["CFBundleVersion"] as? String ?? "0"
+        return "Version \(short) (Build \(build))"
+    }
+
     public init() {}
+
+    private static let githubURL = URL(string: "https://github.com/ahauy/FlowSnap")!
+    private static let websiteURL = URL(string: "https://ahauy.github.io/FlowSnap")!
+    private static let licenseURL = URL(string: "https://github.com/ahauy/FlowSnap/blob/main/LICENSE")!
 
     public var body: some View {
         VStack(spacing: 20) {
@@ -24,7 +40,7 @@ public struct AboutSettingsView: View {
                     .font(.title)
                     .fontWeight(.bold)
 
-                Text("Version 1.0.0 (Build 1)")
+                Text(versionText)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
 
@@ -58,7 +74,10 @@ public struct AboutSettingsView: View {
                         if isAccessibilityTrusted {
                             isAccessibilityTrusted = AXIsProcessTrusted()
                         } else {
-                            SystemSettingsRouter.openAccessibilitySettings()
+                            // The system dialog names this app and jumps to its
+                            // own row; opening Settings blind makes users tick
+                            // the wrong app in a long list.
+                            AXAccessibilityService().promptForTrust()
                         }
                     }
                     .buttonStyle(.borderedProminent)
@@ -80,11 +99,11 @@ public struct AboutSettingsView: View {
 
             // Footer Links
             HStack(spacing: 16) {
-                Link("GitHub", destination: URL(string: "https://github.com/flowsnap/flowsnap")!)
+                Link("GitHub", destination: Self.githubURL)
                 Text("•").foregroundStyle(.secondary)
-                Link("Documentation", destination: URL(string: "https://flowsnap.dev/docs")!)
+                Link("Website", destination: Self.websiteURL)
                 Text("•").foregroundStyle(.secondary)
-                Link("License (MIT)", destination: URL(string: "https://github.com/flowsnap/flowsnap/blob/main/LICENSE")!)
+                Link("License (MIT)", destination: Self.licenseURL)
             }
             .font(.caption)
 
@@ -94,6 +113,9 @@ public struct AboutSettingsView: View {
         }
         .padding(20)
         .onAppear {
+            isAccessibilityTrusted = AXIsProcessTrusted()
+        }
+        .onReceive(trustPoller) { _ in
             isAccessibilityTrusted = AXIsProcessTrusted()
         }
     }

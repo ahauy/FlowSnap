@@ -7,6 +7,8 @@ public struct ShortcutSettingsView: View {
 
     @ObservedObject var store: PreferencesStore
 
+    @State private var conflictErrorMessage: String?
+
     public init(store: PreferencesStore) {
         self.store = store
     }
@@ -41,6 +43,12 @@ public struct ShortcutSettingsView: View {
                 .padding(16)
             }
 
+            if let conflict = conflictErrorMessage {
+                conflictBanner(conflict)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 10)
+            }
+
             Divider()
 
             // Footer actions
@@ -53,6 +61,7 @@ public struct ShortcutSettingsView: View {
 
                 Button("Restore Defaults") {
                     store.resetShortcutsToDefault()
+                    conflictErrorMessage = nil
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
@@ -71,6 +80,7 @@ public struct ShortcutSettingsView: View {
     private func shortcutRow(for action: ShortcutAction) -> some View {
         let currentShortcut = store.shortcut(for: action)
         let conflict = currentShortcut.flatMap { store.hasConflict($0, excluding: action) }
+        let isUnregistered = currentShortcut.map { store.unregisteredShortcuts.contains($0) } ?? false
 
         HStack {
             Text(action.displayName)
@@ -79,6 +89,13 @@ public struct ShortcutSettingsView: View {
 
             Spacer()
 
+            if isUnregistered, let shortcut = currentShortcut {
+                Text("Not registered")
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .help("macOS refused to bind \(shortcut.displayString); it will not trigger until another combination is chosen.")
+            }
+
             ShortcutRecorderField(
                 shortcut: currentShortcut,
                 conflictAction: conflict,
@@ -86,12 +103,46 @@ public struct ShortcutSettingsView: View {
                     store.setRecordingShortcut(isRecording)
                 },
                 onRecord: { newShortcut in
+                    if let message = store.hasActionShortcutConflict(newShortcut, excluding: action) {
+                        conflictErrorMessage = "Cannot assign \(newShortcut.displayString): \(message)"
+                        return
+                    }
+                    conflictErrorMessage = nil
                     store.setShortcut(newShortcut, for: action)
                 },
                 onClear: {
                     store.setShortcut(nil, for: action)
+                    conflictErrorMessage = nil
                 }
             )
         }
+    }
+
+    private func conflictBanner(_ message: String) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+                .font(.system(size: 12))
+
+            Text(message)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.primary)
+
+            Spacer()
+
+            Button {
+                conflictErrorMessage = nil
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 9))
+            }
+            .buttonStyle(.borderless)
+        }
+        .padding(8)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.orange.opacity(0.10))
+                .stroke(Color.orange.opacity(0.25), lineWidth: 1)
+        )
     }
 }

@@ -54,6 +54,7 @@ public final class PreferencesStore: ObservableObject {
     @Published public private(set) var appRules: [AppPolicyRule]
     @Published public private(set) var rememberedFrames: [String: RememberedFrame]
     @Published public var isRecordingShortcut: Bool = false
+    @Published public private(set) var unregisteredShortcuts: [KeyboardShortcut] = []
 
     // MARK: - Initialization
 
@@ -288,6 +289,20 @@ public final class PreferencesStore: ObservableObject {
         return nil
     }
 
+    /// Checks if a proposed shortcut for an action conflicts with another action or a preset binding.
+    /// Returns a human-readable message naming the current owner, or nil when the combination is free (BR-SET-003).
+    public func hasActionShortcutConflict(_ shortcut: KeyboardShortcut, excluding action: ShortcutAction? = nil) -> String? {
+        if let clash = hasConflict(shortcut, excluding: action) {
+            return "Shortcut already assigned to \(clash.displayName)"
+        }
+        for preset in BuiltinPresetFactory.allBuiltinPresets {
+            if let bound = self.shortcut(forPresetID: preset.id), bound == shortcut {
+                return "Shortcut already assigned to \(preset.name) preset"
+            }
+        }
+        return nil
+    }
+
     /// Determines if two distinct shortcut actions are allowed to share the same key combination
     /// (e.g. Window Group and Workspace display throws, which dispatch via context-aware fallback).
     private func areMutuallyCompatible(_ a: ShortcutAction, _ b: ShortcutAction) -> Bool {
@@ -341,6 +356,12 @@ public final class PreferencesStore: ObservableObject {
     /// Sets whether a shortcut is actively being recorded in Settings UI.
     public func setRecordingShortcut(_ isRecording: Bool) {
         self.isRecordingShortcut = isRecording
+    }
+
+    /// Records the combos macOS refused to bind during the latest hotkey registration pass,
+    /// so Settings rows can flag them instead of silently showing dead shortcuts (BR-HOTKEY-002).
+    public func updateUnregisteredShortcuts(_ shortcuts: [KeyboardShortcut]) {
+        unregisteredShortcuts = shortcuts
     }
 
     /// Checks if a proposed shortcut conflicts with standard snap actions or other presets.

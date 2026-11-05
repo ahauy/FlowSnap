@@ -154,11 +154,11 @@ extension WorkspaceManager: WorkspaceCapturing {
             let overlap = display.frame.intersection(frame)
             return !overlap.isNull && overlap.width > 0 && overlap.height > 0
         }
-        return (containing ?? primaryDisplay(from: displays)).visibleFrame
+        return (containing ?? primaryDisplay(from: displays))?.visibleFrame ?? frame
     }
 
-    static func primaryDisplay(from displays: [Display]) -> Display {
-        displays.first { $0.isPrimary } ?? displays[0]
+    static func primaryDisplay(from displays: [Display]) -> Display? {
+        displays.first { $0.isPrimary } ?? displays.first
     }
 
     static func primaryScreenHeight(from displays: [Display]) -> CGFloat? {

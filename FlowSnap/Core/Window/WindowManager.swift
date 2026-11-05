@@ -39,9 +39,9 @@ public final class WindowManager: WindowManaging {
             targetElement = element
         } else if let resolved = accessibilityService.windowElement(for: window) {
             targetElement = resolved
-        } else if let focused = accessibilityService.focusedWindow() {
-            targetElement = focused
         } else {
+            // Fail loud, never on the incidentally-focused window: a stale saved
+            // window must not write its frame onto whatever the user has open now.
             throw AccessibilityError.cannotComplete
         }
 
@@ -119,8 +119,6 @@ public final class WindowManager: WindowManaging {
         let element: AXUIElement
         if let targetElement = accessibilityService.windowElement(for: window) {
             element = targetElement
-        } else if let focused = accessibilityService.focusedWindow() {
-            element = focused
         } else {
             throw AccessibilityError.cannotComplete
         }
@@ -132,8 +130,6 @@ public final class WindowManager: WindowManaging {
         let element: AXUIElement
         if let targetElement = accessibilityService.windowElement(for: window) {
             element = targetElement
-        } else if let focused = accessibilityService.focusedWindow() {
-            element = focused
         } else {
             throw AccessibilityError.cannotComplete
         }
