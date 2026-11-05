@@ -27,7 +27,6 @@ jobs:
   unit-tests:
     name: Swift unit tests (macOS)
     runs-on: macos-14
-    timeout-mins: 20
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
