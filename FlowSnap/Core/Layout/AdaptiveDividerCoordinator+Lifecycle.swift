@@ -43,9 +43,11 @@ extension AdaptiveDividerCoordinator {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            guard let self, self.isTracking else { return }
-            if self.isNonWorkspaceAppFrontmost {
-                self.resetState()
+            Task { @MainActor [weak self] in
+                guard let self, self.isTracking else { return }
+                if self.isNonWorkspaceAppFrontmost {
+                    self.resetState()
+                }
             }
         }
         appTerminationObserver = NSWorkspace.shared.notificationCenter.addObserver(
