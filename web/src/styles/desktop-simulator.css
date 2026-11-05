@@ -137,12 +137,13 @@
   padding: 12px;
   z-index: 60;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
   transform: translateY(-8px) scale(0.96);
   transition: all 0.18s var(--ease-spring);
 }
 
-.fs-menubar-popover.is-open { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+.fs-menubar-popover.is-open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0) scale(1); }
 
 .popover-header { margin-bottom: 10px; } .popover-title-row { display: flex; justify-content: space-between; align-items: center; } .popover-brand { font-size: 0.78rem; font-weight: 700; color: #fff; } .popover-badge { font-size: 0.65rem; color: var(--accent-blue-vibrant); background: rgba(10, 132, 255, 0.15); padding: 1px 6px; border-radius: 10px; } .popover-focus-label { font-size: 0.68rem; color: rgba(255, 255, 255, 0.6); display: block; margin-top: 2px; } .popover-focus-label strong { color: rgba(255, 255, 255, 0.9); }  .popover-section-title {
   font-size: 0.65rem;
@@ -207,11 +208,12 @@
   padding: 10px 14px;
   z-index: 45;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: transform 0.22s var(--ease-spring), opacity 0.18s ease;
+  transition: transform 0.22s var(--ease-spring), opacity 0.18s ease, visibility 0s linear 0.22s;
 }
 
-.snap-picker.is-visible { transform: translate(-50%, 0) scale(1); opacity: 1; pointer-events: auto; }
+.snap-picker.is-visible { transform: translate(-50%, 0) scale(1); opacity: 1; visibility: visible; pointer-events: auto; transition: transform 0.22s var(--ease-spring), opacity 0.18s ease, visibility 0s; }
 
 .picker-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
 

@@ -24,7 +24,7 @@ const viUrl = `${basePath || ''}/vi`;
 <header class="site-header">
   <div class="page-container header-inner">
     <!-- Brand identity -->
-    <a href={homeUrl} class="brand-group" aria-label="FlowSnap Home">
+    <a href={homeUrl} class="brand-group" aria-label={t.a11y.brandHome}>
       <div class="brand-icon-wrapper">
         <svg class="brand-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="28" height="28" rx="7" fill="var(--surface-elevated)" stroke="var(--border-color)" stroke-width="1.5" />
@@ -42,9 +42,9 @@ const viUrl = `${basePath || ''}/vi`;
     </a>
 
     <!-- Center navigation anchors -->
-    <nav class="header-nav" aria-label="Main Navigation">
-      <a href="#features" class="nav-link">{t.header.nav.features}</a>
+    <nav class="header-nav" id="site-nav" aria-label={t.header.nav.menu}>
       <a href="#showcase" class="nav-link">{t.header.nav.simulator}</a>
+      <a href="#features" class="nav-link">{t.header.nav.features}</a>
       <a href="#shortcuts" class="nav-link">{t.header.nav.shortcuts}</a>
       <a href="#download" class="nav-link">{t.header.nav.download}</a>
     </nav>
@@ -52,13 +52,13 @@ const viUrl = `${basePath || ''}/vi`;
     <!-- Header actions -->
     <div class="header-actions">
       <!-- Compact Language Switcher (EN | VI) -->
-      <div class="lang-switcher" role="group" aria-label="Language Switcher">
+      <div class="lang-switcher" role="group" aria-label={t.a11y.languageSwitcher}>
         <a
           href={enUrl}
           class={`lang-btn ${lang === 'en' ? 'active' : ''}`}
           data-lang-target="en"
           data-base-href={enUrl}
-          aria-label="Switch to English"
+          aria-label={t.a11y.switchToEnglish}
           aria-current={lang === 'en' ? 'page' : undefined}
         >
           {t.header.langSwitcher.en}
@@ -69,7 +69,7 @@ const viUrl = `${basePath || ''}/vi`;
           class={`lang-btn ${lang === 'vi' ? 'active' : ''}`}
           data-lang-target="vi"
           data-base-href={viUrl}
-          aria-label="Chuyển sang Tiếng Việt"
+          aria-label={t.a11y.switchToVietnamese}
           aria-current={lang === 'vi' ? 'page' : undefined}
         >
           {t.header.langSwitcher.vi}
@@ -81,7 +81,7 @@ const viUrl = `${basePath || ''}/vi`;
         target="_blank"
         rel="noopener noreferrer"
         class="github-btn action-pill-secondary"
-        aria-label="View FlowSnap on GitHub"
+        aria-label={t.a11y.viewGitHub}
       >
         <svg class="github-icon" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
           <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
@@ -89,7 +89,20 @@ const viUrl = `${basePath || ''}/vi`;
         <span class="github-label">{t.header.github}</span>
       </a>
 
-      <ThemeToggle />
+      <ThemeToggle lang={lang} />
+
+      <button
+        type="button"
+        class="nav-toggle"
+        id="site-nav-toggle"
+        aria-controls="site-nav"
+        aria-expanded="false"
+        aria-label={t.header.nav.menu}
+      >
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+      </button>
     </div>
   </div>
 </header>
@@ -108,14 +121,49 @@ const viUrl = `${basePath || ''}/vi`;
     });
   }
 
+  function initMobileNav() {
+    const toggle = document.getElementById('site-nav-toggle');
+    const nav = document.getElementById('site-nav');
+    if (!toggle || !(nav instanceof HTMLElement)) return;
+
+    const close = () => {
+      nav.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+    };
+    const open = () => {
+      nav.classList.add('is-open');
+      toggle.setAttribute('aria-expanded', 'true');
+    };
+
+    toggle.addEventListener('click', () => {
+      if (toggle.getAttribute('aria-expanded') === 'true') close();
+      else open();
+    });
+
+    nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', close));
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') close();
+    });
+
+    // Leaving the mobile breakpoint must not strand the panel in an open state.
+    window.matchMedia('(min-width: 769px)').addEventListener('change', close);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initLanguageSwitcher);
+    document.addEventListener('DOMContentLoaded', () => {
+      initLanguageSwitcher();
+      initMobileNav();
+    });
   } else {
     initLanguageSwitcher();
+    initMobileNav();
   }
 
   document.addEventListener('astro:after-swap', initLanguageSwitcher);
   document.addEventListener('astro:page-load', initLanguageSwitcher);
+  document.addEventListener('astro:after-swap', initMobileNav);
+  document.addEventListener('astro:page-load', initMobileNav);
 </script>
 
 <style>
@@ -263,10 +311,67 @@ const viUrl = `${basePath || ''}/vi`;
     flex-shrink: 0;
   }
 
+  .nav-toggle {
+    display: none;
+  }
+
   /* Responsive styling */
   @media (max-width: 768px) {
+    .nav-toggle {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      width: 36px;
+      height: 36px;
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .nav-toggle-bar {
+      display: block;
+      width: 100%;
+      height: 1.5px;
+      background-color: var(--text-primary);
+      transition: transform var(--duration-fast) ease, opacity var(--duration-fast) ease;
+    }
+
+    .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) {
+      transform: translateY(5.5px) rotate(45deg);
+    }
+
+    .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) {
+      opacity: 0;
+    }
+
+    .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) {
+      transform: translateY(-5.5px) rotate(-45deg);
+    }
+
     .header-nav {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
       display: none;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+      padding: 10px 20px 14px;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--surface-elevated);
+    }
+
+    :global([data-theme="dark"]) .header-nav,
+    :global(:root:not([data-theme="light"])) .header-nav {
+      background-color: #09090b;
+    }
+
+    .header-nav.is-open {
+      display: flex;
     }
 
     .github-label {

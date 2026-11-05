@@ -19,7 +19,8 @@
       "features": "Features",
       "simulator": "Simulator",
       "shortcuts": "Shortcuts",
-      "download": "Download"
+      "download": "Download",
+      "menu": "Menu"
     },
     "github": "GitHub",
     "langSwitcher": {
@@ -89,7 +90,10 @@
         "title": "Current Space Preservation",
         "badge": "Flow Continuity",
         "description": "Newly launched apps appear strictly in your current active workspace. Permanently ends macOS from jarringly jumping to another virtual desktop space.",
-        "highlights": ["100% Public APIs", "Zero workspace disruption"]
+        "highlights": [
+          "100% Public APIs",
+          "Zero workspace disruption"
+        ]
       },
       {
         "id": "workspaces-presets",
@@ -323,6 +327,12 @@
           "instruction": "Launch FlowSnap from Launchpad or Spotlight, and grant Accessibility permission when prompted to enjoy fluid snapping."
         }
       ]
+    },
+    "meta": {
+      "releaseDate": "September 2026",
+      "binaryArch": "Universal Binary (Apple Silicon & Intel)",
+      "minMacOS": "macOS 14.0+ (Sonoma & Sequoia)",
+      "license": "MIT Open Source"
     }
   },
   "footer": {
@@ -351,5 +361,126 @@
       "mit": "MIT License",
       "designedBy": "Designed & developed by"
     }
+  },
+  "metrics": {
+    "title": "Technical Verification Metrics",
+    "items": {
+      "concurrency": {
+        "label": "Crash-Free Stability",
+        "sublabel": "Strict Concurrency • Zero Memory Leaks & Data Races"
+      },
+      "private-api": {
+        "label": "Private APIs Required",
+        "sublabel": "100% Gatekeeper Safe • Public AppKit & Accessibility APIs"
+      },
+      "tests": {
+        "label": "Verified Precision",
+        "sublabel": "Swift Testing (@Test) Suite Covering 100% Snap Math"
+      },
+      "latency": {
+        "label": "Instant Response",
+        "sublabel": "Snap Math • Zero Disk I/O In-Memory Engine"
+      },
+      "drag-fps": {
+        "label": "Silky Smooth Resizing",
+        "sublabel": "Divider Dragging • 16.6ms Throttled Fluid Multi-Window Reflow"
+      }
+    }
+  },
+  "simulator": {
+    "hintTitle": "Interactive Sandbox:",
+    "hintBody": "Drag any window to the top edge to snap, or click the FlowSnap icon in the Menu Bar or Dock.",
+    "chipsAria": "Quick Snap Presets",
+    "chips": {
+      "split50": "Balanced Split (50/50)",
+      "coding": "Coding Split (70/30)",
+      "left50": "50/50 Left",
+      "right50": "50/50 Right",
+      "left70": "70/30 Wide"
+    },
+    "chipAria": {
+      "split50": "Balanced Split 50/50",
+      "coding": "Apply Coding Preset 70/30 Split",
+      "left50": "Snap Focused Window Left 50%",
+      "right50": "Snap Focused Window Right 50%",
+      "left70": "Snap Focused Window 70% Wide"
+    },
+    "reset": "Reset Sandbox",
+    "resetAria": "Reset Sandbox to default position",
+    "regionAria": "Interactive macOS Desktop Simulator",
+    "menuTitle": "FlowSnap Menu",
+    "targetLabel": "Target:",
+    "gridTitle": "Visual Snap Grid",
+    "pickerTitle": "FlowSnap Smart Layouts",
+    "pickerBadge": "Release to Snap",
+    "freeFloat": "Zone: Free Float",
+    "zones": {
+      "two-col-left": "Snap Left 50%",
+      "two-col-right": "Snap Right 50%",
+      "two-col-asym-left": "Snap Left 70%",
+      "two-col-asym-right": "Snap Right 30%",
+      "three-col-left": "Snap Left 25%",
+      "three-col-center": "Snap Center 50%",
+      "three-col-right": "Snap Right 25%",
+      "quarter-top-left": "Snap Top Left 25%",
+      "quarter-top-right": "Snap Top Right 25%",
+      "quarter-bottom-left": "Snap Bottom Left 25%",
+      "quarter-bottom-right": "Snap Bottom Right 25%"
+    },
+    "dividerHint": "Drag to resize adjacent windows (Double-click for 50/50)",
+    "popoverGrid": {
+      "left-50": {
+        "title": "Snap Left 50%",
+        "label": "Left 1/2"
+      },
+      "right-50": {
+        "title": "Snap Right 50%",
+        "label": "Right 1/2"
+      },
+      "left-70": {
+        "title": "Snap Left 70%",
+        "label": "Left 70%"
+      },
+      "right-30": {
+        "title": "Snap Right 30%",
+        "label": "Right 30%"
+      },
+      "center-50": {
+        "title": "Center 50%",
+        "label": "Center 1/2"
+      },
+      "maximize": {
+        "title": "Maximize",
+        "label": "Maximize"
+      }
+    },
+    "zoneShort": {
+      "two-col-left": "Left 50%",
+      "two-col-right": "Right 50%",
+      "two-col-asym-left": "Left 70%",
+      "two-col-asym-right": "Right 30%",
+      "three-col-left": "Left 25%",
+      "three-col-center": "Center 50%",
+      "three-col-right": "Right 25%",
+      "quarter-top-left": "Top Left 25%",
+      "quarter-top-right": "Top Right 25%",
+      "quarter-bottom-left": "Bottom Left 25%",
+      "quarter-bottom-right": "Bottom Right 25%"
+    },
+    "templateCorners": "4 Corners",
+    "presetCoding": "Coding Workspace",
+    "presetBalanced": "Balanced Side-by-Side"
+  },
+  "clipboard": {
+    "copyFail": "Copy failed. Select the command and copy it manually."
+  },
+  "a11y": {
+    "brandHome": "FlowSnap Home",
+    "languageSwitcher": "Language Switcher",
+    "switchToEnglish": "Switch to English",
+    "switchToVietnamese": "Switch to Tiếng Việt",
+    "viewGitHub": "View FlowSnap on GitHub",
+    "toggleTheme": "Toggle color theme",
+    "backToTop": "Back to top"
   }
 }

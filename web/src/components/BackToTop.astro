@@ -1,11 +1,14 @@
 ---
 // BackToTop.astro: Floating Scroll-Progress & Back-to-Top Action
+import { getI18n, type Locale } from '../i18n';
+
 interface Props {
-  lang?: 'en' | 'vi';
+  lang?: Locale;
 }
 
 const { lang = 'en' } = Astro.props;
-const label = lang === 'vi' ? 'Lên đầu trang' : 'Back to top';
+const t = getI18n(lang);
+const label = t.a11y.backToTop;
 ---
 
 <button

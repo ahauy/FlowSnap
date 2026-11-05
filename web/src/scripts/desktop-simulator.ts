@@ -93,6 +93,7 @@ export class DesktopSimulatorController {
     this.bindTrafficLights();
     this.bindReset();
     this.bindSplitDivider();
+    this.bindKeyboardActivation();
     this.setupClock();
     this.setupIntersectionObserver();
   }
@@ -280,11 +281,16 @@ export class DesktopSimulatorController {
   }
 
   private showPicker() {
-    this.pickerEl?.classList.add("is-visible");
+    if (!this.pickerEl) return;
+    this.pickerEl.classList.add("is-visible");
+    this.pickerEl.setAttribute("aria-hidden", "false");
   }
 
   private hidePicker() {
-    this.pickerEl?.classList.remove("is-visible");
+    if (this.pickerEl) {
+      this.pickerEl.classList.remove("is-visible");
+      this.pickerEl.setAttribute("aria-hidden", "true");
+    }
     document
       .querySelectorAll<HTMLElement>(".snap-zone-btn.is-active")
       .forEach((b) => b.classList.remove("is-active"));
@@ -550,7 +556,40 @@ export class DesktopSimulatorController {
     });
   }
 
+  // Snap zones, the menu bar trigger and the dock icons are styled divs with
+  // role="button", so Enter/Space must synthesise the click their mouse
+  // handler already performs.
+  private bindKeyboardActivation() {
+    const root = document.getElementById("desktop-simulator-root");
+    if (!root) return;
+
+    root.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const target = event.target as HTMLElement | null;
+      const activatable = target?.closest<HTMLElement>(
+        '[role="button"]:not(button)'
+      );
+      if (!activatable || !root.contains(activatable)) return;
+      event.preventDefault();
+      activatable.click();
+    });
+  }
+
   private bindPopover() {
+    // Five separate sites add or remove "is-open", so derive the accessible
+    // state from the class instead of repeating the write at each one.
+    if (this.popoverEl) {
+      const syncPopoverAria = () => {
+        this.popoverEl?.setAttribute(
+          "aria-hidden",
+          this.popoverEl.classList.contains("is-open") ? "false" : "true"
+        );
+      };
+      syncPopoverAria();
+      new MutationObserver(syncPopoverAria).observe(this.popoverEl, {
+        attributeFilter: ["class"],
+      });
+    }
     const togglePopover = (e: Event) => {
       e.stopPropagation();
       this.popoverEl?.classList.toggle("is-open");

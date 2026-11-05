@@ -120,61 +120,61 @@ const t = getI18n(lang);
     <div class="toolbar-hint">
       <span class="hint-pulse"></span>
       <span class="hint-text">
-        <strong>Interactive Sandbox:</strong> Drag any window to top edge to snap, or click <strong>FlowSnap icon</strong> on Menu Bar/Dock.
+        <strong>{t.simulator.hintTitle}</strong> {t.simulator.hintBody}
       </span>
     </div>
 
     <div class="toolbar-actions">
       <!-- Quick Snap Action Chips -->
-      <div class="quick-chips" role="group" aria-label="Quick Snap Presets">
-        <button type="button" class="chip-btn" data-snap-action="split-50" aria-label="Balanced Split 50/50">
+      <div class="quick-chips" role="group" aria-label={t.simulator.chipsAria}>
+        <button type="button" class="chip-btn" data-snap-action="split-50" aria-label={t.simulator.chipAria.split50}>
           <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
             <rect x="2" y="3" width="5.5" height="10" rx="1.5" fill="#0a84ff" />
             <rect x="8.5" y="3" width="5.5" height="10" rx="1.5" fill="#0a84ff" />
           </svg>
-          <span>Balanced Split (50/50)</span>
+          <span>{t.simulator.chips.split50}</span>
         </button>
 
-        <button type="button" class="chip-btn" data-snap-action="coding-preset" aria-label="Apply Coding Preset 70/30 Split">
+        <button type="button" class="chip-btn" data-snap-action="coding-preset" aria-label={t.simulator.chipAria.coding}>
           <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
             <rect x="2" y="3" width="7.5" height="10" rx="1.5" fill="#0a84ff" />
             <rect x="10.5" y="3" width="3.5" height="10" rx="1.5" fill="#10b981" />
           </svg>
-          <span>Coding Split (70/30)</span>
+          <span>{t.simulator.chips.coding}</span>
         </button>
 
-        <button type="button" class="chip-btn" data-snap-action="left-50" aria-label="Snap Focused Window Left 50%">
+        <button type="button" class="chip-btn" data-snap-action="left-50" aria-label={t.simulator.chipAria.left50}>
           <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
             <rect x="2" y="3" width="5.5" height="10" rx="1.5" />
             <rect x="8.5" y="3" width="5.5" height="10" rx="1.5" fill-opacity="0.3" />
           </svg>
-          <span>50/50 Left</span>
+          <span>{t.simulator.chips.left50}</span>
         </button>
 
-        <button type="button" class="chip-btn" data-snap-action="right-50" aria-label="Snap Focused Window Right 50%">
+        <button type="button" class="chip-btn" data-snap-action="right-50" aria-label={t.simulator.chipAria.right50}>
           <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
             <rect x="2" y="3" width="5.5" height="10" rx="1.5" fill-opacity="0.3" />
             <rect x="8.5" y="3" width="5.5" height="10" rx="1.5" />
           </svg>
-          <span>50/50 Right</span>
+          <span>{t.simulator.chips.right50}</span>
         </button>
 
-        <button type="button" class="chip-btn" data-snap-action="left-70" aria-label="Snap Focused Window 70% Wide">
+        <button type="button" class="chip-btn" data-snap-action="left-70" aria-label={t.simulator.chipAria.left70}>
           <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor">
             <rect x="2" y="3" width="8" height="10" rx="1.5" />
             <rect x="11" y="3" width="3" height="10" rx="1.5" fill-opacity="0.3" />
           </svg>
-          <span>70/30 Wide</span>
+          <span>{t.simulator.chips.left70}</span>
         </button>
       </div>
 
       <!-- Reset Sandbox Button -->
-      <button type="button" class="reset-btn" id="simulator-reset-btn" aria-label="Reset Sandbox to default position">
+      <button type="button" class="reset-btn" id="simulator-reset-btn" aria-label={t.simulator.resetAria}>
         <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.75">
           <path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9L2 6" stroke-linecap="round" stroke-linejoin="round" />
           <path d="M2 2.5v3.5h3.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-        <span>Reset Sandbox</span>
+        <span>{t.simulator.reset}</span>
       </button>
     </div>
   </div>
@@ -182,7 +182,7 @@ const t = getI18n(lang);
   <!-- 3D Perspective Viewport -->
   <div class="perspective-stage" id="perspective-stage">
     <!-- Simulated macOS Desktop Screen Frame -->
-    <div class="mac-desktop-frame" id="mac-desktop-frame" role="region" aria-label="Interactive macOS Desktop Simulator">
+    <div class="mac-desktop-frame" id="mac-desktop-frame" role="region" aria-label={t.simulator.regionAria}>
       <!-- Dynamic Bezel Specular Glare Reflection -->
       <div class="bezel-glare" id="bezel-glare"></div>
 
@@ -231,37 +231,37 @@ const t = getI18n(lang);
         <div class="fs-menubar-popover" id="fs-menubar-popover" aria-hidden="true">
           <div class="popover-header">
             <div class="popover-title-row">
-              <span class="popover-brand">FlowSnap Menu</span>
+              <span class="popover-brand">{t.simulator.menuTitle}</span>
               <span class="popover-badge">v1.3.1</span>
             </div>
-            <span class="popover-focus-label">Target: <strong id="popover-target-name">SnapEngine.swift</strong></span>
+            <span class="popover-focus-label">{t.simulator.targetLabel} <strong id="popover-target-name">SnapEngine.swift</strong></span>
           </div>
 
-          <div class="popover-section-title">Visual Snap Grid</div>
+          <div class="popover-section-title">{t.simulator.gridTitle}</div>
           <div class="popover-grid">
-            <button type="button" class="popover-grid-btn" data-popover-snap="left-50" title="Snap Left 50%">
+            <button type="button" class="popover-grid-btn" data-popover-snap="left-50" title={t.simulator.popoverGrid["left-50"].title}>
               <div class="tile-icon split-left"></div>
-              <span>Left 1/2</span>
+              <span>{t.simulator.popoverGrid["left-50"].label}</span>
             </button>
-            <button type="button" class="popover-grid-btn" data-popover-snap="right-50" title="Snap Right 50%">
+            <button type="button" class="popover-grid-btn" data-popover-snap="right-50" title={t.simulator.popoverGrid["right-50"].title}>
               <div class="tile-icon split-right"></div>
-              <span>Right 1/2</span>
+              <span>{t.simulator.popoverGrid["right-50"].label}</span>
             </button>
-            <button type="button" class="popover-grid-btn" data-popover-snap="left-70" title="Snap Left 70%">
+            <button type="button" class="popover-grid-btn" data-popover-snap="left-70" title={t.simulator.popoverGrid["left-70"].title}>
               <div class="tile-icon split-70"></div>
-              <span>Left 70%</span>
+              <span>{t.simulator.popoverGrid["left-70"].label}</span>
             </button>
-            <button type="button" class="popover-grid-btn" data-popover-snap="right-30" title="Snap Right 30%">
+            <button type="button" class="popover-grid-btn" data-popover-snap="right-30" title={t.simulator.popoverGrid["right-30"].title}>
               <div class="tile-icon split-30"></div>
-              <span>Right 30%</span>
+              <span>{t.simulator.popoverGrid["right-30"].label}</span>
             </button>
-            <button type="button" class="popover-grid-btn" data-popover-snap="center-50" title="Center 50%">
+            <button type="button" class="popover-grid-btn" data-popover-snap="center-50" title={t.simulator.popoverGrid["center-50"].title}>
               <div class="tile-icon split-center"></div>
-              <span>Center 1/2</span>
+              <span>{t.simulator.popoverGrid["center-50"].label}</span>
             </button>
-            <button type="button" class="popover-grid-btn" data-popover-snap="maximize" title="Maximize">
+            <button type="button" class="popover-grid-btn" data-popover-snap="maximize" title={t.simulator.popoverGrid["maximize"].title}>
               <div class="tile-icon split-max"></div>
-              <span>Maximize</span>
+              <span>{t.simulator.popoverGrid["maximize"].label}</span>
             </button>
           </div>
 
@@ -271,14 +271,14 @@ const t = getI18n(lang);
           <div class="popover-presets">
             <button type="button" class="preset-row-btn" data-popover-preset="coding">
               <div class="preset-info">
-                <span class="preset-name">Coding Workspace</span>
+                <span class="preset-name">{t.simulator.presetCoding}</span>
                 <span class="preset-desc">Code Editor 70% • Terminal 30%</span>
               </div>
               <span class="preset-keycap">⌃⌥C</span>
             </button>
             <button type="button" class="preset-row-btn" data-popover-preset="research">
               <div class="preset-info">
-                <span class="preset-name">Balanced Side-by-Side</span>
+                <span class="preset-name">{t.simulator.presetBalanced}</span>
                 <span class="preset-desc">Code Editor 50% • Terminal 50%</span>
               </div>
               <span class="preset-keycap">⌃⌥R</span>
@@ -292,16 +292,16 @@ const t = getI18n(lang);
         <!-- Windows 11-Style Top-Edge Snap Picker -->
         <div class="snap-picker" id="snap-picker" aria-hidden="true">
           <div class="picker-header">
-            <span class="picker-title">FlowSnap Smart Layouts</span>
-            <span class="picker-badge">Release to Snap</span>
+            <span class="picker-title">{t.simulator.pickerTitle}</span>
+            <span class="picker-badge">{t.simulator.pickerBadge}</span>
           </div>
 
           <div class="picker-templates-grid">
             <!-- Template 1: Two Columns Equal (50 / 50) -->
             <div class="template-card" data-template-name="2 Columns (50/50)">
               <div class="template-preview">
-                <div class="snap-zone-btn" role="button" tabindex="0" aria-label="Snap Left 50%" data-zone-id="two-col-left" data-left="0" data-top="0" data-width="50" data-height="100" data-label="Left 50%"></div>
-                <div class="snap-zone-btn" role="button" tabindex="0" aria-label="Snap Right 50%" data-zone-id="two-col-right" data-left="50" data-top="0" data-width="50" data-height="100" data-label="Right 50%"></div>
+                <div class="snap-zone-btn" role="button" tabindex="0" aria-label={t.simulator.zones["two-col-left"]} data-zone-id="two-col-left" data-left="0" data-top="0" data-width="50" data-height="100" data-label={t.simulator.zoneShort["two-col-left"]}></div>
+                <div class="snap-zone-btn" role="button" tabindex="0" aria-label={t.simulator.zones["two-col-right"]} data-zone-id="two-col-right" data-left="50" data-top="0" data-width="50" data-height="100" data-label={t.simulator.zoneShort["two-col-right"]}></div>
               </div>
               <span class="template-label">50 / 50</span>
             </div>
@@ -309,8 +309,8 @@ const t = getI18n(lang);
             <!-- Template 2: Two Columns Asymmetric (70 / 30) - PROPORTIONAL FIX -->
             <div class="template-card" data-template-name="2 Columns (70/30)">
               <div class="template-preview preview-70-30">
-                <div class="snap-zone-btn zone-70" role="button" tabindex="0" aria-label="Snap Left 70%" data-zone-id="two-col-asym-left" data-left="0" data-top="0" data-width="70" data-height="100" data-label="Left 70%"></div>
-                <div class="snap-zone-btn zone-30" role="button" tabindex="0" aria-label="Snap Right 30%" data-zone-id="two-col-asym-right" data-left="70" data-top="0" data-width="30" data-height="100" data-label="Right 30%"></div>
+                <div class="snap-zone-btn zone-70" role="button" tabindex="0" aria-label={t.simulator.zones["two-col-asym-left"]} data-zone-id="two-col-asym-left" data-left="0" data-top="0" data-width="70" data-height="100" data-label={t.simulator.zoneShort["two-col-asym-left"]}></div>
+                <div class="snap-zone-btn zone-30" role="button" tabindex="0" aria-label={t.simulator.zones["two-col-asym-right"]} data-zone-id="two-col-asym-right" data-left="70" data-top="0" data-width="30" data-height="100" data-label={t.simulator.zoneShort["two-col-asym-right"]}></div>
               </div>
               <span class="template-label">70 / 30</span>
             </div>
@@ -318,9 +318,9 @@ const t = getI18n(lang);
             <!-- Template 3: Three Columns (25 / 50 / 25) - PROPORTIONAL FIX -->
             <div class="template-card" data-template-name="3 Columns (25/50/25)">
               <div class="template-preview preview-25-50-25">
-                <div class="snap-zone-btn zone-25" role="button" tabindex="0" aria-label="Snap Left 25%" data-zone-id="three-col-left" data-left="0" data-top="0" data-width="25" data-height="100" data-label="Left 25%"></div>
-                <div class="snap-zone-btn zone-50" role="button" tabindex="0" aria-label="Snap Center 50%" data-zone-id="three-col-center" data-left="25" data-top="0" data-width="50" data-height="100" data-label="Center 50%"></div>
-                <div class="snap-zone-btn zone-25" role="button" tabindex="0" aria-label="Snap Right 25%" data-zone-id="three-col-right" data-left="75" data-top="0" data-width="25" data-height="100" data-label="Right 25%"></div>
+                <div class="snap-zone-btn zone-25" role="button" tabindex="0" aria-label={t.simulator.zones["three-col-left"]} data-zone-id="three-col-left" data-left="0" data-top="0" data-width="25" data-height="100" data-label={t.simulator.zoneShort["three-col-left"]}></div>
+                <div class="snap-zone-btn zone-50" role="button" tabindex="0" aria-label={t.simulator.zones["three-col-center"]} data-zone-id="three-col-center" data-left="25" data-top="0" data-width="50" data-height="100" data-label={t.simulator.zoneShort["three-col-center"]}></div>
+                <div class="snap-zone-btn zone-25" role="button" tabindex="0" aria-label={t.simulator.zones["three-col-right"]} data-zone-id="three-col-right" data-left="75" data-top="0" data-width="25" data-height="100" data-label={t.simulator.zoneShort["three-col-right"]}></div>
               </div>
               <span class="template-label">25 / 50 / 25</span>
             </div>
@@ -328,12 +328,12 @@ const t = getI18n(lang);
             <!-- Template 4: Four Quarters (25% each) -->
             <div class="template-card" data-template-name="4 Quarters">
               <div class="template-preview grid-quarters">
-                <div class="snap-zone-btn" role="button" tabindex="0" aria-label="Snap Top Left 25%" data-zone-id="quarter-top-left" data-left="0" data-top="0" data-width="50" data-height="50" data-label="Top Left 25%"></div>
-                <div class="snap-zone-btn" role="button" tabindex="0" aria-label="Snap Top Right 25%" data-zone-id="quarter-top-right" data-left="50" data-top="0" data-width="50" data-height="50" data-label="Top Right 25%"></div>
-                <div class="snap-zone-btn" role="button" tabindex="0" aria-label="Snap Bottom Left 25%" data-zone-id="quarter-bottom-left" data-left="0" data-top="50" data-width="50" data-height="50" data-label="Bottom Left 25%"></div>
-                <div class="snap-zone-btn" role="button" tabindex="0" aria-label="Snap Bottom Right 25%" data-zone-id="quarter-bottom-right" data-left="50" data-top="50" data-width="50" data-height="50" data-label="Bottom Right 25%"></div>
+                <div class="snap-zone-btn" role="button" tabindex="0" aria-label={t.simulator.zones["quarter-top-left"]} data-zone-id="quarter-top-left" data-left="0" data-top="0" data-width="50" data-height="50" data-label={t.simulator.zoneShort["quarter-top-left"]}></div>
+                <div class="snap-zone-btn" role="button" tabindex="0" aria-label={t.simulator.zones["quarter-top-right"]} data-zone-id="quarter-top-right" data-left="50" data-top="0" data-width="50" data-height="50" data-label={t.simulator.zoneShort["quarter-top-right"]}></div>
+                <div class="snap-zone-btn" role="button" tabindex="0" aria-label={t.simulator.zones["quarter-bottom-left"]} data-zone-id="quarter-bottom-left" data-left="0" data-top="50" data-width="50" data-height="50" data-label={t.simulator.zoneShort["quarter-bottom-left"]}></div>
+                <div class="snap-zone-btn" role="button" tabindex="0" aria-label={t.simulator.zones["quarter-bottom-right"]} data-zone-id="quarter-bottom-right" data-left="50" data-top="50" data-width="50" data-height="50" data-label={t.simulator.zoneShort["quarter-bottom-right"]}></div>
               </div>
-              <span class="template-label">4 Corners</span>
+              <span class="template-label">{t.simulator.templateCorners}</span>
             </div>
           </div>
         </div>
@@ -400,7 +400,7 @@ const t = getI18n(lang);
               <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" class="terminal-mini-icon">
                 <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm5.854 4.146a.5.5 0 0 0-.708.708L7.293 9 5.146 11.146a.5.5 0 0 0 .708.708l2.5-2.5a.5.5 0 0 0 0-.708l-2.5-2.5zM9 11.5a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H9z" />
               </svg>
-              <span class="titlebar-text">vutuanhau@MacBook-Pro: ~ (zsh)</span>
+              <span class="titlebar-text">you@macbook: ~ (zsh)</span>
             </div>
             <div class="snap-status-badge">
               <span class="status-pulse-dot terminal-pulse"></span>
@@ -422,7 +422,7 @@ const t = getI18n(lang);
         </div>
 
         <!-- Adaptive Collinear Split Divider Bar (EPIC 08) -->
-        <div class="desktop-split-divider" id="desktop-split-divider" aria-hidden="true" title="Drag to resize adjacent windows (Double-click for 50/50)">
+        <div class="desktop-split-divider" id="desktop-split-divider" aria-hidden="true" title={t.simulator.dividerHint}>
           <div class="divider-line"></div>
           <div class="divider-handle">
             <svg viewBox="0 0 16 16" width="10" height="10" fill="currentColor">
@@ -441,7 +441,7 @@ const t = getI18n(lang);
       <footer class="mac-dock-wrapper">
         <div class="mac-dock">
           <!-- Finder -->
-          <div class="dock-item" id="dock-finder" role="button" tabindex="0" aria-label="Open Finder" title="Finder">
+          <div class="dock-item" id="dock-finder" aria-hidden="true" title="Finder">
             <div class="dock-icon finder-icon">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8">
                 <rect x="3" y="3" width="18" height="18" rx="4" />

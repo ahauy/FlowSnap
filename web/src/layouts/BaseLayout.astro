@@ -126,7 +126,7 @@ const jsonLdSchema = {
         try {
           const stored = localStorage.getItem('flowsnap-theme');
           const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          const theme = stored ? stored : (prefersDark ? 'dark' : 'dark');
+          const theme = stored ? stored : (prefersDark ? 'dark' : 'light');
           document.documentElement.setAttribute('data-theme', theme);
           if (theme === 'dark') {
             document.documentElement.classList.add('dark');
