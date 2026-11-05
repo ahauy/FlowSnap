@@ -1,0 +1,98 @@
+{
+  "$comment": "Machine-readable governance for .qoder/hooks/flowgate.sh. Values mirror AGENTS.md; AGENTS.md stays the human source of truth.",
+  "git": {
+    "$comment": "AGENTS.md forbids autonomous staging, committing and pushing. Prefix a command with FLOWGATE_GIT_APPROVED=1 only after the user explicitly approved it.",
+    "approvalEnv": "FLOWGATE_GIT_APPROVED=1",
+    "allowFlags": [
+      "--dry-run"
+    ],
+    "$comment_flags": "--dry-run cannot change state, so it is never a human-in-the-loop action.",
+    "blockedSubcommands": [
+      "add",
+      "amend",
+      "apply",
+      "branch",
+      "checkout",
+      "cherry-pick",
+      "clean",
+      "commit",
+      "merge",
+      "push",
+      "rebase",
+      "restore",
+      "reset",
+      "rm",
+      "stash",
+      "switch"
+    ],
+    "allowedSubcommands": [
+      "blame",
+      "diff",
+      "log",
+      "ls-files",
+      "rev-parse",
+      "show",
+      "status"
+    ]
+  },
+  "limits": {
+    "maxFileLines": 800,
+    "$comment": "AGENTS.md: File < 800 lines. Checked on the file as written, for the extensions in checks.lengthExempt's complement."
+  },
+  "checks": {
+    "lengthExempt": [
+      "docs/",
+      ".specify/",
+      "web/dist/",
+      "web/.astro/",
+      "build/",
+      "FlowSnap.xcodeproj/",
+      ".agents/"
+    ],
+    "lengthExtensions": [
+      ".swift",
+      ".ts",
+      ".tsx",
+      ".js",
+      ".mjs",
+      ".astro",
+      ".css",
+      ".sh",
+      ".py"
+    ],
+    "lengthGrandfathered": [
+      "web/src/scripts/desktop-simulator.ts"
+    ],
+    "$comment_grandfathered": "938 lines, above the 800 limit. Exempted on 2026-11-05 so the gate does not block every edit; split it when the simulator is next restructured.",
+    "swiftParse": {
+      "enabled": true,
+      "includeDirs": [
+        "FlowSnap/",
+        "FlowSnapTests/"
+      ],
+      "$comment": "xcrun swiftc -parse on the single edited file: catches syntax damage in well under a second. Whole-target typecheck and tests belong to CI (macos-15 workflow). Scoped to the two app targets because standalone scripts under scripts/ legitimately use top-level code, which -parse rejects."
+    },
+    "jsonParse": {
+      "enabled": true,
+      "globs": [
+        "web/src/i18n/*.json",
+        "version.json",
+        "package.json"
+      ]
+    },
+    "i18nKeyParity": {
+      "enabled": true,
+      "files": [
+        "web/src/i18n/en.json",
+        "web/src/i18n/vi.json"
+      ],
+      "$comment": "A key added to one locale and not the other silently renders blank or English on /vi. That was the main defect of the web-i18n branch."
+    },
+    "secretPatterns": [
+      "BEGIN [A-Z ]*PRIVATE KEY",
+      "AKIA[0-9A-Z]{16}",
+      "ghp_[0-9A-Za-z]{36}",
+      "xox[baprs]-[0-9A-Za-z-]{10,}"
+    ]
+  }
+}
