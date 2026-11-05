@@ -15,8 +15,10 @@ gh api -X POST repos/ahauy/FlowSnap/rulesets --input .github/rulesets/main.json
 # Confirm
 gh api repos/ahauy/FlowSnap/rulesets --jq '.[] | {id, name, enforcement, .conditions?}'
 
-# Update an existing ruleset instead of creating a duplicate
-gh api -X PATCH repos/ahauy/FlowSnap/rulesets/<id> --input .github/rulesets/main.json
+# Update an existing ruleset instead of creating a duplicate.
+# This deployment answers PATCH with 404 and only accepts PUT (verified 2026-11-05:
+# PATCH -> HTTP 404 even for a minimal body, PUT -> HTTP 200).
+gh api -X PUT repos/ahauy/FlowSnap/rulesets/26587443 --input .github/rulesets/main.json
 
 # Remove
 gh api -X DELETE repos/ahauy/FlowSnap/rulesets/<id>
