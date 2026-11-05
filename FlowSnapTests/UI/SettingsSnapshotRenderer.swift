@@ -7,7 +7,7 @@ import Testing
 @MainActor
 struct SettingsSnapshotRenderer {
 
-    @Test(.disabled(if: ProcessInfo.processInfo.environment["FLOWSNAP_RENDER_DOCS"] != "1", comment: "documentation screenshot generator; run locally with FLOWSNAP_RENDER_DOCS=1")) func renderSettingsScreenshots() async throws {
+    @Test(.disabled(if: ProcessInfo.processInfo.environment["FLOWSNAP_RENDER_DOCS"] != "1")) func renderSettingsScreenshots() async throws {
         let outputDirs = [
             URL(fileURLWithPath: "docs/user-guides/images/settings-shortcut-customization"),
             URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/settings-shortcut-customization"),

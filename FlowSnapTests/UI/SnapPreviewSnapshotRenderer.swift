@@ -7,7 +7,7 @@ import Testing
 @MainActor
 struct SnapPreviewSnapshotRenderer {
 
-    @Test(.disabled(if: ProcessInfo.processInfo.environment["FLOWSNAP_RENDER_DOCS"] != "1", comment: "documentation screenshot generator; run locally with FLOWSNAP_RENDER_DOCS=1")) func renderSnapPreviewScreenshots() async throws {
+    @Test(.disabled(if: ProcessInfo.processInfo.environment["FLOWSNAP_RENDER_DOCS"] != "1")) func renderSnapPreviewScreenshots() async throws {
         let outputDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/drag-to-snap-preview")
         try FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true)
 
