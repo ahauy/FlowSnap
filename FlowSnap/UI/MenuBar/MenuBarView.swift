@@ -22,6 +22,10 @@ public struct MenuBarView: View {
                 permissionWarningBanner
             }
 
+            if viewModel.isAccessibilityTrusted, let blocked = viewModel.blockedActionMessage {
+                actionFailureBanner(blocked)
+            }
+
             // Quick Snap Actions Grid (Visual Screen Canvas)
             VisualSnapGridView(isEnabled: viewModel.isAccessibilityTrusted) { action in
                 viewModel.triggerSnap(action)
@@ -56,6 +60,10 @@ public struct MenuBarView: View {
         .frame(width: 300)
         .onAppear {
             viewModel.refreshState()
+            viewModel.startPermissionPolling()
+        }
+        .onDisappear {
+            viewModel.stopPermissionPolling()
         }
 
         .sheet(isPresented: saveSheetBinding) {
@@ -176,6 +184,10 @@ public struct MenuBarView: View {
                 .foregroundStyle(.secondary)
             }
 
+            if let storeError = workspaceVM.storeError {
+                storeErrorBanner(workspaceVM, storeError)
+            }
+
             WorkspaceListView(viewModel: workspaceVM)
 
 
@@ -188,9 +200,7 @@ public struct MenuBarView: View {
                     Text("Move Workspace to Next Display")
                         .font(.system(size: 11))
                     Spacer()
-                    Text("⌃⌥⇧⌘→")
-                        .font(.system(size: 9, design: .monospaced))
-                        .foregroundStyle(.secondary)
+                    shortcutBadge(.moveWorkspaceNextDisplay)
                 }
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
@@ -217,6 +227,75 @@ public struct MenuBarView: View {
                 .background(RoundedRectangle(cornerRadius: 5).fill(Color.orange.opacity(0.08)))
             }
         }
+    }
+
+    /// A persistence failure has to look different from "you have no workspaces",
+    /// otherwise the user reads their lost list as an empty app and rebuilds it.
+    private func storeErrorBanner(_ workspaceVM: WorkspaceViewModel, _ storeError: WorkspaceStoreError) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .top, spacing: 4) {
+                Image(systemName: "externaldrive.badge.exclamationmark")
+                    .foregroundStyle(.orange)
+                    .font(.system(size: 10))
+                Text(WorkspaceViewModel.message(for: storeError))
+                    .font(.system(size: 10))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            HStack(spacing: 8) {
+                Button {
+                    Task { await workspaceVM.retryLoad() }
+                } label: {
+                    HStack(spacing: 3) {
+                        Image(systemName: "arrow.clockwise")
+                        Text("Retry")
+                    }
+                    .font(.system(size: 9, weight: .medium))
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.mini)
+
+                Button("Dismiss") {
+                    workspaceVM.dismissStoreError()
+                }
+                .buttonStyle(.plain)
+                .font(.system(size: 9, weight: .medium))
+                .foregroundStyle(.secondary)
+            }
+        }
+        .padding(6)
+        .background(RoundedRectangle(cornerRadius: 5).fill(Color.orange.opacity(0.08)))
+    }
+
+    /// The live key binding for a menu action, including user overrides.
+    @ViewBuilder
+    private func shortcutBadge(_ action: ShortcutAction) -> some View {
+        let badge = viewModel.shortcutBadge(for: action)
+        if !badge.isEmpty {
+            Text(badge)
+                .font(.system(size: 9, weight: .regular, design: .monospaced))
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func actionFailureBanner(_ message: String) -> some View {
+        HStack(alignment: .top, spacing: 4) {
+            Image(systemName: "exclamationmark.circle.fill")
+                .foregroundStyle(.orange)
+                .font(.system(size: 10))
+            Text(message)
+                .font(.system(size: 10))
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
+            Button("Dismiss") {
+                viewModel.clearBlockedActionMessage()
+            }
+            .buttonStyle(.plain)
+            .font(.system(size: 9, weight: .medium))
+            .foregroundStyle(.secondary)
+        }
+        .padding(6)
+        .background(RoundedRectangle(cornerRadius: 5).fill(Color.orange.opacity(0.08)))
     }
 
     // MARK: - Pinned Windows (US-SNAP-021)
@@ -248,9 +327,7 @@ public struct MenuBarView: View {
                     Text("Pin Focused Window")
                         .font(.system(size: 11))
                     Spacer()
-                    Text("⌃⌥P")
-                        .font(.system(size: 9, weight: .regular, design: .monospaced))
-                        .foregroundStyle(.secondary)
+                    shortcutBadge(.togglePinFocusedWindow)
                 }
                 .padding(.horizontal, 8)
                 .padding(.vertical, 5)
@@ -335,9 +412,7 @@ public struct MenuBarView: View {
                             }
                         }
                         Spacer()
-                        Text("⌥Space")
-                            .font(.system(size: 9, weight: .regular, design: .monospaced))
-                            .foregroundStyle(.secondary)
+                        shortcutBadge(.toggleScratchpad)
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 5)
@@ -361,9 +436,7 @@ public struct MenuBarView: View {
                         Text("Assign Focused Window")
                             .font(.system(size: 11))
                         Spacer()
-                        Text("⌃⌥Space")
-                            .font(.system(size: 9, weight: .regular, design: .monospaced))
-                            .foregroundStyle(.secondary)
+                        shortcutBadge(.assignScratchpad)
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 5)
@@ -437,6 +510,14 @@ public struct MenuBarView: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
                 .lineSpacing(1.5)
+
+            if let blocked = viewModel.blockedActionMessage {
+                Text(blocked)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.orange)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .lineSpacing(1.5)
+            }
 
             Button {
                 viewModel.requestAccessibilityPermission()

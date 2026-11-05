@@ -210,7 +210,7 @@ struct CoordinateInversionVisualizerView: View {
 struct DisplayAwareScreenshotGenerator {
     @MainActor
     static func main() {
-        let outDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/display-aware-manipulation")
+        let outDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/display-aware-manipulation")
         try? FileManager.default.createDirectory(at: outDir, withIntermediateDirectories: true)
 
         let inspectorURL = outDir.appendingPathComponent("01_multi_display_inspector.png")

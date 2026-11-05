@@ -187,7 +187,7 @@ struct DispatcherFlowVisualizerView: View {
 struct GlobalHotkeysScreenshotGenerator {
     @MainActor
     static func main() {
-        let outDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/global-hotkeys-dispatcher")
+        let outDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/global-hotkeys-dispatcher")
         try? FileManager.default.createDirectory(at: outDir, withIntermediateDirectories: true)
 
         let inspectorURL = outDir.appendingPathComponent("01_global_hotkeys_inspector.png")

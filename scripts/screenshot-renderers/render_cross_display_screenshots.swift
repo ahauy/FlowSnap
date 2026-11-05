@@ -571,7 +571,7 @@ extension Color {
 struct CrossDisplayScreenshotGenerator {
     @MainActor
     static func main() {
-        let outDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/cross-display-window-throw")
+        let outDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/cross-display-window-throw")
         try? FileManager.default.createDirectory(at: outDir, withIntermediateDirectories: true)
 
         let step1URL = outDir.appendingPathComponent("01_cross_display_topology_throw.png")

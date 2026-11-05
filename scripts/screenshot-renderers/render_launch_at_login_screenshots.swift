@@ -518,7 +518,7 @@ struct AnnotatedSystemSettingsSyncView: View {
 struct LaunchAtLoginScreenshotGenerator {
     @MainActor
     static func main() {
-        let outDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/launch-at-login")
+        let outDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/launch-at-login")
         try? FileManager.default.createDirectory(at: outDir, withIntermediateDirectories: true)
 
         let step1URL = outDir.appendingPathComponent("01_launch_at_login_toggle.png")

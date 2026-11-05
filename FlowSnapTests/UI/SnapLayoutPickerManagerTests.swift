@@ -76,7 +76,7 @@ struct SnapLayoutPickerManagerTests {
 
     // MARK: - TC-TOP-004: Presentation & Hit-Testing
 
-    @Test func presentationPositioningAndDismiss() {
+    @Test func presentationPositioningAndDismiss() async throws {
         let manager = SnapLayoutPickerManager()
 
         #expect(manager.isVisible == false)
@@ -87,8 +87,12 @@ struct SnapLayoutPickerManagerTests {
         #expect(manager.activeDisplayID == 1)
         #expect(manager.pickerFrame != nil)
 
+        // The panel enters 20pt above its resting place, so read it only after
+        // the 0.15s slide settles; otherwise the entry frame is measured.
+        try await Task.sleep(nanoseconds: 400_000_000)
+
         if let frame = manager.pickerFrame {
-            // Verify horizontally centered on primary display (midX = 960, width = 430 -> minX = 745)
+            // Verify horizontally centered on primary display (midX = 960, width = 440 -> minX = 740)
             #expect(abs(frame.midX - primaryDisplay.visibleFrame.midX) <= 1.0)
             // Verify positioned at the top of the visible frame
             #expect(frame.maxY <= primaryDisplay.visibleFrame.maxY)

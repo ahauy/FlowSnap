@@ -427,6 +427,19 @@
   flex-shrink: 0;
 }
 
+.checksum-hint {
+  flex-wrap: wrap;
+  white-space: normal;
+}
+
+.checksum-value {
+  font-size: var(--font-xs, 12px);
+  color: var(--color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
 .releases-link {
   display: inline-flex;
   align-items: center;

@@ -1,4 +1,4 @@
-import ApplicationServices
+@preconcurrency import ApplicationServices
 import CoreGraphics
 import Foundation
 
@@ -33,6 +33,9 @@ public struct ResolvedWindow: @unchecked Sendable {
 public protocol AccessibilityService: Sendable {
     /// Check whether FlowSnap currently has Accessibility trust from macOS.
     var isTrusted: Bool { get }
+
+    /// Show the system's own "grant Accessibility" dialog for this app.
+    func promptForTrust()
 
     /// Open macOS System Settings directly to Privacy & Security > Accessibility.
     func openSystemSettings()
@@ -94,4 +97,13 @@ public protocol AccessibilityService: Sendable {
     /// for waiting after this returns to let the macOS animation complete before
     /// reading or setting the window's frame.
     func exitFullScreen(_ window: AXUIElement) throws
+}
+
+extension AccessibilityService {
+    /// macOS owns the rate limiting for this dialog, so asking every time an
+    /// action finds the app untrusted is safe and needs no local bookkeeping.
+    public func promptForTrust() {
+        let key = "AXTrustedCheckOptionPrompt"
+        _ = AXIsProcessTrustedWithOptions([key: true] as CFDictionary)
+    }
 }

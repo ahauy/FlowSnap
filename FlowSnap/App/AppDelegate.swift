@@ -14,14 +14,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        let dispatcher = dependencies.commandDispatcher
         let hotkeyManager = dependencies.hotkeyManager
         let preferences = dependencies.preferencesStore
 
+        // Every snap, throw and restore is an AX write, so an app that never
+        // asks is an app whose hotkeys do nothing forever. macOS rate-limits
+        // the dialog itself; asking on every untrusted launch is what makes
+        // first-run recoverable.
+        if !dependencies.accessibilityService.isTrusted {
+            dependencies.accessibilityService.promptForTrust()
+        }
+
         // Register custom hotkeys from PreferencesStore
-        hotkeyManager.registerShortcuts(from: preferences) { command in
+        hotkeyManager.registerShortcuts(from: preferences) { [weak self] command in
             Task { @MainActor in
-                try? await dispatcher.dispatch(command)
+                await self?.run(command)
             }
         }
 
@@ -33,7 +40,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 guard let self = self else { return }
                 self.dependencies.hotkeyManager.registerShortcuts(from: self.dependencies.preferencesStore) { command in
                     Task { @MainActor in
-                        try? await dispatcher.dispatch(command)
+                        await self.run(command)
                     }
                 }
             }
@@ -51,7 +58,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 } else {
                     self.dependencies.hotkeyManager.registerShortcuts(from: self.dependencies.preferencesStore) { command in
                         Task { @MainActor in
-                            try? await dispatcher.dispatch(command)
+                            await self.run(command)
                         }
                     }
                 }
@@ -90,7 +97,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    /// Runs a command raised by a global hotkey and reports why it could not run.
+    private func run(_ command: WindowCommand) async {
+        do {
+            try await dependencies.commandDispatcher.dispatch(command)
+        } catch {
+            dependencies.menuBarViewModel.reportActionFailure(error)
+        }
+    }
+
     func applicationWillTerminate(_ notification: Notification) {
+        dependencies.menuBarViewModel.stopPermissionPolling()
         dependencies.hotkeyManager.unregisterAll()
         dependencies.dragToSnapCoordinator.stop()
         dependencies.adaptiveDividerCoordinator.stop()

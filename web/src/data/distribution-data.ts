@@ -48,9 +48,9 @@ export const RELEASE_METADATA: ReleaseMetadata = {
   releasesPageUrl: "https://github.com/ahauy/FlowSnap/releases",
   binaryArch: "Universal Binary (Apple Silicon & Intel)",
   minMacOS: "macOS 14.0+ (Sonoma & Sequoia)",
-  fileSize: "~14.2 MB",
+  fileSize: "~3.3 MB",
   license: "MIT Open Source",
-  sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  sha256: "d31f1a0d9973b3951a2775d776e65959d2b8dae144614b9216c5e517f8f4bf1f",
 };
 
 export const TERMINAL_TABS: readonly TerminalTabItem[] = [
@@ -58,7 +58,7 @@ export const TERMINAL_TABS: readonly TerminalTabItem[] = [
     id: "curl",
     label: "cURL",
     command:
-      "curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/install.sh | bash",
+      '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"',
     description:
       "Automatically download and install the latest Universal DMG into /Applications",
     defaultActive: true,

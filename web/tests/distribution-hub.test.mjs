@@ -24,14 +24,14 @@ assert.ok(html.includes('https://github.com/ahauy/FlowSnap/releases/latest/downl
 assert.ok(html.includes('v1.3.1'), 'Version v1.3.1 badge must be present');
 assert.ok(html.includes('Universal Binary'), 'Universal Binary architecture badge must be present');
 assert.ok(html.includes('macOS 14.0+'), 'macOS 14.0+ requirement must be present');
-assert.ok(html.includes('~14.2 MB'), 'File size ~14.2 MB must be present');
+assert.ok(html.includes('~3.3 MB'), 'File size ~3.3 MB must be present');
 assert.ok(html.includes('https://github.com/ahauy/FlowSnap/releases'), 'Link to releases archive must be present');
 console.log('✅ TC-DIST-001 Passed!\n');
 
 // TC-DIST-002: Tabbed Terminal Installer Box
 console.log('Checking TC-DIST-002: Tabbed Terminal Installer Box...');
 assert.ok(html.includes('id="terminal-installer-root"') || html.includes('class="terminal-box"'), 'Terminal installer container must be present');
-assert.ok(html.includes('curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/install.sh | bash'), 'cURL command string must be present');
+assert.ok(html.includes('raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh'), 'cURL command string must be present');
 assert.ok(html.includes('brew install --cask ahauy/tap/flowsnap'), 'Homebrew command string must be present');
 assert.ok(html.includes('data-install-tab="curl"'), 'cURL tab button must be present');
 assert.ok(html.includes('data-install-tab="brew"'), 'Homebrew tab button must be present');

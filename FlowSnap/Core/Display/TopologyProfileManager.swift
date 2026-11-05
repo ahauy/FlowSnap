@@ -81,6 +81,9 @@ public final class TopologyProfileManager: TopologyProfileManaging {
         let allWindows = accessibilityService.allVisibleManagedWindows()
 
         for window in allWindows {
+            // A full-screen window accepts the AX write and ignores it, so clamping
+            // one only hides the fact that it did not move.
+            if window.kind == .fullscreen { continue }
             // Check if window is partially or completely outside primary visible frame
             let needsClamping = !primary.visibleFrame.contains(window.frame)
             if needsClamping {
@@ -89,8 +92,14 @@ public final class TopologyProfileManager: TopologyProfileManaging {
                     to: primary.visibleFrame,
                     minVisibilityRatio: 1.0
                 )
-                if let element = accessibilityService.windowElement(for: window) {
-                    try? accessibilityService.setFrame(clamped, for: element)
+                guard let element = accessibilityService.windowElement(for: window) else {
+                    diagPrint("[DIAG-TOPO] No addressable element to clamp \(window.bundleIdentifier ?? "?")")
+                    continue
+                }
+                do {
+                    try accessibilityService.setFrame(clamped, for: element)
+                } catch {
+                    diagPrint("[DIAG-TOPO] Clamp after unplug failed for \(window.bundleIdentifier ?? "?"): \(error)")
                 }
             }
         }
@@ -114,13 +123,20 @@ public final class TopologyProfileManager: TopologyProfileManaging {
     ) async -> DisplayTopologyProfile {
         let displays = await displayManager.displays
         let sortedDisplays = sortDisplaysHorizontally(displays)
+        // A profile stores one placement per app, so the largest window is the
+        // representative — otherwise an arbitrary panel of the same app overwrites
+        // the document window the user actually laid out.
         let windows = accessibilityService.allVisibleManagedWindows()
+            .sorted { lhs, rhs in
+                lhs.frame.width * lhs.frame.height > rhs.frame.width * rhs.frame.height
+            }
 
         var placements: [String: WindowPlacement] = [:]
         var displayIndices: [String: Int] = [:]
 
         for window in windows {
             guard let bundleID = window.bundleIdentifier, !bundleID.isEmpty else { continue }
+            guard placements[bundleID] == nil else { continue }
             guard let winDisplay = await displayManager.display(for: window.frame, cursorPoint: nil) else { continue }
 
             let displayIdx = sortedDisplays.firstIndex(where: { $0.id == winDisplay.id }) ?? 0
@@ -162,8 +178,10 @@ public final class TopologyProfileManager: TopologyProfileManaging {
         let primary = await displayManager.primaryDisplay ?? sortedDisplays[0]
         let allWindows = accessibilityService.allVisibleManagedWindows()
 
+        var failed: [String] = []
         for (bundleID, placement) in profile.windowPlacements {
-            guard let window = allWindows.first(where: { $0.bundleIdentifier == bundleID }) else {
+            let candidates = allWindows.filter { $0.bundleIdentifier == bundleID }
+            guard let window = candidates.max(by: { Self.area($0) < Self.area($1) }) else {
                 continue // Missing app resilience: skip gracefully (REQ-DISP-007)
             }
 
@@ -183,12 +201,27 @@ public final class TopologyProfileManager: TopologyProfileManaging {
                 targetFrame = layoutEngine.frame(for: placement.zone, in: targetDisplay.visibleFrame)
             }
 
-            if let element = accessibilityService.windowElement(for: window) {
-                try? accessibilityService.setFrame(targetFrame, for: element)
+            guard let element = accessibilityService.windowElement(for: window) else {
+                failed.append(bundleID)
+                diagPrint("[DIAG-TOPO] No addressable element for \(bundleID)")
+                continue
+            }
+            do {
+                try accessibilityService.setFrame(targetFrame, for: element)
+            } catch {
+                failed.append(bundleID)
+                diagPrint("[DIAG-TOPO] Restore move failed for \(bundleID): \(error)")
             }
         }
 
-        return true
+        if !failed.isEmpty {
+            diagPrint("[DIAG-TOPO] Restore incomplete: \(failed.count)/\(profile.windowPlacements.count) windows not moved")
+        }
+        return failed.isEmpty
+    }
+
+    private static func area(_ window: ManagedWindow) -> CGFloat {
+        window.frame.width * window.frame.height
     }
 
     // MARK: - Persistence & Storage

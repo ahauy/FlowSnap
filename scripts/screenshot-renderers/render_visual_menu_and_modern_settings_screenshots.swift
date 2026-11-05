@@ -1166,9 +1166,9 @@ struct AnnotatedCrossDisplayDualModeVisualizerView: View {
 struct RenderVisualGuideScreenshots {
     @MainActor
     static func main() {
-        let visualGuideDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/visual-menu-and-modern-settings")
-        let windowGroupsDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/window-groups-presets")
-        let menubarDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/menubar-quick-controls")
+        let visualGuideDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/visual-menu-and-modern-settings")
+        let windowGroupsDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/window-groups-presets")
+        let menubarDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/menubar-quick-controls")
 
         for dir in [visualGuideDir, windowGroupsDir, menubarDir] {
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)

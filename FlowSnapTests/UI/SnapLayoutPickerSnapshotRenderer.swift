@@ -7,8 +7,8 @@ import Testing
 @MainActor
 struct SnapLayoutPickerSnapshotRenderer {
 
-    @Test func renderLayoutPickerScreenshots() async throws {
-        let outputDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/top-edge-layout-picker")
+    @Test(.disabled(if: ProcessInfo.processInfo.environment["FLOWSNAP_RENDER_DOCS"] != "1")) func renderLayoutPickerScreenshots() async throws {
+        let outputDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/top-edge-layout-picker")
         try FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true)
 
         // 1. Render Top-Edge Picker Normal Flyout

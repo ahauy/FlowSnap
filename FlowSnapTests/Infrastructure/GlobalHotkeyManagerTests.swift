@@ -81,6 +81,24 @@ struct GlobalHotkeyManagerTests {
     }
 
     @MainActor
+    @Test func registrationFailuresSurfaceInPreferencesStore() {
+        let defaults = UserDefaults(suiteName: "test.globalhotkey.failures.\(UUID().uuidString)")!
+        let store = PreferencesStore(defaults: defaults)
+        let mockManager = MockGlobalHotkeyManager()
+        mockManager.collidingIDs = [1, 2]
+
+        let registered = mockManager.registerShortcuts(from: store) { _ in }
+        let failedShortcuts = registered.filter { !$0.isRegistered }.map(\.shortcut)
+
+        #expect(!failedShortcuts.isEmpty)
+        #expect(store.unregisteredShortcuts == failedShortcuts)
+
+        mockManager.collidingIDs = []
+        mockManager.registerShortcuts(from: store) { _ in }
+        #expect(store.unregisteredShortcuts.isEmpty)
+    }
+
+    @MainActor
     @Test func sharedGroupAndWorkspaceShortcutRegistration() {
         let defaults = UserDefaults(suiteName: "test.globalhotkey.shared.\(UUID().uuidString)")!
         let store = PreferencesStore(defaults: defaults)

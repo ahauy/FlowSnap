@@ -179,7 +179,7 @@ struct AnnotatedTrustedLabView: View {
 struct ScreenshotGenerator {
     @MainActor
     static func main() {
-        let outDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/accessibility-window-discovery")
+        let outDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/accessibility-window-discovery")
         try? FileManager.default.createDirectory(at: outDir, withIntermediateDirectories: true)
 
         let untrustedURL = outDir.appendingPathComponent("01_untrusted_permission_prompt.png")

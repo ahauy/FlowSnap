@@ -235,6 +235,13 @@ public final class WorkspaceViewModel: ObservableObject {
         syncFromManager()
     }
 
+    /// Re-reads the workspace file after a failure (E7 "Retry").
+    public func retryLoad() async {
+        errorMessage = nil
+        await manager.reload()
+        syncFromManager()
+    }
+
     // MARK: - Error → message mapping (spec §5)
 
     /// Turns a `WorkspaceError` into the inline text the UI shows.

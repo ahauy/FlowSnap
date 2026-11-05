@@ -1,13 +1,21 @@
 ---
 // ThemeToggle.astro: Dark/Light Mode Switcher with Zero Layout Shift
+import { getI18n, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = getI18n(lang);
 ---
 
 <button
   id="theme-toggle"
   class="theme-toggle-btn"
   type="button"
-  aria-label="Toggle color theme"
-  title="Toggle Dark / Light theme"
+  aria-label={t.a11y.toggleTheme}
+  title={t.a11y.toggleTheme}
 >
   <!-- Sun icon (shown when theme is dark) -->
   <svg

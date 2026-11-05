@@ -17,10 +17,10 @@ extension AdaptiveDividerCoordinator {
             overlayPanel.overlayView.onDirectMouseDown = { [weak self] pt, _ in self?.triggerMouseDown(at: pt) }
             overlayPanel.overlayView.onDirectMouseDragged = { [weak self] pt in self?.scheduleDragTask(to: pt) }
             overlayPanel.overlayView.onDirectMouseUp = { [weak self] pt in self?.triggerMouseUp(at: pt) }
-            overlayPanel.overlayView.onDirectMouseMoved = { [weak self] pt in self?.triggerMouseMoved(at: pt) }
+            overlayPanel.overlayView.onDirectMouseMoved = { [weak self] pt in self?.scheduleHoverTask(to: pt) }
         }
         moveMonitor = NSEvent.addGlobalMonitorForEvents(matching: .mouseMoved) { [weak self] _ in
-            self?.triggerMouseMoved(at: NSEvent.mouseLocation)
+            self?.scheduleHoverTask(to: NSEvent.mouseLocation)
         }
         downMonitor = NSEvent.addGlobalMonitorForEvents(matching: .leftMouseDown) { [weak self] _ in
             self?.triggerMouseDown(at: NSEvent.mouseLocation)
@@ -43,9 +43,11 @@ extension AdaptiveDividerCoordinator {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            guard let self, self.isTracking else { return }
-            if self.isNonWorkspaceAppFrontmost {
-                self.resetState()
+            Task { @MainActor [weak self] in
+                guard let self, self.isTracking else { return }
+                if self.isNonWorkspaceAppFrontmost {
+                    self.resetState()
+                }
             }
         }
         appTerminationObserver = NSWorkspace.shared.notificationCenter.addObserver(
@@ -73,13 +75,27 @@ extension AdaptiveDividerCoordinator {
         }
     }
 
-    func triggerMouseMoved(at point: CGPoint) {
+    /// Drains hover events one at a time, latest point winning.
+    func scheduleHoverTask(to point: CGPoint) {
+        pendingHoverPoint = point
+        guard !isHoverScheduled else { return }
+        isHoverScheduled = true
         Task { @MainActor [weak self] in
-            guard let self, self.isTracking else { return }
-            if let service = self.accessibilityService, !service.isTrusted { return }
-            await self.refreshWindowsIfNeeded()
-            await self.handleMouseMoved(to: point)
+            guard let self else { return }
+            while let targetPoint = self.pendingHoverPoint {
+                self.pendingHoverPoint = nil
+                guard self.isTracking else { break }
+                if let service = self.accessibilityService, !service.isTrusted { break }
+                await self.refreshWindowsIfNeeded()
+                await self.handleMouseMoved(to: targetPoint)
+            }
+            self.isHoverScheduled = false
         }
+    }
+
+    func flushPendingHover() {
+        pendingHoverPoint = nil
+        isHoverScheduled = false
     }
 
     func triggerMouseDown(at point: CGPoint) {
@@ -118,6 +134,7 @@ extension AdaptiveDividerCoordinator {
         workspaceCancellable?.cancel()
         workspaceCancellable = nil
         flushPendingDrag()
+        flushPendingHover()
         isTracking = false
         isResizing = false
         activeDivider = nil

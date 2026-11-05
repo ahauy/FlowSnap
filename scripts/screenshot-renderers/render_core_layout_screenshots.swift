@@ -173,7 +173,7 @@ struct AnnotatedSnapAppliedView: View {
 struct ScreenshotGenerator {
     @MainActor
     static func main() {
-        let outDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/core-layout-snap-engine")
+        let outDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/core-layout-snap-engine")
         try? FileManager.default.createDirectory(at: outDir, withIntermediateDirectories: true)
 
         let controlsURL = outDir.appendingPathComponent("01_snap_controls_lab.png")

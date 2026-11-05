@@ -84,6 +84,11 @@ public final class AdaptiveDividerCoordinator: AdaptiveDividerCoordinating {
     var pendingDragPoint: CGPoint?
     var isDragScheduled = false
 
+    /// Coalesced hover state. Global `.mouseMoved` fires at pointer-report rate,
+    /// far faster than an AX round-trip can resolve, so hover drains latest-wins.
+    var pendingHoverPoint: CGPoint?
+    var isHoverScheduled = false
+
     /// Divider set memoised across hover events when layout is static.
     struct DividerCache {
         let fingerprint: Int

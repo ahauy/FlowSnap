@@ -136,9 +136,11 @@ public final class AdaptiveDividerOverlayPanel: NSPanel, AdaptiveDividerOverlayM
                 context.timingFunction = CAMediaTimingFunction(name: .easeOut)
                 animator().alphaValue = 0.0
             } completionHandler: { [weak self] in
-                guard let self else { return }
-                if self.alphaValue <= 0.01 {
-                    self.orderOut(nil)
+                MainActor.assumeIsolated {
+                    guard let self else { return }
+                    if self.alphaValue <= 0.01 {
+                        self.orderOut(nil)
+                    }
                 }
             }
         } else {

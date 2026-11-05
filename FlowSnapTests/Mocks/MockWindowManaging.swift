@@ -23,6 +23,10 @@ public final class MockWindowManaging: WindowManaging {
     /// window that refuses to move (fixed-size panel, AX failure).
     public var moveError: Error?
 
+    /// Per-window `moveError`: throws only for the window whose id is keyed here.
+    /// Models a *partial* refusal, which the pass-level `moveError` cannot express.
+    public var moveErrorsByWindowID: [CGWindowID: Error] = [:]
+
     public init(mockFocusedWindow: ManagedWindow? = nil) {
         self.mockFocusedWindow = mockFocusedWindow
     }
@@ -39,14 +43,13 @@ public final class MockWindowManaging: WindowManaging {
     public func move(_ window: ManagedWindow, to frame: CGRect, element: AXUIElement?) async throws {
         moveCallCount += 1
         movedElements.append(element)
-        if let moveError {
-            // Record the attempt before failing: the caller's contract is about
-            // what it *tried* to do, and a test asserting "no move happened"
-            // should read as moveCallCount == 0, not as an empty frame list.
-            movedWindows.append((window, frame))
-            throw moveError
-        }
+        // Record the attempt before failing: the caller's contract is about
+        // what it *tried* to do, and a test asserting "no move happened"
+        // should read as moveCallCount == 0, not as an empty frame list.
         movedWindows.append((window, frame))
+        if let error = moveErrorsByWindowID[window.id] ?? moveError {
+            throw error
+        }
     }
 
     public private(set) var focusedWindows: [ManagedWindow] = []

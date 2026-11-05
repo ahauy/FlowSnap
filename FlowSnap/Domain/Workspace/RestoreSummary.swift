@@ -7,9 +7,10 @@ import Foundation
 /// window simply isn't there are three different user experiences, each needing
 /// its own line in the summary (BR-WORK-004, spec §5 E4–E5).
 ///
-/// Note what is *not* here: a window that refuses to move is still counted as
-/// placed (E6 — best effort, logged), because the user's observable outcome is
-/// "the window is where it was before", not "something went wrong with my setup".
+/// A restore still treats a refused move as good enough (E6 — best effort,
+/// logged): the user's observable outcome is "the window is where it was before".
+/// `.notMoved` is the exception for passes where a refused move leaves the user's
+/// layout split across displays, i.e. cross-display migration.
 public enum SkipReason: String, Codable, Equatable, Hashable, Sendable {
 
     /// E4 — no app is installed for this bundle identifier.
@@ -21,6 +22,12 @@ public enum SkipReason: String, Codable, Equatable, Hashable, Sendable {
     /// E5 — the app was already running but had no matching window (E10: fewer
     /// windows than at save time is not an error for the *others*).
     case noWindow
+
+    /// A window that was there but refused the move (fixed-size panel, modal, AX
+    /// failure). Unlike a restore, cross-display migration reports these rather
+    /// than counting them as placed, because the user is left looking at a layout
+    /// split across two displays.
+    case notMoved
 }
 
 /// An app that restore could not place, with the reason (data-model.md §1).
@@ -43,6 +50,7 @@ public struct SkippedApp: Equatable, Hashable, Identifiable, Sendable {
         case .notInstalled: return "\(name) not installed"
         case .launchTimeout: return "\(name) took too long to open"
         case .noWindow: return "\(name) not running"
+        case .notMoved: return "\(name) couldn't be moved"
         }
     }
 
@@ -54,7 +62,8 @@ public struct SkippedApp: Equatable, Hashable, Identifiable, Sendable {
     }
 }
 
-/// The result of one restore pass (data-model.md §1, spec §2 J2.6).
+/// The result of one placement pass — a restore, or a cross-display migration
+/// (data-model.md §1, spec §2 J2.6).
 ///
 /// ADR-002: assembled from the placement loop's per-app results rather than
 /// accumulated ad hoc, so the counting rules live in one place and are
@@ -70,10 +79,21 @@ public struct RestoreSummary: Equatable, Hashable, Sendable {
     /// Apps that could not be placed, in restore order.
     public let skipped: [SkippedApp]
 
-    public init(placedCount: Int, totalPlacements: Int, skipped: [SkippedApp] = []) {
+    /// Wording for passes whose outcome is not a "restore" (cross-display
+    /// migration, advisory no-ops). Shown verbatim by `headline` so those callers
+    /// reuse this summary and its banner instead of inventing a parallel type.
+    public let headlineOverride: String?
+
+    public init(
+        placedCount: Int,
+        totalPlacements: Int,
+        skipped: [SkippedApp] = [],
+        headlineOverride: String? = nil
+    ) {
         self.placedCount = placedCount
         self.totalPlacements = totalPlacements
         self.skipped = skipped
+        self.headlineOverride = headlineOverride
     }
 
     /// Everything landed (spec §4.5 success state).
@@ -84,6 +104,7 @@ public struct RestoreSummary: Equatable, Hashable, Sendable {
 
     /// Headline text, e.g. "Restored 3/3" or "Restored 2/3 — VS Code not running".
     public var headline: String {
+        if let headlineOverride { return headlineOverride }
         guard !isEmpty else { return "Nothing to restore" }
         guard !skipped.isEmpty else { return "Restored \(placedCount)/\(totalPlacements)" }
         let reasons = skipped.map(\.displayReason)

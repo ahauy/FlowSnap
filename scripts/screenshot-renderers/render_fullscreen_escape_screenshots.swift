@@ -718,7 +718,7 @@ struct WorkspaceRestorationView: View {
 
 @MainActor
 func renderAndSaveGuideImages() {
-    let outputDir = "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/universal-fullscreen-escape"
+    let outputDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/universal-fullscreen-escape").path
     try? FileManager.default.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
 
     // Image 1: Detection & Strategy

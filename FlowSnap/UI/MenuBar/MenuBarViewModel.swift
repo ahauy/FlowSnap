@@ -18,6 +18,9 @@ public final class MenuBarViewModel {
     public private(set) var lastFocusedWindow: ManagedWindow?
     public private(set) var lastPresetRestoreSummary: RestoreSummary?
 
+    /// Why the last user action was refused, shown in the permission banner.
+    public private(set) var blockedActionMessage: String?
+
     // MARK: - Dismissal Callback
 
     public var dismissHandler: (() -> Void)?
@@ -29,6 +32,8 @@ public final class MenuBarViewModel {
     private let preferencesStore: PreferencesStore?
     private let windowPinningCoordinator: (any WindowPinningCoordinating)?
     private let scratchpadCoordinator: (any ScratchpadCoordinating)?
+
+    private var permissionPollTask: Task<Void, Never>?
 
     /// Built-in or custom workflow presets available in the menu bar.
     public let presets: [WorkspacePreset]
@@ -92,6 +97,9 @@ public final class MenuBarViewModel {
 
     public func refreshState() {
         self.isAccessibilityTrusted = accessibilityService.isTrusted
+        if self.isAccessibilityTrusted {
+            self.blockedActionMessage = nil
+        }
         self.pinnedWindows = windowPinningCoordinator?.pinnedWindows ?? []
         self.scratchpadState = scratchpadCoordinator?.state ?? .unassigned
         Task { @MainActor in
@@ -107,6 +115,47 @@ public final class MenuBarViewModel {
         self.scratchpadState = scratchpadCoordinator?.state ?? .unassigned
         if let focused = await self.windowManager.focusedWindow() {
             self.lastFocusedWindow = focused
+        }
+    }
+
+    // MARK: - Permission Awareness
+
+    /// Re-reads the grant state while the panel stays open, so a user who flips
+    /// the System Settings switch sees the menu change without reopening it.
+    public func startPermissionPolling() {
+        guard permissionPollTask == nil else { return }
+        permissionPollTask = Task { @MainActor [weak self] in
+            while let self, !self.isAccessibilityTrusted, !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 1_500_000_000)
+                self.isAccessibilityTrusted = self.accessibilityService.isTrusted
+                if self.isAccessibilityTrusted {
+                    self.blockedActionMessage = nil
+                }
+            }
+            self?.permissionPollTask = nil
+        }
+    }
+
+    public func stopPermissionPolling() {
+        permissionPollTask?.cancel()
+        permissionPollTask = nil
+    }
+
+    public func clearBlockedActionMessage() {
+        blockedActionMessage = nil
+    }
+
+    /// Turns a failed action into something the user can see and act on.
+    ///
+    /// A denied Accessibility grant makes every hotkey a no-op, which reads as
+    /// "the app is broken" rather than "you need to grant access".
+    public func reportActionFailure(_ error: Error) {
+        if error is AccessibilityError || !accessibilityService.isTrusted {
+            isAccessibilityTrusted = false
+            blockedActionMessage = "FlowSnap can’t move windows without Accessibility access."
+            accessibilityService.promptForTrust()
+        } else {
+            blockedActionMessage = error.localizedDescription
         }
     }
 
@@ -143,7 +192,11 @@ public final class MenuBarViewModel {
         }
 
         Task { @MainActor in
-            try? await self.triggerSnapAsync(action)
+            do {
+                try await self.triggerSnapAsync(action)
+            } catch {
+                self.reportActionFailure(error)
+            }
         }
     }
 
@@ -169,7 +222,11 @@ public final class MenuBarViewModel {
         }
 
         Task { @MainActor in
-            try? await self.triggerPresetAsync(preset)
+            do {
+                try await self.triggerPresetAsync(preset)
+            } catch {
+                self.reportActionFailure(error)
+            }
         }
     }
 
@@ -183,7 +240,12 @@ public final class MenuBarViewModel {
         }
         dismissMenuBarWindow()
         Task { @MainActor in
-            try? await self.commandDispatcher.dispatch(.migrateWorkspace(direction))
+            do {
+                try await self.commandDispatcher.dispatch(.migrateWorkspace(direction))
+                self.lastPresetRestoreSummary = self.commandDispatcher.lastRestoreSummary
+            } catch {
+                self.reportActionFailure(error)
+            }
         }
     }
 
@@ -197,7 +259,11 @@ public final class MenuBarViewModel {
         }
         dismissMenuBarWindow()
         Task { @MainActor in
-            try? await self.commandDispatcher.dispatch(.togglePinFocusedWindow)
+            do {
+                try await self.commandDispatcher.dispatch(.togglePinFocusedWindow)
+            } catch {
+                self.reportActionFailure(error)
+            }
         }
     }
 
@@ -225,7 +291,11 @@ public final class MenuBarViewModel {
         }
         dismissMenuBarWindow()
         Task { @MainActor in
-            try? await self.commandDispatcher.dispatch(.toggleScratchpad)
+            do {
+                try await self.commandDispatcher.dispatch(.toggleScratchpad)
+            } catch {
+                self.reportActionFailure(error)
+            }
             self.scratchpadState = self.scratchpadCoordinator?.state ?? .unassigned
         }
     }
@@ -238,7 +308,11 @@ public final class MenuBarViewModel {
         }
         dismissMenuBarWindow()
         Task { @MainActor in
-            try? await self.commandDispatcher.dispatch(.assignScratchpad)
+            do {
+                try await self.commandDispatcher.dispatch(.assignScratchpad)
+            } catch {
+                self.reportActionFailure(error)
+            }
             self.scratchpadState = self.scratchpadCoordinator?.state ?? .unassigned
         }
     }
@@ -261,6 +335,11 @@ public final class MenuBarViewModel {
             return custom.displayString
         }
         return preset.defaultShortcut?.displayString ?? ""
+    }
+
+    /// Computes the active shortcut badge for a menu action, honouring custom bindings.
+    public func shortcutBadge(for action: ShortcutAction) -> String {
+        (preferencesStore?.shortcut(for: action) ?? action.defaultShortcut)?.displayString ?? ""
     }
 
     /// Opens macOS System Settings directly to Privacy & Security > Accessibility.

@@ -7,12 +7,12 @@ import Testing
 @MainActor
 struct SettingsSnapshotRenderer {
 
-    @Test func renderSettingsScreenshots() async throws {
+    @Test(.disabled(if: ProcessInfo.processInfo.environment["FLOWSNAP_RENDER_DOCS"] != "1")) func renderSettingsScreenshots() async throws {
         let outputDirs = [
             URL(fileURLWithPath: "docs/user-guides/images/settings-shortcut-customization"),
-            URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/settings-shortcut-customization"),
+            URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/settings-shortcut-customization"),
             URL(fileURLWithPath: "docs/user-guides/images/custom-ratios-window-gaps"),
-            URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/custom-ratios-window-gaps")
+            URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/custom-ratios-window-gaps")
         ]
 
         for dir in outputDirs {

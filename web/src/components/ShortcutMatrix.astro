@@ -52,14 +52,13 @@ const counts = {
   <!-- Top Controls Bar: Categories & Search Bar -->
   <div class="matrix-controls-bar">
     <!-- Category Filter Tabs -->
-    <div class="category-tabs" role="tablist" aria-label="Shortcut categories">
+    <div class="category-tabs" role="group" aria-label="Shortcut categories">
       {localizedCategories.map((cat, idx) => (
         <button
           type="button"
           class={`cat-tab-btn ${idx === 0 ? 'active' : ''}`}
           data-filter-category={cat.key}
-          role="tab"
-          aria-selected={idx === 0 ? 'true' : 'false'}
+          aria-pressed={idx === 0 ? 'true' : 'false'}
           id={`tab-${cat.key}`}
         >
           <span class="tab-label">{cat.label}</span>
@@ -269,7 +268,8 @@ const counts = {
       }
       applyFilter();
       if (!isExpanded) {
-        root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        root.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
       }
     });
 
@@ -278,10 +278,10 @@ const counts = {
       tab.addEventListener('click', () => {
         tabs.forEach((t) => {
           t.classList.remove('active');
-          t.setAttribute('aria-selected', 'false');
+          t.setAttribute('aria-pressed', 'false');
         });
         tab.classList.add('active');
-        tab.setAttribute('aria-selected', 'true');
+        tab.setAttribute('aria-pressed', 'true');
         currentCategory = tab.getAttribute('data-filter-category') || 'all';
         applyFilter();
       });
@@ -328,7 +328,7 @@ const counts = {
         tabs.forEach((t) => {
           const isAll = t.getAttribute('data-filter-category') === 'all';
           t.classList.toggle('active', isAll);
-          t.setAttribute('aria-selected', isAll ? 'true' : 'false');
+          t.setAttribute('aria-pressed', isAll ? 'true' : 'false');
         });
         applyFilter();
       });

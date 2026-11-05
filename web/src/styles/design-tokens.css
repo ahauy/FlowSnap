@@ -23,7 +23,7 @@
   /* Text hierarchy */
   --text-primary: #09090b;
   --text-secondary: #52525b;
-  --text-tertiary: #71717a;
+  --text-tertiary: #5c5c66;
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-tertiary: var(--text-tertiary);
@@ -61,6 +61,15 @@
   --font-size-lg: 18px;
   --font-size-xl: 22px;
   --font-size-2xl: 30px;
+
+  /* Aliases used by component styles */
+  --font-xs: var(--font-size-xs);
+  --font-sm: var(--font-size-sm);
+  --font-lg: var(--font-size-lg);
+
+  /* Status */
+  --color-success: #34c759;
+  --color-warning: #ff9f0a;
 
   /* Radii */
   --radius-sm: 6px;

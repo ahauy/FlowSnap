@@ -19,7 +19,8 @@
       "features": "Tính năng",
       "simulator": "Trình mô phỏng",
       "shortcuts": "Phím tắt",
-      "download": "Tải về"
+      "download": "Tải về",
+      "menu": "Danh mục"
     },
     "github": "GitHub",
     "langSwitcher": {
@@ -89,7 +90,10 @@
         "title": "Bảo toàn Desktop Space Hiện tại",
         "badge": "Giữ trọn Mạch tập trung",
         "description": "Mở ứng dụng mới luôn xuất hiện tại không gian làm việc hiện tại. Chấm dứt vĩnh viễn ức chế bị macOS tự văng sang Desktop Space khác.",
-        "highlights": ["100% Public APIs", "Bảo toàn mạch tập trung tuyệt đối"]
+        "highlights": [
+          "100% Public APIs",
+          "Bảo toàn mạch tập trung tuyệt đối"
+        ]
       },
       {
         "id": "workspaces-presets",
@@ -323,6 +327,12 @@
           "instruction": "Khởi chạy FlowSnap từ Launchpad hoặc Spotlight, sau đó cấp quyền Trợ năng (Accessibility) khi được hỏi để bắt đầu tận hưởng snap mượt mà."
         }
       ]
+    },
+    "meta": {
+      "releaseDate": "Tháng 9 năm 2026",
+      "binaryArch": "Binary đa kiến trúc (Apple Silicon & Intel)",
+      "minMacOS": "macOS 14.0+ (Sonoma & Sequoia)",
+      "license": "Mã nguồn mở, giấy phép MIT"
     }
   },
   "footer": {
@@ -351,5 +361,126 @@
       "mit": "Giấy phép MIT",
       "designedBy": "Thiết kế & phát triển bởi"
     }
+  },
+  "metrics": {
+    "title": "Chỉ số kiểm chứng kỹ thuật",
+    "items": {
+      "concurrency": {
+        "label": "Ổn định tuyệt đối với Swift 6",
+        "sublabel": "Strict Concurrency • không rò rỉ memory, không data race"
+      },
+      "private-api": {
+        "label": "Không dùng private API",
+        "sublabel": "100% an toàn Gatekeeper • chỉ dùng AppKit & Accessibility công khai"
+      },
+      "tests": {
+        "label": "Độ chính xác đã kiểm chứng",
+        "sublabel": "Bộ kiểm thử Swift Testing (@Test) phủ 100% thuật toán snap"
+      },
+      "latency": {
+        "label": "Phản hồi tức thì",
+        "sublabel": "Tính layout trong bộ nhớ • không đọc/ghi đĩa"
+      },
+      "drag-fps": {
+        "label": "Co giãn mượt mà",
+        "sublabel": "Kéo phân cách • điều tiết 16.6ms, nhiều cửa sổ cùng lúc"
+      }
+    }
+  },
+  "simulator": {
+    "hintTitle": "Trải nghiệm trực tiếp:",
+    "hintBody": "Kéo bất kỳ cửa sổ nào lên cạnh trên để snap, hoặc bấm biểu tượng FlowSnap trên Menu Bar / Dock.",
+    "chipsAria": "Layout snap nhanh",
+    "chips": {
+      "split50": "Chia đều (50/50)",
+      "coding": "Chia lập trình (70/30)",
+      "left50": "Trái 50/50",
+      "right50": "Phải 50/50",
+      "left70": "Rộng 70/30"
+    },
+    "chipAria": {
+      "split50": "Chia đều hai nửa 50/50",
+      "coding": "Áp dụng layout lập trình 70/30",
+      "left50": "Snap cửa sổ đang tập trung sang trái 50%",
+      "right50": "Snap cửa sổ đang tập trung sang phải 50%",
+      "left70": "Snap cửa sổ đang tập trung rộng 70%"
+    },
+    "reset": "Đặt lại mô phỏng",
+    "resetAria": "Đặt lại mô phỏng về vị trí mặc định",
+    "regionAria": "Mô phỏng màn hình macOS tương tác",
+    "menuTitle": "Menu FlowSnap",
+    "targetLabel": "Mục tiêu:",
+    "gridTitle": "Lưới snap trực quan",
+    "pickerTitle": "Layout thông minh FlowSnap",
+    "pickerBadge": "Thả chuột để snap",
+    "freeFloat": "Zone: tự do",
+    "zones": {
+      "two-col-left": "Snap nửa trái",
+      "two-col-right": "Snap nửa phải",
+      "two-col-asym-left": "Snap trái 70%",
+      "two-col-asym-right": "Snap phải 30%",
+      "three-col-left": "Snap trái 25%",
+      "three-col-center": "Snap giữa 50%",
+      "three-col-right": "Snap phải 25%",
+      "quarter-top-left": "Snap góc trên trái",
+      "quarter-top-right": "Snap góc trên phải",
+      "quarter-bottom-left": "Snap góc dưới trái",
+      "quarter-bottom-right": "Snap góc dưới phải"
+    },
+    "dividerHint": "Kéo để co giãn các cửa sổ liền kề (nhấn đúp để chia 50/50)",
+    "popoverGrid": {
+      "left-50": {
+        "title": "Snap nửa trái",
+        "label": "Trái 1/2"
+      },
+      "right-50": {
+        "title": "Snap nửa phải",
+        "label": "Phải 1/2"
+      },
+      "left-70": {
+        "title": "Snap trái 70%",
+        "label": "Trái 70%"
+      },
+      "right-30": {
+        "title": "Snap phải 30%",
+        "label": "Phải 30%"
+      },
+      "center-50": {
+        "title": "Snap giữa 50%",
+        "label": "Giữa 1/2"
+      },
+      "maximize": {
+        "title": "Phóng to toàn màn hình",
+        "label": "Toàn màn hình"
+      }
+    },
+    "zoneShort": {
+      "two-col-left": "Trái 50%",
+      "two-col-right": "Phải 50%",
+      "two-col-asym-left": "Trái 70%",
+      "two-col-asym-right": "Phải 30%",
+      "three-col-left": "Trái 25%",
+      "three-col-center": "Giữa 50%",
+      "three-col-right": "Phải 25%",
+      "quarter-top-left": "Trên trái 25%",
+      "quarter-top-right": "Trên phải 25%",
+      "quarter-bottom-left": "Dưới trái 25%",
+      "quarter-bottom-right": "Dưới phải 25%"
+    },
+    "templateCorners": "4 Góc",
+    "presetCoding": "Không gian lập trình",
+    "presetBalanced": "Chia đôi cân bằng"
+  },
+  "clipboard": {
+    "copyFail": "Sao chép thất bại. Hãy bôi đen lệnh rồi sao chép thủ công."
+  },
+  "a11y": {
+    "brandHome": "Về trang FlowSnap",
+    "languageSwitcher": "Chọn ngôn ngữ",
+    "switchToEnglish": "Chuyển sang tiếng Anh",
+    "switchToVietnamese": "Chuyển sang tiếng Việt",
+    "viewGitHub": "Xem FlowSnap trên GitHub",
+    "toggleTheme": "Đổi màu giao diện",
+    "backToTop": "Lên đầu trang"
   }
 }

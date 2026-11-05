@@ -47,7 +47,9 @@ public final class SnapLayoutPickerManager: SnapLayoutPickerManaging {
     // MARK: - Presentation & Dismissal
 
     public func showPicker(on display: Display) {
-        let pickerWidth: CGFloat = 430
+        // 4 cards at 96pt + 3 gaps at 12pt + 10pt padding each side. A narrower
+        // frame here makes the window grow itself and land off-centre.
+        let pickerWidth: CGFloat = 440
         let pickerHeight: CGFloat = 92
 
         let targetX = display.visibleFrame.midX - (pickerWidth / 2.0)
@@ -91,9 +93,11 @@ public final class SnapLayoutPickerManager: SnapLayoutPickerManaging {
                 panel.animator().setFrame(exitFrame, display: true)
                 panel.animator().alphaValue = 0.0
             } completionHandler: { [weak self] in
-                guard let self else { return }
-                if !self.isPresenting {
-                    self.panel.orderOut(nil)
+                MainActor.assumeIsolated {
+                    guard let self else { return }
+                    if !self.isPresenting {
+                        self.panel.orderOut(nil)
+                    }
                 }
             }
         } else {

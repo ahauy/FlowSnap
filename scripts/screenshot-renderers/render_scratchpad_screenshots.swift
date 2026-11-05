@@ -554,7 +554,7 @@ struct GeneralSettingsScratchpadView: View {
 
 @MainActor
 func renderAndSaveAllScreenshots() {
-    let outputDir = "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/quake-scratchpad-instant-toggle"
+    let outputDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/quake-scratchpad-instant-toggle").path
     try? FileManager.default.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
 
     // Image 1: Instant Scratchpad Summon Overlay

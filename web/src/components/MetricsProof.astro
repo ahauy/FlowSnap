@@ -1,8 +1,17 @@
 ---
 import { metricsProof } from '../data/metrics-data';
+import { getI18n, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = getI18n(lang);
+const copy = t.metrics.items as Record<string, { label: string; sublabel: string }>;
 ---
 
-<div id="metrics-proof-root" class="metrics-ribbon" role="region" aria-label="Technical Verification Metrics">
+<div id="metrics-proof-root" class="metrics-ribbon" role="region" aria-label={t.metrics.title}>
   <div class="metrics-grid">
     {metricsProof.map((item) => (
       <div class="metric-card" data-metric-id={item.id}>
@@ -38,8 +47,8 @@ import { metricsProof } from '../data/metrics-data';
         </div>
         <div class="metric-text-group">
           <div class="metric-value">{item.value}</div>
-          <div class="metric-label">{item.label}</div>
-          <div class="metric-sublabel">{item.sublabel}</div>
+          <div class="metric-label">{copy[item.id]?.label ?? item.label}</div>
+          <div class="metric-sublabel">{copy[item.id]?.sublabel ?? item.sublabel}</div>
         </div>
       </div>
     ))}

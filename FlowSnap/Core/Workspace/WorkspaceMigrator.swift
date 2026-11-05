@@ -5,7 +5,9 @@ import OSLog
 
 private let migratorLogger = Logger(subsystem: "com.flowsnap.app", category: "WorkspaceMigrator")
 
-/// Core coordinator executing atomic cross-display workspace migration.
+/// Core coordinator executing cross-display workspace migration as one best-effort
+/// pass: every window in the layout is attempted, refusals are recorded instead of
+/// thrown, and the outcome comes back as a single reportable result.
 ///
 /// Traces to: US-DISP-017, BR-MIG-001..005, ADR-0014.
 @MainActor
@@ -95,12 +97,6 @@ public final class WorkspaceMigrator: WorkspaceMigrating {
             sourceDisplay.visibleFrame.intersects(window.frame)
         }
 
-        struct MovingPair {
-            let window: ManagedWindow
-            let sourceFrame: CGRect
-            let targetFrame: CGRect
-        }
-
         var pairs: [MovingPair] = []
         for placement in workspace.orderedPlacements {
             let matching = displayWindows.filter {
@@ -123,25 +119,40 @@ public final class WorkspaceMigrator: WorkspaceMigrating {
             return .noOp(reason: .noWindowsFound)
         }
 
-        // 5. Execute move ordering
+        // 5. Execute move ordering — best effort, exactly like the restore pass.
+        // A window that refuses to move is recorded and the pass continues: an
+        // aborted pass would leave the windows already moved on the target display
+        // with nothing to undo them as a unit, while a finished pass with recorded
+        // failures still gives the user a layout and one honest summary line.
         let stageManagerActive = preferences.isStageManagerAutoGroupingEnabled && stageManagerDetector.isStageManagerEnabled
         let primaryHeight = await displayManager.primaryScreenHeight
 
+        var moved: [MovingPair] = []
+        var skipped: [SkippedApp] = []
+
         if stageManagerActive {
             let anchor = pairs[0]
-            let anchorAX = CoordinateTransformer.toAX(rect: anchor.targetFrame, primaryScreenHeight: primaryHeight)
-            try await windowManager.move(anchor.window, to: anchorAX)
-            _ = accessibilityService.raise(window: anchor.window)
+            if let refusal = await movePair(anchor, primaryHeight: primaryHeight) {
+                skipped.append(refusal)
+            } else {
+                moved.append(anchor)
+                _ = accessibilityService.raise(window: anchor.window)
+            }
 
             for pair in pairs.dropFirst() {
                 try? await Task.sleep(nanoseconds: 40_000_000) // 40ms stagger
-                let pairAX = CoordinateTransformer.toAX(rect: pair.targetFrame, primaryScreenHeight: primaryHeight)
-                try await windowManager.move(pair.window, to: pairAX)
-                _ = accessibilityService.raise(window: pair.window)
+                if let refusal = await movePair(pair, primaryHeight: primaryHeight) {
+                    skipped.append(refusal)
+                } else {
+                    moved.append(pair)
+                    _ = accessibilityService.raise(window: pair.window)
+                }
             }
 
             // Final lock on anchor
-            _ = accessibilityService.raise(window: anchor.window)
+            if moved.contains(where: { $0.window.id == anchor.window.id }) {
+                _ = accessibilityService.raise(window: anchor.window)
+            }
         } else {
             // 2-Phase move ordering: shrinking before expanding
             let shrinking = pairs.filter {
@@ -151,29 +162,58 @@ public final class WorkspaceMigrator: WorkspaceMigrating {
                 ($0.targetFrame.width * $0.targetFrame.height) > ($0.sourceFrame.width * $0.sourceFrame.height)
             }
 
-            for pair in shrinking {
-                let ax = CoordinateTransformer.toAX(rect: pair.targetFrame, primaryScreenHeight: primaryHeight)
-                try await windowManager.move(pair.window, to: ax)
-            }
-            for pair in expanding {
-                let ax = CoordinateTransformer.toAX(rect: pair.targetFrame, primaryScreenHeight: primaryHeight)
-                try await windowManager.move(pair.window, to: ax)
+            for pair in shrinking + expanding {
+                if let refusal = await movePair(pair, primaryHeight: primaryHeight) {
+                    skipped.append(refusal)
+                } else {
+                    moved.append(pair)
+                }
             }
         }
 
-        // 6. Post-migration cursor warping and focus retention
-        let primaryTargetFrame = pairs[0].targetFrame
+        guard let primary = moved.first else {
+            return .noOp(reason: .allMovesFailed(attempted: pairs.count, skipped: skipped))
+        }
+
+        // 6. Post-migration cursor warping and focus retention, aimed at the first
+        // window that actually landed — warping to a window left on the source
+        // display would drop the cursor on empty desktop.
         let primaryCenterAX = CoordinateTransformer.toAX(
-            point: CGPoint(x: primaryTargetFrame.midX, y: primaryTargetFrame.midY),
+            point: CGPoint(x: primary.targetFrame.midX, y: primary.targetFrame.midY),
             primaryScreenHeight: primaryHeight
         )
         cursorManager.warpCursor(to: primaryCenterAX)
-        try? await windowManager.focus(pairs[0].window)
+        try? await windowManager.focus(primary.window)
 
         // 7. Reset divider coordinator so seam overlay refreshes on target display
         dividerCoordinator?.resetState()
 
-        return .success(windowsMigrated: pairs.count, targetDisplayID: targetDisplay.id)
+        diagPrint("[DIAG-MIG] pass complete moved=\(moved.count) skipped=\(skipped.count) targetDisplayID=\(targetDisplay.id)")
+        return .success(windowsMigrated: moved.count, targetDisplayID: targetDisplay.id, skipped: skipped)
+    }
+
+    /// One window's leg of the pass: moves it, and returns the skip record when the
+    /// window refuses rather than throwing — the caller has to keep going.
+    private func movePair(_ pair: MovingPair, primaryHeight: CGFloat) async -> SkippedApp? {
+        let ax = CoordinateTransformer.toAX(rect: pair.targetFrame, primaryScreenHeight: primaryHeight)
+        do {
+            try await windowManager.move(pair.window, to: ax)
+            return nil
+        } catch {
+            let name = Self.summaryName(for: pair.window)
+            migratorLogger.error("Migration move refused for \(name): \(error.localizedDescription)")
+            diagPrint("[DIAG-MIG] move refused window=\(name) id=\(pair.window.id) error=\(error.localizedDescription)")
+            return SkippedApp(bundleIdentifier: name, reason: .notMoved)
+        }
+    }
+
+    /// The name a refused window is reported under: its bundle id when the
+    /// WindowServer gave us one, otherwise its title.
+    private static func summaryName(for window: ManagedWindow) -> String {
+        if let bundleIdentifier = window.bundleIdentifier, !bundleIdentifier.isEmpty {
+            return bundleIdentifier
+        }
+        return window.title.isEmpty ? "Window \(window.id)" : window.title
     }
 
     private func resolveActiveWorkspace(on display: Display) -> Workspace? {
@@ -194,4 +234,12 @@ public final class WorkspaceMigrator: WorkspaceMigrating {
         }
         return nil
     }
+}
+
+/// One window paired with the frame it measured on the source display and the frame
+/// it is headed to on the target display, for a single migration pass.
+private struct MovingPair {
+    let window: ManagedWindow
+    let sourceFrame: CGRect
+    let targetFrame: CGRect
 }

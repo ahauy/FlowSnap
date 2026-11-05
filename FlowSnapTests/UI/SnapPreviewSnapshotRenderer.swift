@@ -7,8 +7,8 @@ import Testing
 @MainActor
 struct SnapPreviewSnapshotRenderer {
 
-    @Test func renderSnapPreviewScreenshots() async throws {
-        let outputDir = URL(fileURLWithPath: "/Users/vutuanhau/Documents/PROJECT/FlowSnap/docs/user-guides/images/drag-to-snap-preview")
+    @Test(.disabled(if: ProcessInfo.processInfo.environment["FLOWSNAP_RENDER_DOCS"] != "1")) func renderSnapPreviewScreenshots() async throws {
+        let outputDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("docs/user-guides/images/drag-to-snap-preview")
         try FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true)
 
         // 1. Render Left Half Preview

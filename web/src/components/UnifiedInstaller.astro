@@ -48,7 +48,7 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
                 <span class="pulse-dot" aria-hidden="true"></span>
                 {RELEASE_METADATA.version}
               </span>
-              <span class="release-date">{RELEASE_METADATA.releaseDate}</span>
+              <span class="release-date">{t.distribution.meta.releaseDate}</span>
 
               <!-- Segmented Tabs Switcher (DMG / cURL / Brew) -->
               <div class="installer-tabs" role="tablist" aria-label="Installation method tabs">
@@ -100,7 +100,7 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
           </div>
         </div>
 
-        <span class="license-tag">{RELEASE_METADATA.license}</span>
+        <span class="license-tag">{t.distribution.meta.license}</span>
       </div>
 
       <p class="installer-desc" id="installer-tab-desc">
@@ -153,6 +153,9 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
             class="terminal-copy-btn"
             id="terminal-copy-btn"
             data-copy-trigger="terminal"
+            data-copy-label={t.shortcuts.controls.copyLabel}
+            data-copied-label={t.shortcuts.controls.copiedLabel}
+            data-copy-fail-label={t.clipboard.copyFail}
             aria-label={t.distribution.terminal.copyAria}
           >
             <svg class="copy-icon icon-neutral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true">
@@ -179,7 +182,7 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
             <rect x="4" y="4" width="16" height="16" rx="2" />
             <rect x="9" y="9" width="6" height="6" />
           </svg>
-          <span id="spec-chip-arch">{RELEASE_METADATA.binaryArch}</span>
+          <span id="spec-chip-arch">{t.distribution.meta.binaryArch}</span>
         </div>
 
         <div class="spec-chip">
@@ -188,7 +191,7 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
             <line x1="8" y1="21" x2="16" y2="21" />
             <line x1="12" y1="17" x2="12" y2="21" />
           </svg>
-          <span id="spec-chip-os">{RELEASE_METADATA.minMacOS}</span>
+          <span id="spec-chip-os">{t.distribution.meta.minMacOS}</span>
         </div>
       </div>
     </div>
@@ -201,6 +204,7 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
           <path d="m9 12 2 2 4-4" />
         </svg>
         <span class="hint-label">{t.distribution.unifiedFooterVerified || t.distribution.dmg.verifiedChecksum}</span>
+        <code class="checksum-value" title={RELEASE_METADATA.sha256}>SHA-256: {RELEASE_METADATA.sha256.slice(0, 16)}…</code>
       </div>
 
       <a
@@ -233,7 +237,7 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
     const copyBtn = root.querySelector<HTMLButtonElement>('#terminal-copy-btn');
     const copyStatus = root.querySelector<HTMLElement>('#terminal-copy-status');
 
-    let currentCommand = 'curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/install.sh | bash';
+    let currentCommand = commandCode?.textContent?.trim() || '';
 
     tabs.forEach((tab) => {
       tab.addEventListener('click', () => {
@@ -267,6 +271,7 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
           if (panelTerminal) {
             panelTerminal.classList.add('active');
             panelTerminal.removeAttribute('hidden');
+            panelTerminal.setAttribute('aria-labelledby', tab.id);
           }
 
           const cmd = tab.getAttribute('data-command') || '';
@@ -296,17 +301,24 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
       success = fallbackCopyText(text);
     }
 
+    const label = btn.querySelector('.copy-label');
+
     if (success) {
       btn.classList.add('copied');
-      const label = btn.querySelector('.copy-label');
-      if (label) label.textContent = 'Copied!';
-      if (liveRegion) liveRegion.textContent = 'Command copied to clipboard!';
+      if (label) label.textContent = btn.dataset.copiedLabel || 'Copied!';
+      if (liveRegion) liveRegion.textContent = btn.dataset.copiedLabel || 'Copied!';
 
       setTimeout(() => {
         btn.classList.remove('copied');
-        if (label) label.textContent = 'Copy';
+        if (label) label.textContent = btn.dataset.copyLabel || 'Copy';
         if (liveRegion) liveRegion.textContent = '';
       }, 2000);
+    } else {
+      if (label) label.textContent = btn.dataset.copyLabel || 'Copy';
+      if (liveRegion) {
+        liveRegion.textContent = btn.dataset.copyFailLabel || 'Copy failed.';
+        setTimeout(() => { liveRegion.textContent = ''; }, 4000);
+      }
     }
   }
 
