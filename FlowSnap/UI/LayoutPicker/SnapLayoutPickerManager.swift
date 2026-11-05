@@ -91,9 +91,11 @@ public final class SnapLayoutPickerManager: SnapLayoutPickerManaging {
                 panel.animator().setFrame(exitFrame, display: true)
                 panel.animator().alphaValue = 0.0
             } completionHandler: { [weak self] in
-                guard let self else { return }
-                if !self.isPresenting {
-                    self.panel.orderOut(nil)
+                MainActor.assumeIsolated {
+                    guard let self else { return }
+                    if !self.isPresenting {
+                        self.panel.orderOut(nil)
+                    }
                 }
             }
         } else {

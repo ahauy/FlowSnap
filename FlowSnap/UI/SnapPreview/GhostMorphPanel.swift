@@ -61,13 +61,17 @@ public final class GhostMorphPanel: NSPanel {
                 context.allowsImplicitAnimation = true
                 self.animator().setFrame(targetFrame, display: true)
             } completionHandler: {
-                NSAnimationContext.runAnimationGroup { fadeContext in
-                    fadeContext.duration = fadeDuration
-                    fadeContext.timingFunction = CAMediaTimingFunction(name: .easeOut)
-                    self.animator().alphaValue = 0.0
-                } completionHandler: { [weak self] in
-                    self?.orderOut(nil)
-                    continuation.resume()
+                MainActor.assumeIsolated {
+                    NSAnimationContext.runAnimationGroup { fadeContext in
+                        fadeContext.duration = fadeDuration
+                        fadeContext.timingFunction = CAMediaTimingFunction(name: .easeOut)
+                        self.animator().alphaValue = 0.0
+                    } completionHandler: { [weak self] in
+                        MainActor.assumeIsolated {
+                            self?.orderOut(nil)
+                            continuation.resume()
+                        }
+                    }
                 }
             }
         }

@@ -240,18 +240,20 @@ public final class WindowGroupManager: ObservableObject, WindowGroupManaging {
             object: nil,
             queue: .main
         ) { [weak self] notification in
-            guard let self, !self.isSynchronizing else { return }
-            guard let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication else { return }
-            let pid = app.processIdentifier
-            guard pid != ProcessInfo.processInfo.processIdentifier else { return }
+            MainActor.assumeIsolated {
+                guard let self, !self.isSynchronizing else { return }
+                guard let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication else { return }
+                let pid = app.processIdentifier
+                guard pid != ProcessInfo.processInfo.processIdentifier else { return }
 
-            for group in self.activeGroups where group.syncOptions.contains(.focusTogether) {
-                for wid in group.windowIDs {
-                    if let win = self.cachedWindows[wid], win.pid == pid {
-                        Task { @MainActor [weak self] in
-                            try? await self?.handleWindowFocus(triggerWindowID: wid)
+                for group in self.activeGroups where group.syncOptions.contains(.focusTogether) {
+                    for wid in group.windowIDs {
+                        if let win = self.cachedWindows[wid], win.pid == pid {
+                            Task { @MainActor [weak self] in
+                                try? await self?.handleWindowFocus(triggerWindowID: wid)
+                            }
+                            return
                         }
-                        return
                     }
                 }
             }
