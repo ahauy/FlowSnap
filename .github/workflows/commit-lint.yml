@@ -1,0 +1,32 @@
+name: Conventional Commits
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: commit-lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  subjects:
+    name: Conventional commit subjects
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check every commit subject and body
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ -z "${BASE_SHA:-}" ] || [ -z "${HEAD_SHA:-}" ]; then
+            HEAD_SHA=$(git rev-parse HEAD)
+            BASE_SHA=$(git rev-parse HEAD~1)
+          fi
+          export BASE_SHA HEAD_SHA
+          python3 scripts/check-commit-messages.py
