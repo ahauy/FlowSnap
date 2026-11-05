@@ -240,10 +240,9 @@ public final class WindowGroupManager: ObservableObject, WindowGroupManaging {
             object: nil,
             queue: .main
         ) { [weak self] notification in
+            let pid = (notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication)?.processIdentifier
             MainActor.assumeIsolated {
-                guard let self, !self.isSynchronizing else { return }
-                guard let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication else { return }
-                let pid = app.processIdentifier
+                guard let self, let pid, !self.isSynchronizing else { return }
                 guard pid != ProcessInfo.processInfo.processIdentifier else { return }
 
                 for group in self.activeGroups where group.syncOptions.contains(.focusTogether) {
