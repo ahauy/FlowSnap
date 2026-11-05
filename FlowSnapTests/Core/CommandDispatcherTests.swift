@@ -169,7 +169,7 @@ struct CommandDispatcherTests {
             var callCount = 0
             func migrateActiveWorkspace(direction: MigrationDirection) async throws -> MigrationResult {
                 callCount += 1
-                return .success(windowsMigrated: 1, targetDisplayID: 2)
+                return .success(windowsMigrated: 1, targetDisplayID: 2, skipped: [])
             }
         }
 
@@ -236,7 +236,7 @@ struct CommandDispatcherTests {
             func migrateActiveWorkspace(direction: MigrationDirection) async throws -> MigrationResult {
                 callCount += 1
                 lastDirection = direction
-                return .success(windowsMigrated: 2, targetDisplayID: 2)
+                return .success(windowsMigrated: 2, targetDisplayID: 2, skipped: [])
             }
         }
 
@@ -274,5 +274,47 @@ struct CommandDispatcherTests {
         // Workspace migrator was called because window is not in a group
         #expect(workspaceMigrator.callCount == 1)
         #expect(workspaceMigrator.lastDirection == .previous)
+    }
+
+    @Test func migrateWorkspacePublishesSummaryIncludingNoOp() async throws {
+        final class ScriptedMigrator: WorkspaceMigrating, @unchecked Sendable {
+            var nextResult: MigrationResult = .noOp(reason: .singleDisplay)
+            func migrateActiveWorkspace(direction: MigrationDirection) async throws -> MigrationResult {
+                nextResult
+            }
+        }
+
+        let migrator = ScriptedMigrator()
+        let primary = Display(
+            id: 1,
+            frame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            visibleFrame: CGRect(x: 0, y: 0, width: 1440, height: 900),
+            scaleFactor: 2.0,
+            isPrimary: true
+        )
+        let displayManager = DisplayManager(displayProvider: { [primary] })
+        let snapEngine = SnapEngine(windowRegistry: WindowRegistry(), displayManager: displayManager)
+        let dispatcher = CommandDispatcher(
+            windowManager: MockWindowManaging(),
+            snapEngine: snapEngine,
+            displayManager: displayManager,
+            workspaceMigrator: migrator
+        )
+
+        // The silent no-op now reaches the banner through the same channel presets use.
+        try await dispatcher.dispatch(.migrateWorkspace(.next))
+        #expect(dispatcher.lastRestoreSummary?.headline
+            == "Only one display is connected — plug in a second one, then migrate again.")
+        #expect(dispatcher.lastRestoreSummary?.isFullSuccess == false)
+
+        migrator.nextResult = .success(
+            windowsMigrated: 1,
+            targetDisplayID: 2,
+            skipped: [SkippedApp(bundleIdentifier: "com.test.Terminal", reason: .notMoved)]
+        )
+        try await dispatcher.dispatch(.migrateWorkspace(.next))
+        #expect(dispatcher.lastRestoreSummary?.placedCount == 1)
+        #expect(dispatcher.lastRestoreSummary?.totalPlacements == 2)
+        #expect(dispatcher.lastRestoreSummary?.headline == "Moved 1/2 — Terminal couldn't be moved")
     }
 }

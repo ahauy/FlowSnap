@@ -116,6 +116,9 @@ public final class MockGlobalHotkeyManager: GlobalHotkeyManaging, @unchecked Sen
             }
             idCounter += 1
         }
+
+        preferencesStore.updateUnregisteredShortcuts(result.filter { !$0.isRegistered }.map(\.shortcut))
+
         return result
     }
 

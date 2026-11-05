@@ -117,7 +117,7 @@ struct WorkspaceMigratorTests {
 
         let result = try await migrator.migrateActiveWorkspace(direction: .next)
 
-        #expect(result == .success(windowsMigrated: 2, targetDisplayID: display2.id))
+        #expect(result == .success(windowsMigrated: 2, targetDisplayID: display2.id, skipped: []))
         #expect(windowManager.moveCallCount >= 2)
         #expect(cursor.warpedPoints.count >= 1)
     }
@@ -177,7 +177,7 @@ struct WorkspaceMigratorTests {
 
         let result = try await migrator.migrateActiveWorkspace(direction: .next)
 
-        #expect(result == .success(windowsMigrated: 2, targetDisplayID: display2.id))
+        #expect(result == .success(windowsMigrated: 2, targetDisplayID: display2.id, skipped: []))
         #expect(accessibility.raiseCallCount >= 2)
     }
 
@@ -209,6 +209,7 @@ struct WorkspaceMigratorTests {
         #expect(result == .noOp(reason: .singleDisplay))
         #expect(windowManager.moveCallCount == 0)
         #expect(cursor.warpedPoints.isEmpty)
+        #expect(result.restoreSummary.headline.contains("Only one display is connected"))
     }
 
     // MARK: - TC-MIG-005: No Active Workspace Safe No-Op
@@ -238,6 +239,7 @@ struct WorkspaceMigratorTests {
 
         #expect(result == .noOp(reason: .noActiveWorkspace))
         #expect(windowManager.moveCallCount == 0)
+        #expect(result.restoreSummary.headline.contains("save or restore one first"))
     }
 
     // MARK: - TC-MIG-006: Cyclic Navigation
@@ -282,7 +284,7 @@ struct WorkspaceMigratorTests {
 
         // From Display 3 (rightmost), .next wraps around to Display 1 (leftmost)
         let result = try await migrator.migrateActiveWorkspace(direction: .next)
-        #expect(result == .success(windowsMigrated: 1, targetDisplayID: display1.id))
+        #expect(result == .success(windowsMigrated: 1, targetDisplayID: display1.id, skipped: []))
     }
 
     // MARK: - TC-MIG-002: 3-Window Migration with Two-Phase Move Ordering
@@ -331,8 +333,135 @@ struct WorkspaceMigratorTests {
         windowManager.mockFocusedWindow = win1
 
         let result = try await migrator.migrateActiveWorkspace(direction: .next)
-        #expect(result == .success(windowsMigrated: 3, targetDisplayID: display2.id))
+        #expect(result == .success(windowsMigrated: 3, targetDisplayID: display2.id, skipped: []))
         #expect(windowManager.moveCallCount >= 3)
+    }
+
+    // MARK: - TC-MIG-008: Refused Move Does Not Abort The Pass
+
+    @Test("TC-MIG-008: A refused window is recorded and the remaining windows still move")
+    func refusedMoveDoesNotAbortPass() async throws {
+        let win1 = ManagedWindow(
+            id: 101, pid: 1001, bundleIdentifier: "com.test.Editor", title: "Code",
+            frame: CGRect(x: 0, y: 0, width: 1536, height: 1400), isMinimized: false, kind: .normal
+        )
+        let win2 = ManagedWindow(
+            id: 102, pid: 1002, bundleIdentifier: "com.test.Terminal", title: "Term",
+            frame: CGRect(x: 1536, y: 0, width: 1024, height: 1400), isMinimized: false, kind: .normal
+        )
+
+        let (manager, accessibility, windowManager) = makeWorkspaceManager(
+            windows: [win1, win2],
+            displays: [display1, display2]
+        )
+        let cursor = MockCursorManager()
+
+        let workspace = try await manager.saveWorkspace(named: "Dev", placements: [
+            WindowPlacement(bundleIdentifier: "com.test.Editor", zone: .left70_30, orderIndex: 0),
+            WindowPlacement(bundleIdentifier: "com.test.Terminal", zone: .rightOneThird, orderIndex: 1)
+        ])
+        _ = try await manager.restoreWorkspace(id: workspace.id)
+
+        let migrator = WorkspaceMigrator(
+            workspaceManager: manager,
+            displayManager: MockDisplayManager(displays: [display1, display2]),
+            displayNavigator: DisplayNavigator(),
+            windowManager: windowManager,
+            accessibilityService: accessibility,
+            cursorManager: cursor,
+            stageManagerDetector: MockStageManagerDetector(isStageManagerEnabled: false),
+            preferences: WorkspaceTestFixtures.preferences(gap: 0)
+        )
+
+        windowManager.mockFocusedWindow = win1
+        // Only the second window refuses. Before the fix the whole call aborted on
+        // it, leaving win1 on the target display and win2 behind with nothing to undo.
+        windowManager.moveErrorsByWindowID[102] = AccessibilityError.cannotComplete
+        let attemptsBefore = windowManager.moveCallCount
+
+        let result = try await migrator.migrateActiveWorkspace(direction: .next)
+
+        #expect(result == .success(
+            windowsMigrated: 1,
+            targetDisplayID: display2.id,
+            skipped: [SkippedApp(bundleIdentifier: "com.test.Terminal", reason: .notMoved)]
+        ))
+        #expect(windowManager.moveCallCount - attemptsBefore == 2)
+        #expect(windowManager.movedWindows.last?.window.id == 102)
+        #expect(cursor.warpedPoints.isEmpty == false)
+        #expect(result.restoreSummary.headline == "Moved 1/2 — Terminal couldn't be moved")
+        #expect(result.restoreSummary.isFullSuccess == false)
+    }
+
+    // MARK: - TC-MIG-009: Every Move Refused
+
+    @Test("TC-MIG-009: All windows refusing to move reports the attempt, not silence")
+    func allMovesRefusedReportsCounts() async throws {
+        let win1 = ManagedWindow(
+            id: 101, pid: 1001, bundleIdentifier: "com.test.Editor", title: "Code",
+            frame: CGRect(x: 0, y: 0, width: 1536, height: 1400), isMinimized: false, kind: .normal
+        )
+        let win2 = ManagedWindow(
+            id: 102, pid: 1002, bundleIdentifier: "com.test.Terminal", title: "Term",
+            frame: CGRect(x: 1536, y: 0, width: 1024, height: 1400), isMinimized: false, kind: .normal
+        )
+
+        let (manager, accessibility, windowManager) = makeWorkspaceManager(
+            windows: [win1, win2],
+            displays: [display1, display2]
+        )
+        let cursor = MockCursorManager()
+
+        let workspace = try await manager.saveWorkspace(named: "Dev", placements: [
+            WindowPlacement(bundleIdentifier: "com.test.Editor", zone: .left70_30, orderIndex: 0),
+            WindowPlacement(bundleIdentifier: "com.test.Terminal", zone: .rightOneThird, orderIndex: 1)
+        ])
+        _ = try await manager.restoreWorkspace(id: workspace.id)
+
+        let migrator = WorkspaceMigrator(
+            workspaceManager: manager,
+            displayManager: MockDisplayManager(displays: [display1, display2]),
+            displayNavigator: DisplayNavigator(),
+            windowManager: windowManager,
+            accessibilityService: accessibility,
+            cursorManager: cursor,
+            stageManagerDetector: MockStageManagerDetector(isStageManagerEnabled: false),
+            preferences: WorkspaceTestFixtures.preferences(gap: 0)
+        )
+
+        windowManager.mockFocusedWindow = win1
+        windowManager.moveError = AccessibilityError.cannotComplete
+        let attemptsBefore = windowManager.moveCallCount
+
+        let result = try await migrator.migrateActiveWorkspace(direction: .next)
+
+        guard case .noOp(let reason) = result, case .allMovesFailed(let attempted, let skipped) = reason else {
+            Issue.record("Expected .noOp(.allMovesFailed), got \(result)")
+            return
+        }
+        #expect(attempted == 2)
+        #expect(skipped.map(\.bundleIdentifier) == ["com.test.Editor", "com.test.Terminal"])
+        #expect(windowManager.moveCallCount - attemptsBefore == 2)
+        // Nothing landed, so the cursor must not be thrown onto an empty target display.
+        #expect(cursor.warpedPoints.isEmpty)
+        #expect(windowManager.focusCallCount == 0)
+        #expect(result.restoreSummary.headline
+            == "Moved 0/2 — Editor couldn't be moved, Terminal couldn't be moved. Unlock them and try again.")
+    }
+
+    // MARK: - TC-MIG-010: No-Ops Say What To Do Next
+
+    @Test("TC-MIG-010: Every no-op reason produces an actionable summary line")
+    func noOpReasonsProduceActionableSummary() {
+        #expect(MigrationResult.noOp(reason: .singleDisplay).restoreSummary.headline
+            == "Only one display is connected — plug in a second one, then migrate again.")
+        #expect(MigrationResult.noOp(reason: .noActiveWorkspace).restoreSummary.headline
+            .contains("save or restore one first"))
+        #expect(MigrationResult.noOp(reason: .noWindowsFound).restoreSummary.headline
+            .contains("then migrate again"))
+        #expect(MigrationResult.noOp(reason: .accessibilityDenied).restoreSummary.headline
+            .contains("Accessibility"))
+        #expect(MigrationResult.noOp(reason: .singleDisplay).restoreSummary.isFullSuccess == false)
     }
 
     // MARK: - TC-MIG-007: CommandDispatcher Dispatching
@@ -346,7 +475,7 @@ struct WorkspaceMigratorTests {
             func migrateActiveWorkspace(direction: MigrationDirection) async throws -> MigrationResult {
                 callCount += 1
                 lastDirection = direction
-                return .success(windowsMigrated: 2, targetDisplayID: 2)
+                return .success(windowsMigrated: 2, targetDisplayID: 2, skipped: [])
             }
         }
 

@@ -136,6 +136,47 @@ struct PreferencesStoreTests {
         #expect(singleWindowConflict == .moveGroupNextDisplay)
     }
 
+    @Test func actionShortcutConflictNamesOwningAction() {
+        let defaults = freshDefaults()
+        let store = makeStore(defaults: defaults)
+
+        // ⌃⌥← is default for leftHalf
+        let leftDefault = KeyboardShortcut(keyCode: 123, carbonModifiers: UInt32(controlKey | optionKey))
+
+        let message = store.hasActionShortcutConflict(leftDefault, excluding: .rightHalf)
+        #expect(message == "Shortcut already assigned to \(ShortcutAction.leftHalf.displayName)")
+
+        // Re-saving the action's own shortcut is not a conflict
+        #expect(store.hasActionShortcutConflict(leftDefault, excluding: .leftHalf) == nil)
+    }
+
+    @Test func actionShortcutConflictDetectsPresetOwner() {
+        let defaults = freshDefaults()
+        let store = makeStore(defaults: defaults)
+
+        // ⌃⌥C is the default shortcut of the Coding preset, owned by no action
+        guard let codingShortcut = BuiltinPresetFactory.codingPreset.defaultShortcut else {
+            Issue.record("Expected default shortcut for coding preset")
+            return
+        }
+
+        let message = store.hasActionShortcutConflict(codingShortcut, excluding: .maximize)
+        #expect(message == "Shortcut already assigned to \(BuiltinPresetFactory.codingPreset.name) preset")
+    }
+
+    @Test func actionShortcutConflictAllowsMutuallyCompatiblePair() {
+        let defaults = freshDefaults()
+        let store = makeStore(defaults: defaults)
+
+        guard let groupNextDefault = ShortcutAction.moveGroupNextDisplay.defaultShortcut else {
+            Issue.record("Expected default shortcut for moveGroupNextDisplay")
+            return
+        }
+
+        // The group/workspace throw pair is deliberately allowed to share a combination
+        #expect(store.hasActionShortcutConflict(groupNextDefault, excluding: .moveWorkspaceNextDisplay) == nil)
+    }
+
     @Test func resetShortcutsToDefault() {
         let defaults = freshDefaults()
         let store = makeStore(defaults: defaults)
