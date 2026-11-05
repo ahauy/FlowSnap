@@ -45,7 +45,10 @@ AGENTS.md
 .cursor/
 .gemini/
 .kiro/
-.qoder/
+.qoder/*
+!.qoder/settings.json
+!.qoder/hooks/
+.qoder/settings.local.json
 .vscode/
 .mcp.json
 CODEBUDDY.md
