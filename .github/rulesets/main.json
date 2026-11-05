@@ -31,6 +31,10 @@
           {
             "context": "GitGuardian Security Checks",
             "integration_id": 46505
+          },
+          {
+            "context": "Conventional commit subjects",
+            "integration_id": 15368
           }
         ]
       }
