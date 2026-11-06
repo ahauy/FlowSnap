@@ -47,38 +47,43 @@ const t = getI18n(lang);
             <div class="step-top-content">
               <div class="step-header">
                 <span class="step-num" aria-hidden="true">{step.stepNumber}</span>
-                <h5 class="step-title">{step.title}</h5>
+                <h4 class="step-title">{step.title}</h4>
               </div>
               <p class="step-instruction">{step.instruction}</p>
             </div>
-            
-            {step.stepNumber === 2 && (
-              <div class="command-box">
-                <span class="prompt" aria-hidden="true">$</span>
-                <code class="code-snippet" id="gatekeeper-command">{GATEKEEPER_DATA.command}</code>
-                <button
-                  type="button"
-                  class="gatekeeper-copy-btn"
-                  id="gatekeeper-copy-btn"
-                  data-copy-trigger="gatekeeper"
-                  data-command={GATEKEEPER_DATA.command}
-                  data-copied-label={t.shortcuts.controls.copiedLabel}
-                  data-copy-fail-label={t.clipboard.copyFail}
-                  aria-label={t.distribution.gatekeeper.copyAria}
-                >
-                  <svg class="copy-icon icon-neutral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                  </svg>
-                  <svg class="copy-icon icon-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                  <span class="copy-text">{t.shortcuts.controls.copyLabel}</span>
-                </button>
-              </div>
-            )}
           </div>
         ))}
+      </div>
+
+      <!-- The command strips a protection Apple just applied, so it is no
+           longer step 2. Right-click Open clears the same flag and comes
+           first; this is the labelled fallback. -->
+      <div class="gatekeeper-fallback" aria-labelledby="gatekeeper-fallback-title">
+        <p class="fallback-title" id="gatekeeper-fallback-title">{t.distribution.gatekeeper.fallbackTitle}</p>
+        <p class="fallback-note">{t.distribution.gatekeeper.fallbackNote}</p>
+        <div class="command-box">
+          <span class="prompt" aria-hidden="true">$</span>
+          <code class="code-snippet" id="gatekeeper-command">{GATEKEEPER_DATA.command}</code>
+          <button
+            type="button"
+            class="gatekeeper-copy-btn"
+            id="gatekeeper-copy-btn"
+            data-copy-trigger="gatekeeper"
+            data-command={GATEKEEPER_DATA.command}
+            data-copied-label={t.shortcuts.controls.copiedLabel}
+            data-copy-fail-label={t.clipboard.copyFail}
+            aria-label={t.distribution.gatekeeper.copyAria}
+          >
+            <svg class="copy-icon icon-neutral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+            <svg class="copy-icon icon-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <span class="copy-text">{t.shortcuts.controls.copyLabel}</span>
+          </button>
+        </div>
       </div>
 
       <div class="sr-only" aria-live="polite" id="gatekeeper-copy-status"></div>
@@ -172,7 +177,7 @@ const t = getI18n(lang);
     border-color: rgba(255, 255, 255, 0.18);
   }
 
-  :global(.light) .gatekeeper-wrapper:hover {
+  :global([data-theme="light"]) .gatekeeper-wrapper:hover {
     border-color: rgba(0, 0, 0, 0.16);
   }
 
@@ -199,7 +204,7 @@ const t = getI18n(lang);
     background: rgba(255, 255, 255, 0.02);
   }
 
-  :global(.light) .gatekeeper-summary:hover {
+  :global([data-theme="light"]) .gatekeeper-summary:hover {
     background: rgba(0, 0, 0, 0.02);
   }
 
@@ -242,7 +247,7 @@ const t = getI18n(lang);
   }
 
   .gatekeeper-badge {
-    font-size: 10px;
+    font-size: var(--font-size-meta);
     font-family: var(--font-mono);
     color: var(--color-warning);
     background: rgba(255, 214, 10, 0.1);
@@ -252,7 +257,7 @@ const t = getI18n(lang);
   }
 
   .summary-hint {
-    font-size: 11px;
+    font-size: var(--font-size-label);
     color: var(--color-text-tertiary);
   }
 
@@ -263,7 +268,7 @@ const t = getI18n(lang);
   }
 
   .toggle-label {
-    font-size: 11px;
+    font-size: var(--font-size-meta);
     color: var(--color-text-tertiary);
     font-family: var(--font-mono);
   }
@@ -286,10 +291,11 @@ const t = getI18n(lang);
   }
 
   .gatekeeper-desc {
-    font-size: var(--font-xs);
+    font-size: var(--font-size-body-sm);
     color: var(--color-text-secondary);
-    line-height: 1.5;
+    line-height: 1.55;
     margin: 0;
+    max-width: 34em;
   }
 
   .steps-row {
@@ -317,7 +323,7 @@ const t = getI18n(lang);
     border-color: rgba(255, 255, 255, 0.16);
   }
 
-  :global(.light) .step-pane:hover {
+  :global([data-theme="light"]) .step-pane:hover {
     border-color: rgba(0, 0, 0, 0.14);
   }
 
@@ -340,7 +346,7 @@ const t = getI18n(lang);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     color: var(--color-text-primary);
-    font-size: 11px;
+    font-size: var(--font-size-meta);
     font-weight: 700;
     font-family: var(--font-mono);
     display: flex;
@@ -357,7 +363,7 @@ const t = getI18n(lang);
   }
 
   .step-instruction {
-    font-size: 11px;
+    font-size: var(--font-size-label);
     color: var(--color-text-secondary);
     line-height: 1.45;
     margin: 0;
@@ -374,9 +380,40 @@ const t = getI18n(lang);
     margin-top: 6px;
   }
 
-  :global(.light) .command-box {
+  :global([data-theme="light"]) .command-box {
     background: #151720;
     border-color: rgba(0, 0, 0, 0.15);
+  }
+
+  /* Fallback, not step 2: separated from the steps by a hairline so it reads
+     as "only if the first way failed" rather than as required work. */
+  .gatekeeper-fallback {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+    min-width: 0;
+  }
+
+  .fallback-title {
+    margin: 0;
+    font-size: var(--font-sm, 14px);
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .fallback-note {
+    margin: 0;
+    font-size: var(--font-size-body-sm);
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+    max-width: 34em;
+  }
+
+  .gatekeeper-fallback .command-box {
+    margin-top: 2px;
   }
 
   .prompt {
@@ -390,10 +427,10 @@ const t = getI18n(lang);
   .code-snippet {
     flex: 1;
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: var(--font-size-meta);
     color: #f4f4f5;
-    overflow-x: auto;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .gatekeeper-copy-btn {
@@ -405,7 +442,7 @@ const t = getI18n(lang);
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.14);
     color: #f4f4f5;
-    font-size: 11px;
+    font-size: var(--font-size-meta);
     font-weight: 500;
     cursor: pointer;
     transition: background var(--transition-fast), color var(--transition-fast);
@@ -456,6 +493,23 @@ const t = getI18n(lang);
 
     .gatekeeper-body {
       padding: 16px 20px 20px 20px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .command-box {
+      flex-wrap: wrap;
+    }
+
+    /* The command wraps at every width now; on phones the Copy button also
+       takes its own row so it never sits on top of the text. */
+    .code-snippet {
+      flex: 1 0 100%;
+    }
+
+    .gatekeeper-copy-btn {
+      min-height: 44px;
+      padding-inline: 16px;
     }
   }
 </style>

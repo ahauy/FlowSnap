@@ -16,7 +16,7 @@ colors:
     border-focus: "#0a84ff"
     text-primary: "#f4f4f5"
     text-secondary: "#a1a1aa"
-    text-tertiary: "#71717a"
+    text-tertiary: "#8a8a93"
   light:
     background: "#ffffff"
     surface: "#fafafa"
@@ -26,7 +26,7 @@ colors:
     border-focus: "#0071e3"
     text-primary: "#09090b"
     text-secondary: "#52525b"
-    text-tertiary: "#71717a"
+    text-tertiary: "#8a8a93"
   brand:
     apple-blue: "#0071e3"
     apple-blue-vibrant: "#0a84ff"
@@ -50,18 +50,25 @@ typography:
     fontFamily: '"SF Mono", "JetBrains Mono", Menlo, Consolas, monospace'
     weights: "400, 500, 600"
   scale:
+    meta: "0.6875rem" # 11px - mono metadata only: version, dates, counts, keycaps
     xs: "0.75rem" # 12px
+    label: "0.8125rem" # 13px - secondary UI labels and short prose hints
     sm: "0.875rem" # 14px
     base: "1rem" # 16px
     lg: "1.125rem" # 18px
-    xl: "1.25rem" # 20px
-    2xl: "1.5rem" # 24px
-    3xl: "2rem" # 32px
-    4xl: "2.5rem" # 40px
-    5xl: "3.5rem" # 56px
+    xl: "1.375rem" # 22px
+    2xl: "1.875rem" # 30px
+    3xl: "2.375rem" # 38px
+    4xl: "4rem" # 64px
+  fluid:
+    hero-title: clamp(38px, 6vw, 64px)
+    hero-subtitle: clamp(16px, 2vw, 19px)
+    section-title: clamp(22px, 3.5vw, 30px)
+  floor: 11px - nothing renders below this, including rem-based values
 rounded:
   sm: "6px"
   md: "10px"
+  window: "12px"  # macOS window frame and HUD snap preview
   lg: "14px"
   xl: "18px"
   full: "9999px"
@@ -97,6 +104,7 @@ FlowSnap's landing page embodies the craftsmanship of native macOS applications:
 3. **High Contrast & WCAG 2.2 AA**: All text must maintain a minimum contrast ratio of `4.5:1` against its background.
 4. **Stable Outer Anchors for Hover**: Wrap interactive translating elements in a stable container to prevent 60Hz hover jitter.
 5. **Hairline Precision**: Card borders, dividers, and modal frames must strictly be `1px solid` with low opacity (`rgba(255,255,255,0.08)` on dark mode).
+6. **Type Floor Is 11px**: `meta` (11px) and `label` (13px) are the documented steps under `xs`/`sm`. Nothing may render below 11px, including `rem` values that compute smaller.
 
 ### DON'T:
 

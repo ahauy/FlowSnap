@@ -30,8 +30,11 @@
 3. **Simulated macOS Terminal One-Line Installer (`TerminalInstaller.astro`)**:
    - Realistic macOS Terminal window chrome with 3 colored window control dots (red, yellow, green).
    - Dynamic tab toggle for developer preferences:
-     - **Tab 1 (`cURL`)**: `curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/install.sh | bash`
-     - **Tab 2 (`Homebrew`)**: `brew install --cask ahauy/tap/flowsnap`
+     - **Tab (`cURL`)**: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"`
+     - **Homebrew is not shipped**: the `ahauy/homebrew-tap` repository does not exist, so advertising
+       `brew install --cask ahauy/tap/flowsnap` would hand visitors a command that 404s.
+     - The component rendered on the live page is `UnifiedInstaller.astro`; this `TerminalInstaller.astro`
+       is not imported by any page (see the orphan cleanup backlog).
    - Accessible 1-click Copy button with dual fallback (`navigator.clipboard` -> temporary off-screen `<textarea>`).
    - Visual feedback: checkmark icon, "Copied!" text, and `aria-live="polite"` announcement for exactly 2000ms.
 
@@ -77,7 +80,8 @@ web/
 
 - **Automated Tests (`web/tests/distribution-hub.test.mjs`)**:
   - `TC-DIST-001`: Direct DMG link, badges (v1.3.1, Universal Binary, macOS 14.0+, ~14.2 MB) — **PASSED**
-  - `TC-DIST-002`: Tabbed Terminal window with cURL and Homebrew commands — **PASSED**
+  - `TC-DIST-002`: Terminal panel exposes the cURL command and asserts the Homebrew tab stays absent
+    until the tap is published — **PASSED**
   - `TC-DIST-003`: 1-click clipboard copy with 2000ms micro-interaction — **PASSED**
   - `TC-DIST-004`: 3 Privacy manifesto pillars with AXUIElement & Zero Keylogging — **PASSED**
   - `TC-DIST-005`: Accessible `<details>` Gatekeeper accordion & `xattr -cr` copy button — **PASSED**

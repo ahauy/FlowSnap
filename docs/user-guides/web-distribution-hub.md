@@ -17,28 +17,22 @@ Khu vực **Distribution Hub** (`#download`) trên trang chủ chính thức c�
 
 ---
 
-## 2. Cài đặt tự động bằng 1 dòng lệnh Terminal (Tab cURL & Homebrew)
+## 2. Cài đặt tự động bằng 1 dòng lệnh Terminal (tab cURL)
 
-Khung cài đặt tích hợp sẵn lệnh cho 2 công cụ phổ biến của developers:
+Khung cài đặt tích hợp sẵn một dòng lệnh cho developers:
 
 ### Cách 1: Sử dụng lệnh cURL (Mặc định)
 
 1. Trong khung Terminal Installer, chọn tab **cURL**.
 2. Nhấp nút **Copy** (hoặc chọn toàn bộ câu lệnh):
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/install.sh | bash
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"
    ```
 3. Mở ứng dụng Terminal trên máy Mac của bạn (`Terminal`, `iTerm2` hoặc `Ghostty`), dán lệnh và nhấn **Enter**.
 4. Script cài đặt sẽ tự động tải phiên bản Universal mới nhất, mount disk image, sao chép `FlowSnap.app` vào `/Applications` và dọn dẹp bộ nhớ tạm.
 
-### Cách 2: Sử dụng Homebrew Cask
-
-1. Trong khung Terminal Installer, chuyển sang tab **Homebrew**.
-2. Nhấp nút **Copy** để sao chép câu lệnh:
-   ```bash
-   brew install --cask ahauy/tap/flowsnap
-   ```
-3. Dán vào Terminal và nhấn **Enter**. Homebrew sẽ quản lý vòng đời và cập nhật phiên bản cho FlowSnap.
+> **Homebrew chưa hỗ trợ.** Trang web không còn hiển thị lệnh `brew install --cask ahauy/tap/flowsnap`
+> vì tap `ahauy/homebrew-tap` chưa được phát hành; chạy lệnh đó sẽ báo lỗi 404.
 
 ---
 

@@ -1,4 +1,4 @@
-export type InstallTabId = "curl" | "brew";
+export type InstallTabId = "curl";
 
 export interface ReleaseMetadata {
   readonly version: string;
@@ -18,6 +18,9 @@ export interface TerminalTabItem {
   readonly command: string;
   readonly description: string;
   readonly defaultActive?: boolean;
+  /** Source a visitor can read before running the command. Absent means the
+   *  command has no same-origin script to audit, so the UI must not imply one. */
+  readonly scriptUrl?: string;
 }
 
 export interface PrivacyPillarItem {
@@ -61,15 +64,8 @@ export const TERMINAL_TABS: readonly TerminalTabItem[] = [
       '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"',
     description:
       "Automatically download and install the latest Universal DMG into /Applications",
+    scriptUrl: "https://github.com/ahauy/FlowSnap/blob/main/scripts/install.sh",
     defaultActive: true,
-  },
-  {
-    id: "brew",
-    label: "Homebrew",
-    command: "brew install --cask ahauy/tap/flowsnap",
-    description:
-      "Install and manage updates via the official Homebrew Cask tap",
-    defaultActive: false,
   },
 ];
 

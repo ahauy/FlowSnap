@@ -43,6 +43,11 @@
   align-items: center;
   gap: 16px;
   flex: 1;
+
+  /* Without this the segmented control's 314px min-content propagates up
+     through brand-text and badge-row, and the whole identity block measures
+     356px inside a 246px card at 320px viewport. */
+  min-width: 0;
 }
 
 .app-icon-squircle {
@@ -61,6 +66,7 @@
   flex-direction: column;
   gap: 6px;
   flex: 1;
+  min-width: 0;
 }
 
 .badge-row {
@@ -68,6 +74,7 @@
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .version-badge {
@@ -79,7 +86,7 @@
   background: rgba(48, 209, 88, 0.12);
   border: 1px solid rgba(48, 209, 88, 0.3);
   color: var(--color-success);
-  font-size: 11px;
+  font-size: var(--font-size-meta);
   font-weight: 600;
   font-family: var(--font-mono);
 }
@@ -99,7 +106,7 @@
 }
 
 .release-date {
-  font-size: 11px;
+  font-size: var(--font-size-meta);
   color: var(--color-text-tertiary);
 }
 
@@ -113,6 +120,19 @@
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
   margin-left: 4px;
+
+  /* Three tabs measure 319px, which at 320px viewport spilled out of the
+     column-stacked card header and pushed the whole document sideways. Same
+     treatment as the shortcut tab strip: constrain, then scroll internally. */
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.installer-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .installer-tab {
@@ -120,10 +140,13 @@
   align-items: center;
   gap: 5px;
   padding: 3px 12px;
+  flex-shrink: 0;
   border: none;
   background: transparent;
   color: var(--color-text-tertiary);
-  font-size: 11px;
+  /* 12px, not 11: the touch override below raises this to 13px, and the
+     install-method switcher must never be smallest on desktop. */
+  font-size: var(--font-size-xs);
   font-weight: 500;
   border-radius: var(--radius-full);
   cursor: pointer;
@@ -146,8 +169,18 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.16);
 }
 
+/* The install-method switcher is the page's most consequential control, and a
+   19px pill cannot be hit with a thumb. Height only; width is untouched so the
+   tab strip's overflow behaviour stays as it was measured. */
+@media (max-width: 768px), (pointer: coarse) {
+  .installer-tab {
+    min-height: 44px;
+    font-size: var(--font-size-label);
+  }
+}
+
 .license-tag {
-  font-size: 11px;
+  font-size: var(--font-size-meta);
   color: var(--color-text-tertiary);
   font-family: var(--font-mono);
   padding: 3px 8px;
@@ -168,10 +201,12 @@
 }
 
 .installer-desc {
-  font-size: var(--font-xs);
+  font-size: var(--font-size-body-sm);
   color: var(--color-text-secondary);
   line-height: 1.55;
   margin: 0;
+  min-width: 0;
+  max-width: 34em;
   min-height: 38px;
 }
 
@@ -255,7 +290,7 @@
 }
 
 .btn-specs {
-  font-size: 11px;
+  font-size: var(--font-size-meta);
   opacity: 0.8;
   font-family: var(--font-mono);
 }
@@ -305,7 +340,7 @@
   color: #30d158;
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: 13px;
+  font-size: var(--font-size-label);
   user-select: none;
   flex-shrink: 0;
 }
@@ -338,7 +373,7 @@
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.16);
   color: #f4f4f5;
-  font-size: 11px;
+  font-size: var(--font-size-meta);
   font-weight: 600;
   cursor: pointer;
   flex-shrink: 0;
@@ -390,12 +425,14 @@
   border-radius: var(--radius-sm);
   background: var(--color-surface-elevated);
   border: 1px solid var(--color-border);
-  font-size: 11px;
+  font-size: var(--font-size-meta);
   color: var(--color-text-secondary);
   font-family: var(--font-mono);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* "Universal Binary (Apple Silicon & Intel)" lost its tail at 320px, which
+     removed the claim rather than trimming it. */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
 
 .spec-icon {
@@ -410,7 +447,7 @@
   justify-content: space-between;
   padding-top: 18px;
   border-top: 1px solid var(--color-border);
-  font-size: 11px;
+  font-size: var(--font-size-meta);
 }
 
 .checksum-hint {
@@ -433,11 +470,57 @@
 }
 
 .checksum-value {
-  font-size: var(--font-xs, 12px);
-  color: var(--color-text-tertiary);
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--font-size-xs);
+
+  /* The digest is now the full 64 characters and load-bearing, so it wraps
+     instead of ellipsising and sits at AA contrast instead of 3.87:1. */
+  color: var(--color-text-secondary);
   max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  user-select: all;
+  cursor: text;
+}
+
+/* Read-before-you-run affordance under the terminal command. The stack keeps
+   .action-panel a single-child flex row, which it was designed as. */
+.terminal-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.script-check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--font-sm, 14px);
+  color: var(--color-text-secondary);
+}
+
+.script-check-icon {
+  flex-shrink: 0;
+  color: var(--color-warning);
+}
+
+.script-check-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--brand-apple-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(10, 132, 255, 0.4);
+}
+
+.script-check-link:hover {
+  text-decoration-color: currentColor;
 }
 
 .releases-link {
@@ -473,7 +556,22 @@
 
   .card-header {
     flex-direction: column;
+    align-items: stretch;
     gap: 12px;
+  }
+
+  /* The base rule's align-items:flex-start let the brand block size to its
+     319px max-content here, so the tab pill sat on the same line as the version
+     badge and reached 356px. Stretch plus a full-width pill makes the badge row
+     wrap and the pill scroll inside the card. */
+  .installer-tabs {
+    width: 100%;
+    margin-left: 0;
+
+    /* flex-basis:100% forces the pill onto its own line inside the wrapping
+       badge row; without it min-width:0 let it shrink to 180px beside the
+       version badge and cut the tab labels mid-word. */
+    flex: 1 0 100%;
   }
 
   .license-tag {

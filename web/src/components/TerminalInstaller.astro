@@ -342,7 +342,7 @@ const localizedTabs = TERMINAL_TABS.map((tab) => ({
     border: none;
     background: transparent;
     color: var(--color-text-tertiary);
-    font-size: 11px;
+    font-size: var(--font-size-meta);
     font-weight: 500;
     border-radius: calc(var(--radius-sm) - 2px);
     cursor: pointer;
@@ -362,14 +362,14 @@ const localizedTabs = TERMINAL_TABS.map((tab) => ({
   }
 
   .terminal-badge {
-    font-size: 10px;
+    font-size: var(--font-size-meta);
     color: var(--color-text-tertiary);
     font-family: var(--font-mono);
     letter-spacing: 0.06em;
   }
 
   .license-tag {
-    font-size: 11px;
+    font-size: var(--font-size-meta);
     color: var(--color-text-tertiary);
     font-family: var(--font-mono);
     padding: 3px 8px;
@@ -433,7 +433,7 @@ const localizedTabs = TERMINAL_TABS.map((tab) => ({
     color: #30d158;
     font-family: var(--font-mono);
     font-weight: 700;
-    font-size: 13px;
+    font-size: var(--font-size-label);
     user-select: none;
     flex-shrink: 0;
   }
@@ -466,7 +466,7 @@ const localizedTabs = TERMINAL_TABS.map((tab) => ({
     background: rgba(255, 255, 255, 0.12);
     border: 1px solid rgba(255, 255, 255, 0.16);
     color: #f4f4f5;
-    font-size: 11px;
+    font-size: var(--font-size-meta);
     font-weight: 600;
     cursor: pointer;
     flex-shrink: 0;
@@ -516,7 +516,7 @@ const localizedTabs = TERMINAL_TABS.map((tab) => ({
     border-radius: var(--radius-sm);
     background: var(--color-surface-elevated);
     border: 1px solid var(--color-border);
-    font-size: 11px;
+    font-size: var(--font-size-meta);
     color: var(--color-text-secondary);
     font-family: var(--font-mono);
   }
@@ -532,7 +532,7 @@ const localizedTabs = TERMINAL_TABS.map((tab) => ({
     justify-content: space-between;
     padding-top: 16px;
     border-top: 1px solid var(--color-border);
-    font-size: 11px;
+    font-size: var(--font-size-meta);
   }
 
   .checksum-hint {

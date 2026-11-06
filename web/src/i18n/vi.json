@@ -241,8 +241,7 @@
     "unifiedSubtitle": "Tải trực tiếp bản DMG chuẩn macOS hoặc cài đặt tự động trong vài giây qua dòng lệnh terminal.",
     "tabs": {
       "dmg": "Gói DMG",
-      "curl": "Lệnh cURL",
-      "brew": "Homebrew"
+      "curl": "Lệnh cURL"
     },
     "unifiedFooterVerified": "Xác thực mã băm SHA-256 & Tập lệnh an toàn",
     "dmg": {
@@ -255,12 +254,11 @@
     "terminal": {
       "title": "Cài Đặt Tự Động 1 Dòng Lệnh",
       "curlDesc": "Tải và cài đặt tự động bản Universal DMG mới nhất vào /Applications",
-      "brewDesc": "Cài đặt và quản lý phiên bản qua Homebrew Cask tap chính thức",
-      "chipSudo": "Sudo-less (Không cần root)",
       "chipArch": "Tự phát hiện Apple Silicon & Intel",
       "footerHint": "Tập lệnh Universal đã xác thực",
       "footerLink": "Xem script trên GitHub",
-      "copyAria": "Sao chép lệnh cài đặt terminal vào clipboard"
+      "copyAria": "Sao chép lệnh cài đặt terminal vào clipboard",
+      "readScript": "Đọc script trước khi chạy"
     },
     "privacy": {
       "badge": "Cam kết Không thu thập Dữ liệu",
@@ -306,7 +304,7 @@
     "gatekeeper": {
       "title": "Gặp cảnh báo \"Unidentified Developer\" từ macOS Gatekeeper?",
       "summary": "Vì FlowSnap là phần mềm mã nguồn mở cộng đồng phi thương mại (không mua chứng chỉ Apple Developer trả phí), macOS sẽ gắn thuộc tính cách ly (quarantine) trong lần đầu mở app.",
-      "hint": "Cách khắc phục cách ly (quarantine) nhanh chóng trong 5 giây cho macOS Sequoia & Sonoma",
+      "hint": "Hai cách vượt qua: click chuột phải rồi chọn Mở, không cần Terminal",
       "toggleLabel": "Chi tiết",
       "command": "xattr -cr /Applications/FlowSnap.app",
       "copyAria": "Sao chép lệnh xattr vào clipboard",
@@ -314,26 +312,29 @@
         {
           "stepNumber": 1,
           "title": "Kéo FlowSnap vào thư mục Applications",
-          "instruction": "Mở tệp FlowSnap.dmg vừa tải và kéo biểu tượng FlowSnap vào thư mục /Applications như bình thường."
+          "instruction": "Mở file FlowSnap.dmg đã tải và kéo biểu tượng FlowSnap vào /Applications như bình thường."
         },
         {
           "stepNumber": 2,
-          "title": "Mở Terminal và chạy lệnh gỡ cờ cách ly",
-          "instruction": "Sao chép và dán câu lệnh bên dưới vào Terminal rồi nhấn Enter để xóa thuộc tính com.apple.quarantine."
+          "title": "Click chuột phải vào FlowSnap rồi chọn Mở (Open)",
+          "instruction": "Trong thư mục Applications của Finder, click chuột phải (hoặc Control-click) vào FlowSnap, chọn Mở (Open), rồi xác nhận Mở trong hộp thoại. Cách này gỡ cảnh báo cho các lần mở sau mà không cần chạy lệnh nào."
         },
         {
           "stepNumber": 3,
           "title": "Mở ứng dụng và cấp quyền Trợ năng",
-          "instruction": "Khởi chạy FlowSnap từ Launchpad hoặc Spotlight, sau đó cấp quyền Trợ năng (Accessibility) khi được hỏi để bắt đầu tận hưởng snap mượt mà."
+          "instruction": "Mở FlowSnap từ Launchpad hoặc Spotlight, và cấp quyền Trợ năng khi được hỏi để bật tính năng chia cửa sổ."
         }
-      ]
+      ],
+      "fallbackTitle": "Nếu macOS vẫn không cho mở",
+      "fallbackNote": "Lệnh này xoá cờ cách ly Apple gắn lên mọi file bên trong bundle của ứng dụng."
     },
     "meta": {
       "releaseDate": "Tháng 9 năm 2026",
       "binaryArch": "Binary đa kiến trúc (Apple Silicon & Intel)",
       "minMacOS": "macOS 14.0+ (Sonoma & Sequoia)",
       "license": "Mã nguồn mở, giấy phép MIT"
-    }
+    },
+    "checksumSelectHint": "Bôi đen để sao chép toàn bộ mã băm"
   },
   "footer": {
     "desc": "Quản lý cửa sổ gốc được thiết kế với tính năng khôi phục workspace theo ngữ cảnh, khay snap mép trên kiểu Windows 11 và 100% Public APIs.",

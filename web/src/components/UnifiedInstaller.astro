@@ -11,7 +11,6 @@ const { lang = 'en' } = Astro.props;
 const t = getI18n(lang);
 
 const curlTab = TERMINAL_TABS.find((tab) => tab.id === 'curl') || TERMINAL_TABS[0];
-const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[1];
 ---
 
 <div id="terminal-installer-root" class="unified-installer-box terminal-box" data-component="unified-installer">
@@ -50,7 +49,7 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
               </span>
               <span class="release-date">{t.distribution.meta.releaseDate}</span>
 
-              <!-- Segmented Tabs Switcher (DMG / cURL / Brew) -->
+              <!-- Segmented Tabs Switcher (DMG / cURL) -->
               <div class="installer-tabs" role="tablist" aria-label="Installation method tabs">
                 <button
                   type="button"
@@ -77,21 +76,9 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
                   data-install-tab="curl"
                   data-command={curlTab.command}
                   data-description={t.distribution.terminal.curlDesc}
+                  data-script-url={curlTab.scriptUrl}
                 >
                   <span>{t.distribution.tabs?.curl || 'cURL Script'}</span>
-                </button>
-                <button
-                  type="button"
-                  class="installer-tab"
-                  role="tab"
-                  aria-selected="false"
-                  aria-controls="panel-terminal"
-                  id="tab-brew"
-                  data-install-tab="brew"
-                  data-command={brewTab.command}
-                  data-description={t.distribution.terminal.brewDesc}
-                >
-                  <span>{t.distribution.tabs?.brew || 'Homebrew'}</span>
                 </button>
               </div>
             </div>
@@ -140,40 +127,55 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
         </a>
       </div>
 
-      <!-- Terminal Panel (cURL / Homebrew) -->
+      <!-- Terminal Panel (cURL) -->
       <div class="action-panel" id="panel-terminal" role="tabpanel" aria-labelledby="tab-curl" hidden>
-        <div class="console-box">
-          <div class="command-row">
-            <span class="terminal-prompt" aria-hidden="true">$</span>
-            <pre class="code-wrapper"><code class="terminal-code" id="active-terminal-command">{curlTab.command}</code></pre>
+        <div class="terminal-stack">
+          <div class="console-box">
+            <div class="command-row">
+              <span class="terminal-prompt" aria-hidden="true">$</span>
+              <pre class="code-wrapper"><code class="terminal-code" id="active-terminal-command">{curlTab.command}</code></pre>
+            </div>
+
+            <button
+              type="button"
+              class="terminal-copy-btn"
+              id="terminal-copy-btn"
+              data-copy-trigger="terminal"
+              data-copy-label={t.shortcuts.controls.copyLabel}
+              data-copied-label={t.shortcuts.controls.copiedLabel}
+              data-copy-fail-label={t.clipboard.copyFail}
+              aria-label={t.distribution.terminal.copyAria}
+            >
+              <svg class="copy-icon icon-neutral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+              <svg class="copy-icon icon-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span class="copy-label">{t.shortcuts.controls.copyLabel}</span>
+            </button>
           </div>
 
-          <button
-            type="button"
-            class="terminal-copy-btn"
-            id="terminal-copy-btn"
-            data-copy-trigger="terminal"
-            data-copy-label={t.shortcuts.controls.copyLabel}
-            data-copied-label={t.shortcuts.controls.copiedLabel}
-            data-copy-fail-label={t.clipboard.copyFail}
-            aria-label={t.distribution.terminal.copyAria}
-          >
-            <svg class="copy-icon icon-neutral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          <!-- This command pipes a remote script straight into /bin/bash, so the
+               source it downloads has to be one click away. Hidden for methods
+               that have no auditable same-origin script. -->
+          <p class="script-check-row" id="script-check-row">
+            <svg class="script-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true">
+              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+              <circle cx="12" cy="12" r="3" />
             </svg>
-            <svg class="copy-icon icon-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-            <span class="copy-label">{t.shortcuts.controls.copyLabel}</span>
-          </button>
+            <a
+              class="script-check-link"
+              id="script-source-link"
+              href={curlTab.scriptUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >{t.distribution.terminal.readScript}</a>
+          </p>
         </div>
       </div>
 
-      <!-- Pre-rendered Homebrew template command to guarantee static crawl and test suite detection -->
-      <div class="sr-only" aria-hidden="true" data-hidden-commands>
-        <code>{brewTab.command}</code>
-      </div>
 
       <!-- Symmetrical 2-Column Specs Grid (Always 1 row on desktop) -->
       <div class="specs-grid">
@@ -204,7 +206,9 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
           <path d="m9 12 2 2 4-4" />
         </svg>
         <span class="hint-label">{t.distribution.unifiedFooterVerified || t.distribution.dmg.verifiedChecksum}</span>
-        <code class="checksum-value" title={RELEASE_METADATA.sha256}>SHA-256: {RELEASE_METADATA.sha256.slice(0, 16)}…</code>
+        <!-- Full digest, selectable. It is the hash of the published
+             FlowSnap.dmg, so a visitor can verify the download themselves. -->
+        <code class="checksum-value" title={t.distribution.checksumSelectHint}>{RELEASE_METADATA.sha256}</code>
       </div>
 
       <a
@@ -236,6 +240,8 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
     const tabDesc = root.querySelector<HTMLElement>('#installer-tab-desc');
     const copyBtn = root.querySelector<HTMLButtonElement>('#terminal-copy-btn');
     const copyStatus = root.querySelector<HTMLElement>('#terminal-copy-status');
+    const scriptRow = root.querySelector<HTMLElement>('#script-check-row');
+    const scriptLink = root.querySelector<HTMLAnchorElement>('#script-source-link');
 
     let currentCommand = commandCode?.textContent?.trim() || '';
 
@@ -277,6 +283,17 @@ const brewTab = TERMINAL_TABS.find((tab) => tab.id === 'brew') || TERMINAL_TABS[
           const cmd = tab.getAttribute('data-command') || '';
           currentCommand = cmd;
           if (commandCode) commandCode.textContent = cmd;
+
+          const url = tab.getAttribute('data-script-url') || '';
+          if (scriptRow && scriptLink) {
+            if (url) {
+              scriptLink.href = url;
+              scriptRow.hidden = false;
+            } else {
+              scriptLink.removeAttribute('href');
+              scriptRow.hidden = true;
+            }
+          }
         }
       });
     });

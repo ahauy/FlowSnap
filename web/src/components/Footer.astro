@@ -141,7 +141,7 @@ const currentYear = new Date().getFullYear();
   }
 
   .footer-desc {
-    font-size: 13px;
+    font-size: var(--font-size-label);
     line-height: 1.6;
     color: var(--text-secondary);
   }
@@ -152,7 +152,7 @@ const currentYear = new Date().getFullYear();
     flex-wrap: wrap;
     gap: 6px;
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: var(--font-size-meta);
     color: var(--text-tertiary);
     background-color: var(--surface-elevated);
     padding: 6px 10px;
@@ -166,7 +166,7 @@ const currentYear = new Date().getFullYear();
   }
 
   .footer-heading {
-    font-size: 13px;
+    font-size: var(--font-size-label);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -181,7 +181,7 @@ const currentYear = new Date().getFullYear();
   }
 
   .footer-link {
-    font-size: 13px;
+    font-size: var(--font-size-label);
     color: var(--text-secondary);
     text-decoration: none;
     transition: color var(--duration-fast) ease;
@@ -189,6 +189,20 @@ const currentYear = new Date().getFullYear();
 
   .footer-link:hover {
     color: var(--text-primary);
+  }
+
+  /* 13px links stacked on a 10px gap give a ~16px hit area. On touch the rows
+     become the target instead of the text. */
+  @media (max-width: 768px), (pointer: coarse) {
+    .footer-links {
+      gap: 0;
+    }
+
+    .footer-link {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+    }
   }
 
   /* Bottom Bar */

@@ -41,69 +41,75 @@ const viUrl = `${basePath || ''}/vi`;
       </div>
     </a>
 
-    <!-- Center navigation anchors -->
-    <nav class="header-nav" id="site-nav" aria-label={t.header.nav.menu}>
-      <a href="#showcase" class="nav-link">{t.header.nav.simulator}</a>
-      <a href="#features" class="nav-link">{t.header.nav.features}</a>
-      <a href="#shortcuts" class="nav-link">{t.header.nav.shortcuts}</a>
-      <a href="#download" class="nav-link">{t.header.nav.download}</a>
-    </nav>
+    <!--
+      One container holds the links and the actions because both collapse into a
+      single drawer under 768px. Splitting them into two DOM branches is what
+      strands the language switcher off-screen on a phone.
+    -->
+    <div class="header-menu" id="site-nav">
+      <nav class="nav-links" aria-label={t.header.nav.menu}>
+        <a href="#showcase" class="nav-link">{t.header.nav.simulator}</a>
+        <a href="#features" class="nav-link">{t.header.nav.features}</a>
+        <a href="#shortcuts" class="nav-link">{t.header.nav.shortcuts}</a>
+        <a href="#download" class="nav-link">{t.header.nav.download}</a>
+      </nav>
 
-    <!-- Header actions -->
-    <div class="header-actions">
-      <!-- Compact Language Switcher (EN | VI) -->
-      <div class="lang-switcher" role="group" aria-label={t.a11y.languageSwitcher}>
+      <!-- Header actions -->
+      <div class="header-actions">
+        <!-- Compact Language Switcher (EN | VI) -->
+        <div class="lang-switcher" role="group" aria-label={t.a11y.languageSwitcher}>
+          <a
+            href={enUrl}
+            class={`lang-btn ${lang === 'en' ? 'active' : ''}`}
+            data-lang-target="en"
+            data-base-href={enUrl}
+            aria-label={t.a11y.switchToEnglish}
+            aria-current={lang === 'en' ? 'page' : undefined}
+          >
+            {t.header.langSwitcher.en}
+          </a>
+          <span class="lang-divider" aria-hidden="true">|</span>
+          <a
+            href={viUrl}
+            class={`lang-btn ${lang === 'vi' ? 'active' : ''}`}
+            data-lang-target="vi"
+            data-base-href={viUrl}
+            aria-label={t.a11y.switchToVietnamese}
+            aria-current={lang === 'vi' ? 'page' : undefined}
+          >
+            {t.header.langSwitcher.vi}
+          </a>
+        </div>
+
         <a
-          href={enUrl}
-          class={`lang-btn ${lang === 'en' ? 'active' : ''}`}
-          data-lang-target="en"
-          data-base-href={enUrl}
-          aria-label={t.a11y.switchToEnglish}
-          aria-current={lang === 'en' ? 'page' : undefined}
+          href={githubUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="github-btn action-pill-secondary"
+          aria-label={t.a11y.viewGitHub}
         >
-          {t.header.langSwitcher.en}
+          <svg class="github-icon" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+          </svg>
+          <span class="github-label">{t.header.github}</span>
         </a>
-        <span class="lang-divider" aria-hidden="true">|</span>
-        <a
-          href={viUrl}
-          class={`lang-btn ${lang === 'vi' ? 'active' : ''}`}
-          data-lang-target="vi"
-          data-base-href={viUrl}
-          aria-label={t.a11y.switchToVietnamese}
-          aria-current={lang === 'vi' ? 'page' : undefined}
-        >
-          {t.header.langSwitcher.vi}
-        </a>
+
+        <ThemeToggle lang={lang} />
       </div>
-
-      <a
-        href={githubUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="github-btn action-pill-secondary"
-        aria-label={t.a11y.viewGitHub}
-      >
-        <svg class="github-icon" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-        </svg>
-        <span class="github-label">{t.header.github}</span>
-      </a>
-
-      <ThemeToggle lang={lang} />
-
-      <button
-        type="button"
-        class="nav-toggle"
-        id="site-nav-toggle"
-        aria-controls="site-nav"
-        aria-expanded="false"
-        aria-label={t.header.nav.menu}
-      >
-        <span class="nav-toggle-bar" aria-hidden="true"></span>
-        <span class="nav-toggle-bar" aria-hidden="true"></span>
-        <span class="nav-toggle-bar" aria-hidden="true"></span>
-      </button>
     </div>
+
+    <button
+      type="button"
+      class="nav-toggle"
+      id="site-nav-toggle"
+      aria-controls="site-nav"
+      aria-expanded="false"
+      aria-label={t.header.nav.menu}
+    >
+      <span class="nav-toggle-bar" aria-hidden="true"></span>
+      <span class="nav-toggle-bar" aria-hidden="true"></span>
+      <span class="nav-toggle-bar" aria-hidden="true"></span>
+    </button>
   </div>
 </header>
 
@@ -133,6 +139,7 @@ const viUrl = `${basePath || ''}/vi`;
     const open = () => {
       nav.classList.add('is-open');
       toggle.setAttribute('aria-expanded', 'true');
+      (nav.querySelector<HTMLElement>('.nav-link'))?.focus();
     };
 
     toggle.addEventListener('click', () => {
@@ -143,11 +150,25 @@ const viUrl = `${basePath || ''}/vi`;
     nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', close));
 
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') close();
+      if (event.key === 'Escape' && nav.classList.contains('is-open')) {
+        close();
+        toggle.focus();
+      }
     });
 
-    // Leaving the mobile breakpoint must not strand the panel in an open state.
-    window.matchMedia('(min-width: 769px)').addEventListener('change', close);
+    // A drawer with no scrim still has to close when the page is clicked elsewhere.
+    document.addEventListener('click', (event) => {
+      if (!nav.classList.contains('is-open')) return;
+      const target = event.target as Node | null;
+      if (target && !nav.contains(target) && !toggle.contains(target)) close();
+    });
+
+    // Leaving the drawer breakpoint must not strand the panel in an open state.
+    // Same condition as the @media block that renders the drawer.
+    const drawer = window.matchMedia('(max-width: 860px), (pointer: coarse) and (max-width: 900px)');
+    drawer.addEventListener('change', (event) => {
+      if (!event.matches) close();
+    });
   }
 
   if (document.readyState === 'loading') {
@@ -188,7 +209,9 @@ const viUrl = `${basePath || ''}/vi`;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 60px;
+    /* min-height, not height: Vietnamese labels wrap to 3 lines on a coarse
+       pointer at 769px and painted 7.6px outside the sticky bar. */
+    min-height: var(--site-header-height, 60px);
     gap: 16px;
   }
 
@@ -228,11 +251,24 @@ const viUrl = `${basePath || ''}/vi`;
     color: var(--text-primary);
   }
 
-  /* Navigation Links */
-  .header-nav {
+  /* Navigation */
+  .header-menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .nav-links {
     display: flex;
     align-items: center;
     gap: 24px;
+
+    /* Auto margins, not space-between: they recenter the links in the leftover
+       space exactly as the old three-child header-inner did. */
+    margin-inline: auto;
   }
 
   .nav-link {
@@ -273,13 +309,13 @@ const viUrl = `${basePath || ''}/vi`;
     align-items: center;
     justify-content: center;
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: var(--font-size-xs);
     font-weight: 500;
     color: var(--text-tertiary);
     text-decoration: none;
     padding: 3px 7px;
     border-radius: var(--radius-full);
-    transition: all var(--duration-fast) ease;
+    transition: color var(--duration-fast) ease, background var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
     user-select: none;
   }
 
@@ -295,8 +331,10 @@ const viUrl = `${basePath || ''}/vi`;
   }
 
   .lang-divider {
-    color: var(--border-color);
-    font-size: 10px;
+    /* var(--border-color) rendered this at 1.22:1 - invisible text that a
+       screen reader can still announce. */
+    color: var(--text-tertiary);
+    font-size: var(--font-size-meta);
     user-select: none;
     line-height: 1;
   }
@@ -304,7 +342,7 @@ const viUrl = `${basePath || ''}/vi`;
   .github-btn {
     height: 36px;
     padding: 0 14px;
-    font-size: 13px;
+    font-size: var(--font-size-label);
   }
 
   .github-icon {
@@ -315,16 +353,50 @@ const viUrl = `${basePath || ''}/vi`;
     display: none;
   }
 
-  /* Responsive styling */
-  @media (max-width: 768px) {
+  /*
+    Two separate concerns. Tap sizing keys off the input device, not the width:
+    a 1024px tablet in landscape is still a thumb. The drawer reflow below keys
+    off the viewport.
+  */
+  @media (max-width: 768px), (pointer: coarse) {
+    .nav-toggle {
+      width: 44px;
+      height: 44px;
+      padding: 12px;
+    }
+
+    .lang-switcher {
+      height: 48px;
+      padding: 2px 6px;
+    }
+
+    .lang-btn {
+      height: 44px;
+      padding: 0 14px;
+      font-size: var(--font-size-label);
+    }
+
+    .lang-divider {
+      font-size: var(--font-size-label);
+    }
+
+    .github-btn {
+      height: 44px;
+      padding: 0 16px;
+      font-size: 14px;
+    }
+  }
+
+  /* Drawer. Content-driven, not device-driven: with touch-sized controls the
+     row needs 886px (brand 178 + links 339 + actions 281 + gaps 88), so a
+     820px tablet cannot hold it and Vietnamese labels wrap to two lines. */
+  @media (max-width: 860px), (pointer: coarse) and (max-width: 900px) {
     .nav-toggle {
       display: inline-flex;
       flex-direction: column;
       justify-content: center;
       gap: 4px;
-      width: 36px;
-      height: 36px;
-      padding: 8px;
+      flex-shrink: 0;
       border: 1px solid var(--border-color);
       border-radius: var(--radius-sm);
       background: transparent;
@@ -351,7 +423,7 @@ const viUrl = `${basePath || ''}/vi`;
       transform: translateY(-5.5px) rotate(-45deg);
     }
 
-    .header-nav {
+    .header-menu {
       position: absolute;
       top: 100%;
       left: 0;
@@ -359,37 +431,50 @@ const viUrl = `${basePath || ''}/vi`;
       display: none;
       flex-direction: column;
       align-items: stretch;
-      gap: 2px;
-      padding: 10px 20px 14px;
+      gap: 0;
+      max-height: calc(100dvh - 60px);
+      overflow-y: auto;
+      padding: 8px 20px 16px;
       border-bottom: 1px solid var(--border-color);
       background-color: var(--surface-elevated);
     }
 
-    :global([data-theme="dark"]) .header-nav,
-    :global(:root:not([data-theme="light"])) .header-nav {
+    :global([data-theme="dark"]) .header-menu,
+    :global(:root:not([data-theme="light"])) .header-menu {
       background-color: #09090b;
     }
 
-    .header-nav.is-open {
+    .header-menu.is-open {
       display: flex;
     }
 
-    .github-label {
-      display: none;
+    .nav-links {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      margin: 0;
     }
 
-    .github-btn {
-      padding: 0 10px;
+    .nav-link {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 0 2px;
+      font-size: 16px;
+      border-bottom: 1px solid var(--border-color);
     }
 
-    .lang-switcher {
-      padding: 1px 3px;
-      height: 28px;
+    .nav-link:last-child {
+      border-bottom: none;
     }
 
-    .lang-btn {
-      padding: 2px 5px;
-      font-size: 10px;
+    .header-actions {
+      justify-content: space-between;
+      width: 100%;
+      gap: 12px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-color);
     }
   }
 </style>

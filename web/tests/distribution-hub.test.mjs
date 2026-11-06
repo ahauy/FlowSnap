@@ -32,9 +32,11 @@ console.log('✅ TC-DIST-001 Passed!\n');
 console.log('Checking TC-DIST-002: Tabbed Terminal Installer Box...');
 assert.ok(html.includes('id="terminal-installer-root"') || html.includes('class="terminal-box"'), 'Terminal installer container must be present');
 assert.ok(html.includes('raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh'), 'cURL command string must be present');
-assert.ok(html.includes('brew install --cask ahauy/tap/flowsnap'), 'Homebrew command string must be present');
 assert.ok(html.includes('data-install-tab="curl"'), 'cURL tab button must be present');
-assert.ok(html.includes('data-install-tab="brew"'), 'Homebrew tab button must be present');
+// The Homebrew tap (ahauy/homebrew-tap) does not exist yet, so the page must
+// not advertise a command that 404s. Re-add these when the tap is published.
+assert.ok(!html.includes('data-install-tab="brew"'), 'Homebrew tab must stay absent until ahauy/homebrew-tap exists');
+assert.ok(!html.includes('brew install --cask'), 'No brew command may ship while the tap 404s');
 console.log('✅ TC-DIST-002 Passed!\n');
 
 // TC-DIST-003: 1-Click Clipboard Copy & Feedback Behavior
