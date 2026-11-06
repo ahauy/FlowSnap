@@ -570,6 +570,11 @@ const localizedCards = bentoFeatures.map((card) => {
     .bento-standard {
       grid-column: span 1;
     }
+
+    /* three standards in two columns orphan the third */
+    .bento-standard:last-of-type {
+      grid-column: 1 / -1;
+    }
   }
 
   @media (max-width: 680px) {

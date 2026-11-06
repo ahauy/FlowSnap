@@ -12,7 +12,7 @@
   border-radius: var(--radius-lg);
 }
 
-.toolbar-hint { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); }
+.toolbar-hint { display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--text-secondary); }
 
 .hint-pulse {
   width: 8px;
@@ -37,7 +37,7 @@
   align-items: center;
   gap: 5px;
   padding: 5px 10px;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-secondary);
   background: var(--surface-elevated);
@@ -102,7 +102,7 @@
 
 .menubar-left { display: flex; align-items: center; gap: 12px; }
 
-.apple-logo { color: rgba(255, 255, 255, 0.95); } .app-name { font-weight: 600; } .dummy-menus { display: flex; align-items: center; gap: 10px; } .menu-item { color: rgba(255, 255, 255, 0.7); font-size: 0.72rem; cursor: pointer; } .menu-item:hover { color: #fff; }  .menubar-right { display: flex; align-items: center; gap: 10px; }
+.apple-logo { color: rgba(255, 255, 255, 0.95); } .app-name { font-weight: 600; } .dummy-menus { display: flex; align-items: center; gap: 10px; } .menu-item { color: rgba(255, 255, 255, 0.7); font-size: 0.6875rem; cursor: pointer; } .menu-item:hover { color: #fff; }  .menubar-right { display: flex; align-items: center; gap: 10px; }
 
 .status-icon { color: rgba(255, 255, 255, 0.8); display: flex; align-items: center; cursor: pointer; }
 
@@ -120,7 +120,7 @@
   border-radius: var(--radius-full);
 }
 
-.virtual-clock { font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500; }
+.virtual-clock { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 500; }
 
 /* FlowSnap Menu Bar Popover */
 .fs-menubar-popover {
@@ -145,7 +145,7 @@
 
 .fs-menubar-popover.is-open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0) scale(1); }
 
-.popover-header { margin-bottom: 10px; } .popover-title-row { display: flex; justify-content: space-between; align-items: center; } .popover-brand { font-size: 0.78rem; font-weight: 700; color: #fff; } .popover-badge { font-size: 0.6875rem; color: var(--accent-blue-vibrant); background: rgba(10, 132, 255, 0.15); padding: 1px 6px; border-radius: 10px; } .popover-focus-label { font-size: 0.6875rem; color: rgba(255, 255, 255, 0.6); display: block; margin-top: 2px; } .popover-focus-label strong { color: rgba(255, 255, 255, 0.9); }  .popover-section-title {
+.popover-header { margin-bottom: 10px; } .popover-title-row { display: flex; justify-content: space-between; align-items: center; } .popover-brand { font-size: 0.75rem; font-weight: 700; color: #fff; } .popover-badge { font-size: 0.6875rem; color: var(--accent-blue-vibrant); background: rgba(10, 132, 255, 0.15); padding: 1px 6px; border-radius: 10px; } .popover-focus-label { font-size: 0.6875rem; color: rgba(255, 255, 255, 0.6); display: block; margin-top: 2px; } .popover-focus-label strong { color: rgba(255, 255, 255, 0.9); }  .popover-section-title {
   font-size: 0.6875rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -217,7 +217,7 @@
 
 .picker-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
 
-.picker-title { font-size: 0.72rem; font-weight: 600; color: #fff; } .picker-badge { font-size: 0.6875rem; color: var(--accent-blue-vibrant); background: rgba(10, 132, 255, 0.14); padding: 2px 6px; border-radius: var(--radius-full); }  .picker-templates-grid { display: flex; align-items: center; gap: 10px; } .template-card { display: flex; flex-direction: column; align-items: center; gap: 5px; }  .template-preview {
+.picker-title { font-size: 0.6875rem; font-weight: 600; color: #fff; } .picker-badge { font-size: 0.6875rem; color: var(--accent-blue-vibrant); background: rgba(10, 132, 255, 0.14); padding: 2px 6px; border-radius: var(--radius-full); }  .picker-templates-grid { display: flex; align-items: center; gap: 10px; } .template-card { display: flex; flex-direction: column; align-items: center; gap: 5px; }  .template-preview {
   display: flex;
   gap: 3px;
   width: 60px;
@@ -306,7 +306,7 @@
   padding: 12px;
   overflow: hidden;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.6875rem;
   line-height: 1.5;
 }
 
@@ -450,7 +450,7 @@
   padding: 0 10px;
   background: rgba(18, 18, 22, 0.88);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.72rem;
+  font-size: 0.6875rem;
   color: rgba(255, 255, 255, 0.8);
 }
 

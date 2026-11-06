@@ -56,3 +56,6 @@ QODER.md
 opencode.jsonc
 .cline/
 .clinerules/
+
+# Impeccable critique snapshots (generated locally, not a source of truth)
+.impeccable/
