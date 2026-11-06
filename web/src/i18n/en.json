@@ -41,23 +41,19 @@
   },
   "sections": {
     "showcase": {
-      "tag": "Hero Experience",
       "title": "3D Interactive macOS Desktop Simulator",
       "desc": "Drag windows, test top-edge snap layouts, and trigger translucent HUD previews directly in your browser.",
       "mobileFallback": "Best experienced on desktop — try the interactive sandbox on a larger screen"
     },
     "features": {
-      "tag": "Core Architecture",
       "title": "Engineered for Focus & Intent",
       "desc": "6 breakthrough capabilities bringing Windows 11 elegance to native macOS speed."
     },
     "shortcuts": {
-      "tag": "Tactile Speed",
       "title": "Keyboard Shortcuts Matrix",
       "desc": "Full spectrum keyboard navigation for windows, multi-display throws, and presets."
     },
     "download": {
-      "tag": "Distribution",
       "title": "Get Started with FlowSnap",
       "desc": "One-click terminal install, verified DMG packages, and offline privacy manifesto."
     }

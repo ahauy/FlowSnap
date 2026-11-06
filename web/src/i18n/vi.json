@@ -41,23 +41,19 @@
   },
   "sections": {
     "showcase": {
-      "tag": "Trải nghiệm Tương tác",
       "title": "Trình mô phỏng Màn hình macOS 3D",
       "desc": "Kéo thả cửa sổ, trải nghiệm khay snap mép trên và kích hoạt xem trước HUD mờ trực tiếp trên trình duyệt.",
       "mobileFallback": "Trải nghiệm tốt nhất trên máy tính — hãy thử sandbox tương tác trên màn hình lớn hơn"
     },
     "features": {
-      "tag": "Kiến trúc Cốt lõi",
       "title": "Thiết kế cho Sự tập trung & Tinh tế",
       "desc": "6 tính năng đột phá mang vẻ đẹp Windows 11 hòa quyện cùng tốc độ native của macOS."
     },
     "shortcuts": {
-      "tag": "Tốc độ Thực chiến",
       "title": "Ma trận Phím tắt",
       "desc": "Hệ thống phím tắt toàn diện điều khiển cửa sổ, ném đa màn hình và các bố cục mẫu."
     },
     "download": {
-      "tag": "Kênh Phân phối",
       "title": "Bắt đầu cùng FlowSnap",
       "desc": "Cài đặt 1 dòng lệnh Terminal, gói cài DMG chuẩn hóa và cam kết quyền riêng tư ngoại tuyến."
     }

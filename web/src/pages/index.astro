@@ -76,7 +76,6 @@ const t = getI18n(lang);
     <div class="page-container sections-container">
       <section id="showcase" class="section-card">
         <div class="section-header">
-          <span class="section-tag">{t.sections.showcase.tag}</span>
           <h2 class="section-title">{t.sections.showcase.title}</h2>
           <p class="section-desc">{t.sections.showcase.desc}</p>
         </div>
@@ -87,7 +86,6 @@ const t = getI18n(lang);
 
       <section id="features" class="section-card">
         <div class="section-header">
-          <span class="section-tag">{t.sections.features.tag}</span>
           <h2 class="section-title">{t.sections.features.title}</h2>
           <p class="section-desc">{t.sections.features.desc}</p>
         </div>
@@ -97,7 +95,6 @@ const t = getI18n(lang);
 
       <section id="shortcuts" class="section-card">
         <div class="section-header">
-          <span class="section-tag">{t.sections.shortcuts.tag}</span>
           <h2 class="section-title">{t.sections.shortcuts.title}</h2>
           <p class="section-desc">{t.sections.shortcuts.desc}</p>
         </div>
@@ -106,7 +103,6 @@ const t = getI18n(lang);
 
       <section id="download" class="section-card">
         <div class="section-header">
-          <span class="section-tag">{t.sections.download.tag}</span>
           <h2 class="section-title">{t.sections.download.title}</h2>
           <p class="section-desc">{t.sections.download.desc}</p>
         </div>
@@ -215,18 +211,7 @@ const t = getI18n(lang);
     display: flex;
     flex-direction: column;
     gap: 8px;
-  }
-
-  .section-tag {
-    font-family: var(--font-mono);
-    font-size: var(--font-size-meta);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--accent-blue);
-  }
-
-  .section-title {
+  }  .section-title {
     font-family: var(--font-display);
     font-size: clamp(22px, 3.5vw, 30px);
     font-weight: 700;
