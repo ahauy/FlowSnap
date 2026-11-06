@@ -137,6 +137,17 @@
   display: none;
 }
 
+/* At 320px the two method segments measured 243px against 180px, hiding
+   "cURL Script" behind a scrollbar with no track. Equal flex basis keeps both
+   labels on screen instead of scrolling one out of sight. */
+@media (max-width: 360px) {
+  .installer-tab {
+    flex: 1 1 0;
+    justify-content: center;
+    padding-inline: 8px;
+  }
+}
+
 .installer-tab {
   display: inline-flex;
   align-items: center;

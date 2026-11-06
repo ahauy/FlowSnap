@@ -56,6 +56,7 @@ const curlTab = TERMINAL_TABS.find((tab) => tab.id === 'curl') || TERMINAL_TABS[
                   class="installer-tab active"
                   role="tab"
                   aria-selected="true"
+                  tabindex="0"
                   aria-controls="panel-dmg"
                   id="tab-dmg"
                   data-install-tab="dmg"
@@ -71,6 +72,7 @@ const curlTab = TERMINAL_TABS.find((tab) => tab.id === 'curl') || TERMINAL_TABS[
                   class="installer-tab"
                   role="tab"
                   aria-selected="false"
+                  tabindex="-1"
                   aria-controls="panel-terminal"
                   id="tab-curl"
                   data-install-tab="curl"
@@ -245,6 +247,22 @@ const curlTab = TERMINAL_TABS.find((tab) => tab.id === 'curl') || TERMINAL_TABS[
 
     let currentCommand = commandCode?.textContent?.trim() || '';
 
+    root.querySelector('[role="tablist"]')?.addEventListener('keydown', (event) => {
+      const key = (event as KeyboardEvent).key;
+      if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(key)) return;
+      event.preventDefault();
+      const list = Array.from(tabs) as HTMLButtonElement[];
+      const current = list.indexOf(document.activeElement as HTMLButtonElement);
+      if (current === -1) return;
+      const next =
+        key === 'ArrowRight' ? (current + 1) % list.length
+        : key === 'ArrowLeft' ? (current - 1 + list.length) % list.length
+        : key === 'Home' ? 0
+        : list.length - 1;
+      list[next].focus();
+      list[next].click();
+    });
+
     tabs.forEach((tab) => {
       tab.addEventListener('click', () => {
         const tabId = tab.getAttribute('data-install-tab');
@@ -256,6 +274,8 @@ const curlTab = TERMINAL_TABS.find((tab) => tab.id === 'curl') || TERMINAL_TABS[
 
         tab.classList.add('active');
         tab.setAttribute('aria-selected', 'true');
+        // One Tab stop for the whole strip; the arrows carry the rest.
+        tabs.forEach((t) => t.setAttribute('tabindex', t === tab ? '0' : '-1'));
 
         const newDesc = tab.getAttribute('data-description') || '';
         if (tabDesc && newDesc) tabDesc.textContent = newDesc;

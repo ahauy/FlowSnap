@@ -262,14 +262,20 @@
   flex-direction: column;
   overflow: hidden;
   z-index: 30;
-  transition: left 0.22s var(--ease-spring), top 0.22s var(--ease-spring), width 0.22s var(--ease-spring), height 0.22s var(--ease-spring), box-shadow 0.2s ease, opacity 0.2s ease;
+  transition: left 0.22s var(--ease-spring), top 0.22s var(--ease-spring), width 0.22s var(--ease-spring), height 0.22s var(--ease-spring), box-shadow 0.2s ease, opacity 0.2s ease, visibility 0s;
 }
 
 .mock-window.active-window { z-index: 35; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.15); }
 
 .mock-window.is-dragging { transition: none !important; cursor: grabbing; z-index: 40 !important; box-shadow: 0 35px 70px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(10, 132, 255, 0.5); }
 
-.mock-window.is-hidden { opacity: 0; pointer-events: none; transform: scale(0.9); }
+.mock-window.is-hidden { opacity: 0; pointer-events: none; transform: scale(0.9);
+  /* opacity alone keeps the three traffic-light buttons in the tab ring, so a
+     closed window still eats Tab presses. visibility flips after the 0.2s fade
+     and snaps back to visible the moment the class is removed. */
+  visibility: hidden;
+  transition-delay: 0s, 0s, 0s, 0s, 0s, 0s, 0.2s;
+}
 
 /* Specific Window Positions */
 #mock-window-code { left: 8%; top: 10%; width: 54%; height: 70%; }
@@ -327,7 +333,15 @@
   text-align: right;
 }
 
-.code-content { flex: 1; padding-left: 12px; margin: 0; color: #e4e4e7; overflow-x: auto; } .token-comment { color: #a1a1aa; } .token-keyword { color: #f472b6; font-weight: 600; } .token-type { color: #38bdf8; } .token-attr { color: #fbbf24; } .token-func { color: #a78bfa; }  .mock-terminal-body { flex-direction: column; background: #0b0c10; gap: 4px; color: #e5e7eb; }
+.code-content { flex: 1; padding-left: 12px; margin: 0; color: #e4e4e7; overflow-x: auto; }
+/* The Swift mock needs 449px and the window gives 335px at 768px, which cut
+   lines mid-token behind an overlay scrollbar that never shows a track. The
+   gutter goes with it: ten numbers beside twelve wrapped rows would line up
+   with nothing. */
+@media (max-width: 1023px) {
+  .code-content { white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: visible; padding-left: 0; }
+  .code-line-numbers { display: none; }
+} .token-comment { color: #a1a1aa; } .token-keyword { color: #f472b6; font-weight: 600; } .token-type { color: #38bdf8; } .token-attr { color: #fbbf24; } .token-func { color: #a78bfa; }  .mock-terminal-body { flex-direction: column; background: #0b0c10; gap: 4px; color: #e5e7eb; }
 
 .terminal-line { display: flex; align-items: center; gap: 6px; } .t-prompt { color: #10b981; font-weight: 700; } .t-dir { color: #38bdf8; } .t-cmd { color: #f3f4f6; } .t-output { font-size: 0.6875rem; color: #9ca3af; margin-left: 12px; } .t-green { color: #10b981; } .t-blue { color: #60a5fa; } .t-cursor { animation: blink 1s infinite; color: #10b981; } @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }  .mock-window-footer {
   height: 22px;
