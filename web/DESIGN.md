@@ -17,6 +17,11 @@ colors:
     text-primary: "#f4f4f5"
     text-secondary: "#a1a1aa"
     text-tertiary: "#8a8a93"
+    accent-text: "#4aa6ff"
+    success-text: "#34c759"
+    warning-text: "#ff9f0a"
+    liquid-glass-tint: "rgba(10, 132, 255, 0.18)"
+    liquid-glass-border: "rgba(10, 132, 255, 0.5)"
   light:
     background: "#ffffff"
     surface: "#fafafa"
@@ -26,17 +31,28 @@ colors:
     border-focus: "#0071e3"
     text-primary: "#09090b"
     text-secondary: "#52525b"
-    text-tertiary: "#8a8a93"
+    text-tertiary: "#5c5c66"
+    accent-text: "#0057b8"
+    success-text: "#146c2e"
+    warning-text: "#8a5a00"
+    liquid-glass-tint: "rgba(0, 113, 227, 0.12)"
+    liquid-glass-border: "rgba(0, 113, 227, 0.4)"
   brand:
     apple-blue: "#0071e3"
     apple-blue-vibrant: "#0a84ff"
-    swift-orange: "#FA7343"
-    liquid-glass-tint: "rgba(10, 132, 255, 0.15)"
-    liquid-glass-border: "rgba(10, 132, 255, 0.4)"
+    swift-orange: "#fa7343"
   semantic:
+    success: "#34c759"
+    warning: "#ff9f0a"
+  chrome:
+    note: "Literal greens kept inside surfaces that stay dark in either page
+      theme (the installer console, the simulated macOS chrome, the mock
+      terminal illustrations). They are not theme tokens."
     success: "#30d158"
-    warning: "#ffd60a"
-    danger: "#ff453a"
+    status-dot: "#10b981"
+    traffic-red: "#ff5f56"
+    traffic-yellow: "#ffbd2e"
+    traffic-green: "#27c93f"
 typography:
   display:
     fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif'
@@ -112,6 +128,7 @@ FlowSnap's landing page embodies the craftsmanship of native macOS applications:
 5. **Hairline Precision**: Card borders, dividers, and modal frames must strictly be `1px solid` with low opacity (`rgba(255,255,255,0.08)` on dark mode).
 6. **Type Floor Is 11px**: `meta` (11px) and `label` (13px) are the documented steps under `xs`/`sm`. Nothing may render below 11px, including `rem` values that compute smaller.
 7. **Mono Means Code or Data**: metadata that is a sentence (`.license-tag`, `.spec-chip`, `.pillar-badge`, `.hint-label`, `.toggle-label`, `.audit-link`) uses the body stack at the `meta` size. Mono stays on keycaps, prompts, digests and counts.
+8. **Brand and status colours need a text shade**: the raw brand values (`#0a84ff`, `#34c759`, `#ff9f0a`) are tuned for dark and fail AA when used as 11-13px text on light surfaces. Text uses `var(--brand-apple-blue-vibrant)` (= `accent-text` above), `var(--color-success-text)` and `var(--color-warning-text)`; the raw tokens stay for dots, fills, glows and icons. Anything that renders its own dark chrome (`.static-preview-frame`, `.mac-desktop-frame`) pins those tokens locally instead of inheriting the page theme.
 
 ### DON'T:
 

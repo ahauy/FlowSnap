@@ -37,6 +37,22 @@
   display: none;
 }
 
+/* Six filter chips measure 538px (EN) / 578px (VI), so at phone width the
+   hidden scrollbar was cutting off Display/Workspace/Utility with no hint that
+   more existed. Wrapping puts every filter on screen; the scroll rule above
+   stays as the safety for longer locales at tablet width. */
+@media (max-width: 768px) {
+  .category-tabs {
+    flex-wrap: wrap;
+    border-radius: var(--radius-xl, 18px);
+    overflow-x: visible;
+  }
+
+  .cat-tab-btn {
+    flex-shrink: 1;
+  }
+}
+
 .cat-tab-btn {
   flex-shrink: 0;
   display: inline-flex;
@@ -288,7 +304,7 @@
 }
 
 .copy-shortcut-btn.copied {
-  color: #30d158;
+  color: var(--color-success-text);
   border-color: rgba(48, 209, 88, 0.4);
   background: rgba(48, 209, 88, 0.1);
 }
