@@ -17,7 +17,7 @@
    - Desktop layout (>= 1024px): 2 balanced columns.
    - Mobile layout (< 1024px): Responsive single-column stacked hierarchy.
 
-2. **Direct DMG Download Card (`DmgCard.astro`)**:
+2. **Direct DMG Download Card (`UnifiedInstaller.astro`, DMG tab)**:
    - Prominent primary CTA button linked directly to the latest production release `https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg`.
    - Displays clear, verified metadata:
      - Version: `v1.3.1` (with live green pulse dot).
@@ -27,16 +27,11 @@
      - License: `MIT License (100% Free & Open Source)`.
    - Secondary link navigating to all GitHub releases.
 
-3. **Simulated macOS Terminal One-Line Installer (`TerminalInstaller.astro`)**:
-   - Realistic macOS Terminal window chrome with 3 colored window control dots (red, yellow, green).
-   - Dynamic tab toggle for developer preferences:
-     - **Tab (`cURL`)**: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ahauy/FlowSnap/main/scripts/install.sh)"`
-     - **Homebrew is not shipped**: the `ahauy/homebrew-tap` repository does not exist, so advertising
-       `brew install --cask ahauy/tap/flowsnap` would hand visitors a command that 404s.
-     - The component rendered on the live page is `UnifiedInstaller.astro`; this `TerminalInstaller.astro`
-       is not imported by any page (see the orphan cleanup backlog).
-   - Accessible 1-click Copy button with dual fallback (`navigator.clipboard` -> temporary off-screen `<textarea>`).
+3. **Simulated macOS Terminal One-Line Installer (`UnifiedInstaller.astro`)**:
+   - Terminal-styled command row with `$` prompt and a 1-click Copy button with dual fallback (`navigator.clipboard` -> temporary off-screen `<textarea>`).
    - Visual feedback: checkmark icon, "Copied!" text, and `aria-live="polite"` announcement for exactly 2000ms.
+   - A "read the script before you run it" link points at the exact `scripts/install.sh` the cURL command downloads. The link is hidden for any method that has no auditable same-origin source.
+   - `DmgCard.astro` and `TerminalInstaller.astro` were deleted on 2026-11-06: nothing imported them, and they had drifted (they referenced i18n keys and a Homebrew tap that no longer exist).
 
 4. **Privacy & Trust Manifesto (`PrivacyManifesto.astro`)**:
    - 3 structured guarantee cards with semantic vector icons:
@@ -63,8 +58,6 @@ web/
 │   ├── data/
 │   │   └── distribution-data.ts        # Type-safe constants (Metadata, Tabs, Privacy, Gatekeeper)
 │   ├── components/
-│   │   ├── DmgCard.astro               # Direct DMG download card & version metadata
-│   │   ├── TerminalInstaller.astro     # Terminal window with cURL/brew tabs & 1-click copy
 │   │   ├── PrivacyManifesto.astro      # 3 trust pillars (Offline, Zero Telemetry, AXUIElement)
 │   │   ├── GatekeeperGuide.astro       # Collapsible quarantine troubleshooting & xattr copy
 │   │   └── DistributionHub.astro       # Main 2-column container & responsive layout
