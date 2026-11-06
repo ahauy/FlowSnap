@@ -253,7 +253,7 @@ const localizedCards = bentoFeatures.map((card) => {
   .bento-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: var(--space-grid);
   }
 
   /* Asymmetric Bento Layout */
@@ -562,7 +562,7 @@ const localizedCards = bentoFeatures.map((card) => {
   @media (max-width: 1024px) {
     .bento-grid {
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
+      gap: var(--space-grid);
     }
     .bento-hero {
       grid-column: span 2;
@@ -580,7 +580,7 @@ const localizedCards = bentoFeatures.map((card) => {
   @media (max-width: 680px) {
     .bento-grid {
       grid-template-columns: 1fr;
-      gap: 16px;
+      gap: var(--space-grid-sm);
     }
     .bento-hero,
     .bento-standard {

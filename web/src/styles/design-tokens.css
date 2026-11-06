@@ -57,6 +57,10 @@
   --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
 
   /* Typography Font Sizes */
+  /* card-grid rhythm: the two card ribbons used 16/12 and 20/16 for the
+     same sibling relationship */
+  --space-grid: 20px;
+  --space-grid-sm: 16px;
   --site-header-height: 60px;
   --font-size-meta: 11px;   /* mono metadata: version, dates, counts, keycaps */
   --font-size-label: 13px;  /* secondary UI label: nav, buttons, small prose */
