@@ -241,8 +241,7 @@
     "unifiedSubtitle": "Download verified universal DMG package or install in seconds via one-line terminal script.",
     "tabs": {
       "dmg": "DMG Package",
-      "curl": "cURL Script",
-      "brew": "Homebrew"
+      "curl": "cURL Script"
     },
     "unifiedFooterVerified": "SHA-256 Checksum & Universal Script Verified",
     "dmg": {
@@ -255,12 +254,11 @@
     "terminal": {
       "title": "One-Line Automated Installer",
       "curlDesc": "Automatically downloads and installs the latest Universal DMG into /Applications",
-      "brewDesc": "Install and manage version updates via official Homebrew Cask tap",
-      "chipSudo": "Sudo-less (No root required)",
       "chipArch": "Auto-detects Apple Silicon & Intel",
       "footerHint": "Universal Script Verified",
       "footerLink": "View script on GitHub",
-      "copyAria": "Copy terminal installation command to clipboard"
+      "copyAria": "Copy terminal installation command to clipboard",
+      "readScript": "Read the script before you run it"
     },
     "privacy": {
       "badge": "Zero Telemetry Guarantee",
@@ -306,7 +304,7 @@
     "gatekeeper": {
       "title": "Seeing \"Unidentified Developer\" warning from macOS Gatekeeper?",
       "summary": "Because FlowSnap is community-driven open source (without a commercial paid Apple Developer certificate), macOS applies quarantine flags on first launch.",
-      "hint": "Quick 5-second quarantine removal for macOS Sequoia & Sonoma",
+      "hint": "Two ways through: right-click Open needs no Terminal",
       "toggleLabel": "Details",
       "command": "xattr -cr /Applications/FlowSnap.app",
       "copyAria": "Copy xattr command to clipboard",
@@ -318,22 +316,25 @@
         },
         {
           "stepNumber": 2,
-          "title": "Open Terminal and clear quarantine flag",
-          "instruction": "Copy and paste the command below into Terminal, then press Enter to remove com.apple.quarantine."
+          "title": "Right-click FlowSnap, then choose Open",
+          "instruction": "In Finder's Applications folder, right-click (or Control-click) FlowSnap, pick Open, then confirm Open in the dialog. This clears the warning for later launches without running anything."
         },
         {
           "stepNumber": 3,
-          "title": "Open app and grant Accessibility permission",
-          "instruction": "Launch FlowSnap from Launchpad or Spotlight, and grant Accessibility permission when prompted to enjoy fluid snapping."
+          "title": "Launch it and grant Accessibility",
+          "instruction": "Open FlowSnap from Launchpad or Spotlight, and grant Accessibility permission when prompted to enable window snapping."
         }
-      ]
+      ],
+      "fallbackTitle": "If macOS still refuses to open it",
+      "fallbackNote": "This clears the quarantine flag Apple placed on every file inside the app bundle."
     },
     "meta": {
       "releaseDate": "September 2026",
       "binaryArch": "Universal Binary (Apple Silicon & Intel)",
       "minMacOS": "macOS 14.0+ (Sonoma & Sequoia)",
       "license": "MIT Open Source"
-    }
+    },
+    "checksumSelectHint": "Select to copy the full digest"
   },
   "footer": {
     "desc": "Native macOS window management engineered with intent-based layouts, Windows 11-style snap picker, and zero private APIs.",
