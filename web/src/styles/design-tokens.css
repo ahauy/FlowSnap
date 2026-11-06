@@ -52,7 +52,9 @@
     -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
   --font-body:
     -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
-  --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  /* ui-monospace makes this resolve to the platform mono everywhere; the old
+     list picked whatever a visitor happened to have installed. */
+  --font-mono: "SF Mono", ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
 
   /* Typography Font Sizes */
   --site-header-height: 60px;

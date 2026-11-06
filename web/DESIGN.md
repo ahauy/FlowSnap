@@ -42,13 +42,19 @@ typography:
     fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif'
     weights: "600, 700"
     letterSpacing: "-0.025em"
+    note: "Same rendered face as body. -apple-system resolves to SF Pro Text on
+      macOS; there is no separate optical display cut here, so hierarchy comes
+      from size, weight and leading. The token stays as the seam for one."
   body:
     fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif'
     weights: "400, 500"
     lineHeight: "1.6"
   mono:
-    fontFamily: '"SF Mono", "JetBrains Mono", Menlo, Consolas, monospace'
+    fontFamily: '"SF Mono", ui-monospace, Menlo, Consolas, "Liberation Mono", monospace'
     weights: "400, 500, 600"
+    note: "Mono is for code, keycaps, digests and counts - never for English
+      sentences. On a machine without SF Mono only two real faces exist:
+      400/500 render identically and 600/700 render identically."
   scale:
     meta: "0.6875rem" # 11px - mono metadata only: version, dates, counts, keycaps
     xs: "0.75rem" # 12px
@@ -105,6 +111,7 @@ FlowSnap's landing page embodies the craftsmanship of native macOS applications:
 4. **Stable Outer Anchors for Hover**: Wrap interactive translating elements in a stable container to prevent 60Hz hover jitter.
 5. **Hairline Precision**: Card borders, dividers, and modal frames must strictly be `1px solid` with low opacity (`rgba(255,255,255,0.08)` on dark mode).
 6. **Type Floor Is 11px**: `meta` (11px) and `label` (13px) are the documented steps under `xs`/`sm`. Nothing may render below 11px, including `rem` values that compute smaller.
+7. **Mono Means Code or Data**: metadata that is a sentence (`.license-tag`, `.spec-chip`, `.pillar-badge`, `.hint-label`, `.toggle-label`, `.audit-link`) uses the body stack at the `meta` size. Mono stays on keycaps, prompts, digests and counts.
 
 ### DON'T:
 
