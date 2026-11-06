@@ -274,7 +274,10 @@
 /* Specific Window Positions */
 #mock-window-code { left: 8%; top: 10%; width: 54%; height: 70%; }
 
-#mock-window-terminal { left: 48%; top: 22%; width: 46%; height: 62%; }
+/* The terminal used to start at 48%, inside the code window's 8-62% span, so
+   its five output lines sat covered at rest. 66% clears the overlap at every
+   stage width without moving the code window. */
+#mock-window-terminal { left: 66%; top: 22%; width: 30%; height: 62%; }
 
 .mock-titlebar {
   height: 36px;
@@ -289,9 +292,13 @@
   touch-action: none;
 }
 
-.traffic-lights { display: flex; align-items: center; gap: 7px; } .traffic-light { width: 11px; height: 11px; border-radius: 50%; border: none; padding: 0; cursor: pointer; transition: opacity 0.15s ease; } .traffic-light:hover { opacity: 0.8; } .traffic-light.red { background: #ff5f56; } .traffic-light.yellow { background: #ffbd2e; } .traffic-light.green { background: #27c93f; }  .titlebar-info { display: flex; align-items: center; gap: 6px; color: rgba(255, 255, 255, 0.85); font-size: 0.75rem; font-weight: 500; } .file-icon { color: var(--accent-swift); } .terminal-mini-icon { color: #10b981; }  .snap-status-badge {
+.traffic-lights { display: flex; align-items: center; gap: 7px; } .traffic-light { width: 11px; height: 11px; border-radius: 50%; border: none; padding: 0; cursor: pointer; transition: opacity 0.15s ease; } .traffic-light:hover { opacity: 0.8; } .traffic-light.red { background: #ff5f56; } .traffic-light.yellow { background: #ffbd2e; } .traffic-light.green { background: #27c93f; }  .titlebar-info { display: flex; align-items: center; gap: 6px; min-width: 0; color: rgba(255, 255, 255, 0.85); font-size: 0.75rem; font-weight: 500; } .file-icon { color: var(--accent-swift); } .terminal-mini-icon { color: #10b981; }  /* The narrower terminal window has to give up its title before the
+   36px titlebar breaks onto two lines. */
+.titlebar-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }  .snap-status-badge {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
   gap: 5px;
   background: rgba(255, 255, 255, 0.08);
   padding: 2px 8px;
