@@ -1,3 +1,9 @@
+/* The simulated macOS chrome stays dark in either page theme, so its accent
+   tokens are pinned here instead of inheriting the page theme (#0a84ff and
+   #0071e3 both land under 4.5:1 on the chrome surfaces). */
+.static-preview-frame,
+.mac-desktop-frame { --accent-blue-vibrant: #4aa6ff; }
+
 .simulator-wrapper { display: flex; flex-direction: column; gap: 14px; width: 100%; user-select: none; }
 
 .sandbox-toolbar {
@@ -319,7 +325,7 @@
   text-align: right;
 }
 
-.code-content { flex: 1; padding-left: 12px; margin: 0; color: #e4e4e7; overflow-x: auto; } .token-comment { color: #6b7280; } .token-keyword { color: #f472b6; font-weight: 600; } .token-type { color: #38bdf8; } .token-attr { color: #fbbf24; } .token-func { color: #a78bfa; }  .mock-terminal-body { flex-direction: column; background: #0b0c10; gap: 4px; color: #e5e7eb; }
+.code-content { flex: 1; padding-left: 12px; margin: 0; color: #e4e4e7; overflow-x: auto; } .token-comment { color: #a1a1aa; } .token-keyword { color: #f472b6; font-weight: 600; } .token-type { color: #38bdf8; } .token-attr { color: #fbbf24; } .token-func { color: #a78bfa; }  .mock-terminal-body { flex-direction: column; background: #0b0c10; gap: 4px; color: #e5e7eb; }
 
 .terminal-line { display: flex; align-items: center; gap: 6px; } .t-prompt { color: #10b981; font-weight: 700; } .t-dir { color: #38bdf8; } .t-cmd { color: #f3f4f6; } .t-output { font-size: 0.6875rem; color: #9ca3af; margin-left: 12px; } .t-green { color: #10b981; } .t-blue { color: #60a5fa; } .t-cursor { animation: blink 1s infinite; color: #10b981; } @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }  .mock-window-footer {
   height: 22px;
@@ -495,7 +501,7 @@
 .static-badge {
   font-size: 0.6875rem;
   font-family: var(--font-mono);
-  color: var(--accent-blue);
+  color: var(--accent-blue-vibrant);
   background: rgba(10, 132, 255, 0.16);
   padding: 1px 4px;
   border-radius: 3px;

@@ -33,7 +33,9 @@
   --accent-blue-vibrant: #0a84ff;
   --accent-swift: #fa7343;
   --brand-apple-blue: var(--accent-blue);
-  --brand-apple-blue-vibrant: var(--accent-blue-vibrant);
+  /* -vibrant is only ever used as 11-12px text on page surfaces, so light
+     uses the AA-passing shade (#0a84ff measures 3.1:1 on the chip tints). */
+  --brand-apple-blue-vibrant: #0057b8;
 
   /* Liquid Glass HUD */
   --liquid-glass-bg: rgba(0, 113, 227, 0.12);
@@ -83,6 +85,10 @@
   /* Status */
   --color-success: #34c759;
   --color-warning: #ff9f0a;
+  /* Status colours used as TEXT on light surfaces need the dark shade:
+     #34c759 is 2.0:1 and #ff9f0a is 1.9:1 on their own tinted chips. */
+  --color-success-text: #146c2e;
+  --color-warning-text: #8a5a00;
 
   /* Radii */
   --radius-sm: 6px;
@@ -126,7 +132,9 @@
   --accent-blue: #0a84ff;
   --accent-blue-vibrant: #0a84ff;
   --brand-apple-blue: var(--accent-blue);
-  --brand-apple-blue-vibrant: var(--accent-blue-vibrant);
+  --brand-apple-blue-vibrant: #4aa6ff;
+  --color-success-text: #34c759;
+  --color-warning-text: #ff9f0a;
   --liquid-glass-bg: rgba(10, 132, 255, 0.18);
   --liquid-glass-border: rgba(10, 132, 255, 0.5);
 }
@@ -158,7 +166,9 @@
     --accent-blue: #0a84ff;
     --accent-blue-vibrant: #0a84ff;
     --brand-apple-blue: var(--accent-blue);
-    --brand-apple-blue-vibrant: var(--accent-blue-vibrant);
+    --brand-apple-blue-vibrant: #4aa6ff;
+    --color-success-text: #34c759;
+    --color-warning-text: #ff9f0a;
     --liquid-glass-bg: rgba(10, 132, 255, 0.18);
     --liquid-glass-border: rgba(10, 132, 255, 0.5);
   }

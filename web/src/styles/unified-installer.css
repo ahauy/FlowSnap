@@ -77,7 +77,9 @@
   min-width: 0;
 }
 
-.version-badge {
+/* Scoped to the installer: an unscoped .version-badge here overrode the
+   shared neutral badge in design-tokens.css for Header and both hero badges. */
+.badge-row .version-badge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -85,7 +87,7 @@
   border-radius: var(--radius-full);
   background: rgba(48, 209, 88, 0.12);
   border: 1px solid rgba(48, 209, 88, 0.3);
-  color: var(--color-success);
+  color: var(--color-success-text);
   font-size: var(--font-size-meta);
   font-weight: 600;
   font-family: var(--font-mono);
@@ -513,13 +515,9 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: var(--brand-apple-blue);
+  color: var(--brand-apple-blue-vibrant);
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: rgba(10, 132, 255, 0.4);
-}
-
-.script-check-link:hover {
   text-decoration-color: currentColor;
 }
 
