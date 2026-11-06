@@ -55,6 +55,10 @@
   --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
 
   /* Typography Font Sizes */
+  --site-header-height: 60px;
+  --font-size-meta: 11px;   /* mono metadata: version, dates, counts, keycaps */
+  --font-size-label: 13px;  /* secondary UI label: nav, buttons, small prose */
+  --font-size-body-sm: 14px;  /* full sentences never render below this */
   --font-size-xs: 12px;
   --font-size-sm: 14px;
   --font-size-base: 16px;
@@ -63,6 +67,9 @@
   --font-size-2xl: 30px;
 
   /* Aliases used by component styles */
+  --font-meta: var(--font-size-meta);
+  --font-label: var(--font-size-label);
+  --font-body-sm: var(--font-size-body-sm);
   --font-xs: var(--font-size-xs);
   --font-sm: var(--font-size-sm);
   --font-lg: var(--font-size-lg);
@@ -105,7 +112,7 @@
 
   --text-primary: #f4f4f5;
   --text-secondary: #a1a1aa;
-  --text-tertiary: #71717a;
+  --text-tertiary: #8a8a93;
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-text-tertiary: var(--text-tertiary);
@@ -137,7 +144,7 @@
 
     --text-primary: #f4f4f5;
     --text-secondary: #a1a1aa;
-    --text-tertiary: #71717a;
+    --text-tertiary: #8a8a93;
     --color-text-primary: var(--text-primary);
     --color-text-secondary: var(--text-secondary);
     --color-text-tertiary: var(--text-tertiary);
@@ -172,6 +179,7 @@ body {
   color: var(--text-primary);
   font-family: var(--font-body);
   line-height: 1.6;
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -182,7 +190,8 @@ body {
 
 /* Section scroll offset for sticky header */
 section[id] {
-  scroll-margin-top: 80px;
+  /* one source of truth: the sticky bar height plus breathing room */
+  scroll-margin-top: calc(var(--site-header-height) + 16px);
 }
 
 /* Layout Utilities */
@@ -323,4 +332,12 @@ summary:focus-visible {
     transform: none !important;
     transition: none !important;
   }
+}
+
+/* UA defaults put <code>/<pre>/<kbd> on generic monospace, which is Courier New
+   on Windows while the token stack resolves Consolas - two faces inside one card. */
+code,
+pre,
+kbd {
+  font-family: var(--font-mono);
 }
