@@ -86,6 +86,13 @@ const t = getI18n(lang);
     transform: scale(0.95);
   }
 
+  @media (max-width: 768px), (pointer: coarse) {
+    .theme-toggle-btn {
+      width: 44px;
+      height: 44px;
+    }
+  }
+
   .theme-icon {
     transition: transform var(--duration-fast) var(--ease-spring), opacity var(--duration-fast) ease;
   }
