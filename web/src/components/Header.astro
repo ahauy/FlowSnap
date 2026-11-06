@@ -193,11 +193,16 @@ const viUrl = `${basePath || ''}/vi`;
     top: 0;
     z-index: 50;
     width: 100%;
-    backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     background-color: rgba(255, 255, 255, 0.85);
     border-bottom: 1px solid var(--border-color);
     transition: background-color var(--duration-normal) ease, border-color var(--duration-normal) ease;
+  }
+
+  /* Firefox has never accepted -webkit-backdrop-filter, and the CSS
+     minifier deletes the unprefixed twin of a prefixed declaration. */
+  @supports (backdrop-filter: blur(1px)) {
+    .site-header { backdrop-filter: blur(20px); }
   }
 
   :global([data-theme="dark"]) .site-header,
