@@ -110,8 +110,10 @@ const copy = t.metrics.items as Record<string, { label: string; sublabel: string
   }
 
   .metric-value {
+    /* 22px, not 30: the ribbon numbers were the same size and weight
+       as h2.section-title, so they read as a second row of headings. */
     font-family: var(--font-display);
-    font-size: var(--font-size-2xl, 30px);
+    font-size: var(--font-size-xl, 22px);
     font-weight: 700;
     letter-spacing: -0.025em;
     color: var(--color-text-primary, #09090b);
@@ -135,9 +137,22 @@ const copy = t.metrics.items as Record<string, { label: string; sublabel: string
   }
 
   /* Responsive Breakpoints */
-  @media (max-width: 1024px) {
+  /* Bounded band on purpose: an unbounded max-width would let the span-3 rule
+     create implicit tracks in the narrower grids below and divide the ribbon
+     into thirds. */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    /* 6 tracks: three cards span 2, the last two span 3, so the
+       second row is full instead of 3+2 with a hole. */
     .metrics-grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .metric-card {
+      grid-column: span 2;
+    }
+
+    .metric-card:nth-last-child(-n+2) {
+      grid-column: span 3;
     }
   }
 
@@ -146,11 +161,15 @@ const copy = t.metrics.items as Record<string, { label: string; sublabel: string
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
     }
+
+    .metric-card:last-child {
+      grid-column: 1 / -1;
+    }
     .metric-card {
       padding: 16px 14px;
     }
     .metric-value {
-      font-size: var(--font-size-xl);
+      font-size: var(--font-size-lg);
     }
   }
 
