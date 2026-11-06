@@ -20,6 +20,8 @@ colors:
     accent-text: "#4aa6ff"
     success-text: "#34c759"
     warning-text: "#ff9f0a"
+    liquid-glass-tint: "rgba(10, 132, 255, 0.18)"
+    liquid-glass-border: "rgba(10, 132, 255, 0.5)"
   light:
     background: "#ffffff"
     surface: "#fafafa"
@@ -33,16 +35,24 @@ colors:
     accent-text: "#0057b8"
     success-text: "#146c2e"
     warning-text: "#8a5a00"
+    liquid-glass-tint: "rgba(0, 113, 227, 0.12)"
+    liquid-glass-border: "rgba(0, 113, 227, 0.4)"
   brand:
     apple-blue: "#0071e3"
     apple-blue-vibrant: "#0a84ff"
-    swift-orange: "#FA7343"
-    liquid-glass-tint: "rgba(10, 132, 255, 0.15)"
-    liquid-glass-border: "rgba(10, 132, 255, 0.4)"
+    swift-orange: "#fa7343"
   semantic:
+    success: "#34c759"
+    warning: "#ff9f0a"
+  chrome:
+    note: "Literal greens kept inside surfaces that stay dark in either page
+      theme (the installer console, the simulated macOS chrome, the mock
+      terminal illustrations). They are not theme tokens."
     success: "#30d158"
-    warning: "#ffd60a"
-    danger: "#ff453a"
+    status-dot: "#10b981"
+    traffic-red: "#ff5f56"
+    traffic-yellow: "#ffbd2e"
+    traffic-green: "#27c93f"
 typography:
   display:
     fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif'

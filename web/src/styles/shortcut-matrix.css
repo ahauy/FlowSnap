@@ -288,7 +288,7 @@
 }
 
 .copy-shortcut-btn.copied {
-  color: #30d158;
+  color: var(--color-success-text);
   border-color: rgba(48, 209, 88, 0.4);
   background: rgba(48, 209, 88, 0.1);
 }
