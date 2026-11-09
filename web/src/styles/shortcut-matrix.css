@@ -424,6 +424,7 @@
 @media (max-width: 768px), (pointer: coarse) {
   .cat-tab-btn,
   .copy-shortcut-btn,
+  .keycaps-container,
   .reset-filter-btn {
     min-height: 44px;
   }
