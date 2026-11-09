@@ -302,6 +302,7 @@
       "summary": "Because FlowSnap is community-driven open source (without a commercial paid Apple Developer certificate), macOS applies quarantine flags on first launch.",
       "hint": "Two ways through: right-click Open needs no Terminal",
       "toggleLabel": "Details",
+      "badge": "Gatekeeper Help",
       "command": "xattr -cr /Applications/FlowSnap.app",
       "copyAria": "Copy xattr command to clipboard",
       "steps": [

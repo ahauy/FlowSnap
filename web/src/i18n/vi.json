@@ -275,7 +275,7 @@
         },
         {
           "id": "telemetry",
-          "title": "Zero Telemetry & Tracking",
+          "title": "Không Thu Thập Dữ Liệu & Theo Dõi",
           "badge": "Không SDK Theo dõi",
           "description": "Tuyệt đối không thu thập dữ liệu phân tích hành vi, thống kê hay thông tin cá nhân của người dùng.",
           "details": [
@@ -302,6 +302,7 @@
       "summary": "Vì FlowSnap là phần mềm mã nguồn mở cộng đồng phi thương mại (không mua chứng chỉ Apple Developer trả phí), macOS sẽ gắn thuộc tính cách ly (quarantine) trong lần đầu mở app.",
       "hint": "Hai cách vượt qua: click chuột phải rồi chọn Mở, không cần Terminal",
       "toggleLabel": "Chi tiết",
+      "badge": "Trợ giúp Gatekeeper",
       "command": "xattr -cr /Applications/FlowSnap.app",
       "copyAria": "Sao chép lệnh xattr vào clipboard",
       "steps": [
