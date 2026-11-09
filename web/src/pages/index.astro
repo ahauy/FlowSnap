@@ -22,7 +22,7 @@ const t = getI18n(lang);
 >
   <Header lang={lang} />
 
-  <main class="main-content">
+  <main class="main-content" id="main-content" tabindex="-1">
     <!-- Hero Section Baseline -->
     <section class="hero-section page-container">
       <div class="hero-badge-wrapper">
@@ -226,56 +226,6 @@ const t = getI18n(lang);
     font-size: 14px;
     color: var(--text-secondary);
     max-width: 34em;
-  }
-
-  .placeholder-box {
-    width: 100%;
-    min-height: 180px;
-    border: 1px dashed var(--border-color);
-    border-radius: var(--radius-lg);
-    background-color: var(--surface-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-
-  .placeholder-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .traffic-lights {
-    display: flex;
-    gap: 6px;
-  }
-
-  .dot-red,
-  .dot-yellow,
-  .dot-green {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-
-  .dot-red { background-color: #ff5f56; }
-  .dot-yellow { background-color: #ffbd2e; }
-  .dot-green { background-color: #27c93f; }
-
-  .placeholder-text {
-    font-family: var(--font-mono);
-    font-size: var(--font-size-label);
-    color: var(--text-secondary);
-  }
-
-  .placeholder-text code {
-    background-color: var(--surface-elevated);
-    padding: 2px 6px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-    color: var(--accent-blue);
   }
 
   @media (max-width: 640px) {

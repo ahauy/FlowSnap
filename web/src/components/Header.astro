@@ -1,6 +1,7 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
 import { getI18n, type Locale } from '../i18n';
+import { RELEASE_METADATA } from '../data/distribution-data';
 
 interface Props {
   version?: string;
@@ -9,7 +10,7 @@ interface Props {
 }
 
 const {
-  version = 'v1.3.1',
+  version = RELEASE_METADATA.version,
   githubUrl = 'https://github.com/ahauy/FlowSnap',
   lang = 'en',
 } = Astro.props;

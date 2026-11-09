@@ -6,9 +6,11 @@
  *
  * Implements hardware-accelerated CSS 3D transforms, multi-window concurrency (VS Code & Terminal),
  * authentic FlowSnap Menu Bar popover, Windows 11-style top-edge layout picker with true 70/30 proportions,
- * liquid glass HUD snap preview, and buttery 120 FPS pointer drag physics.
+ * liquid glass HUD snap preview, and 60 FPS pointer drag physics, paced by
+ * LiveResizeThrottler at ~16.6ms to match the shipped app.
  */
 import { getI18n, type Locale } from '../i18n';
+import { RELEASE_METADATA } from '../data/distribution-data';
 import '../styles/desktop-simulator.css';
 
 interface Props {
@@ -232,7 +234,7 @@ const t = getI18n(lang);
           <div class="popover-header">
             <div class="popover-title-row">
               <span class="popover-brand">{t.simulator.menuTitle}</span>
-              <span class="popover-badge">v1.3.1</span>
+              <span class="popover-badge">{RELEASE_METADATA.version}</span>
             </div>
             <span class="popover-focus-label">{t.simulator.targetLabel} <strong id="popover-target-name">SnapEngine.swift</strong></span>
           </div>

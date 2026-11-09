@@ -357,3 +357,24 @@ pre,
 kbd {
   font-family: var(--font-mono);
 }
+
+/* Keyboard users otherwise cross ~75 tab stops before the download card. The
+   link stays off-screen until focused so it costs nothing visually. */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+  padding: 10px 16px;
+  background: var(--color-surface-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}

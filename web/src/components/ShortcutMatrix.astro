@@ -46,6 +46,7 @@ const counts = {
   aria-label="Interactive Keyboard Shortcuts Matrix"
   data-copy-label={t.shortcuts.controls.copyLabel}
   data-copied-label={t.shortcuts.controls.copiedLabel}
+  data-copy-fail-label={t.clipboard.copyFail}
   data-show-all-label={t.shortcuts.controls.showAll}
   data-show-fewer-label={t.shortcuts.controls.showFewer}
 >
@@ -157,6 +158,7 @@ const counts = {
   </div>
 
   <!-- Zero-Match Empty State -->
+  <div class="sr-only" aria-live="polite" id="shortcut-copy-status"></div>
   <div id="shortcut-empty-state" class="empty-state-card" aria-live="polite" hidden>
     <div class="empty-icon-wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" aria-hidden="true">
@@ -201,6 +203,8 @@ const counts = {
 
     const copyLabel = root.getAttribute('data-copy-label') || 'Copy';
     const copiedLabel = root.getAttribute('data-copied-label') || 'Copied!';
+    const copyFailLabel = root.getAttribute('data-copy-fail-label') || 'Copy failed.';
+    const copyStatus = root.querySelector<HTMLElement>('#shortcut-copy-status');
     const showAllLabel = root.getAttribute('data-show-all-label') || 'Show all 15 shortcuts';
     const showFewerLabel = root.getAttribute('data-show-fewer-label') || 'Show fewer shortcuts';
 
@@ -361,8 +365,16 @@ const counts = {
             if (label) label.textContent = copyLabel;
           }, 1500);
         }
+        if (copyStatus) {
+          copyStatus.textContent = copiedLabel;
+          setTimeout(() => { copyStatus.textContent = ''; }, 1500);
+        }
       } catch (err) {
         console.warn('Clipboard write failed:', err);
+        if (copyStatus) {
+          copyStatus.textContent = copyFailLabel;
+          setTimeout(() => { copyStatus.textContent = ''; }, 4000);
+        }
       }
     }
 

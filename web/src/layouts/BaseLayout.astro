@@ -1,5 +1,7 @@
 ---
 import '../styles/design-tokens.css';
+import { getI18n } from '../i18n';
+import { RELEASE_METADATA } from '../data/distribution-data';
 
 interface Props {
   title?: string;
@@ -45,6 +47,7 @@ const absoluteOgImage = ogImage.startsWith('http')
   ? ogImage
   : `${siteUrl}${basePath || '/FlowSnap'}/${ogImage.replace(/^\//, '')}`;
 const ogLocale = lang === 'vi' ? 'vi_VN' : 'en_US';
+const t = getI18n(lang);
 
 const jsonLdSchema = {
   '@context': 'https://schema.org',
@@ -52,7 +55,7 @@ const jsonLdSchema = {
   name: 'FlowSnap',
   operatingSystem: 'macOS 14.0+',
   applicationCategory: 'UtilitiesApplication',
-  softwareVersion: '1.3.1',
+  softwareVersion: RELEASE_METADATA.version,
   description: description,
   url: canonical,
   downloadUrl: 'https://github.com/ahauy/FlowSnap/releases/latest/download/FlowSnap.dmg',
@@ -72,7 +75,9 @@ const jsonLdSchema = {
 ---
 
 <!doctype html>
-<html lang={lang} data-theme="dark">
+<!-- No data-theme here on purpose: the attribute would outrank the
+     prefers-color-scheme block in design-tokens.css for visitors without JS. -->
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href={`${basePath || ''}/favicon.svg`} />
@@ -140,6 +145,7 @@ const jsonLdSchema = {
     </script>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">{t.a11y.skipToContent}</a>
     <slot />
   </body>
 </html>

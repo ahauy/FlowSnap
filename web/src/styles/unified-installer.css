@@ -123,7 +123,7 @@
   border: 1px solid var(--color-border);
   margin-left: 4px;
 
-  /* Three tabs measure 319px, which at 320px viewport spilled out of the
+  /* The tab strip measured 319px, which at a 320px viewport spilled out of the
      column-stacked card header and pushed the whole document sideways. Same
      treatment as the shortcut tab strip: constrain, then scroll internally. */
   min-width: 0;
@@ -523,7 +523,7 @@
 
 .script-check-icon {
   flex-shrink: 0;
-  color: var(--color-warning);
+  color: var(--color-warning-text);
 }
 
 .script-check-link {
