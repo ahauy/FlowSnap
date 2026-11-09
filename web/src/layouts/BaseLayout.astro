@@ -1,5 +1,7 @@
 ---
 import '../styles/design-tokens.css';
+import { getI18n } from '../i18n';
+import { RELEASE_METADATA } from '../data/distribution-data';
 
 interface Props {
   title?: string;
@@ -45,6 +47,7 @@ const absoluteOgImage = ogImage.startsWith('http')
   ? ogImage
   : `${siteUrl}${basePath || '/FlowSnap'}/${ogImage.replace(/^\//, '')}`;
 const ogLocale = lang === 'vi' ? 'vi_VN' : 'en_US';
+const t = getI18n(lang);
 
 const jsonLdSchema = {
   '@context': 'https://schema.org',
@@ -140,6 +143,7 @@ const jsonLdSchema = {
     </script>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">{t.a11y.skipToContent}</a>
     <slot />
   </body>
 </html>
