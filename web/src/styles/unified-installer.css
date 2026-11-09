@@ -523,7 +523,7 @@
 
 .script-check-icon {
   flex-shrink: 0;
-  color: var(--color-warning);
+  color: var(--color-warning-text);
 }
 
 .script-check-link {
