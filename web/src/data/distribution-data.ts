@@ -33,14 +33,7 @@ export interface PrivacyPillarItem {
 }
 
 export interface GatekeeperGuideData {
-  readonly title: string;
-  readonly summary: string;
   readonly command: string;
-  readonly steps: readonly {
-    readonly stepNumber: number;
-    readonly title: string;
-    readonly instruction: string;
-  }[];
 }
 
 export const RELEASE_METADATA: ReleaseMetadata = {
@@ -112,28 +105,5 @@ export const PRIVACY_PILLARS: readonly PrivacyPillarItem[] = [
 ];
 
 export const GATEKEEPER_DATA: GatekeeperGuideData = {
-  title: 'Encountered macOS Gatekeeper "Unidentified Developer" Warning?',
-  summary:
-    "Because FlowSnap is an open-source community utility without Apple Developer Program signing, macOS applies a quarantine flag on first launch.",
   command: "xattr -cr /Applications/FlowSnap.app",
-  steps: [
-    {
-      stepNumber: 1,
-      title: "Drag FlowSnap to Applications",
-      instruction:
-        "Open the downloaded FlowSnap.dmg and drag the FlowSnap icon into your /Applications directory as usual.",
-    },
-    {
-      stepNumber: 2,
-      title: "Remove quarantine attribute via Terminal",
-      instruction:
-        "Copy and paste the command below into Terminal, then press Enter to remove the com.apple.quarantine attribute.",
-    },
-    {
-      stepNumber: 3,
-      title: "Launch and grant Accessibility permissions",
-      instruction:
-        "Open FlowSnap from Spotlight or Launchpad, then grant Accessibility access when prompted to enable window snapping.",
-    },
-  ],
 };
